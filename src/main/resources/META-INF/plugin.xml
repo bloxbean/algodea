@@ -1,0 +1,19 @@
+<idea-plugin>
+    <id>com.bloxbean.algorand</id>
+    <name>BloxBean Algorand Integration</name>
+    <vendor email="info@bloxbean.com" url="https://github.com/bloxbean/algorand-idea-plugin/">Algorand Idea Project
+    </vendor>
+
+    <description><![CDATA[
+    Intellij IDEA plugin for development on Algorand blockchain
+    ]]></description>
+
+    <idea-version since-build="201"/>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <fileType name="TEAL File" implementationClass="com.bloxbean.algorand.idea.language.TEALFileType"
+                  fieldName="INSTANCE" language="TEAL" extensions="teal"/>
+        <lang.parserDefinition language="TEAL"
+                               implementationClass="com.bloxbean.algorand.idea.language.TEALParserDefinition"/>
+    </extensions>
+</idea-plugin>

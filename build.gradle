@@ -1,0 +1,62 @@
+import com.vladsch.flexmark.ast.Document
+import com.vladsch.flexmark.html.HtmlRenderer
+import com.vladsch.flexmark.parser.Parser
+
+buildscript {
+    apply plugin: 'groovy'
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+    dependencies {
+        classpath group: 'com.vladsch.flexmark', name: 'flexmark', version: '0.28.12'
+    }
+}
+
+plugins {
+    id 'java'
+    id 'idea'
+    id 'org.jetbrains.intellij' version '0.4.21'
+}
+
+group 'com.bloxbean'
+version '0.0.1'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'lib')
+//    compile 'com.konghq:unirest-java:3.1.00'
+//    compile group: "org.aion4j", name: "avm-helper", version: "0.1.0"
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+sourceSets.main.java.srcDirs 'src/main/gen'
+
+String changeLogAsHtml() {
+    Parser parser = Parser.builder().build()
+    HtmlRenderer renderer = HtmlRenderer.builder().build()
+    Document changeLogDocument = parser.parse(new File(rootProject.uri('CHANGELOG.md')).text)
+    renderer.render(changeLogDocument)
+}
+
+intellij {
+    version '2020.1'
+    plugins = []
+
+    publishPlugin {
+        username System.getProperty('ij_plugin_portal_login')
+        password System.getProperty('ij_plugin_portal_password')
+    }
+
+    updateSinceUntilBuild false
+}
+patchPluginXml {
+    changeNotes changeLogAsHtml()
+}
