@@ -1,6 +1,5 @@
 {
   parserClass="com.bloxbean.algorand.idea.language.parser.TEALParser"
-  parserUtilClass="com.bloxbean.algorand.idea.language.parser.TEALParserUtil"
 
   extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
 
@@ -14,10 +13,221 @@
   tokenTypeClass="com.bloxbean.algorand.idea.language.psi.TEALTokenType"
 
   psiImplUtilClass="com.bloxbean.algorand.idea.language.psi.impl.TEALPsiImplUtil"
+
+  tokens = [
+    NL = 'regexp:\R'
+
+    //Loading values
+    INTCBLOCK   = 'intcblock'
+    INTC        = 'intc'
+    INTC_0      = 'intc_0'
+    INTC_1      = 'intc_1'
+    INTC_2      = 'intc_2'
+    INTC_3      = 'intc_3'
+
+    BYTEBLOCK   = 'bytecblock'
+    BYTEC       = 'bytec'
+    BYTEC_0     = 'bytec_0'
+    BYTEC_1     = 'bytec_1'
+    BYTEC_2     = 'bytec_2'
+    BYTEC_3     = 'bytec_3'
+
+    ARG         = 'arg'
+    ARG_0       = 'arg_0'
+    ARG_1       = 'arg_1'
+    ARG_2       = 'arg_2'
+    ARG_3       = 'arg_3'
+
+    TXN         = 'txn'
+    GTXN        = 'gtxn'
+    TXNA        = 'txna'
+    GTXNA       = 'gtxna'
+    GLOBAL      = 'global'
+    LOAD        = 'load'
+    STORE       = 'store'
+
+    //Named Integer Constants
+    NAMED_INTEGER_CONSTANT = 'regex: (NoOp | OptIn | CloseOut | ClearState | UpdateApplication | DeleteApplication)'
+
+    //TypeEnum constants
+    TYPENUM_CONSTANT = 'regex: (unknown | pay | keyreg | acfg | axfer | afrz | appl)'
+
+    //Operations
+    SHA256              = 'sha256'
+    KECCAK256           = 'keccak256'
+    SHA512_256          = 'sha512_256'
+    ED25519VERIFY       = 'ed25519verify'
+    PLUS                = '+'
+    MINUS               = '-'
+    DIVIDE              = '/'
+    TIMES               = '*'
+    LESSTHAN            = '<'
+    GREATERTHAN         = '>'
+    LESSTHANEQUAL       = '<='
+    GREATERTHANEQUAL    = '>='
+
+    LOGICAL_AND         = '&&'
+    LOGICAL_OR          = '\|\|'
+    LOGICAL_EQUAL       = '=='
+    LOGICAL_NOTEQUAL    = '!='
+
+    NOT                 = '!'
+    LEN                 = 'len'
+    ITOB                = 'itob'
+    BTOI                = 'btoi'
+
+    MODULO              = '%'
+    BITWISE_OR          = '\|'
+    BITWISE_AND         = '&'
+    BITWISE_XOR         = '^'
+    BITWISE_INVERT      = '~'
+
+    MULW                = 'mulw'
+    ADDW                = 'addw'
+    CONCAT              = 'concat'
+    SUBSTRING           = 'substring'
+    SUBSTRING3          = 'substring3'
+
+    //Transaction Fields
+    TRANSACTION_FILED   = 'regex: (Sender | Fee | FirstValid | FirstValidTime | LastValid | Note | Lease | Receiver | Amount)'
+    TRANSACTION_FIELD_1 = 'regex: (CloseRemainderTo | VotePK | SelectionPK | VoteFirst | VoteLast | VoteKeyDilution | Type)'
+    TRANSACTION_FILED_2 = 'regex: (TypeEnum | XferAsset | AssetAmount | AssetSender | AssetReceiver | AssetCloseTo | GroupIndex)'
+    TRANSACTIONFIELD_3  = 'regex: (TxID | ApplicationID | OnCompletion | ApplicationArgs | NumAppArgs | Accounts | NumAccounts)'
+    TRANSACTION_FIELD_4 = 'regex: (ApprovalProgram | ClearStateProgram | RekeyTo | ConfigAsset | ConfigAssetTotal | ConfigAssetDecimals)'
+    TRANSACTION_FIELD_5 = 'regex: (ConfigAssetDefaultFrozen | ConfigAssetUnitName | ConfigAssetName | ConfigAssetURL | ConfigAssetMetadataHash)'
+    TRANSACTION_FIELD_6 = 'regex: (ConfigAssetManager | ConfigAssetReserve | ConfigAssetFreeze | ConfigAssetClawback | FreezeAsset)'
+    TRANSACTION_FIELD_7 = 'regex: (FreezeAssetAccount | FreezeAssetFrozen)'
+
+    //Global Fields
+    GLOBAL_FIELD        = 'regex: (MinTxnFee | MinBalance | MaxTxnLife | ZeroAddress | GroupSize | LogicSigVersion | Round | LatestTimestamp | CurrentApplicationID)'
+
+    //Asset Fields
+    ASSET_FIELD         = 'regex: (AssetBalance | AssetFrozen)'
+    ASSET_FIELD_1       = 'regex: (AssetTotal | AssetDecimals | AssetDefaultFrozen | AssetUnitName | AssetName | AssetURL | AssetMetadataHash | AssetManager | AssetReserve | AssetFreeze | AssetClawback)'
+
+    //Flow control
+    ERR                 = 'err'
+    BNZ                 = 'bnz'
+    BZ                  = 'bz'
+    B                   = 'b'
+    RETURN              = 'return'
+    POP                 = 'pop'
+    DUP                 = 'dup'
+    DUP2                = 'dup2'
+
+    //State access
+    BALANCE             = 'balance'
+    APP_OPTED_IN        = 'app_opted_in'
+    APP_LOCAL_GET       = 'app_local_get'
+    APP_LOCAL_GET_EX    = 'app_local_get_ex'
+    APP_GLOBAL_GET      = 'app_global_get'
+    APP_GLOBAL_GET_EX   = 'app_global_get_ex'
+    APP_LOCAL_PUT       = 'app_local_put'
+    APP_GLOBAL_PUT      = 'app_global_put'
+    APP_LOCAL_DEL       = 'app_local_del'
+    APP_GLOBAL_DEL      = 'app_global_del'
+    ASSET_HOLDING_GET   = 'asset_holding_get'
+    ASSET_PARAMS_GET    = 'asset_params_get'
+
+  ]
 }
 
-simpleFile ::= item_*
+//simpleFile ::= item_*
+//
+//private item_ ::= (property|COMMENT|CRLF)
+//
+//property ::= (KEY? SEPARATOR VALUE?) | KEY {methods=[getKey getValue]}
 
-private item_ ::= (property|COMMENT|CRLF)
+tealFile ::= statementList
 
-property ::= (KEY? SEPARATOR VALUE?) | KEY
+private statementList ::= statement*
+
+//private statement ::= label_definition
+//                    | directive_statement
+//                    | instruction
+//                    | COMMA
+//                    | EOL
+
+private statement ::= instruction
+                    | NL
+
+/** Instructions */
+instruction ::= OPERATOR instruction_args*
+                | TXN_LOADING_OPERATOR TXN_FIELD_ARG
+
+OPERATOR ::= LOADING_OPERATOR
+             | OPERATION
+
+LOADING_OPERATOR ::= INTCBLOCK
+                    | INTC
+                    | INTC_0
+                    | INTC_1
+                    | INTC_2
+                    | INTC_3
+                    | BYTEBLOCK
+                    | BYTEC
+                    | BYTEC_0
+                    | BYTEC_1
+                    | BYTEC_2
+                    | BYTEC_3
+                    | ARG
+                    | ARG_0
+                    | ARG_1
+                    | ARG_2
+                    | ARG_3
+//                    | TXN_LOADING_OPERATOR
+//                    | TXN
+//                    | GTXN
+//                    | TXNA
+//                    | GTXNA
+                    | GLOBAL
+                    | LOAD
+                    | STORE
+
+TXN_LOADING_OPERATOR ::= TXN
+                        | GTXN
+                        | TXNA
+                        | GTXNA
+
+TXN_FIELD_ARG ::= TRANSACTION_FILED
+                 | TRANSACTION_FIELD_1
+                 | TRANSACTION_FIELD_2
+                 | TRANSACTION_FIELD_3
+                 | TRANSACTION_FIELD_4
+                 | TRANSACTION_FIELD_5
+                 | TRANSACTION_FIELD_6
+                 | TRANSACTION_FIELD_7
+
+
+OPERATION       ::= SHA256
+                    | KECCAK256
+                    | SHA512_256
+                    | ED25519VERIFY
+                    | PLUS
+                    | MINUS
+                    | DIVIDE
+                    | TIMES
+                    | LESSTHAN
+                    | GREATERTHAN
+                    | LESSTHANEQUAL
+                    | GREATERTHANEQUAL
+                    | LOGICAL_AND
+                    | LOGICAL_OR
+                    | LOGICAL_EQUAL
+                    | LOGICAL_NOTEQUAL
+                    | NOT
+                    | LEN
+                    | ITOB
+                    | BTOI
+                    | MODULO
+                    | BITWISE_OR
+                    | BITWISE_AND
+                    | BITWISE_XOR
+                    | BITWISE_INVERT
+                    | MULW
+                    | ADDW
+                    | CONCAT
+                    | SUBSTRING
+                    | SUBSTRING3
+
+

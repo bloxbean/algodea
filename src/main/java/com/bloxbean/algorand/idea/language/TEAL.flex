@@ -1,8 +1,6 @@
 package com.bloxbean.algorand.idea.language;
 
-import com.intellij.lexer.FlexLexer;
 import com.intellij.psi.tree.IElementType;
-import com.bloxbean.algorand.idea.language.psi.TEALTypes;
 import com.intellij.psi.TokenType;
 
 %%

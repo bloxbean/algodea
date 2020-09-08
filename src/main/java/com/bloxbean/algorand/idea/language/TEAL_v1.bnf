@@ -1,0 +1,21 @@
+{
+  parserClass="com.bloxbean.algorand.idea.language.parser.TEALParser"
+
+  extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+  psiClassPrefix="TEAL"
+  psiImplClassSuffix="Impl"
+  psiPackage="com.bloxbean.algorand.idea.language.psi"
+  psiImplPackage="com.bloxbean.algorand.idea.language.psi.impl"
+
+  elementTypeHolderClass="com.bloxbean.algorand.idea.language.psi.TEALTypes"
+  elementTypeClass="com.bloxbean.algorand.idea.language.psi.TEALElementType"
+  tokenTypeClass="com.bloxbean.algorand.idea.language.psi.TEALTokenType"
+
+  psiImplUtilClass="com.bloxbean.algorand.idea.language.psi.impl.TEALPsiImplUtil"
+
+  tokens = [
+    TXN = 'txn'
+
+  ]
+}
