@@ -1,5 +1,6 @@
 {
   parserClass="com.bloxbean.algorand.idea.language.parser.TEALParser"
+  parserUtilClass="com.bloxbean.algorand.idea.language.psi.impl.TEALParserUtil"
 
   extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
 
@@ -16,6 +17,10 @@
 
   tokens = [
     NL = 'regexp:\R'
+    EOF = 'regexp:\Z'
+    SPACE='regexp:\s+'
+    COMMENT='regexp://.*'
+    NUMBER='regexp:\d+(\.\d*)?'
 
     //Loading values
     INTCBLOCK   = 'intcblock'
@@ -47,10 +52,10 @@
     STORE       = 'store'
 
     //Named Integer Constants
-    NAMED_INTEGER_CONSTANT = 'regex: (NoOp | OptIn | CloseOut | ClearState | UpdateApplication | DeleteApplication)'
+    NAMED_INTEGER_CONSTANT = 'regexp: (NoOp | OptIn | CloseOut | ClearState | UpdateApplication | DeleteApplication)'
 
     //TypeEnum constants
-    TYPENUM_CONSTANT = 'regex: (unknown | pay | keyreg | acfg | axfer | afrz | appl)'
+    TYPENUM_CONSTANT = 'regexp: (unknown | pay | keyreg | acfg | axfer | afrz | appl)'
 
     //Operations
     SHA256              = 'sha256'
@@ -89,21 +94,21 @@
     SUBSTRING3          = 'substring3'
 
     //Transaction Fields
-    TRANSACTION_FILED   = 'regex: (Sender | Fee | FirstValid | FirstValidTime | LastValid | Note | Lease | Receiver | Amount)'
-    TRANSACTION_FIELD_1 = 'regex: (CloseRemainderTo | VotePK | SelectionPK | VoteFirst | VoteLast | VoteKeyDilution | Type)'
-    TRANSACTION_FILED_2 = 'regex: (TypeEnum | XferAsset | AssetAmount | AssetSender | AssetReceiver | AssetCloseTo | GroupIndex)'
-    TRANSACTIONFIELD_3  = 'regex: (TxID | ApplicationID | OnCompletion | ApplicationArgs | NumAppArgs | Accounts | NumAccounts)'
-    TRANSACTION_FIELD_4 = 'regex: (ApprovalProgram | ClearStateProgram | RekeyTo | ConfigAsset | ConfigAssetTotal | ConfigAssetDecimals)'
-    TRANSACTION_FIELD_5 = 'regex: (ConfigAssetDefaultFrozen | ConfigAssetUnitName | ConfigAssetName | ConfigAssetURL | ConfigAssetMetadataHash)'
-    TRANSACTION_FIELD_6 = 'regex: (ConfigAssetManager | ConfigAssetReserve | ConfigAssetFreeze | ConfigAssetClawback | FreezeAsset)'
-    TRANSACTION_FIELD_7 = 'regex: (FreezeAssetAccount | FreezeAssetFrozen)'
+    TRANSACTION_FIELD   = 'regexp:(Sender|Fee|FirstValid|FirstValidTime|LastValid|Note|Lease|Receiver|Amount)'
+    TRANSACTION_FIELD_1 = 'regexp:(CloseRemainderTo|VotePK|SelectionPK|VoteFirst|VoteLast|VoteKeyDilution|Type)'
+    TRANSACTION_FILED_2 = 'regexp:(TypeEnum|XferAsset|AssetAmount|AssetSender|AssetReceiver|AssetCloseTo|GroupIndex)'
+    TRANSACTION_FIELD_3  = 'regexp:(TxID|ApplicationID|OnCompletion|ApplicationArgs|NumAppArgs|Accounts|NumAccounts)'
+    TRANSACTION_FIELD_4 = 'regexp:(ApprovalProgram|ClearStateProgram|RekeyTo|ConfigAsset|ConfigAssetTotal|ConfigAssetDecimals)'
+    TRANSACTION_FIELD_5 = 'regexp:(ConfigAssetDefaultFrozen|ConfigAssetUnitName|ConfigAssetName|ConfigAssetURL|ConfigAssetMetadataHash)'
+    TRANSACTION_FIELD_6 = 'regexp:(ConfigAssetManager|ConfigAssetReserve|ConfigAssetFreeze|ConfigAssetClawback|FreezeAsset)'
+    TRANSACTION_FIELD_7 = 'regexp:(FreezeAssetAccount|FreezeAssetFrozen)'
 
     //Global Fields
-    GLOBAL_FIELD        = 'regex: (MinTxnFee | MinBalance | MaxTxnLife | ZeroAddress | GroupSize | LogicSigVersion | Round | LatestTimestamp | CurrentApplicationID)'
+    GLOBAL_FIELD        = 'regexp:(MinTxnFee|MinBalance|MaxTxnLife|ZeroAddress|GroupSize|LogicSigVersion|Round|LatestTimestamp|CurrentApplicationID)'
 
     //Asset Fields
-    ASSET_FIELD         = 'regex: (AssetBalance | AssetFrozen)'
-    ASSET_FIELD_1       = 'regex: (AssetTotal | AssetDecimals | AssetDefaultFrozen | AssetUnitName | AssetName | AssetURL | AssetMetadataHash | AssetManager | AssetReserve | AssetFreeze | AssetClawback)'
+    ASSET_FIELD         = 'regexp:(AssetBalance|AssetFrozen)'
+    ASSET_FIELD_1       = 'regexp:(AssetTotal|AssetDecimals|AssetDefaultFrozen|AssetUnitName|AssetName|AssetURL|AssetMetadataHash|AssetManager|AssetReserve|AssetFreeze|AssetClawback)'
 
     //Flow control
     ERR                 = 'err'
@@ -140,23 +145,27 @@
 
 tealFile ::= statementList
 
-private statementList ::= statement*
-
 //private statement ::= label_definition
 //                    | directive_statement
 //                    | instruction
 //                    | COMMA
 //                    | EOL
 
+private statementList ::= statement*
+
 private statement ::= instruction
                     | NL
 
 /** Instructions */
-instruction ::= OPERATOR instruction_args*
-                | TXN_LOADING_OPERATOR TXN_FIELD_ARG
+instruction ::= OPERATOR //instruction_args*
+                | TXN_LOADING_OPERATOR SPACE TXN_FIELD_ARG
+
 
 OPERATOR ::= LOADING_OPERATOR
              | OPERATION
+             | SINGLE_ARG_OPERATOR
+             | FLOW_CONTROL
+
 
 LOADING_OPERATOR ::= INTCBLOCK
                     | INTC
@@ -170,7 +179,7 @@ LOADING_OPERATOR ::= INTCBLOCK
                     | BYTEC_1
                     | BYTEC_2
                     | BYTEC_3
-                    | ARG
+//                    | SINGLE_ARG_OPERATOR
                     | ARG_0
                     | ARG_1
                     | ARG_2
@@ -184,12 +193,15 @@ LOADING_OPERATOR ::= INTCBLOCK
                     | LOAD
                     | STORE
 
+SINGLE_ARG_OPERATOR ::= ARG_OPERATOR
+ARG_OPERATOR ::= ARG SPACE NUMBER
+
 TXN_LOADING_OPERATOR ::= TXN
                         | GTXN
                         | TXNA
                         | GTXNA
 
-TXN_FIELD_ARG ::= TRANSACTION_FILED
+TXN_FIELD_ARG ::= TRANSACTION_FIELD
                  | TRANSACTION_FIELD_1
                  | TRANSACTION_FIELD_2
                  | TRANSACTION_FIELD_3
@@ -199,7 +211,7 @@ TXN_FIELD_ARG ::= TRANSACTION_FILED
                  | TRANSACTION_FIELD_7
 
 
-OPERATION       ::= SHA256
+OPERATION    ::= SHA256
                     | KECCAK256
                     | SHA512_256
                     | ED25519VERIFY
@@ -230,4 +242,11 @@ OPERATION       ::= SHA256
                     | SUBSTRING
                     | SUBSTRING3
 
-
+FLOW_CONTROL   ::= ERR
+                    | BNZ
+                    | BZ
+                    | B
+                    | RETURN
+                    | POP
+                    | DUP
+                    | DUP2
