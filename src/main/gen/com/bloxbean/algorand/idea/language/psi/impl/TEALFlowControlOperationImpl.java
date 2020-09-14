@@ -11,14 +11,14 @@ import static com.bloxbean.algorand.idea.language.psi.TEALTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.bloxbean.algorand.idea.language.psi.*;
 
-public class TEALPropertyImpl extends ASTWrapperPsiElement implements TEALProperty {
+public class TEALFlowControlOperationImpl extends ASTWrapperPsiElement implements TEALFlowControlOperation {
 
-  public TEALPropertyImpl(@NotNull ASTNode node) {
+  public TEALFlowControlOperationImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull TEALVisitor visitor) {
-    visitor.visitProperty(this);
+    visitor.visitFlowControlOperation(this);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {

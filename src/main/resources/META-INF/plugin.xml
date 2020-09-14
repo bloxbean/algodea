@@ -17,8 +17,8 @@
                                implementationClass="com.bloxbean.algorand.idea.language.TEALParserDefinition"/>
         <lang.syntaxHighlighterFactory language="TEAL"
                                        implementationClass="com.bloxbean.algorand.idea.language.TEALSyntaxHighlighterFactory"/>
-        <colorSettingsPage implementation="com.bloxbean.algorand.idea.language.TEALColorSettingsPage"/>
+<!--        <colorSettingsPage implementation="com.bloxbean.algorand.idea.language.TEALColorSettingsPage"/>-->
         <completion.contributor language="TEAL"
-                                implementationClass="com.bloxbean.algorand.idea.language.TEALCompletionContributor"/>
+                                implementationClass="com.bloxbean.algorand.idea.language.completion.TEALCompletionContributor"/>
     </extensions>
 </idea-plugin>

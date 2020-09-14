@@ -4,6 +4,6 @@ import com.intellij.lexer.FlexAdapter;
 
 public class TEALLexerAdapter extends FlexAdapter {
     public TEALLexerAdapter() {
-        super(new TEALLexer(null));
+        super(new _TEALLexer(null));
     }
 }

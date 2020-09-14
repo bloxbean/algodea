@@ -1,0 +1,295 @@
+{
+  parserClass="com.bloxbean.algorand.idea.language.parser.TEALParser"
+  parserUtilClass="com.bloxbean.algorand.idea.language.psi.impl.TEALParserUtil"
+
+  extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+  psiClassPrefix="TEAL"
+  psiImplClassSuffix="Impl"
+  psiPackage="com.bloxbean.algorand.idea.language.psi"
+  psiImplPackage="com.bloxbean.algorand.idea.language.psi.impl"
+
+  elementTypeHolderClass="com.bloxbean.algorand.idea.language.psi.TEALTypes"
+  elementTypeClass="com.bloxbean.algorand.idea.language.psi.TEALElementType"
+  tokenTypeClass="com.bloxbean.algorand.idea.language.psi.TEALTokenType"
+
+  psiImplUtilClass="com.bloxbean.algorand.idea.language.psi.impl.TEALPsiImplUtil"
+
+  tokens = [
+    NL = 'regexp:\R'
+    EOF = 'regexp:\Z'
+    SPACE='regexp:\s+'
+    COMMENT='regexp://.*'
+    NUMBER='regexp:\d+(\.\d*)?'
+
+//   UINT8='regexp:([01]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])'
+//   UINT8='regexp:^(12[0-7]|1[01][0-9]|[1-9]?[0-9])$'
+
+    //TODO
+//    IDENTIFIER = 'regexp:[\.\_\-A-Za-z0-9]+'
+//       // literals
+//        l_identifier="regexp:[a-zA-Z_][a-zA-Z_$0-9]*"
+//        l_identifier_text="regexp:\`[^`]+\`"
+//        l_decimal="regexp:(0|[1-9][0-9]*)\.[0-9]+"
+//        l_integer="regexp:0|[1-9][0-9]*"
+//        l_string="regexp:('([^'\\]|\\.)*'|\"([^\"\\]|\\.)*\")"
+
+
+    //Loading values
+    INTCBLOCK   = 'intcblock'
+    INTC        = 'intc'
+    INTC_0      = 'intc_0'
+    INTC_1      = 'intc_1'
+    INTC_2      = 'intc_2'
+    INTC_3      = 'intc_3'
+
+    BYTEBLOCK   = 'bytecblock'
+    BYTEC       = 'bytec'
+    BYTEC_0     = 'bytec_0'
+    BYTEC_1     = 'bytec_1'
+    BYTEC_2     = 'bytec_2'
+    BYTEC_3     = 'bytec_3'
+
+    ARG         = 'arg'
+    ARG_0       = 'arg_0'
+    ARG_1       = 'arg_1'
+    ARG_2       = 'arg_2'
+    ARG_3       = 'arg_3'
+
+    TXN         = 'txn'
+    GTXN        = 'gtxn'
+    TXNA        = 'txna'
+    GTXNA       = 'gtxna'
+    GLOBAL      = 'global'
+    LOAD        = 'load'
+    STORE       = 'store'
+
+    //TODO need clarification
+    ADDR        = "addr"
+    //TODO end need clarification
+
+    //Named Integer Constants
+    NAMED_INTEGER_CONSTANT = 'regexp:(NoOp|OptIn|CloseOut|ClearState|UpdateApplication|DeleteApplication)'
+
+    //TypeEnum constants
+    TYPENUM_CONSTANT = 'regexp:(unknown|pay|keyreg|acfg|axfer|afrz|appl)'
+
+    //Operations
+    SHA256              = 'sha256'
+    KECCAK256           = 'keccak256'
+    SHA512_256          = 'sha512_256'
+    ED25519VERIFY       = 'ed25519verify'
+    PLUS                = '+'
+    MINUS               = '-'
+    DIVIDE              = '/'
+    TIMES               = '*'
+    LESSTHAN            = '<'
+    GREATERTHAN         = '>'
+    LESSTHANEQUAL       = '<='
+    GREATERTHANEQUAL    = '>='
+
+    LOGICAL_AND         = '&&'
+    LOGICAL_OR          = '\|\|'
+    LOGICAL_EQUAL       = '=='
+    LOGICAL_NOTEQUAL    = '!='
+
+    NOT                 = '!'
+    LEN                 = 'len'
+    ITOB                = 'itob'
+    BTOI                = 'btoi'
+
+    MODULO              = '%'
+    BITWISE_OR          = '\|'
+    BITWISE_AND         = '&'
+    BITWISE_XOR         = '^'
+    BITWISE_INVERT      = '~'
+
+    MULW                = 'mulw'
+    ADDW                = 'addw'
+    CONCAT              = 'concat'
+    SUBSTRING           = 'substring'
+    SUBSTRING3          = 'substring3'
+
+    //Transaction Fields
+    TRANSACTION_FIELD   = 'regexp:(Sender|Fee|FirstValid|FirstValidTime|LastValid|Note|Lease|Receiver|Amount)'
+    TRANSACTION_FIELD_1 = 'regexp:(CloseRemainderTo|VotePK|SelectionPK|VoteFirst|VoteLast|VoteKeyDilution|Type)'
+    TRANSACTION_FILED_2 = 'regexp:(TypeEnum|XferAsset|AssetAmount|AssetSender|AssetReceiver|AssetCloseTo|GroupIndex)'
+    TRANSACTION_FIELD_3  = 'regexp:(TxID|ApplicationID|OnCompletion|ApplicationArgs|NumAppArgs|Accounts|NumAccounts)'
+    TRANSACTION_FIELD_4 = 'regexp:(ApprovalProgram|ClearStateProgram|RekeyTo|ConfigAsset|ConfigAssetTotal|ConfigAssetDecimals)'
+    TRANSACTION_FIELD_5 = 'regexp:(ConfigAssetDefaultFrozen|ConfigAssetUnitName|ConfigAssetName|ConfigAssetURL|ConfigAssetMetadataHash)'
+    TRANSACTION_FIELD_6 = 'regexp:(ConfigAssetManager|ConfigAssetReserve|ConfigAssetFreeze|ConfigAssetClawback|FreezeAsset)'
+    TRANSACTION_FIELD_7 = 'regexp:(FreezeAssetAccount|FreezeAssetFrozen)'
+
+    //Global Fields
+    GLOBAL_FIELD        = 'regexp:(MinTxnFee|MinBalance|MaxTxnLife|ZeroAddress|GroupSize|LogicSigVersion|Round|LatestTimestamp|CurrentApplicationID)'
+
+    //Asset Fields
+    ASSET_FIELD         = 'regexp:(AssetBalance|AssetFrozen)'
+    ASSET_FIELD_1       = 'regexp:(AssetTotal|AssetDecimals|AssetDefaultFrozen|AssetUnitName|AssetName|AssetURL|AssetMetadataHash|AssetManager|AssetReserve|AssetFreeze|AssetClawback)'
+
+    //Flow control
+    ERR                 = 'err'
+    BNZ                 = 'bnz'
+    BZ                  = 'bz'
+    B                   = 'b'
+    RETURN              = 'return'
+    POP                 = 'pop'
+    DUP                 = 'dup'
+    DUP2                = 'dup2'
+
+    //State access
+    BALANCE             = 'balance'
+    APP_OPTED_IN        = 'app_opted_in'
+    APP_LOCAL_GET       = 'app_local_get'
+    APP_LOCAL_GET_EX    = 'app_local_get_ex'
+    APP_GLOBAL_GET      = 'app_global_get'
+    APP_GLOBAL_GET_EX   = 'app_global_get_ex'
+    APP_LOCAL_PUT       = 'app_local_put'
+    APP_GLOBAL_PUT      = 'app_global_put'
+    APP_LOCAL_DEL       = 'app_local_del'
+    APP_GLOBAL_DEL      = 'app_global_del'
+    ASSET_HOLDING_GET   = 'asset_holding_get'
+    ASSET_PARAMS_GET    = 'asset_params_get'
+
+  ]
+}
+
+//simpleFile ::= item_*
+//
+//private item_ ::= (property|COMMENT|CRLF)
+//
+//property ::= (KEY? SEPARATOR VALUE?) | KEY {methods=[getKey getValue]}
+
+tealFile ::= statementList
+
+//private statement ::= label_definition
+//                    | directive_statement
+//                    | instruction
+//                    | COMMA
+//                    | EOL
+
+private statementList ::= statement*
+
+private statement ::= INSTRUCTION
+                    | NL
+
+INSTRUCTION ::= LOADING_OPERATOR_OPCODE
+              | TXN_LOADING_OPERATOR TXN_FIELD_ARG
+              | SINGLE_ARG_OPERATOR_OPCODE
+              | FLOW_CONTROL
+              | BRANCH_FLOW_CONTROL_INSTRUCTION
+              | OPERATION
+              | ARG_OPERATION
+              | STATE_ACCESS_OPCODE
+
+private instruction_arg ::= NUMBER
+                  | IDENTIFIER
+
+LOADING_OPERATOR_OPCODE ::= INTCBLOCK
+                    | INTC
+                    | INTC_0
+                    | INTC_1
+                    | INTC_2
+                    | INTC_3
+                    | BYTEBLOCK
+                    | BYTEC
+                    | BYTEC_0
+                    | BYTEC_1
+                    | BYTEC_2
+                    | BYTEC_3
+//                    | SINGLE_ARG_OPERATOR
+                    | ARG_0
+                    | ARG_1
+                    | ARG_2
+                    | ARG_3
+//                    | TXN_LOADING_OPERATOR
+//                    | TXN
+//                    | GTXN
+//                    | TXNA
+//                    | GTXNA
+                    | GLOBAL
+                    | LOAD
+                    | STORE
+ //TODO remove addr if not required
+                    | ADDR
+
+SINGLE_ARG_OPERATOR_OPCODE ::= ARG_OPERATOR
+ARG_OPERATOR ::= ARG NUMBER {pin=1}
+
+TXN_LOADING_OPERATOR ::= TXN
+                        | GTXN
+                        | TXNA
+                        | GTXNA
+
+TXN_FIELD_ARG ::= TRANSACTION_FIELD
+                 | TRANSACTION_FIELD_1
+                 | TRANSACTION_FIELD_2
+                 | TRANSACTION_FIELD_3
+                 | TRANSACTION_FIELD_4
+                 | TRANSACTION_FIELD_5
+                 | TRANSACTION_FIELD_6
+                 | TRANSACTION_FIELD_7
+
+
+OPERATION    ::= SHA256
+                    | KECCAK256
+                    | SHA512_256
+                    | ED25519VERIFY
+                    | PLUS
+                    | MINUS
+                    | DIVIDE
+                    | TIMES
+                    | LESSTHAN
+                    | GREATERTHAN
+                    | LESSTHANEQUAL
+                    | GREATERTHANEQUAL
+                    | LOGICAL_AND
+                    | LOGICAL_OR
+                    | LOGICAL_EQUAL
+                    | LOGICAL_NOTEQUAL
+                    | NOT
+                    | LEN
+                    | ITOB
+                    | BTOI
+                    | MODULO
+                    | BITWISE_OR
+                    | BITWISE_AND
+                    | BITWISE_XOR
+                    | BITWISE_INVERT
+                    | MULW
+                    | ADDW
+                    | CONCAT
+
+ARG_OPERATION ::= SUBSTRING NUMBER NUMBER
+                    | SUBSTRING3 NUMBER NUMBER {pin=1}
+
+
+//Flow Control
+FLOW_CONTROL ::= ERR
+                    | RETURN
+                    | POP
+                    | DUP
+                    | DUP2
+
+BRANCH_FLOW_CONTROL_INSTRUCTION ::= BRANCH_FLOW_CONTROL (instruction_arg)* {pin = 1}
+BRANCH_FLOW_CONTROL ::=  BNZ
+                        | BZ
+                        | B
+
+
+STATE_ACCESS_OPCODE ::= BALANCE
+                       | APP_OPTED_IN
+                       | APP_LOCAL_GET
+                       | APP_LOCAL_GET_EX
+                       | APP_GLOBAL_GET
+                       | APP_GLOBAL_GET_EX
+                       | APP_LOCAL_PUT
+                       | APP_GLOBAL_PUT
+                       | APP_LOCAL_DEL
+                       | APP_GLOBAL_DEL
+                       | ASSET_HOLDING_GET  instruction_arg
+                       | ASSET_PARAMS_GET  instruction_arg
+                       {pin=1}
+
+
+

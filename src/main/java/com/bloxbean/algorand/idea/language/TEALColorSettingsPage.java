@@ -1,5 +1,6 @@
 package com.bloxbean.algorand.idea.language;
 
+import com.bloxbean.algorand.idea.language.highlights.TEALSyntaxHighlighter;
 import com.intellij.openapi.editor.colors.TextAttributesKey;
 import com.intellij.openapi.fileTypes.SyntaxHighlighter;
 import com.intellij.openapi.options.colors.AttributesDescriptor;
@@ -14,10 +15,10 @@ import java.util.Map;
 public class TEALColorSettingsPage implements ColorSettingsPage {
 
     private static final AttributesDescriptor[] DESCRIPTORS = new AttributesDescriptor[]{
-            new AttributesDescriptor("Key", TEALSyntaxHighlighter.KEY),
-            new AttributesDescriptor("Separator", TEALSyntaxHighlighter.SEPARATOR),
-            new AttributesDescriptor("Value", TEALSyntaxHighlighter.VALUE),
-            new AttributesDescriptor("Bad Value", TEALSyntaxHighlighter.BAD_CHARACTER)
+//            new AttributesDescriptor("Key", TEALSyntaxHighlighter.KEY),
+//            new AttributesDescriptor("Separator", TEALSyntaxHighlighter.SEPARATOR),
+//            new AttributesDescriptor("Value", TEALSyntaxHighlighter.VALUE),
+//            new AttributesDescriptor("Bad Value", TEALSyntaxHighlighter.BAD_CHARACTER)
     };
 
     @Nullable

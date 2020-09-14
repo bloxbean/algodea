@@ -1,0 +1,250 @@
+package com.bloxbean.algorand.idea.language;
+
+import com.intellij.lexer.FlexLexer;
+import com.intellij.psi.tree.IElementType;
+
+import static com.intellij.psi.TokenType.BAD_CHARACTER;
+import static com.intellij.psi.TokenType.WHITE_SPACE;
+import static com.bloxbean.algorand.idea.language.psi.TEALTypes.*;
+import static com.bloxbean.algorand.idea.language.TEALParserDefinition.LINE_COMMENT;
+import static com.bloxbean.algorand.idea.language.TEALParserDefinition.BLOCK_COMMENT;
+
+%%
+
+%{
+  public _TEALLexer() {
+    this((java.io.Reader)null);
+  }
+%}
+
+%public
+%class _TEALLexer
+%implements FlexLexer
+%function advance
+%type IElementType
+%unicode
+
+EOL=\R
+WHITE_SPACE=\s+
+
+NL=\R
+EOF=\Z
+SPACE=[ \t\n\x0B\f\r]+
+NUMBER=[0-9]+(\.[0-9]*)?
+NAMED_INTEGER_CONSTANT=(NoOp|OptIn|CloseOut|ClearState|UpdateApplication|DeleteApplication)
+TYPENUM_CONSTANT=(unknown|pay|keyreg|acfg|axfer|afrz|appl)
+TRANSACTION_FIELD=(Sender|Fee|FirstValid|FirstValidTime|LastValid|Note|Lease|Receiver|Amount)
+TRANSACTION_FIELD_1=(CloseRemainderTo|VotePK|SelectionPK|VoteFirst|VoteLast|VoteKeyDilution|Type)
+TRANSACTION_FILED_2=(TypeEnum|XferAsset|AssetAmount|AssetSender|AssetReceiver|AssetCloseTo|GroupIndex)
+TRANSACTION_FIELD_3=(TxID|ApplicationID|OnCompletion|ApplicationArgs|NumAppArgs|Accounts|NumAccounts)
+TRANSACTION_FIELD_4=(ApprovalProgram|ClearStateProgram|RekeyTo|ConfigAsset|ConfigAssetTotal|ConfigAssetDecimals)
+TRANSACTION_FIELD_5=(ConfigAssetDefaultFrozen|ConfigAssetUnitName|ConfigAssetName|ConfigAssetURL|ConfigAssetMetadataHash)
+TRANSACTION_FIELD_6=(ConfigAssetManager|ConfigAssetReserve|ConfigAssetFreeze|ConfigAssetClawback|FreezeAsset)
+TRANSACTION_FIELD_7=(FreezeAssetAccount|FreezeAssetFrozen)
+GLOBAL_FIELD=(MinTxnFee|MinBalance|MaxTxnLife|ZeroAddress|GroupSize|LogicSigVersion|Round|LatestTimestamp|CurrentApplicationID)
+ASSET_FIELD=(AssetBalance|AssetFrozen)
+ASSET_FIELD_1=(AssetTotal|AssetDecimals|AssetDefaultFrozen|AssetUnitName|AssetName|AssetURL|AssetMetadataHash|AssetManager|AssetReserve|AssetFreeze|AssetClawback)
+
+LINE_COMMENT = "//" [^\r\n]*
+BLOCK_COMMENT = "/*" ( ([^"*"]|[\r\n])* ("*"+ [^"*""/"] )? )* ("*" | "*"+"/")?
+
+  L_INTCBLOCK   = 'intcblock'
+    L_INTC        = 'intc'
+    L_INTC_0      = 'intc_0'
+    L_INTC_1      = 'intc_1'
+    L_INTC_2      = 'intc_2'
+    L_INTC_3      = 'intc_3'
+
+    L_BYTEBLOCK   = 'bytecblock'
+    L_BYTEC       = 'bytec'
+    L_BYTEC_0     = 'bytec_0'
+    L_BYTEC_1     = 'bytec_1'
+    L_BYTEC_2     = 'bytec_2'
+    L_BYTEC_3     = 'bytec_3'
+
+    L_ARG         = 'arg'
+    L_ARG_0       = 'arg_0'
+    L_ARG_1       = 'arg_1'
+    L_ARG_2       = 'arg_2'
+    L_ARG_3       = 'arg_3'
+
+    L_TXN         = 'txn'
+    L_GTXN        = 'gtxn'
+    L_TXNA        = 'txna'
+    L_GTXNA       = 'gtxna'
+    L_GLOBAL      = 'global'
+    L_LOAD        = 'load'
+    L_STORE       = 'store'
+
+    //TODO need clarification
+    L_ADDR        = "addr"
+
+     O_SHA256              = 'sha256'
+        O_KECCAK256           = 'keccak256'
+        O_SHA512_256          = 'sha512_256'
+        O_ED25519VERIFY       = 'ed25519verify'
+        O_PLUS                = '+'
+        O_MINUS               = '-'
+        O_DIVIDE              = '\/'
+        O_TIMES               = '*'
+        O_LESSTHAN            = '<'
+        O_GREATERTHAN         = '>'
+        O_LESSTHANEQUAL       = '<='
+        O_GREATERTHANEQUAL    = '>='
+
+        O_LOGICAL_AND         = '&&'
+        O_LOGICAL_OR          = '\|\|'
+        O_LOGICAL_EQUAL       = '=='
+        O_LOGICAL_NOTEQUAL    = '!='
+
+        O_NOT                 = '!'
+        O_LEN                 = 'len'
+        O_ITOB                = 'itob'
+        O_BTOI                = 'btoi'
+
+        O_MODULO              = '%'
+        O_BITWISE_OR          = '\|'
+        O_BITWISE_AND         = '&'
+        O_BITWISE_XOR         = '\^'
+        O_BITWISE_INVERT      = '~'
+
+        O_MULW                = 'mulw'
+        O_ADDW                = 'addw'
+        O_CONCAT              = 'concat'
+        O_SUBSTRING           = 'substring'
+        O_SUBSTRING3          = 'substring3'
+
+        //Flow control
+            F_ERR                 = 'err'
+            F_BNZ                 = 'bnz'
+            F_BZ                  = 'bz'
+            F_B                   = 'b'
+            F_RETURN              = 'return'
+            F_POP                 = 'pop'
+            F_DUP                 = 'dup'
+            F_DUP2                = 'dup2'
+
+            //State access
+            S_BALANCE             = 'balance'
+            S_APP_OPTED_IN        = 'app_opted_in'
+            S_APP_LOCAL_GET       = 'app_local_get'
+            S_APP_LOCAL_GET_EX    = 'app_local_get_ex'
+            S_APP_GLOBAL_GET      = 'app_global_get'
+            S_APP_GLOBAL_GET_EX   = 'app_global_get_ex'
+            S_APP_LOCAL_PUT       = 'app_local_put'
+            S_APP_GLOBAL_PUT      = 'app_global_put'
+            S_APP_LOCAL_DEL       = 'app_local_del'
+            S_APP_GLOBAL_DEL      = 'app_global_del'
+            S_ASSET_HOLDING_GET   = 'asset_holding_get'
+            S_ASSET_PARAMS_GET    = 'asset_params_get'
+%%
+<YYINITIAL> {
+  {WHITE_SPACE}                 { return WHITE_SPACE; }
+  {LINE_COMMENT}            { return LINE_COMMENT; }
+  {BLOCK_COMMENT}           { return BLOCK_COMMENT; }
+
+  {L_INTCBLOCK}                   { return L_INTCBLOCK; }
+  {L_INTC}                        { return L_INTC; }
+  "intc_0"                      { return L_INTC_0; }
+  "intc_1"                      { return L_INTC_1; }
+  "intc_2"                      { return L_INTC_2; }
+  "intc_3"                      { return L_INTC_3; }
+  "bytecblock"                  { return L_BYTEBLOCK; }
+  "bytec"                       { return L_BYTEC; }
+  "bytec_0"                     { return L_BYTEC_0; }
+  "bytec_1"                     { return L_BYTEC_1; }
+  "bytec_2"                     { return L_BYTEC_2; }
+  "bytec_3"                     { return L_BYTEC_3; }
+  "arg"                         { return L_ARG; }
+  "arg_0"                       { return L_ARG_0; }
+  "arg_1"                       { return L_ARG_1; }
+  "arg_2"                       { return L_ARG_2; }
+  "arg_3"                       { return L_ARG_3; }
+  {L_TXN}                         { return L_TXN; }
+  "gtxn"                        { return L_GTXN; }
+  "txna"                        { return L_TXNA; }
+  "gtxna"                       { return L_GTXNA; }
+  "global"                      { return L_GLOBAL; }
+  "load"                        { return L_LOAD; }
+  "store"                       { return L_STORE; }
+  "addr"                        { return L_ADDR; }
+  {O_SHA256}                      { return O_SHA256; }
+  "keccak256"                   { return O_KECCAK256; }
+  "sha512_256"                  { return O_SHA512_256; }
+  "ed25519verify"               { return O_ED25519VERIFY; }
+  "+"                           { return O_PLUS; }
+  "-"                           { return O_MINUS; }
+  "/"                           { return O_DIVIDE; }
+  "*"                           { return O_TIMES; }
+  "<"                           { return O_LESSTHAN; }
+  ">"                           { return O_GREATERTHAN; }
+  "<="                          { return O_LESSTHANEQUAL; }
+  ">="                          { return O_GREATERTHANEQUAL; }
+  "&&"                          { return O_LOGICAL_AND; }
+  "\\|\\|"                      { return O_LOGICAL_OR; }
+  "=="                          { return O_LOGICAL_EQUAL; }
+  "!="                          { return O_LOGICAL_NOTEQUAL; }
+  "!"                           { return O_NOT; }
+  "len"                         { return O_LEN; }
+  "itob"                        { return O_ITOB; }
+  "btoi"                        { return O_BTOI; }
+  "%"                           { return O_MODULO; }
+  "\\|"                         { return O_BITWISE_OR; }
+  "&"                           { return O_BITWISE_AND; }
+  "^"                           { return O_BITWISE_XOR; }
+  "~"                           { return O_BITWISE_INVERT; }
+  "mulw"                        { return O_MULW; }
+  "addw"                        { return O_ADDW; }
+  "concat"                      { return O_CONCAT; }
+  "substring"                   { return O_SUBSTRING; }
+  "substring3"                  { return O_SUBSTRING3; }
+  "err"                         { return F_ERR; }
+  "bnz"                         { return F_BNZ; }
+  "bz"                          { return F_BZ; }
+  "b"                           { return F_B; }
+  "return"                      { return F_RETURN; }
+  "pop"                         { return F_POP; }
+  "dup"                         { return F_DUP; }
+  "dup2"                        { return F_DUP2; }
+  "balance"                     { return S_BALANCE; }
+  "app_opted_in"                { return S_APP_OPTED_IN; }
+  "app_local_get"               { return S_APP_LOCAL_GET; }
+  "app_local_get_ex"            { return S_APP_LOCAL_GET_EX; }
+  "app_global_get"              { return S_APP_GLOBAL_GET; }
+  "app_global_get_ex"           { return S_APP_GLOBAL_GET_EX; }
+  "app_local_put"               { return S_APP_LOCAL_PUT; }
+  "app_global_put"              { return S_APP_GLOBAL_PUT; }
+  "app_local_del"               { return S_APP_LOCAL_DEL; }
+  "app_global_del"              { return S_APP_GLOBAL_DEL; }
+  "asset_holding_get"           { return S_ASSET_HOLDING_GET; }
+  "asset_params_get"            { return S_ASSET_PARAMS_GET; }
+  "IDENTIFIER"                  { return IDENTIFIER; }
+  "ARG"                         { return L_ARG; }
+  "TRANSACTION_FIELD_2"         { return TRANSACTION_FIELD_2; }
+
+  {NL}                          { return NL; }
+  {EOF}                         { return EOF; }
+  {SPACE}                       { return SPACE; }
+  {NUMBER}                      { return NUMBER; }
+  {NAMED_INTEGER_CONSTANT}      { return NAMED_INTEGER_CONSTANT; }
+  {TYPENUM_CONSTANT}            { return TYPENUM_CONSTANT; }
+  {TRANSACTION_FIELD}           { return TRANSACTION_FIELD; }
+  {TRANSACTION_FIELD_1}         { return TRANSACTION_FIELD_1; }
+  {TRANSACTION_FILED_2}         { return TRANSACTION_FILED_2; }
+  {TRANSACTION_FIELD_3}         { return TRANSACTION_FIELD_3; }
+  {TRANSACTION_FIELD_4}         { return TRANSACTION_FIELD_4; }
+  {TRANSACTION_FIELD_5}         { return TRANSACTION_FIELD_5; }
+  {TRANSACTION_FIELD_6}         { return TRANSACTION_FIELD_6; }
+  {TRANSACTION_FIELD_7}         { return TRANSACTION_FIELD_7; }
+  {GLOBAL_FIELD}                { return GLOBAL_FIELD; }
+  {ASSET_FIELD}                 { return ASSET_FIELD; }
+  {ASSET_FIELD_1}               { return ASSET_FIELD_1; }
+
+}
+
+[^] { return BAD_CHARACTER; }
+
+
+{NL}+                       { yybegin(YYINITIAL); return NL; }
+
+. { return BAD_CHARACTER; }
