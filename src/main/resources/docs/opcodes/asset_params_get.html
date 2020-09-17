@@ -1,0 +1,9 @@
+<ul>
+    <li>Opcode: 0x71 {uint8 asset params field index}</li>
+    <li>Pops: <em>... stack</em>, uint64</li>
+    <li>Pushes: uint64, any</li>
+    <li>read from asset Txn.ForeignAssets[A] params field X (imm arg) =&gt; {0 or 1 (top), value}</li>
+    <li>LogicSigVersion &gt;= 2</li>
+    <li>Mode: Application</li>
+</ul>
+<p><code>asset_params_get</code> Fields:</p>

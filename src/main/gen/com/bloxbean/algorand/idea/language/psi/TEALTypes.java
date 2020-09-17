@@ -11,9 +11,9 @@ public interface TEALTypes {
   IElementType FLOW_CONTROL_OPERATION = new TEALElementType("FLOW_CONTROL_OPERATION");
   IElementType GENERAL_OPERATION = new TEALElementType("GENERAL_OPERATION");
   IElementType LOADING_OPERATION = new TEALElementType("LOADING_OPERATION");
+  IElementType PROGRAM = new TEALElementType("PROGRAM");
   IElementType STATEMENT = new TEALElementType("STATEMENT");
   IElementType STATE_ACCESS_OPERATION = new TEALElementType("STATE_ACCESS_OPERATION");
-  IElementType TXN_FIELD_ARG = new TEALElementType("TXN_FIELD_ARG");
 
   IElementType ADDW = new TEALTokenType("addw");
   IElementType ASSET_FIELD = new TEALTokenType("ASSET_FIELD");
@@ -57,6 +57,7 @@ public interface TEALTypes {
   IElementType SUBSTRING = new TEALTokenType("substring");
   IElementType SUBSTRING3 = new TEALTokenType("substring3");
   IElementType TIMES = new TEALTokenType("*");
+  IElementType TXN_LOADING_OP = new TEALTokenType("TXN_LOADING_OP");
   IElementType TYPENUM_CONSTANT = new TEALTokenType("TYPENUM_CONSTANT");
 
   class Factory {
@@ -71,14 +72,14 @@ public interface TEALTypes {
       else if (type == LOADING_OPERATION) {
         return new TEALLoadingOperationImpl(node);
       }
+      else if (type == PROGRAM) {
+        return new TEALProgramImpl(node);
+      }
       else if (type == STATEMENT) {
         return new TEALStatementImpl(node);
       }
       else if (type == STATE_ACCESS_OPERATION) {
         return new TEALStateAccessOperationImpl(node);
-      }
-      else if (type == TXN_FIELD_ARG) {
-        return new TEALTxnFieldArgImpl(node);
       }
       throw new AssertionError("Unknown element type: " + type);
     }

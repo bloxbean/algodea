@@ -1,0 +1,7 @@
+<ul>
+    <li>Opcode: 0x51 {uint8 start position}{uint8 end position}</li>
+    <li>Pops: <em>... stack</em>, []byte</li>
+    <li>Pushes: []byte</li>
+    <li>pop a byte string X. For immediate values in 0..255 M and N: extract a range of bytes from it starting at M up to but not including N, push the substring result. If N &lt; M, or either is larger than the string length, the program fails</li>
+    <li>LogicSigVersion &gt;= 2</li>
+</ul>

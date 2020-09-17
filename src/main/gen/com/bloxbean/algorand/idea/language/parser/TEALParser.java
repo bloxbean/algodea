@@ -224,10 +224,11 @@ public class TEALParser implements PsiParser, LightPsiParser {
   //                                   | 'global'
   //                                   | 'load'
   //                                   | 'store'
-  //                                     | 'txn' TxnFieldArg
-  //                                        | 'gtxn' TxnFieldArg
-  //                                        | 'txna' TxnFieldArg
-  //                                        | 'gtxna' TxnFieldArg
+  // //                                    | 'txn' TxnFieldArg
+  // //                                       | 'gtxn' TxnFieldArg
+  // //                                       | 'txna' TxnFieldArg
+  // //                                       | 'gtxna' TxnFieldArg
+  //                                   | TXN_LOADING_OP TxnFieldArg
   //                                        //TODO need clarification
   //                                        | 'addr'
   //                                        | 'arg' NUMBER
@@ -255,62 +256,26 @@ public class TEALParser implements PsiParser, LightPsiParser {
     if (!r) r = consumeToken(b, "load");
     if (!r) r = consumeToken(b, "store");
     if (!r) r = LoadingOperation_19(b, l + 1);
-    if (!r) r = LoadingOperation_20(b, l + 1);
-    if (!r) r = LoadingOperation_21(b, l + 1);
-    if (!r) r = LoadingOperation_22(b, l + 1);
     if (!r) r = consumeToken(b, "addr");
-    if (!r) r = LoadingOperation_24(b, l + 1);
+    if (!r) r = LoadingOperation_21(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
 
-  // 'txn' TxnFieldArg
+  // TXN_LOADING_OP TxnFieldArg
   private static boolean LoadingOperation_19(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "LoadingOperation_19")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, "txn");
-    r = r && TxnFieldArg(b, l + 1);
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  // 'gtxn' TxnFieldArg
-  private static boolean LoadingOperation_20(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "LoadingOperation_20")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = consumeToken(b, "gtxn");
-    r = r && TxnFieldArg(b, l + 1);
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  // 'txna' TxnFieldArg
-  private static boolean LoadingOperation_21(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "LoadingOperation_21")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = consumeToken(b, "txna");
-    r = r && TxnFieldArg(b, l + 1);
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  // 'gtxna' TxnFieldArg
-  private static boolean LoadingOperation_22(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "LoadingOperation_22")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = consumeToken(b, "gtxna");
+    r = consumeToken(b, TXN_LOADING_OP);
     r = r && TxnFieldArg(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
   }
 
   // 'arg' NUMBER
-  private static boolean LoadingOperation_24(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "LoadingOperation_24")) return false;
+  private static boolean LoadingOperation_21(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "LoadingOperation_21")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeToken(b, "arg");
@@ -376,10 +341,9 @@ public class TEALParser implements PsiParser, LightPsiParser {
   //                        | 'ConfigAssetDefaultFrozen'|'ConfigAssetUnitName'|'ConfigAssetName'|'ConfigAssetURL'|'ConfigAssetMetadataHash'
   //                        | 'ConfigAssetManager'|'ConfigAssetReserve'|'ConfigAssetFreeze'|'ConfigAssetClawback'|'FreezeAsset'
   //                        | 'FreezeAssetAccount'|'FreezeAssetFrozen'
-  public static boolean TxnFieldArg(PsiBuilder b, int l) {
+  static boolean TxnFieldArg(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "TxnFieldArg")) return false;
     boolean r;
-    Marker m = enter_section_(b, l, _NONE_, TXN_FIELD_ARG, "<txn field arg>");
     r = consumeToken(b, "Sender");
     if (!r) r = consumeToken(b, "Fee");
     if (!r) r = consumeToken(b, "FirstValid");
@@ -428,8 +392,21 @@ public class TEALParser implements PsiParser, LightPsiParser {
     if (!r) r = consumeToken(b, "FreezeAsset");
     if (!r) r = consumeToken(b, "FreezeAssetAccount");
     if (!r) r = consumeToken(b, "FreezeAssetFrozen");
-    exit_section_(b, l, m, r, false, null);
     return r;
+  }
+
+  /* ********************************************************** */
+  // statement*
+  public static boolean program(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "program")) return false;
+    Marker m = enter_section_(b, l, _NONE_, PROGRAM, "<program>");
+    while (true) {
+      int c = current_position_(b);
+      if (!statement(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "program", c)) break;
+    }
+    exit_section_(b, l, m, true, false, null);
+    return true;
   }
 
   /* ********************************************************** */
@@ -456,15 +433,9 @@ public class TEALParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // statement*
+  // program
   static boolean tealFile(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "tealFile")) return false;
-    while (true) {
-      int c = current_position_(b);
-      if (!statement(b, l + 1)) break;
-      if (!empty_element_parsed_guard_(b, "tealFile", c)) break;
-    }
-    return true;
+    return program(b, l + 1);
   }
 
 }

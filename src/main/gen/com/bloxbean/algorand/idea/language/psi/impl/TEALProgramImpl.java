@@ -11,19 +11,25 @@ import static com.bloxbean.algorand.idea.language.psi.TEALTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.bloxbean.algorand.idea.language.psi.*;
 
-public class TEALTxnFieldArgImpl extends ASTWrapperPsiElement implements TEALTxnFieldArg {
+public class TEALProgramImpl extends ASTWrapperPsiElement implements TEALProgram {
 
-  public TEALTxnFieldArgImpl(@NotNull ASTNode node) {
+  public TEALProgramImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull TEALVisitor visitor) {
-    visitor.visitTxnFieldArg(this);
+    visitor.visitProgram(this);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof TEALVisitor) accept((TEALVisitor)visitor);
     else super.accept(visitor);
+  }
+
+  @Override
+  @NotNull
+  public List<TEALStatement> getStatementList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, TEALStatement.class);
   }
 
 }

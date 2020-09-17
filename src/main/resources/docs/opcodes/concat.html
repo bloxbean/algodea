@@ -1,0 +1,8 @@
+<ul>
+    <li>Opcode: 0x50</li>
+    <li>Pops: <em>... stack</em>, {[]byte A}, {[]byte B}</li>
+    <li>Pushes: []byte</li>
+    <li>pop two byte strings A and B and join them, push the result</li>
+    <li>LogicSigVersion &gt;= 2</li>
+</ul>
+<p><code>concat</code> panics if the result would be greater than 4096 bytes.</p>

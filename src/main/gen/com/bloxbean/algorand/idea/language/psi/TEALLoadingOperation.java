@@ -8,9 +8,9 @@ import com.intellij.psi.PsiElement;
 public interface TEALLoadingOperation extends PsiElement {
 
   @Nullable
-  TEALTxnFieldArg getTxnFieldArg();
+  PsiElement getNumber();
 
   @Nullable
-  PsiElement getNumber();
+  PsiElement getTxnLoadingOp();
 
 }

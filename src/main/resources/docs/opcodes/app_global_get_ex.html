@@ -1,0 +1,9 @@
+<ul>
+    <li>Opcode: 0x65</li>
+    <li>Pops: <em>... stack</em>, {uint64 A}, {[]byte B}</li>
+    <li>Pushes: uint64, any</li>
+    <li>read from application Txn.ForeignApps[A] global state key B =&gt; {0 or 1 (top), value}. A is specified as an account index in the ForeignApps field of the ApplicationCall transaction, zero index means this app</li>
+    <li>LogicSigVersion &gt;= 2</li>
+    <li>Mode: Application</li>
+</ul>
+<p>params: application index, state key. Return: value. Application index is</p>

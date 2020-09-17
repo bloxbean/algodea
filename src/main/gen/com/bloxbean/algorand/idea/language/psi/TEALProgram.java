@@ -5,6 +5,9 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface TEALTxnFieldArg extends PsiElement {
+public interface TEALProgram extends PsiElement {
+
+  @NotNull
+  List<TEALStatement> getStatementList();
 
 }

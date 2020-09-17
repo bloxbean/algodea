@@ -34,10 +34,11 @@
 //        l_integer="regexp:0|[1-9][0-9]*"
 //        l_string="regexp:('([^'\\]|\\.)*'|\"([^\"\\]|\\.)*\")"
 
-    LOADING_OP = "regexp:(intcblock|intc|intc_0|intc_1|intc_2|intc_3|bytecblock|bytec|bytec_0|bytec_1|bytec_2|bytec_3|arg|arg_0|arg_1|arg_2|arg_3|global|load|store|txn|gtxn|txna|gtxna|addr)"
+    LOADING_OP = "regexp:(intcblock|intc|intc_0|intc_1|intc_2|intc_3|bytecblock|bytec|bytec_0|bytec_1|bytec_2|bytec_3|arg|arg_0|arg_1|arg_2|arg_3|global|load|store|addr)"
     FLOWCONTROL_OP = "regexp:(err|return|pop|dup|dup2|bnz|bz|b)"
     STATEACCESS_OP = "regexp:(balance|app_opted_in|app_local_get|app_local_get_ex|app_global_get|app_global_get_ex|app_local_put|app_global_put|app_local_del|app_global_del|asset_holding_get|asset_params_get)"
 
+    TXN_LOADING_OP = 'regexp:(txn|gtxn|txna|gtxna)'
 
   //Operations
     SHA256              = 'sha256'
@@ -74,11 +75,16 @@
     CONCAT              = 'concat'
     SUBSTRING           = 'substring'
     SUBSTRING3          = 'substring3'
+
+   // TXN_FIELD_ARG = 'regexp:(Sender|Fee|FirstValid|FirstValidTime|LastValid)'
+
+
     //Named Integer Constants
     NAMED_INTEGER_CONSTANT = 'regexp:(NoOp|OptIn|CloseOut|ClearState|UpdateApplication|DeleteApplication)'
 
     //TypeEnum constants
     TYPENUM_CONSTANT = 'regexp:(unknown|pay|keyreg|acfg|axfer|afrz|appl)'
+
 
 
 
@@ -134,7 +140,8 @@
 //
 //property ::= (KEY? SEPARATOR VALUE?) | KEY {methods=[getKey getValue]}
 
-tealFile ::= statement*
+tealFile ::= program
+program ::= statement*
 
 //private statement ::= label_definition
 //                    | directive_statement
@@ -172,16 +179,19 @@ LoadingOperation ::=  'intcblock'
                                   | 'load'
                                   | 'store'
 
-                                    | 'txn' TxnFieldArg
-                                       | 'gtxn' TxnFieldArg
-                                       | 'txna' TxnFieldArg
-                                       | 'gtxna' TxnFieldArg
+//                                    | 'txn' TxnFieldArg
+//                                       | 'gtxn' TxnFieldArg
+//                                       | 'txna' TxnFieldArg
+//                                       | 'gtxna' TxnFieldArg
+                                  | TXN_LOADING_OP TxnFieldArg
 
                                        //TODO need clarification
                                        | 'addr'
                                        | 'arg' NUMBER
 
-TxnFieldArg ::= 'Sender'| 'Fee'| 'FirstValid'| 'FirstValidTime'| 'LastValid'| 'Note'| 'Lease'| 'Receiver'| 'Amount'
+
+
+private TxnFieldArg ::= 'Sender'| 'Fee'| 'FirstValid'| 'FirstValidTime'| 'LastValid'| 'Note'| 'Lease'| 'Receiver'| 'Amount'
                        | 'CloseRemainderTo'|'VotePK'|'SelectionPK'|'VoteFirst'|'VoteLast'|'VoteKeyDilution'|'Type'
                        | 'TypeEnum'|'XferAsset'|'AssetAmount'|'AssetSender'|'AssetReceiver'|'AssetCloseTo'|'GroupIndex'
                        | 'TxID'|'ApplicationID'|'OnCompletion'|'ApplicationArgs'|'NumAppArgs'|'Accounts'|'NumAccounts'

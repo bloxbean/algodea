@@ -29,9 +29,10 @@ NL=\R
 EOF=\Z
 SPACE=[ \t\n\x0B\f\r]+
 COMMENT="//".*
-LOADING_OP=(intcblock|intc|intc_0|intc_1|intc_2|intc_3|bytecblock|bytec|bytec_0|bytec_1|bytec_2|bytec_3|arg|arg_0|arg_1|arg_2|arg_3|global|load|store|txn|gtxn|txna|gtxna|addr)
+LOADING_OP=(intcblock|intc|intc_0|intc_1|intc_2|intc_3|bytecblock|bytec|bytec_0|bytec_1|bytec_2|bytec_3|arg|arg_0|arg_1|arg_2|arg_3|global|load|store|addr)
 FLOWCONTROL_OP=(err|return|pop|dup|dup2|bnz|bz|b)
 STATEACCESS_OP=(balance|app_opted_in|app_local_get|app_local_get_ex|app_global_get|app_global_get_ex|app_local_put|app_global_put|app_local_del|app_global_del|asset_holding_get|asset_params_get)
+TXN_LOADING_OP=(txn|gtxn|txna|gtxna)
 NAMED_INTEGER_CONSTANT=(NoOp|OptIn|CloseOut|ClearState|UpdateApplication|DeleteApplication)
 TYPENUM_CONSTANT=(unknown|pay|keyreg|acfg|axfer|afrz|appl)
 GLOBAL_FIELD=(MinTxnFee|MinBalance|MaxTxnLife|ZeroAddress|GroupSize|LogicSigVersion|Round|LatestTimestamp|CurrentApplicationID)
@@ -82,6 +83,7 @@ ID=([a-zA-Z_?]+[a-zA-Z0-9_$.#@~?]*)
   {LOADING_OP}                  { return LOADING_OP; }
   {FLOWCONTROL_OP}              { return FLOWCONTROL_OP; }
   {STATEACCESS_OP}              { return STATEACCESS_OP; }
+  {TXN_LOADING_OP}              { return TXN_LOADING_OP; }
   {NAMED_INTEGER_CONSTANT}      { return NAMED_INTEGER_CONSTANT; }
   {TYPENUM_CONSTANT}            { return TYPENUM_CONSTANT; }
   {GLOBAL_FIELD}                { return GLOBAL_FIELD; }
@@ -92,6 +94,4 @@ ID=([a-zA-Z_?]+[a-zA-Z0-9_$.#@~?]*)
 
 }
 
-{NL}+                       { yybegin(YYINITIAL); return NL; }
-
-. { return BAD_CHARACTER; }
+[^] { return BAD_CHARACTER; }

@@ -20,5 +20,8 @@
 <!--        <colorSettingsPage implementation="com.bloxbean.algorand.idea.language.TEALColorSettingsPage"/>-->
         <completion.contributor language="TEAL"
                                 implementationClass="com.bloxbean.algorand.idea.language.completion.TEALCompletionContributor"/>
+
+        <lang.documentationProvider language="TEAL" implementationClass="com.bloxbean.algorand.idea.language.documentation.TEALDocumentationProvider"/>
+
     </extensions>
 </idea-plugin>

@@ -23,7 +23,7 @@ public class TEALVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
-  public void visitTxnFieldArg(@NotNull TEALTxnFieldArg o) {
+  public void visitProgram(@NotNull TEALProgram o) {
     visitPsiElement(o);
   }
 

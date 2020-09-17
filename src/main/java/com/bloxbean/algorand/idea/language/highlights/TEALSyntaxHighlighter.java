@@ -146,6 +146,7 @@ public class TEALSyntaxHighlighter extends SyntaxHighlighterBase {
         fillMap(keys, OPERATIONS, TEALSyntaxColors.FUNCTION);
 //        fillMap(keys, OPERATIONS, OPERATION_ATTR);
         keys.put(LOADING_OP, TEALSyntaxColors.KEYWORD);
+        keys.put(TXN_LOADING_OP, TEALSyntaxColors.KEYWORD);
         keys.put(FLOWCONTROL_OP, TEALSyntaxColors.KEYWORD);
         keys.put(STATEACCESS_OP, TEALSyntaxColors.KEYWORD);
         keys.put(TEALTypes.COMMENT, TEALSyntaxColors.LINE_COMMENT);

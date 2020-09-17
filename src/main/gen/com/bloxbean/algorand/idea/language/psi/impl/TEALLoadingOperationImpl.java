@@ -28,14 +28,14 @@ public class TEALLoadingOperationImpl extends ASTWrapperPsiElement implements TE
 
   @Override
   @Nullable
-  public TEALTxnFieldArg getTxnFieldArg() {
-    return findChildByClass(TEALTxnFieldArg.class);
+  public PsiElement getNumber() {
+    return findChildByType(NUMBER);
   }
 
   @Override
   @Nullable
-  public PsiElement getNumber() {
-    return findChildByType(NUMBER);
+  public PsiElement getTxnLoadingOp() {
+    return findChildByType(TXN_LOADING_OP);
   }
 
 }

@@ -1,0 +1,10 @@
+<ul>
+    <li>Opcode: 0x68</li>
+    <li>Pops: <em>... stack</em>, {uint64 A}, {[]byte B}</li>
+    <li>Pushes: <em>None</em></li>
+    <li>delete from account specified by Txn.Accounts[A] local state key B of the current application</li>
+    <li>LogicSigVersion &gt;= 2</li>
+    <li>Mode: Application</li>
+</ul>
+<p>params: account index, state key.</p>
+<p>Deleting a key which is already absent has no effect on the application local state. (In particular, it does <em>not</em> cause the program to fail.)</p>

@@ -1,0 +1,7 @@
+<ul>
+    <li>Opcode: 0x52</li>
+    <li>Pops: <em>... stack</em>, {[]byte A}, {uint64 B}, {uint64 C}</li>
+    <li>Pushes: []byte</li>
+    <li>pop a byte string A and two integers B and C. Extract a range of bytes from A starting at B up to but not including C, push the substring result. If C &lt; B, or either is larger than the string length, the program fails</li>
+    <li>LogicSigVersion &gt;= 2</li>
+</ul>
