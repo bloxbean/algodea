@@ -32,9 +32,9 @@
 //        l_identifier_text="regexp:\`[^`]+\`"
 //        l_decimal="regexp:(0|[1-9][0-9]*)\.[0-9]+"
 //        l_integer="regexp:0|[1-9][0-9]*"
-//        l_string="regexp:('([^'\\]|\\.)*'|\"([^\"\\]|\\.)*\")"
+        l_string="regexp:('([^'\\]|\\.)*'|\"([^\"\\]|\\.)*\")"
 
-    LOADING_OP = "regexp:(intcblock|intc|intc_0|intc_1|intc_2|intc_3|bytecblock|bytec|bytec_0|bytec_1|bytec_2|bytec_3|arg|arg_0|arg_1|arg_2|arg_3|global|load|store|addr)"
+    LOADING_OP = "regexp:(intcblock|intc|intc_0|intc_1|intc_2|intc_3|bytecblock|bytec|bytec_0|bytec_1|bytec_2|bytec_3|arg|arg_0|arg_1|arg_2|arg_3|global|load|store)"
     FLOWCONTROL_OP = "regexp:(err|return|pop|dup|dup2|bnz|bz|b)"
     STATEACCESS_OP = "regexp:(balance|app_opted_in|app_local_get|app_local_get_ex|app_global_get|app_global_get_ex|app_local_put|app_global_put|app_local_del|app_global_del|asset_holding_get|asset_params_get)"
 
@@ -55,7 +55,7 @@
     GREATERTHANEQUAL    = '>='
 
     LOGICAL_AND         = '&&'
-    LOGICAL_OR          = '\|\|'
+    LOGICAL_OR          = '||'
     LOGICAL_EQUAL       = '=='
     LOGICAL_NOTEQUAL    = '!='
 
@@ -65,7 +65,7 @@
     BTOI                = 'btoi'
 
     MODULO              = '%'
-    BITWISE_OR          = '\|'
+    BITWISE_OR          = '|'
     BITWISE_AND         = '&'
     BITWISE_XOR         = '^'
     BITWISE_INVERT      = '~'
@@ -76,94 +76,90 @@
     SUBSTRING           = 'substring'
     SUBSTRING3          = 'substring3'
 
-   // TXN_FIELD_ARG = 'regexp:(Sender|Fee|FirstValid|FirstValidTime|LastValid)'
-
-
     //Named Integer Constants
     NAMED_INTEGER_CONSTANT = 'regexp:(NoOp|OptIn|CloseOut|ClearState|UpdateApplication|DeleteApplication)'
 
     //TypeEnum constants
     TYPENUM_CONSTANT = 'regexp:(unknown|pay|keyreg|acfg|axfer|afrz|appl)'
 
-
-
-
-    //Transaction Fields
-//    TRANSACTION_FIELD   = 'regexp:(Sender|Fee|FirstValid|FirstValidTime|LastValid|Note|Lease|Receiver|Amount)'
-//    TRANSACTION_FIELD_1 = 'regexp:(CloseRemainderTo|VotePK|SelectionPK|VoteFirst|VoteLast|VoteKeyDilution|Type)'
-//    TRANSACTION_FILED_2 = 'regexp:(TypeEnum|XferAsset|AssetAmount|AssetSender|AssetReceiver|AssetCloseTo|GroupIndex)'
-//    TRANSACTION_FIELD_3  = 'regexp:(TxID|ApplicationID|OnCompletion|ApplicationArgs|NumAppArgs|Accounts|NumAccounts)'
-//    TRANSACTION_FIELD_4 = 'regexp:(ApprovalProgram|ClearStateProgram|RekeyTo|ConfigAsset|ConfigAssetTotal|ConfigAssetDecimals)'
-//    TRANSACTION_FIELD_5 = 'regexp:(ConfigAssetDefaultFrozen|ConfigAssetUnitName|ConfigAssetName|ConfigAssetURL|ConfigAssetMetadataHash)'
-//    TRANSACTION_FIELD_6 = 'regexp:(ConfigAssetManager|ConfigAssetReserve|ConfigAssetFreeze|ConfigAssetClawback|FreezeAsset)'
-//    TRANSACTION_FIELD_7 = 'regexp:(FreezeAssetAccount|FreezeAssetFrozen)'
-
     //Global Fields
     GLOBAL_FIELD        = 'regexp:(MinTxnFee|MinBalance|MaxTxnLife|ZeroAddress|GroupSize|LogicSigVersion|Round|LatestTimestamp|CurrentApplicationID)'
 
     //Asset Fields
-    ASSET_FIELD         = 'regexp:(AssetBalance|AssetFrozen)'
-    ASSET_FIELD_1       = 'regexp:(AssetTotal|AssetDecimals|AssetDefaultFrozen|AssetUnitName|AssetName|AssetURL|AssetMetadataHash|AssetManager|AssetReserve|AssetFreeze|AssetClawback)'
+    ASSET_HOLDING_GET_FIELD      = 'regexp:(AssetBalance|AssetFrozen)'
+    ASSET_PARAMS_GET_FIELD       = 'regexp:(AssetTotal|AssetDecimals|AssetDefaultFrozen|AssetUnitName|AssetName|AssetURL|AssetMetadataHash|AssetManager|AssetReserve|AssetFreeze|AssetClawback)'
 
-    //Flow control
-//    ERR                 = 'err'
-//    BNZ                 = 'bnz'
-//    BZ                  = 'bz'
-//    B                   = 'b'
-//    RETURN              = 'return'
-//    POP                 = 'pop'
-//    DUP                 = 'dup'
-//    DUP2                = 'dup2'
+    PRAGMA = "#pragma"
+    VERSION = "version"
 
-    //State access
-//    BALANCE             = 'balance'
-//    APP_OPTED_IN        = 'app_opted_in'
-//    APP_LOCAL_GET       = 'app_local_get'
-//    APP_LOCAL_GET_EX    = 'app_local_get_ex'
-//    APP_GLOBAL_GET      = 'app_global_get'
-//    APP_GLOBAL_GET_EX   = 'app_global_get_ex'
-//    APP_LOCAL_PUT       = 'app_local_put'
-//    APP_GLOBAL_PUT      = 'app_global_put'
-//    APP_LOCAL_DEL       = 'app_local_del'
-//    APP_GLOBAL_DEL      = 'app_global_del'
-//    ASSET_HOLDING_GET   = 'asset_holding_get'
-//    ASSET_PARAMS_GET    = 'asset_params_get'
-      NUMBER='regexp:\d+(\.\d*)?'
+    //pseudo opcodes
+    INT = "int"
+    BYTE = "byte"
+    ADDR = "addr"
 
-      ID     = 'regexp:([a-zA-Z_?]+[a-zA-Z0-9_$.#@~?]*)'
+    OCTAL ='regexp:(0)[0-9]+'
+
+    NUMBER ='regexp:\d+(\.\d*)?'
+
+    HEX ='regexp:(0x|0X)[a-fA-F0-9]*'
+
+    COLON = ":"
+
+    ID     = 'regexp:([a-zA-Z_?]+[a-zA-Z0-9_$.#@~?]*)'
+
+
   ]
 }
 
-//simpleFile ::= item_*
-//
-//private item_ ::= (property|COMMENT|CRLF)
-//
-//property ::= (KEY? SEPARATOR VALUE?) | KEY {methods=[getKey getValue]}
-
 tealFile ::= program
-program ::= statement*
+program ::= [pragma NL] statement*
 
-//private statement ::= label_definition
-//                    | directive_statement
-//                    | instruction
-//                    | COMMA
-//                    | EOL
-
+pragma ::= PRAGMA VERSION pragma_version {pin=1 recoverWhile=statement_recover}
+pragma_version ::= NUMBER
 statement ::= COMMENT
                     | LoadingOperation
                     | FlowControlOperation
                     | StateAccessOperation
                     | GeneralOperation
+                    | pseudo_op
+                    | branch
                     | NL
-                    | EOF
+                    | EOF {name= "TEAL OpCode" recoverWhile=statement_recover }
 
+private statement_recover ::= !(
+                    COMMENT
+                                        | LoadingOperation
+                                        | FlowControlOperation
+                                        | StateAccessOperation
+                                        | GeneralOperation
+                                        | pseudo_op
+                                        | branch
+                                        | NL
+                                        | EOF
+)
+
+branch ::= ID COLON
+
+pseudo_op ::= int_statement | byte_statement | addr_statement
+private int_statement ::= INT (HEX | OCTAL | NUMBER | NAMED_INTEGER_CONSTANT | TYPENUM_CONSTANT) {pin=1}
+
+//TODO No strict check for byte pseudo opcode for now
+private byte_encoding_type ::=  'base64' | 'base32' | 'b64' | 'b32'
+private byte_encoding_type_values ::=  (byte_encoding_type | byte_encoding_type_short) ID
+private byte_encoding_type_values_function_type ::=  byte_encoding_type '(' ID ')'
+
+byte_statement ::= BYTE (l_string | HEX | byte_encoding_type_values | byte_encoding_type_values_function_type) {pin=1}
+
+addr_param ::= ID {name= "Algo address"}
+addr_statement ::= ADDR addr_param {pin=1}
 
 LoadingOperation ::=  'intcblock'
-                                  | 'intc'
+                                  | intcOperation
                                   | 'intc_0'
                                   | 'intc_1'
                                   | 'intc_2'
                                   | 'intc_3'
+                                  
                                   | 'bytecblock'
                                   | 'bytec'
                                   | 'bytec_0'
@@ -175,20 +171,44 @@ LoadingOperation ::=  'intcblock'
                                   | 'arg_1'
                                   | 'arg_2'
                                   | 'arg_3'
-                                  | 'global'
-                                  | 'load'
-                                  | 'store'
+//                                  | 'global'
+                                  | globalOperation
+                                  | loadOperation
+                                  | storeOperation
 
 //                                    | 'txn' TxnFieldArg
 //                                       | 'gtxn' TxnFieldArg
 //                                       | 'txna' TxnFieldArg
 //                                       | 'gtxna' TxnFieldArg
-                                  | TXN_LOADING_OP TxnFieldArg
+//                                  | TXN_LOADING_OP TxnFieldArg
+                                    | txnLoadingOperation
+                                    | gtxnLoadingOperation
+                                    | txnaLoadingOperation
+                                    | gtxnaLoadingOperation
 
                                        //TODO need clarification
-                                       | 'addr'
-                                       | 'arg' NUMBER
+//                                       | 'addr'
+//                                       | 'arg' NUMBER
+                                        | ARG_OPERATION {pin=1}
 
+private intcOperation ::= 'intc' NUMBER {pin=1}
+GLOBAL_OPCODE ::= 'global'
+private globalOperation ::= GLOBAL_OPCODE (NUMBER | GLOBAL_FIELD) {pin=1}
+private loadOperation ::= 'load' NUMBER {pin=1}
+private storeOperation ::= 'store' NUMBER {pin=1}
+
+private TXN_OPCODE ::= 'txn'
+private GTXN_OPCODE ::= 'gtxn'
+private TXNA_OPCODE ::= 'txna'
+private GTXNA_OPCODE ::= 'gtxna';
+
+private txnLoadingOperation ::= TXN_OPCODE TxnFieldArg {pin=1}
+private gtxnLoadingOperation ::= GTXN_OPCODE NUMBER TxnFieldArg [NUMBER] {pin=1}
+
+private txnaLoadingOperation ::= TXNA_OPCODE TxnFieldArg [NUMBER] {pin=1}
+private gtxnaLoadingOperation ::= GTXNA_OPCODE NUMBER TxnFieldArg [NUMBER] {pin=1}
+
+private ARG_OPERATION ::= 'arg' NUMBER {pin=1}
 
 
 private TxnFieldArg ::= 'Sender'| 'Fee'| 'FirstValid'| 'FirstValidTime'| 'LastValid'| 'Note'| 'Lease'| 'Receiver'| 'Amount'
@@ -228,160 +248,25 @@ GeneralOperation ::= SHA256
                                      | MULW
                                      | ADDW
                                      | CONCAT
-                                       |SUBSTRING NUMBER NUMBER
+                                     | SUBSTRING NUMBER NUMBER
                                      | SUBSTRING3 NUMBER NUMBER
-//GeneralOperation    ::= 'sha256'
-//        |'keccak256'
-//        |'sha512_256'
-//        |'ed25519verify'
-//        |'+'
-//        |'-'
-//        |'/'
-//        |'*'
-//        |'<'
-//        |'>'
-//        |'<='
-//        |'>='
-//        |'&&'
-//        |'\|\|'
-//        |'=='
-//        |'!='
-//        | '!'
-//        |'len'
-//        |'itob'
-//        |'btoi'
-//        |'%'
-//        | '\|'
-//        |'&'
-//        |'^'
-//        |'~'
-//        |'mulw'
-//        |'addw'
-//        |'concat'
-//        |'substring' NUMBER NUMBER
-//        |'substring3' NUMBER NUMBER
+
 
 FlowControlOperation ::= 'err' | 'return' | 'pop' | 'dup' | 'dup2'
-                                | 'bnz' (ID)+
-                                | 'bz' (ID)+
-                                | 'b' (ID)+
+                                | 'bnz' ID
+                                | 'bz' ID
+                                | 'b' ID
 
 StateAccessOperation ::=  'balance' | 'app_opted_in' | 'app_local_get'| 'app_local_get_ex' | 'app_global_get'
                             | 'app_global_get_ex'| 'app_local_put'| 'app_global_put'| 'app_local_del'
                             | 'app_global_del'
-                            | 'asset_holding_get' ID
-                            | 'asset_params_get'  ID
+                            | assetHoldingGetOperation
+                            | assetParamsGetOperation
 
-//INSTRUCTION ::= LOADING_OPERATOR_OPCODE
-//              | TXN_LOADING_OPERATOR TXN_FIELD_ARG
-//              | SINGLE_ARG_OPERATOR_OPCODE
-//              | FLOW_CONTROL
-//              | BRANCH_FLOW_CONTROL_INSTRUCTION
-//              | OPERATION
-//              | ARG_OPERATION
-//              | STATE_ACCESS_OPCODE
-//
-//private instruction_arg ::= NUMBER
-//                  | IDENTIFIER
-//
-//LOADING_OPERATOR_OPCODE ::= INTCBLOCK
-//                    | INTC
-//                    | INTC_0
-//                    | INTC_1
-//                    | INTC_2
-//                    | INTC_3
-//                    | BYTEBLOCK
-//                    | BYTEC
-//                    | BYTEC_0
-//                    | BYTEC_1
-//                    | BYTEC_2
-//                    | BYTEC_3
-////                    | SINGLE_ARG_OPERATOR
-//                    | ARG_0
-//                    | ARG_1
-//                    | ARG_2
-//                    | ARG_3
-////                    | TXN_LOADING_OPERATOR
-////                    | TXN
-////                    | GTXN
-////                    | TXNA
-////                    | GTXNA
-//                    | GLOBAL
-//                    | LOAD
-//                    | STORE
-// //TODO remove addr if not required
-//                    | ADDR
-//
-//SINGLE_ARG_OPERATOR_OPCODE ::= ARG_OPERATOR
-//ARG_OPERATOR ::= ARG NUMBER {pin=1}
-//
-//TXN_LOADING_OPERATOR ::= TXN
-//                        | GTXN
-//                        | TXNA
-//                        | GTXNA
-//
-//
-//
-//
-//OPERATION    ::= SHA256
-//                    | KECCAK256
-//                    | SHA512_256
-//                    | ED25519VERIFY
-//                    | PLUS
-//                    | MINUS
-//                    | DIVIDE
-//                    | TIMES
-//                    | LESSTHAN
-//                    | GREATERTHAN
-//                    | LESSTHANEQUAL
-//                    | GREATERTHANEQUAL
-//                    | LOGICAL_AND
-//                    | LOGICAL_OR
-//                    | LOGICAL_EQUAL
-//                    | LOGICAL_NOTEQUAL
-//                    | NOT
-//                    | LEN
-//                    | ITOB
-//                    | BTOI
-//                    | MODULO
-//                    | BITWISE_OR
-//                    | BITWISE_AND
-//                    | BITWISE_XOR
-//                    | BITWISE_INVERT
-//                    | MULW
-//                    | ADDW
-//                    | CONCAT
-//
-//ARG_OPERATION ::= SUBSTRING NUMBER NUMBER
-//                    | SUBSTRING3 NUMBER NUMBER {pin=1}
-//
-//
-////Flow Control
-//FLOW_CONTROL ::= ERR
-//                    | RETURN
-//                    | POP
-//                    | DUP
-//                    | DUP2
-//
-//BRANCH_FLOW_CONTROL_INSTRUCTION ::= BRANCH_FLOW_CONTROL (instruction_arg)* {pin = 1}
-//BRANCH_FLOW_CONTROL ::=  BNZ
-//                        | BZ
-//                        | B
-//
-//
-//STATE_ACCESS_OPCODE ::= BALANCE
-//                       | APP_OPTED_IN
-//                       | APP_LOCAL_GET
-//                       | APP_LOCAL_GET_EX
-//                       | APP_GLOBAL_GET
-//                       | APP_GLOBAL_GET_EX
-//                       | APP_LOCAL_PUT
-//                       | APP_GLOBAL_PUT
-//                       | APP_LOCAL_DEL
-//                       | APP_GLOBAL_DEL
-//                       | ASSET_HOLDING_GET  instruction_arg
-//                       | ASSET_PARAMS_GET  instruction_arg
-//                       {pin=1}
-//
+assetHoldingGetOperation ::= ASSET_HOLDING_GET_OP NUMBER (NUMBER | ASSET_HOLDING_GET_FIELD) {pin=1}
+assetParamsGetOperation ::=  ASSET_PARAMS_GET_OP NUMBER (NUMBER | ASSET_PARAMS_GET_FIELD) {pin=1}
+ASSET_HOLDING_GET_OP    ::= 'asset_holding_get'
+ASSET_PARAMS_GET_OP     ::= 'asset_params_get'
 
+//private NAMED_INTEGER_CONSTANT ::= 'NoOp'|'OptIn'|'CloseOut'|'ClearState'|'UpdateApplication'|'DeleteApplication'
 
