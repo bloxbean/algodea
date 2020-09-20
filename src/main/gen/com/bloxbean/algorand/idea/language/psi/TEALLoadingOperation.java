@@ -8,9 +8,12 @@ import com.intellij.psi.PsiElement;
 public interface TEALLoadingOperation extends PsiElement {
 
   @Nullable
-  PsiElement getNumber();
+  TEALGlobalOpCode getGlobalOpCode();
 
   @Nullable
-  PsiElement getTxnLoadingOp();
+  PsiElement getGlobalField();
+
+  @Nullable
+  PsiElement getNumber();
 
 }

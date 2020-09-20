@@ -63,9 +63,6 @@ public class TEALDocumentationProvider extends AbstractDocumentationProvider  {
     }
 
     private Optional<String> loadingOpcodeDocumentation(PsiElement element) {
-
-        System.out.println(" Inside generate Doc.....");
-
         if (TEALTypes.LOADING_OP.equals(element.getNode().getElementType())
                 || TEALTypes.TXN_LOADING_OP.equals(element.getNode().getElementType())
                 || TEALTypes.FLOWCONTROL_OP.equals(element.getNode().getElementType())

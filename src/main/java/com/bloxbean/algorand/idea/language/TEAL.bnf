@@ -16,7 +16,7 @@
   psiImplUtilClass="com.bloxbean.algorand.idea.language.psi.impl.TEALPsiImplUtil"
 
   tokens = [
-    NL = 'regexp:\R'
+    NL = 'regexp:\r\n'
     EOF = 'regexp:\Z'
     SPACE='regexp:\s+'
     COMMENT='regexp://.*'
@@ -89,7 +89,6 @@
     ASSET_HOLDING_GET_FIELD      = 'regexp:(AssetBalance|AssetFrozen)'
     ASSET_PARAMS_GET_FIELD       = 'regexp:(AssetTotal|AssetDecimals|AssetDefaultFrozen|AssetUnitName|AssetName|AssetURL|AssetMetadataHash|AssetManager|AssetReserve|AssetFreeze|AssetClawback)'
 
-    PRAGMA = "#pragma"
     VERSION = "version"
 
     //pseudo opcodes
@@ -107,14 +106,16 @@
 
     ID     = 'regexp:([a-zA-Z_?]+[a-zA-Z0-9_$.#@~?]*)'
 
+    BASE32 ='regexp:([A-Z2-7]{8})*([A-Z2-7]{2}={6}|[A-Z2-7]{4}={4}|[A-Z2-7]{5}={3}|[A-Z2-7]{7}=)?'
+    BASE64 = 'regexp:[-A-Za-z0-9+=]{1,50}|=[^=]|={3}'
 
   ]
 }
 
 tealFile ::= program
-program ::= [pragma NL] statement*
+program ::= [pragma NL*] statement*
 
-pragma ::= PRAGMA VERSION pragma_version {pin=1 recoverWhile=statement_recover}
+pragma ::= "#pragma" VERSION pragma_version {pin=1 recoverWhile=statement_recover}
 pragma_version ::= NUMBER
 statement ::= COMMENT
                     | LoadingOperation
@@ -144,11 +145,15 @@ pseudo_op ::= int_statement | byte_statement | addr_statement
 private int_statement ::= INT (HEX | OCTAL | NUMBER | NAMED_INTEGER_CONSTANT | TYPENUM_CONSTANT) {pin=1}
 
 //TODO No strict check for byte pseudo opcode for now
-private byte_encoding_type ::=  'base64' | 'base32' | 'b64' | 'b32'
-private byte_encoding_type_values ::=  (byte_encoding_type | byte_encoding_type_short) ID
-private byte_encoding_type_values_function_type ::=  byte_encoding_type '(' ID ')'
+private byte_base64_encoding_type ::=  'base64' | 'b64'
+private byte_base64_encoding_type_values ::=  byte_base64_encoding_type BASE64
+private byte_base64encoding_type_values_function_type ::=  byte_base64_encoding_type '(' BASE64 ')'
 
-byte_statement ::= BYTE (l_string | HEX | byte_encoding_type_values | byte_encoding_type_values_function_type) {pin=1}
+private byte_base32_encoding_type ::=  'base32' | 'b32'
+private byte_base32_encoding_type_values ::=  byte_base32_encoding_type BASE32
+private byte_base32encoding_type_values_function_type ::=  byte_base32_encoding_type '(' BASE32 ')'
+
+byte_statement ::= BYTE (l_string | HEX | byte_base64_encoding_type_values | byte_base64encoding_type_values_function_type | byte_base32_encoding_type_values | byte_base32encoding_type_values_function_type | ID) {pin=1}
 
 addr_param ::= ID {name= "Algo address"}
 addr_statement ::= ADDR addr_param {pin=1}
@@ -161,39 +166,29 @@ LoadingOperation ::=  'intcblock'
                                   | 'intc_3'
                                   
                                   | 'bytecblock'
-                                  | 'bytec'
+                                  | bytecOperation
                                   | 'bytec_0'
                                   | 'bytec_1'
                                   | 'bytec_2'
                                   | 'bytec_3'
-//                                       ARG         = 'arg'
+                                  | argOperation
                                   | 'arg_0'
                                   | 'arg_1'
                                   | 'arg_2'
                                   | 'arg_3'
-//                                  | 'global'
                                   | globalOperation
                                   | loadOperation
                                   | storeOperation
 
-//                                    | 'txn' TxnFieldArg
-//                                       | 'gtxn' TxnFieldArg
-//                                       | 'txna' TxnFieldArg
-//                                       | 'gtxna' TxnFieldArg
-//                                  | TXN_LOADING_OP TxnFieldArg
-                                    | txnLoadingOperation
-                                    | gtxnLoadingOperation
-                                    | txnaLoadingOperation
-                                    | gtxnaLoadingOperation
-
-                                       //TODO need clarification
-//                                       | 'addr'
-//                                       | 'arg' NUMBER
-                                        | ARG_OPERATION {pin=1}
+                                  | txnLoadingOperation
+                                  | gtxnLoadingOperation
+                                  | txnaLoadingOperation
+                                  | gtxnaLoadingOperation {pin=1}
 
 private intcOperation ::= 'intc' NUMBER {pin=1}
-GLOBAL_OPCODE ::= 'global'
-private globalOperation ::= GLOBAL_OPCODE (NUMBER | GLOBAL_FIELD) {pin=1}
+private bytecOperation ::= 'bytec' NUMBER {pin=1}
+globalOpCode ::= 'global'
+private globalOperation ::= globalOpCode (NUMBER | GLOBAL_FIELD) {pin=1}
 private loadOperation ::= 'load' NUMBER {pin=1}
 private storeOperation ::= 'store' NUMBER {pin=1}
 
@@ -202,13 +197,13 @@ private GTXN_OPCODE ::= 'gtxn'
 private TXNA_OPCODE ::= 'txna'
 private GTXNA_OPCODE ::= 'gtxna';
 
-private txnLoadingOperation ::= TXN_OPCODE TxnFieldArg {pin=1}
-private gtxnLoadingOperation ::= GTXN_OPCODE NUMBER TxnFieldArg [NUMBER] {pin=1}
+private txnLoadingOperation ::= TXN_OPCODE (NUMBER | TxnFieldArg) {pin=1}
+private gtxnLoadingOperation ::= GTXN_OPCODE NUMBER (NUMBER | TxnFieldArg) {pin=1}
 
-private txnaLoadingOperation ::= TXNA_OPCODE TxnFieldArg [NUMBER] {pin=1}
-private gtxnaLoadingOperation ::= GTXNA_OPCODE NUMBER TxnFieldArg [NUMBER] {pin=1}
+private txnaLoadingOperation ::= TXNA_OPCODE (NUMBER | TxnFieldArg) NUMBER {pin=1}
+private gtxnaLoadingOperation ::= GTXNA_OPCODE NUMBER (NUMBER | TxnFieldArg) NUMBER {pin=1}
 
-private ARG_OPERATION ::= 'arg' NUMBER {pin=1}
+private argOperation ::= 'arg' NUMBER {pin=1}
 
 
 private TxnFieldArg ::= 'Sender'| 'Fee'| 'FirstValid'| 'FirstValidTime'| 'LastValid'| 'Note'| 'Lease'| 'Receiver'| 'Amount'
@@ -220,9 +215,9 @@ private TxnFieldArg ::= 'Sender'| 'Fee'| 'FirstValid'| 'FirstValidTime'| 'LastVa
                        | 'ConfigAssetManager'|'ConfigAssetReserve'|'ConfigAssetFreeze'|'ConfigAssetClawback'|'FreezeAsset'
                        | 'FreezeAssetAccount'|'FreezeAssetFrozen'
 
-GeneralOperation ::= SHA256
-                    | KECCAK256
-                    | SHA512_256
+GeneralOperation                   ::= SHA256
+                                     | KECCAK256
+                                     | SHA512_256
                                      | ED25519VERIFY
                                      | PLUS
                                      | MINUS
@@ -248,14 +243,15 @@ GeneralOperation ::= SHA256
                                      | MULW
                                      | ADDW
                                      | CONCAT
-                                     | SUBSTRING NUMBER NUMBER
-                                     | SUBSTRING3 NUMBER NUMBER
+                                     | substringOperation
+                                     | SUBSTRING3
 
+substringOperation ::= SUBSTRING NUMBER NUMBER {pin=1}
 
 FlowControlOperation ::= 'err' | 'return' | 'pop' | 'dup' | 'dup2'
-                                | 'bnz' ID
-                                | 'bz' ID
-                                | 'b' ID
+                                | branchOperation {pin=1}
+
+branchOperation ::= ('bnz' | 'bz' | 'b') ID {pin=1}
 
 StateAccessOperation ::=  'balance' | 'app_opted_in' | 'app_local_get'| 'app_local_get_ex' | 'app_global_get'
                             | 'app_global_get_ex'| 'app_local_put'| 'app_global_put'| 'app_local_del'
@@ -263,10 +259,7 @@ StateAccessOperation ::=  'balance' | 'app_opted_in' | 'app_local_get'| 'app_loc
                             | assetHoldingGetOperation
                             | assetParamsGetOperation
 
-assetHoldingGetOperation ::= ASSET_HOLDING_GET_OP NUMBER (NUMBER | ASSET_HOLDING_GET_FIELD) {pin=1}
-assetParamsGetOperation ::=  ASSET_PARAMS_GET_OP NUMBER (NUMBER | ASSET_PARAMS_GET_FIELD) {pin=1}
-ASSET_HOLDING_GET_OP    ::= 'asset_holding_get'
-ASSET_PARAMS_GET_OP     ::= 'asset_params_get'
-
-//private NAMED_INTEGER_CONSTANT ::= 'NoOp'|'OptIn'|'CloseOut'|'ClearState'|'UpdateApplication'|'DeleteApplication'
-
+assetHoldingGetOperation ::= assetHoldingGetOP (NUMBER | ASSET_HOLDING_GET_FIELD) {pin=1}
+assetParamsGetOperation ::=  assetParamsGetOp (NUMBER | ASSET_PARAMS_GET_FIELD) {pin=1}
+assetHoldingGetOP    ::= 'asset_holding_get'
+assetParamsGetOp     ::= 'asset_params_get'

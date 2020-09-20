@@ -5,12 +5,21 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface TEALStateAccessOperation extends PsiElement {
+public interface TEALByteStatement extends PsiElement {
 
   @Nullable
-  TEALAssetHoldingGetOperation getAssetHoldingGetOperation();
+  PsiElement getBase32();
 
   @Nullable
-  TEALAssetParamsGetOperation getAssetParamsGetOperation();
+  PsiElement getBase64();
+
+  @Nullable
+  PsiElement getHex();
+
+  @Nullable
+  PsiElement getId();
+
+  @Nullable
+  PsiElement getLString();
 
 }

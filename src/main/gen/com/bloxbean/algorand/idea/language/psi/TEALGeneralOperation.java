@@ -7,4 +7,7 @@ import com.intellij.psi.PsiElement;
 
 public interface TEALGeneralOperation extends PsiElement {
 
+  @Nullable
+  TEALSubstringOperation getSubstringOperation();
+
 }

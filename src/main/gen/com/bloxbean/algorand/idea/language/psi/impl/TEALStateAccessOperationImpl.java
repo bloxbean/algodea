@@ -28,8 +28,14 @@ public class TEALStateAccessOperationImpl extends ASTWrapperPsiElement implement
 
   @Override
   @Nullable
-  public PsiElement getId() {
-    return findChildByType(ID);
+  public TEALAssetHoldingGetOperation getAssetHoldingGetOperation() {
+    return findChildByClass(TEALAssetHoldingGetOperation.class);
+  }
+
+  @Override
+  @Nullable
+  public TEALAssetParamsGetOperation getAssetParamsGetOperation() {
+    return findChildByClass(TEALAssetParamsGetOperation.class);
   }
 
 }

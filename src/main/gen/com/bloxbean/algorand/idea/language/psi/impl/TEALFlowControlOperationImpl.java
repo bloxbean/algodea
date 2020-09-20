@@ -26,4 +26,10 @@ public class TEALFlowControlOperationImpl extends ASTWrapperPsiElement implement
     else super.accept(visitor);
   }
 
+  @Override
+  @Nullable
+  public TEALBranchOperation getBranchOperation() {
+    return findChildByClass(TEALBranchOperation.class);
+  }
+
 }

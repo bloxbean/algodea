@@ -7,6 +7,9 @@ import com.intellij.psi.PsiElement;
 
 public interface TEALProgram extends PsiElement {
 
+  @Nullable
+  TEALPragma getPragma();
+
   @NotNull
   List<TEALStatement> getStatementList();
 

@@ -23,11 +23,67 @@ public class TEALVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitAddrParam(@NotNull TEALAddrParam o) {
+    visitPsiElement(o);
+  }
+
+  public void visitAddrStatement(@NotNull TEALAddrStatement o) {
+    visitPsiElement(o);
+  }
+
+  public void visitAssetHoldingGetOP(@NotNull TEALAssetHoldingGetOP o) {
+    visitPsiElement(o);
+  }
+
+  public void visitAssetHoldingGetOperation(@NotNull TEALAssetHoldingGetOperation o) {
+    visitPsiElement(o);
+  }
+
+  public void visitAssetParamsGetOp(@NotNull TEALAssetParamsGetOp o) {
+    visitPsiElement(o);
+  }
+
+  public void visitAssetParamsGetOperation(@NotNull TEALAssetParamsGetOperation o) {
+    visitPsiElement(o);
+  }
+
+  public void visitBranch(@NotNull TEALBranch o) {
+    visitPsiElement(o);
+  }
+
+  public void visitBranchOperation(@NotNull TEALBranchOperation o) {
+    visitPsiElement(o);
+  }
+
+  public void visitByteStatement(@NotNull TEALByteStatement o) {
+    visitPsiElement(o);
+  }
+
+  public void visitGlobalOpCode(@NotNull TEALGlobalOpCode o) {
+    visitPsiElement(o);
+  }
+
+  public void visitPragma(@NotNull TEALPragma o) {
+    visitPsiElement(o);
+  }
+
+  public void visitPragmaVersion(@NotNull TEALPragmaVersion o) {
+    visitPsiElement(o);
+  }
+
   public void visitProgram(@NotNull TEALProgram o) {
     visitPsiElement(o);
   }
 
+  public void visitPseudoOp(@NotNull TEALPseudoOp o) {
+    visitPsiElement(o);
+  }
+
   public void visitStatement(@NotNull TEALStatement o) {
+    visitPsiElement(o);
+  }
+
+  public void visitSubstringOperation(@NotNull TEALSubstringOperation o) {
     visitPsiElement(o);
   }
 

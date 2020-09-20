@@ -11,14 +11,14 @@ import static com.bloxbean.algorand.idea.language.psi.TEALTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.bloxbean.algorand.idea.language.psi.*;
 
-public class TEALLoadingOperationImpl extends ASTWrapperPsiElement implements TEALLoadingOperation {
+public class TEALByteStatementImpl extends ASTWrapperPsiElement implements TEALByteStatement {
 
-  public TEALLoadingOperationImpl(@NotNull ASTNode node) {
+  public TEALByteStatementImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull TEALVisitor visitor) {
-    visitor.visitLoadingOperation(this);
+    visitor.visitByteStatement(this);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
@@ -28,20 +28,32 @@ public class TEALLoadingOperationImpl extends ASTWrapperPsiElement implements TE
 
   @Override
   @Nullable
-  public TEALGlobalOpCode getGlobalOpCode() {
-    return findChildByClass(TEALGlobalOpCode.class);
+  public PsiElement getBase32() {
+    return findChildByType(BASE32);
   }
 
   @Override
   @Nullable
-  public PsiElement getGlobalField() {
-    return findChildByType(GLOBAL_FIELD);
+  public PsiElement getBase64() {
+    return findChildByType(BASE64);
   }
 
   @Override
   @Nullable
-  public PsiElement getNumber() {
-    return findChildByType(NUMBER);
+  public PsiElement getHex() {
+    return findChildByType(HEX);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getId() {
+    return findChildByType(ID);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getLString() {
+    return findChildByType(L_STRING);
   }
 
 }

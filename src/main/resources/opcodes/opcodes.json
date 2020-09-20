@@ -1184,5 +1184,26 @@
           "filter": ""
         }
       ]
-    }
+    },
+   {
+     "op": "int",
+     "opcode": "Pseudo opcode",
+     "pops": [],
+     "pushes": [],
+     "desc":"int pseudo opcode"
+   },
+   {
+     "op": "byte",
+     "opcode": "Pseudo opcode",
+     "pops": [],
+     "pushes": [],
+     "desc":"byte pseudo opcode"
+   },
+   {
+     "op": "addr",
+     "opcode": "Pseudo opcode",
+     "pops": [],
+     "pushes": [],
+     "desc":"addr pseudo opcode"
+   }
  ]

@@ -11,14 +11,14 @@ import static com.bloxbean.algorand.idea.language.psi.TEALTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.bloxbean.algorand.idea.language.psi.*;
 
-public class TEALLoadingOperationImpl extends ASTWrapperPsiElement implements TEALLoadingOperation {
+public class TEALAssetParamsGetOperationImpl extends ASTWrapperPsiElement implements TEALAssetParamsGetOperation {
 
-  public TEALLoadingOperationImpl(@NotNull ASTNode node) {
+  public TEALAssetParamsGetOperationImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull TEALVisitor visitor) {
-    visitor.visitLoadingOperation(this);
+    visitor.visitAssetParamsGetOperation(this);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
@@ -27,15 +27,15 @@ public class TEALLoadingOperationImpl extends ASTWrapperPsiElement implements TE
   }
 
   @Override
-  @Nullable
-  public TEALGlobalOpCode getGlobalOpCode() {
-    return findChildByClass(TEALGlobalOpCode.class);
+  @NotNull
+  public TEALAssetParamsGetOp getAssetParamsGetOp() {
+    return findNotNullChildByClass(TEALAssetParamsGetOp.class);
   }
 
   @Override
   @Nullable
-  public PsiElement getGlobalField() {
-    return findChildByType(GLOBAL_FIELD);
+  public PsiElement getAssetParamsGetField() {
+    return findChildByType(ASSET_PARAMS_GET_FIELD);
   }
 
   @Override

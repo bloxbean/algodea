@@ -26,4 +26,10 @@ public class TEALGeneralOperationImpl extends ASTWrapperPsiElement implements TE
     else super.accept(visitor);
   }
 
+  @Override
+  @Nullable
+  public TEALSubstringOperation getSubstringOperation() {
+    return findChildByClass(TEALSubstringOperation.class);
+  }
+
 }

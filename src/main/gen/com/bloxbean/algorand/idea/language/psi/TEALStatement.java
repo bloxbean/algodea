@@ -20,6 +20,12 @@ public interface TEALStatement extends PsiElement {
   TEALStateAccessOperation getStateAccessOperation();
 
   @Nullable
+  TEALBranch getBranch();
+
+  @Nullable
+  TEALPseudoOp getPseudoOp();
+
+  @Nullable
   PsiElement getComment();
 
   @Nullable

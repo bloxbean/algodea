@@ -52,6 +52,18 @@ public class TEALStatementImpl extends ASTWrapperPsiElement implements TEALState
 
   @Override
   @Nullable
+  public TEALBranch getBranch() {
+    return findChildByClass(TEALBranch.class);
+  }
+
+  @Override
+  @Nullable
+  public TEALPseudoOp getPseudoOp() {
+    return findChildByClass(TEALPseudoOp.class);
+  }
+
+  @Override
+  @Nullable
   public PsiElement getComment() {
     return findChildByType(COMMENT);
   }

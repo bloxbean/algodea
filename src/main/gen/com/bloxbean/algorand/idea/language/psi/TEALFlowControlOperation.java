@@ -7,4 +7,7 @@ import com.intellij.psi.PsiElement;
 
 public interface TEALFlowControlOperation extends PsiElement {
 
+  @Nullable
+  TEALBranchOperation getBranchOperation();
+
 }

@@ -27,6 +27,12 @@ public class TEALProgramImpl extends ASTWrapperPsiElement implements TEALProgram
   }
 
   @Override
+  @Nullable
+  public TEALPragma getPragma() {
+    return findChildByClass(TEALPragma.class);
+  }
+
+  @Override
   @NotNull
   public List<TEALStatement> getStatementList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, TEALStatement.class);
