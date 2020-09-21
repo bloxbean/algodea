@@ -33,10 +33,14 @@ public class TEALCompletionContributor extends CompletionContributor {
         extend(CompletionType.BASIC,
                 KeywordCompletionProvider.PATTERN,
                 new KeywordCompletionProvider());
-
         extend(CompletionType.BASIC,
                 KeywordCompletionProvider.FIRST_ELEMENT_PATTERN,
                 new KeywordCompletionProvider());
+        extend(CompletionType.BASIC,
+                KeywordCompletionProvider.FIRST_ELEMENT_AFTER_PRAGMA_PATTERN,
+                new KeywordCompletionProvider());
+
+
 
         extend(CompletionType.BASIC,
                 TxnArgCompletionProvider.PATTERN,

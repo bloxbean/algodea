@@ -25,11 +25,12 @@ package com.bloxbean.algorand.idea.language.completion.providers;
 import com.bloxbean.algorand.idea.language.TEALLanguage;
 import com.bloxbean.algorand.idea.language.TEALParserDefinition;
 import com.bloxbean.algorand.idea.language.completion.metadata.atoms.TEALKeywords;
-import com.bloxbean.algorand.idea.language.psi.TEALFile;
+import com.bloxbean.algorand.idea.language.psi.TEALPragma;
 import com.bloxbean.algorand.idea.language.psi.TEALProgram;
 import com.bloxbean.algorand.idea.language.psi.TEALStatement;
 import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.codeInsight.completion.CompletionResultSet;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.patterns.ElementPattern;
 import com.intellij.patterns.PatternCondition;
 import com.intellij.patterns.PlatformPatterns;
@@ -41,6 +42,9 @@ import org.jetbrains.annotations.NotNull;
 import static com.intellij.patterns.PlatformPatterns.psiElement;
 
 public final class KeywordCompletionProvider extends BaseCompletionProvider {
+    private static final Logger LOG = Logger.getInstance(KeywordCompletionProvider.class);
+
+    private final static String FIRST_LINE = "FIRST_LINE";
 
     public static final ElementPattern<PsiElement> PATTERN = psiElement()  //Start of Statement
             .afterLeaf(psiElement().inside(TEALStatement.class))
@@ -48,16 +52,22 @@ public final class KeywordCompletionProvider extends BaseCompletionProvider {
             .andNot(PlatformPatterns.psiElement(TEALParserDefinition.LINE_COMMENT))
             .andNot(PlatformPatterns.psiElement(TEALParserDefinition.BLOCK_COMMENT));
 
-    public static final ElementPattern<PsiElement> FIRST_ELEMENT_PATTERN = psiElement() //Top level
+    public static final ElementPattern<PsiElement> FIRST_ELEMENT_AFTER_PRAGMA_PATTERN = psiElement() //Top level
+            .afterLeaf(psiElement().inside(TEALPragma.class));
+
+    public static final ElementPattern<PsiElement> FIRST_ELEMENT_PATTERN = psiElement()
             .with(new PatternCondition<PsiElement>("topLevel") {
                 @Override
                 public boolean accepts(@NotNull PsiElement psiElement, ProcessingContext context) {
                     PsiElement parentPsiElement = psiElement.getParent();
-                    if(parentPsiElement != null && parentPsiElement instanceof PsiErrorElement) {
+
+                    if (parentPsiElement != null && parentPsiElement instanceof PsiErrorElement) {
+                        context.put(FIRST_LINE, FIRST_LINE);
                         return (parentPsiElement.getPrevSibling() != null)
                                 && (parentPsiElement.getPrevSibling() instanceof TEALProgram);
                     } else {
-                        return psiElement.getParent() instanceof TEALFile;
+                        context.put(FIRST_LINE, FIRST_LINE);
+                        return psiElement.getParent() instanceof TEALProgram;
                     }
                 }
             });
@@ -66,6 +76,21 @@ public final class KeywordCompletionProvider extends BaseCompletionProvider {
     protected void addCompletions(@NotNull CompletionParameters parameters,
                                   ProcessingContext context,
                                   @NotNull CompletionResultSet result) {
+        if (context.get(FIRST_LINE) != null) {
+            result.addElement(TEALKeywords.PRAGMA_LINE);
+        }
+
+        if(parameters.getPosition() != null) {
+
+            LOG.info("Offset >>> " + parameters.getPosition().getStartOffsetInParent());
+
+           PsiElement parentElement = parameters.getPosition().getParent();
+
+           int offset = parameters.getPosition().getStartOffsetInParent();
+           if(offset > 0 && parentElement instanceof TEALStatement)
+               return;
+        }
+
         result.addAllElements(TEALKeywords.KEYWORD_LOOKUP_ELEMENTS);
     }
 }

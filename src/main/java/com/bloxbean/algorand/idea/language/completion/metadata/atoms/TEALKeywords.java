@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 import static com.bloxbean.algorand.idea.language.psi.TEALTypes.*;
 
 public final class TEALKeywords {
-
+    public final static LookupElement PRAGMA_LINE = new TEALKeywordElement("#pragma version 2").getLookupElement();
 //    public static final Collection<String> LOADING_OPERATIONS = Sets.newHashSet(
 //            "intcblock", "intc", "intc_0", "intc_1", "intc_2", "intc_3", "bytecblock", "bytec", "bytec_0"
 //            , "bytec_1", "bytec_2", "bytec_3", "arg", "arg_0", "arg_1", "arg_2", "arg_3", "global", "load", "store"
@@ -101,6 +101,7 @@ public final class TEALKeywords {
 //            .collect(Collectors.toList());
     public static final List<LookupElement> KEYWORD_LOOKUP_ELEMENTS = TEALOpCodeFactory.getInstance()
             .getOps().stream()
+            .sorted()
             .map(TEALKeywordElement::new)
             .map(TEALKeywordElement::getLookupElement)
             .collect(Collectors.toList());
