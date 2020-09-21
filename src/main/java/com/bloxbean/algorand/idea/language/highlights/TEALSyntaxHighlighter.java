@@ -23,12 +23,8 @@
 package com.bloxbean.algorand.idea.language.highlights;
 
 import com.bloxbean.algorand.idea.language.TEALLexerAdapter;
-import com.bloxbean.algorand.idea.language.TEALParserDefinition;
-import com.bloxbean.algorand.idea.language.psi.TEALTokenType;
 import com.bloxbean.algorand.idea.language.psi.TEALTypes;
 import com.intellij.lexer.Lexer;
-import com.intellij.openapi.editor.DefaultLanguageHighlighterColors;
-import com.intellij.openapi.editor.HighlighterColors;
 import com.intellij.openapi.editor.colors.TextAttributesKey;
 import com.intellij.openapi.fileTypes.SyntaxHighlighterBase;
 import com.intellij.psi.TokenType;
@@ -39,7 +35,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.intellij.openapi.editor.colors.TextAttributesKey.createTextAttributesKey;
 import static com.bloxbean.algorand.idea.language.psi.TEALTypes.*;
 
 public class TEALSyntaxHighlighter extends SyntaxHighlighterBase {
@@ -64,68 +59,6 @@ public class TEALSyntaxHighlighter extends SyntaxHighlighterBase {
     private static final TextAttributesKey[] COMMA_KEYS = new TextAttributesKey[]{TEALSyntaxColors.COMMA};
     private static final TextAttributesKey[] DOT_KEYS = new TextAttributesKey[]{TEALSyntaxColors.DOT};
 
-//    private static final TokenSet OP_CODE = TokenSet.create(
-//            INTCBLOCK,
-//            INTC,
-//            INTC_0,
-//            INTC_1,
-//            INTC_2,
-//            INTC_3,
-//            BYTEBLOCK,
-//            BYTEC,
-//            BYTEC_0,
-//            BYTEC_1,
-//            BYTEC_2,
-//            BYTEC_3,
-//            ARG,
-//            ARG_0,
-//            ARG_1,
-//            ARG_2,
-//            ARG_3,
-//            TXN,
-//            GTXN,
-//            TXNA,
-//            GTXNA,
-//            GLOBAL,
-//            LOAD,
-//            STORE,
-//            ADDR,
-//
-//            SHA256,
-//            KECCAK256,
-//            SHA512_256,
-//            ED25519VERIFY,
-//            PLUS,
-//            MINUS,
-//            DIVIDE,
-//            TIMES,
-//            LESSTHAN,
-//            GREATERTHAN,
-//            LESSTHANEQUAL,
-//            GREATERTHANEQUAL,
-//
-//            LOGICAL_AND,
-//            LOGICAL_OR,
-//            LOGICAL_EQUAL,
-//            LOGICAL_NOTEQUAL,
-//
-//            NOT,
-//            LEN,
-//            ITOB,
-//            BTOI,
-//
-//            MODULO,
-//            BITWISE_OR,
-//            BITWISE_AND,
-//            BITWISE_XOR,
-//            BITWISE_INVERT,
-//            MULW,
-//            ADDW,
-//            CONCAT,
-//            SUBSTRING,
-//            SUBSTRING3
-//    );
-//
     private static final TokenSet OPERATIONS = TokenSet.create(
             SHA256,
             KECCAK256,
@@ -166,7 +99,6 @@ public class TEALSyntaxHighlighter extends SyntaxHighlighterBase {
 
     static {
         fillMap(keys, OPERATIONS, TEALSyntaxColors.FUNCTION);
-//        fillMap(keys, OPERATIONS, OPERATION_ATTR);
         keys.put(LOADING_OP, TEALSyntaxColors.KEYWORD);
         keys.put(TXN_LOADING_OP, TEALSyntaxColors.KEYWORD);
         keys.put(FLOWCONTROL_OP, TEALSyntaxColors.KEYWORD);
@@ -217,33 +149,33 @@ public class TEALSyntaxHighlighter extends SyntaxHighlighterBase {
 //        if (isKeywordTokenType(tokenType)) {
 //            return KEYWORD_KEYS;
 //        }
-//        if (tokenType.equals(CypherTypes.L_IDENTIFIER) || tokenType.equals(CypherTypes.L_IDENTIFIER_TEXT)) {
+//        if (tokenType.equals(TEALTypes.L_IDENTIFIER) || tokenType.equals(TEALTypes.L_IDENTIFIER_TEXT)) {
 //            return IDENTIFIER_KEYS;
 //        }
-//        if (tokenType.equals(CypherTypes.L_DECIMAL) || tokenType.equals(CypherTypes.L_INTEGER)) {
+//        if (tokenType.equals(TEALTypes.L_DECIMAL) || tokenType.equals(TEALTypes.L_INTEGER)) {
 //            return NUMBER_KEYS;
 //        }
-//        if (tokenType.equals(CypherTypes.L_STRING)) {
+//        if (tokenType.equals(TEALTypes.L_STRING)) {
 //            return STRING_KEYS;
 //        }
-//        if (tokenType.equals(CypherTypes.SEMICOLON)) {
+//        if (tokenType.equals(TEALTypes.SEMICOLON)) {
 //            return SEMICOLON_KEYS;
 //        }
-//        if (tokenType.equals(CypherTypes.PARENTHESE_OPEN) || tokenType.equals(CypherTypes.PARENTHESE_CLOSE)) {
+//        if (tokenType.equals(TEALTypes.PARENTHESE_OPEN) || tokenType.equals(TEALTypes.PARENTHESE_CLOSE)) {
 //            return PARENTHESES_KEYS;
 //        }
-//        if (tokenType.equals(CypherTypes.BRACKET_CURLYOPEN)
-//                || tokenType.equals(CypherTypes.BRACKET_CURLYCLOSE)) {
+//        if (tokenType.equals(TEALTypes.BRACKET_CURLYOPEN)
+//                || tokenType.equals(TEALTypes.BRACKET_CURLYCLOSE)) {
 //            return CURLY_BRACES_KEYS;
 //        }
-//        if (tokenType.equals(CypherTypes.BRACKET_SQUAREOPEN)
-//                || tokenType.equals(CypherTypes.BRACKET_SQUARECLOSE)) {
+//        if (tokenType.equals(TEALTypes.BRACKET_SQUAREOPEN)
+//                || tokenType.equals(TEALTypes.BRACKET_SQUARECLOSE)) {
 //            return SQUARE_BRACES_KEYS;
 //        }
-//        if (tokenType.equals(CypherTypes.OP_COMMA)) {
+//        if (tokenType.equals(TEALTypes.OP_COMMA)) {
 //            return COMMA_KEYS;
 //        }
-//        if (tokenType.equals(CypherTypes.OP_DOT)) {
+//        if (tokenType.equals(TEALTypes.OP_DOT)) {
 //            return DOT_KEYS;
 //        }
 //        if (isOperationTokenType(tokenType)) {
@@ -257,38 +189,38 @@ public class TEALSyntaxHighlighter extends SyntaxHighlighterBase {
 
 //    private boolean isKeywordTokenType(IElementType tokenType) {
 //        if (tokenType instanceof TEALTokenType) {
-//            TEALTokenType cypherTokenType = (TEALTokenType) tokenType;
-//            System.out.println("token Original name: " + cypherTokenType);
-//            return cypherTokenType.getOriginalName().startsWith("FLOW") ||
-//                    cypherTokenType.getOriginalName().startsWith("O_") ||
-//                    cypherTokenType.getOriginalName().startsWith("F_") ||
-//                    cypherTokenType.getOriginalName().startsWith("S_");
+//            TEALTokenType tealTokenType = (TEALTokenType) tokenType;
+//            System.out.println("token Original name: " + tealTokenType);
+//            return tealTokenType.getOriginalName().startsWith("FLOW") ||
+//                    tealTokenType.getOriginalName().startsWith("O_") ||
+//                    tealTokenType.getOriginalName().startsWith("F_") ||
+//                    tealTokenType.getOriginalName().startsWith("S_");
 //        }
 //        return false;
 //    }
 
     private boolean isOperationTokenType(IElementType tokenType) {
         return false;
-//        return tokenType.equals(CypherTypes.OP_BACTICK)
-//                || tokenType.equals(CypherTypes.OP_COLON)
-//                || tokenType.equals(CypherTypes.OP_DIVIDE)
-//                || tokenType.equals(CypherTypes.OP_EQUAL)
-//                || tokenType.equals(CypherTypes.OP_GREATERTHANEQUALS)
-//                || tokenType.equals(CypherTypes.OP_GREATHERTHEN)
-//                || tokenType.equals(CypherTypes.OP_INVALIDNOTEQUALS)
-//                || tokenType.equals(CypherTypes.OP_LESSTHANEQUALS)
-//                || tokenType.equals(CypherTypes.OP_LESSTHEN)
-//                || tokenType.equals(CypherTypes.OP_MINUS)
-//                || tokenType.equals(CypherTypes.OP_MODULO)
-//                || tokenType.equals(CypherTypes.OP_MUL)
-//                || tokenType.equals(CypherTypes.OP_NOTEQUALS)
-//                || tokenType.equals(CypherTypes.OP_PIPE)
-//                || tokenType.equals(CypherTypes.OP_PLUS)
-//                || tokenType.equals(CypherTypes.OP_PLUSEQUALS)
-//                || tokenType.equals(CypherTypes.OP_POW)
-//                || tokenType.equals(CypherTypes.OP_QUESTIONSIGN)
-//                || tokenType.equals(CypherTypes.OP_RANGE)
-//                || tokenType.equals(CypherTypes.OP_REGEXMATCH);
+//        return tokenType.equals(TEALTypes.OP_BACTICK)
+//                || tokenType.equals(TEALTypes.OP_COLON)
+//                || tokenType.equals(TEALTypes.OP_DIVIDE)
+//                || tokenType.equals(TEALTypes.OP_EQUAL)
+//                || tokenType.equals(TEALTypes.OP_GREATERTHANEQUALS)
+//                || tokenType.equals(TEALTypes.OP_GREATHERTHEN)
+//                || tokenType.equals(TEALTypes.OP_INVALIDNOTEQUALS)
+//                || tokenType.equals(TEALTypes.OP_LESSTHANEQUALS)
+//                || tokenType.equals(TEALTypes.OP_LESSTHEN)
+//                || tokenType.equals(TEALTypes.OP_MINUS)
+//                || tokenType.equals(TEALTypes.OP_MODULO)
+//                || tokenType.equals(TEALTypes.OP_MUL)
+//                || tokenType.equals(TEALTypes.OP_NOTEQUALS)
+//                || tokenType.equals(TEALTypes.OP_PIPE)
+//                || tokenType.equals(TEALTypes.OP_PLUS)
+//                || tokenType.equals(TEALTypes.OP_PLUSEQUALS)
+//                || tokenType.equals(TEALTypes.OP_POW)
+//                || tokenType.equals(TEALTypes.OP_QUESTIONSIGN)
+//                || tokenType.equals(TEALTypes.OP_RANGE)
+//                || tokenType.equals(TEALTypes.OP_REGEXMATCH);
     }
 
 

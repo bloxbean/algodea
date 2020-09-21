@@ -66,7 +66,7 @@ public class TEALSyntaxColors {
     public static final TextAttributesKey STRING =
             createTextAttributesKey("TEAL_STRING", DefaultLanguageHighlighterColors.STRING);
     public static final TextAttributesKey NUMBER =
-            createTextAttributesKey("CYPHER_NUMBER", DefaultLanguageHighlighterColors.NUMBER);
+            createTextAttributesKey("TEAL_NUMBER", DefaultLanguageHighlighterColors.NUMBER);
 
     public static final TextAttributesKey BAD_CHARACTER =
             createTextAttributesKey("SIMPLE_BAD_CHARACTER", HighlighterColors.BAD_CHARACTER);
