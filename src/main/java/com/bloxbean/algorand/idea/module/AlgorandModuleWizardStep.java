@@ -20,22 +20,20 @@
  * SOFTWARE.
  */
 
-package com.bloxbean.algorand.idea.language;
+package com.bloxbean.algorand.idea.module;
 
-import com.bloxbean.algorand.idea.language.highlights.TEALSyntaxHighlighter;
-import com.intellij.openapi.fileTypes.SyntaxHighlighter;
-import com.intellij.openapi.fileTypes.SyntaxHighlighterFactory;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.VirtualFile;
-import org.jetbrains.annotations.NotNull;
+import com.intellij.ide.util.projectWizard.ModuleWizardStep;
 
-public class TEALSyntaxHighlighterFactory extends SyntaxHighlighterFactory {
+import javax.swing.*;
 
-    @NotNull
+public class AlgorandModuleWizardStep extends ModuleWizardStep {
     @Override
-    public SyntaxHighlighter getSyntaxHighlighter(Project project, VirtualFile virtualFile) {
-        System.out.println("Get syntax highlighter......");
-        return new TEALSyntaxHighlighter();
+    public JComponent getComponent() {
+        return new JLabel("Provide some setting here");
     }
 
+    @Override
+    public void updateDataModel() {
+        //todo update model according to UI
+    }
 }

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="269px" height="263px" viewBox="0 0 269 263" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Group 3</title>
+    <g id="Welcome" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Desktop-HD" transform="translate(-918.000000, -353.000000)">
+            <g id="Group-3" transform="translate(918.000000, 353.000000)">
+                <g id="any_type">
+                    <rect id="frame" x="0" y="0" width="269" height="263"></rect>
+                    <g id="Group" transform="translate(52.000000, 17.000000)" fill="#9AA7B0" fill-opacity="0.8">
+                        <polygon id="Path" points="67.2 0 0 65.7142857 67.2 65.7142857"></polygon>
+                        <polygon id="Path" points="84 0 84 82.1428571 0 82.1428571 0 230 168 230 168 0"></polygon>
+                    </g>
+                </g>
+                <rect id="Rectangle" stroke="#979797" fill-opacity="0.753277972" fill="#FECE23" x="52" y="173" width="168" height="73"></rect>
+                <text id="TEAL" font-family="OktaNeue-Bold, Okta Neue" font-size="36" font-weight="bold" fill="#000000">
+                    <tspan x="91" y="223">TEAL</tspan>
+                </text>
+            </g>
+        </g>
+    </g>
+</svg>

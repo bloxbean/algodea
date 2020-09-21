@@ -1,1 +1,1 @@
-https://github.com/JetBrains/gradle-grammar-kit-plugin
+Algorand Smart Contract Plugin for Intellij

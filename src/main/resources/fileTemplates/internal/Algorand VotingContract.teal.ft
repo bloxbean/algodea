@@ -1,0 +1,213 @@
+#pragma version 2
+// check if the app is being created
+// if so save creator
+int 0
+txn ApplicationID
+==
+bz not_creation
+byte "Creator"
+txn Sender
+app_global_put
+//4 args must be used on creation
+txn NumAppArgs
+int 4
+==
+bz failed
+//set round ranges
+byte "RegBegin"
+txna ApplicationArgs 0
+btoi
+app_global_put
+byte "RegEnd"
+txna ApplicationArgs 1
+btoi
+app_global_put
+byte "VoteBegin"
+txna ApplicationArgs 2
+btoi
+app_global_put
+byte "VoteEnd"
+txna ApplicationArgs 3
+btoi
+app_global_put
+int 1
+return
+not_creation:
+// check if this is deletion ---
+int DeleteApplication
+txn OnCompletion
+==
+bz not_deletion
+byte "Creator"
+app_global_get
+txn Sender
+==
+bz failed
+int 1
+return
+not_deletion:
+//---
+// check if this is update ---
+int UpdateApplication
+txn OnCompletion
+==
+bz not_update
+byte "Creator"
+app_global_get
+txn Sender
+==
+bz failed
+int 1
+return
+not_update:
+//---
+// check for closeout
+int CloseOut
+txn OnCompletion
+==
+bnz close_out
+// register
+txna ApplicationArgs 0
+byte "register"
+==
+bnz register
+//vote
+txna ApplicationArgs 0
+byte "vote"
+==
+bnz vote
+int 0
+return
+vote:
+//verify in voting rounds
+global Round
+byte "VoteBegin"
+app_global_get
+>=
+global Round
+byte "VoteEnd"
+app_global_get
+<=
+&&
+bz failed
+// Check that the account has opted in
+// account offset (0 == sender,
+// 1 == txn.accounts[0], 2 == txn.accounts[1], etc..)
+int 0
+txn ApplicationID
+app_opted_in
+bz failed
+// check if they have the vote token
+// assuming assetid 2. This should
+// be changed to appropriate asset id
+// sender
+int 0
+// hard-coded assetid
+int 2
+// returns frozen an asset balance
+// pop frozen
+asset_holding_get AssetBalance
+pop
+// does voter have at least 1 vote token
+int 1
+>=
+bz failed
+// two transactions
+global GroupSize
+int 2
+==
+bz failed
+// second tx is an asset xfer
+gtxn 1 TypeEnum
+int 4
+==
+bz failed
+// creator receiving the vote token
+byte "Creator"
+app_global_get
+gtxn 1 AssetReceiver
+==
+bz failed
+// verify the proper token is being spent
+gtxn 1 XferAsset
+// hard coded and should be changed
+int 2
+==
+bz failed
+// spent 1 vote token
+gtxn 1 AssetAmount
+//
+int 1
+==
+bz failed
+//check local to see if they have voted
+int 0 //sender
+txn ApplicationID
+byte "voted"
+app_local_get_ex
+// if voted skip incrementing count
+bnz voted
+pop
+// can only vote for candidatea
+// or candidateb
+txna ApplicationArgs 1
+byte "candidatea"
+==
+txna ApplicationArgs 1
+byte "candidateb"
+==
+||
+bz failed
+// read existing vote candiate
+// in global state and increment vote
+int 0
+txna ApplicationArgs 1
+app_global_get_ex
+bnz increment_existing
+pop
+int 0
+increment_existing:
+int 1
++
+store 1
+txna ApplicationArgs 1
+load 1
+app_global_put
+// store the voters choice in local state
+int 0 //sender
+byte "voted"
+txna ApplicationArgs 1
+app_local_put
+int 1
+return
+voted:
+pop
+int 1
+return
+register:
+global Round
+byte "RegBegin"
+app_global_get
+>=
+global Round
+byte "RegEnd"
+app_global_get
+<=
+&&
+int OptIn
+txn OnCompletion
+==
+&&
+bz failed
+int 1
+return
+//call if this is a closeout op
+close_out:
+int 1
+return
+failed:
+int 0
+return
+finished:
+int 1
+return

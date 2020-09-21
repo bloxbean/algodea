@@ -1,14 +1,16 @@
 <idea-plugin>
     <id>com.bloxbean.algorand</id>
-    <name>BloxBean Algorand Integration</name>
+    <name>BloxBean Algorand Smart Contract Integration</name>
     <vendor email="info@bloxbean.com" url="https://github.com/bloxbean/algorand-idea-plugin/">Algorand Idea Project
     </vendor>
 
     <description><![CDATA[
-    Intellij IDEA plugin for development on Algorand blockchain
+    Intellij IDEA plugin for Smart Contract development on Algorand blockchain
     ]]></description>
 
-    <idea-version since-build="201"/>
+    <idea-version since-build="202"/>
+
+<!--    <depends>com.intellij.modules.java</depends>-->
 
     <extensions defaultExtensionNs="com.intellij">
         <fileType name="TEAL File" implementationClass="com.bloxbean.algorand.idea.language.TEALFileType"
@@ -23,5 +25,18 @@
 
         <lang.documentationProvider language="TEAL" implementationClass="com.bloxbean.algorand.idea.language.documentation.TEALDocumentationProvider"/>
 
+
+
+        <moduleType id="ALGORAND_ASC_MODULE_TYPE" implementationClass="com.bloxbean.algorand.idea.module.AlgorandModuleType"/>
+
+        <internalFileTemplate name="Algorand Empty"/>
+        <internalFileTemplate name="Algorand VotingContract"/>
     </extensions>
+    <actions>
+        <action id="Algorand.NewTEALFile" class="com.bloxbean.algorand.idea.action.NewTEALFileAction"
+                text="TEAL File" description="Create new TEAL file">
+            <add-to-group group-id="NewGroup" anchor="first" />
+        </action>
+
+    </actions>
 </idea-plugin>

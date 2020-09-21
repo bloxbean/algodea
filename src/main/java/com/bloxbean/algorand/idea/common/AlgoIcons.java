@@ -20,22 +20,14 @@
  * SOFTWARE.
  */
 
-package com.bloxbean.algorand.idea.language;
+package com.bloxbean.algorand.idea.common;
 
-import com.bloxbean.algorand.idea.language.highlights.TEALSyntaxHighlighter;
-import com.intellij.openapi.fileTypes.SyntaxHighlighter;
-import com.intellij.openapi.fileTypes.SyntaxHighlighterFactory;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.VirtualFile;
-import org.jetbrains.annotations.NotNull;
+import com.intellij.openapi.util.IconLoader;
 
-public class TEALSyntaxHighlighterFactory extends SyntaxHighlighterFactory {
+import javax.swing.*;
 
-    @NotNull
-    @Override
-    public SyntaxHighlighter getSyntaxHighlighter(Project project, VirtualFile virtualFile) {
-        System.out.println("Get syntax highlighter......");
-        return new TEALSyntaxHighlighter();
-    }
-
+public class AlgoIcons {
+    public final static Icon ALGO_ICON = IconLoader.getIcon("/icons/algo16x16.png");
+    public final static Icon TEAL_FILE_ICON = IconLoader.getIcon("/icons/teal_file.png");
+    public final static Icon MODULE_ICON = IconLoader.getIcon("/icons/module.png");
 }
