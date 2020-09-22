@@ -1,0 +1,69 @@
+// Allows some account to execute periodic withdrawal of funds.
+// This is a contract account.
+//
+// This allows VAR_TMPL_RCV to withdraw VAR_TMPL_AMT every
+// VAR_TMPL_PERIOD rounds for VAR_TMPL_DUR after every multiple
+// of VAR_TMPL_PERIOD.
+//
+// After VAR_TMPL_TIMEOUT, all remaining funds in the escrow
+// are available to VAR_TMPL_RCV.
+//
+// Parameters:
+//  - VAR_TMPL_RCV: address which is authorized to make withdrawals
+//  - VAR_TMPL_PERIOD: the time between a pair of withdrawal periods
+//  - VAR_TMPL_DUR: the duration of a withdrawal period
+//  - VAR_TMPL_AMT: the maximum number of funds allowed for a single withdrawal
+//  - VAR_TMPL_LEASE: string to use for the transaction lease
+//  - VAR_TMPL_TIMEOUT: the round at which the account expires
+//  - VAR_TMPL_FEE: maximum fee used by the withdrawal transaction
+txn TypeEnum
+int 1
+==
+txn Fee
+int VAR_TMPL_FEE
+<=
+&&
+txn FirstValid
+int VAR_TMPL_PERIOD
+%
+int 0
+==
+&&
+txn LastValid
+int VAR_TMPL_DUR
+txn FirstValid
++
+==
+&&
+txn Lease
+byte base64 VAR_TMPL_LEASE
+==
+&& // is Payment and ok Fee and on period and correct duration and good lease
+txn CloseRemainderTo
+global ZeroAddress
+==
+txn Receiver
+addr VAR_TMPL_RCV
+==
+&&
+txn Amount
+int VAR_TMPL_AMT
+==
+&& // no close and good Receiver and good amount
+txn CloseRemainderTo
+addr VAR_TMPL_RCV
+==
+txn Receiver
+global ZeroAddress
+==
+&&
+txn FirstValid
+int VAR_TMPL_TIMEOUT
+>
+&&
+txn Amount
+int 0
+==
+&& // good close to and after timeout and 0 Amount
+|| // normal payment or close
+&& // (normal payment or close) and preamble checks

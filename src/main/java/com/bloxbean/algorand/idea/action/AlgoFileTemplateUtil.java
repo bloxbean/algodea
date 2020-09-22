@@ -32,7 +32,7 @@ import com.intellij.util.containers.ContainerUtil;
 import java.util.List;
 
 public class AlgoFileTemplateUtil {
-  private final static String ALGORAND_TEMPLATE_PREFIX = "Algorand ";
+  private final static String ALGORAND_TEMPLATE_PREFIX = "Algo.";
 
   public static List<FileTemplate> getApplicableTemplates() {
     return getApplicableTemplates(new Condition<FileTemplate>() {

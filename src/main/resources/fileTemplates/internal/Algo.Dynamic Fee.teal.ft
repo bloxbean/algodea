@@ -1,0 +1,65 @@
+// Implements a payment transaction with an undetermined fee.
+// This is delegate logic.
+//
+// This must be present on the second of two transactions.
+//
+// The first transaction should send money to this account.
+// It must send an amount equal to txn.Fee.
+//
+// The second transaction should be from this account.
+// VAR_TMPL_LEASE is mandatory!
+//
+// Parameters:
+//  - VAR_TMPL_TO: the payment receiver
+//  - VAR_TMPL_CLS: the account to close the payment to
+//  - VAR_TMPL_AMT: the amount of the payment
+//  - VAR_TMPL_FV: the first valid round of the transaction
+//  - VAR_TMPL_LV: the last valid round of the transaction
+//  - VAR_TMPL_LEASE: string to use for the transaction lease
+global GroupSize
+int 2
+==
+gtxn 0 TypeEnum
+int 1
+==
+&&
+gtxn 0 Receiver
+txn Sender
+==
+&&
+gtxn 0 Amount
+txn Fee
+==
+&&
+txn GroupIndex
+int 1
+==
+&&
+txn TypeEnum
+int 1
+==
+&&
+txn Receiver
+addr VAR_TMPL_TO
+==
+&&
+txn CloseRemainderTo
+addr VAR_TMPL_CLS
+==
+&&
+txn Amount
+int VAR_TMPL_AMT
+==
+&&
+txn FirstValid
+int VAR_TMPL_FV
+==
+&&
+txn LastValid
+int VAR_TMPL_LV
+==
+&&
+txn Lease
+byte base64 VAR_TMPL_LEASE
+==
+&&

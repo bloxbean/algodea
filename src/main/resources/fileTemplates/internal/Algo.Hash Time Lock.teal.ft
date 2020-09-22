@@ -1,0 +1,48 @@
+// Implements a hash time lock contract.
+// This is a contract account.
+//
+// The receiver must be omitted.
+//
+// Money is released under two circumstances:
+// 1. To VAR_TMPL_RCV if VAR_TMPL_HASHFN(arg_0) = VAR_TMPL_HASHIMG
+// 2. To VAR_TMPL_OWN if txn.FirstValid > VAR_TMPL_TIMEOUT
+//
+// Parameters:
+//  - VAR_TMPL_RCV: the address to send funds to when the preimage is supplied
+//  - VAR_TMPL_HASHFN: the specific hash function (either sha256 or keccak256) to apply
+//  - VAR_TMPL_HASHIMG: the image of the hash function
+//  - VAR_TMPL_TIMEOUT: the round at which the account expires
+//  - VAR_TMPL_OWN: the address to refund funds to on timeout
+//  - VAR_TMPL_FEE: maximum fee used by the transaction
+txn Fee
+int VAR_TMPL_FEE
+<=
+txn TypeEnum
+int 1
+==
+&&
+txn Receiver
+global ZeroAddress
+==
+&&
+txn Amount
+int 0
+==
+&&
+txn CloseRemainderTo
+addr VAR_TMPL_RCV
+==
+arg_0
+VAR_TMPL_HASHFN
+byte base64 VAR_TMPL_HASHIMG
+==
+&&
+txn CloseRemainderTo
+addr VAR_TMPL_OWN
+==
+txn FirstValid
+int VAR_TMPL_TIMEOUT
+>
+&&
+||
+&&

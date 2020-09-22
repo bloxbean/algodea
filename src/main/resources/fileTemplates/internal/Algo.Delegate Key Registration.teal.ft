@@ -1,0 +1,52 @@
+// Creates a delegate key solely with the authority to
+// register participation keys.
+// This is delegate logic.
+//
+// VAR_TMPL_AUTH specifies the delegate public key.  For the
+// transaction to be valid, arg_0 must contain the signature
+// of the private key corresponding to VAR_TMPL_AUTH on the
+// key registration transaction.
+//
+// This allows the delegate key to spend VAR_TMPL_FEE every
+// VAR_TMPL_PERIOD rounds for VAR_TMPL_DUR after every multiple
+// of VAR_TMPL_PERIOD.
+//
+// Parameters:
+//  - VAR_TMPL_AUTH: key authorized with delegation authority
+//  - VAR_TMPL_EXPIRE: round at which key expires
+//  - VAR_TMPL_PERIOD: time between a pair of allowed registration periods
+//  - VAR_TMPL_DUR: duration of an allowed registration period
+//  - VAR_TMPL_LEASE: string to use for the transaction lease
+//  - VAR_TMPL_FEE: maximum fee used by the delegate key registration transaction
+txn TypeEnum
+int 2
+==
+txn Fee
+int VAR_TMPL_FEE
+<=
+&&
+txn LastValid
+int VAR_TMPL_EXPIRE
+<
+&&
+txn LastValid
+int VAR_TMPL_DUR
+txn FirstValid
++
+==
+&&
+txn FirstValid
+int VAR_TMPL_PERIOD
+%
+int 0
+==
+&&
+txn Lease
+byte base64 VAR_TMPL_LEASE
+==
+&&
+txn TxID
+arg_0
+addr VAR_TMPL_AUTH
+ed25519verify
+&&

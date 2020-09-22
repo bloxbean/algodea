@@ -29,8 +29,17 @@
 
         <moduleType id="ALGORAND_ASC_MODULE_TYPE" implementationClass="com.bloxbean.algorand.idea.module.AlgorandModuleType"/>
 
-        <internalFileTemplate name="Algorand Empty"/>
-        <internalFileTemplate name="Algorand VotingContract"/>
+        <internalFileTemplate name="Algo.Empty"/>
+<!--    <internalFileTemplate name="Algo.VotingContract"/>-->
+
+        <internalFileTemplate name="Algo.Dynamic Fee"/>
+        <internalFileTemplate name="Algo.Hash Time Lock"/>
+        <internalFileTemplate name="Algo.Delegation Key Registration"/>
+        <internalFileTemplate name="Algo.Limit Order A"/>
+        <internalFileTemplate name="Algo.Limit Order B"/>
+        <internalFileTemplate name="Algo.Periodic Payment Escrow"/>
+        <internalFileTemplate name="Algo.Split Contract"/>
+
     </extensions>
     <actions>
         <action id="Algorand.NewTEALFile" class="com.bloxbean.algorand.idea.action.NewTEALFileAction"
