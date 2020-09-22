@@ -293,13 +293,14 @@ public class TEALParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // ID
+  // ID | VAR_TMPL
   public static boolean addr_param(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "addr_param")) return false;
-    if (!nextTokenIs(b, "<Algo address>", ID)) return false;
+    if (!nextTokenIs(b, "<Algo address>", ID, VAR_TMPL)) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, ADDR_PARAM, "<Algo address>");
     r = consumeToken(b, ID);
+    if (!r) r = consumeToken(b, VAR_TMPL);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
@@ -319,16 +320,25 @@ public class TEALParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // 'arg' NUMBER
-  static boolean argOperation(PsiBuilder b, int l) {
+  // 'arg' (NUMBER | VAR_TMPL)
+  public static boolean argOperation(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "argOperation")) return false;
     boolean r, p;
-    Marker m = enter_section_(b, l, _NONE_);
+    Marker m = enter_section_(b, l, _NONE_, ARG_OPERATION, "<arg operation>");
     r = consumeToken(b, "arg");
     p = r; // pin = 1
-    r = r && consumeToken(b, NUMBER);
+    r = r && argOperation_1(b, l + 1);
     exit_section_(b, l, m, r, p, null);
     return r || p;
+  }
+
+  // NUMBER | VAR_TMPL
+  private static boolean argOperation_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "argOperation_1")) return false;
+    boolean r;
+    r = consumeToken(b, NUMBER);
+    if (!r) r = consumeToken(b, VAR_TMPL);
+    return r;
   }
 
   /* ********************************************************** */
@@ -343,7 +353,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // assetHoldingGetOP (NUMBER | ASSET_HOLDING_GET_FIELD)
+  // assetHoldingGetOP (NUMBER | ASSET_HOLDING_GET_FIELD | VAR_TMPL)
   public static boolean assetHoldingGetOperation(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "assetHoldingGetOperation")) return false;
     boolean r, p;
@@ -355,12 +365,13 @@ public class TEALParser implements PsiParser, LightPsiParser {
     return r || p;
   }
 
-  // NUMBER | ASSET_HOLDING_GET_FIELD
+  // NUMBER | ASSET_HOLDING_GET_FIELD | VAR_TMPL
   private static boolean assetHoldingGetOperation_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "assetHoldingGetOperation_1")) return false;
     boolean r;
     r = consumeToken(b, NUMBER);
     if (!r) r = consumeToken(b, ASSET_HOLDING_GET_FIELD);
+    if (!r) r = consumeToken(b, VAR_TMPL);
     return r;
   }
 
@@ -376,7 +387,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // assetParamsGetOp (NUMBER | ASSET_PARAMS_GET_FIELD)
+  // assetParamsGetOp (NUMBER | ASSET_PARAMS_GET_FIELD | VAR_TMPL)
   public static boolean assetParamsGetOperation(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "assetParamsGetOperation")) return false;
     boolean r, p;
@@ -388,12 +399,13 @@ public class TEALParser implements PsiParser, LightPsiParser {
     return r || p;
   }
 
-  // NUMBER | ASSET_PARAMS_GET_FIELD
+  // NUMBER | ASSET_PARAMS_GET_FIELD | VAR_TMPL
   private static boolean assetParamsGetOperation_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "assetParamsGetOperation_1")) return false;
     boolean r;
     r = consumeToken(b, NUMBER);
     if (!r) r = consumeToken(b, ASSET_PARAMS_GET_FIELD);
+    if (!r) r = consumeToken(b, VAR_TMPL);
     return r;
   }
 
@@ -410,14 +422,14 @@ public class TEALParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // ('bnz' | 'bz' | 'b') ID
+  // ('bnz' | 'bz' | 'b') (VAR_TMPL | ID)
   public static boolean branchOperation(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "branchOperation")) return false;
     boolean r, p;
     Marker m = enter_section_(b, l, _NONE_, BRANCH_OPERATION, "<branch operation>");
     r = branchOperation_0(b, l + 1);
     p = r; // pin = 1
-    r = r && consumeToken(b, ID);
+    r = r && branchOperation_1(b, l + 1);
     exit_section_(b, l, m, r, p, null);
     return r || p;
   }
@@ -432,6 +444,15 @@ public class TEALParser implements PsiParser, LightPsiParser {
     return r;
   }
 
+  // VAR_TMPL | ID
+  private static boolean branchOperation_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "branchOperation_1")) return false;
+    boolean r;
+    r = consumeToken(b, VAR_TMPL);
+    if (!r) r = consumeToken(b, ID);
+    return r;
+  }
+
   /* ********************************************************** */
   // 'base32' | 'b32'
   static boolean byte_base32_encoding_type(PsiBuilder b, int l) {
@@ -443,28 +464,46 @@ public class TEALParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // byte_base32_encoding_type BASE32
+  // byte_base32_encoding_type (BASE32 | VAR_TMPL)
   static boolean byte_base32_encoding_type_values(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "byte_base32_encoding_type_values")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = byte_base32_encoding_type(b, l + 1);
-    r = r && consumeToken(b, BASE32);
+    r = r && byte_base32_encoding_type_values_1(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
   }
 
+  // BASE32 | VAR_TMPL
+  private static boolean byte_base32_encoding_type_values_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "byte_base32_encoding_type_values_1")) return false;
+    boolean r;
+    r = consumeToken(b, BASE32);
+    if (!r) r = consumeToken(b, VAR_TMPL);
+    return r;
+  }
+
   /* ********************************************************** */
-  // byte_base32_encoding_type '(' BASE32 ')'
+  // byte_base32_encoding_type '(' (BASE32 | VAR_TMPL) ')'
   static boolean byte_base32encoding_type_values_function_type(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "byte_base32encoding_type_values_function_type")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = byte_base32_encoding_type(b, l + 1);
     r = r && consumeToken(b, "(");
-    r = r && consumeToken(b, BASE32);
+    r = r && byte_base32encoding_type_values_function_type_2(b, l + 1);
     r = r && consumeToken(b, ")");
     exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // BASE32 | VAR_TMPL
+  private static boolean byte_base32encoding_type_values_function_type_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "byte_base32encoding_type_values_function_type_2")) return false;
+    boolean r;
+    r = consumeToken(b, BASE32);
+    if (!r) r = consumeToken(b, VAR_TMPL);
     return r;
   }
 
@@ -479,33 +518,51 @@ public class TEALParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // byte_base64_encoding_type BASE64
+  // byte_base64_encoding_type (BASE64 | VAR_TMPL)
   static boolean byte_base64_encoding_type_values(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "byte_base64_encoding_type_values")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = byte_base64_encoding_type(b, l + 1);
-    r = r && consumeToken(b, BASE64);
+    r = r && byte_base64_encoding_type_values_1(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
   }
 
+  // BASE64 | VAR_TMPL
+  private static boolean byte_base64_encoding_type_values_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "byte_base64_encoding_type_values_1")) return false;
+    boolean r;
+    r = consumeToken(b, BASE64);
+    if (!r) r = consumeToken(b, VAR_TMPL);
+    return r;
+  }
+
   /* ********************************************************** */
-  // byte_base64_encoding_type '(' BASE64 ')'
+  // byte_base64_encoding_type '(' (BASE64 | VAR_TMPL) ')'
   static boolean byte_base64encoding_type_values_function_type(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "byte_base64encoding_type_values_function_type")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = byte_base64_encoding_type(b, l + 1);
     r = r && consumeToken(b, "(");
-    r = r && consumeToken(b, BASE64);
+    r = r && byte_base64encoding_type_values_function_type_2(b, l + 1);
     r = r && consumeToken(b, ")");
     exit_section_(b, m, null, r);
     return r;
   }
 
+  // BASE64 | VAR_TMPL
+  private static boolean byte_base64encoding_type_values_function_type_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "byte_base64encoding_type_values_function_type_2")) return false;
+    boolean r;
+    r = consumeToken(b, BASE64);
+    if (!r) r = consumeToken(b, VAR_TMPL);
+    return r;
+  }
+
   /* ********************************************************** */
-  // BYTE (l_string | HEX | byte_base64_encoding_type_values | byte_base64encoding_type_values_function_type | byte_base32_encoding_type_values | byte_base32encoding_type_values_function_type | ID)
+  // BYTE (l_string | HEX | byte_base64_encoding_type_values | byte_base64encoding_type_values_function_type | byte_base32_encoding_type_values | byte_base32encoding_type_values_function_type | VAR_TMPL | ID)
   public static boolean byte_statement(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "byte_statement")) return false;
     if (!nextTokenIs(b, BYTE)) return false;
@@ -518,7 +575,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
     return r || p;
   }
 
-  // l_string | HEX | byte_base64_encoding_type_values | byte_base64encoding_type_values_function_type | byte_base32_encoding_type_values | byte_base32encoding_type_values_function_type | ID
+  // l_string | HEX | byte_base64_encoding_type_values | byte_base64encoding_type_values_function_type | byte_base32_encoding_type_values | byte_base32encoding_type_values_function_type | VAR_TMPL | ID
   private static boolean byte_statement_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "byte_statement_1")) return false;
     boolean r;
@@ -528,21 +585,31 @@ public class TEALParser implements PsiParser, LightPsiParser {
     if (!r) r = byte_base64encoding_type_values_function_type(b, l + 1);
     if (!r) r = byte_base32_encoding_type_values(b, l + 1);
     if (!r) r = byte_base32encoding_type_values_function_type(b, l + 1);
+    if (!r) r = consumeToken(b, VAR_TMPL);
     if (!r) r = consumeToken(b, ID);
     return r;
   }
 
   /* ********************************************************** */
-  // 'bytec' NUMBER
-  static boolean bytecOperation(PsiBuilder b, int l) {
+  // 'bytec' (NUMBER | VAR_TMPL)
+  public static boolean bytecOperation(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "bytecOperation")) return false;
     boolean r, p;
-    Marker m = enter_section_(b, l, _NONE_);
+    Marker m = enter_section_(b, l, _NONE_, BYTEC_OPERATION, "<bytec operation>");
     r = consumeToken(b, "bytec");
     p = r; // pin = 1
-    r = r && consumeToken(b, NUMBER);
+    r = r && bytecOperation_1(b, l + 1);
     exit_section_(b, l, m, r, p, null);
     return r || p;
+  }
+
+  // NUMBER | VAR_TMPL
+  private static boolean bytecOperation_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "bytecOperation_1")) return false;
+    boolean r;
+    r = consumeToken(b, NUMBER);
+    if (!r) r = consumeToken(b, VAR_TMPL);
+    return r;
   }
 
   /* ********************************************************** */
@@ -557,11 +624,11 @@ public class TEALParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // globalOpCode (NUMBER | GLOBAL_FIELD)
-  static boolean globalOperation(PsiBuilder b, int l) {
+  // globalOpCode (NUMBER | GLOBAL_FIELD | VAR_TMPL)
+  public static boolean globalOperation(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "globalOperation")) return false;
     boolean r, p;
-    Marker m = enter_section_(b, l, _NONE_);
+    Marker m = enter_section_(b, l, _NONE_, GLOBAL_OPERATION, "<global operation>");
     r = globalOpCode(b, l + 1);
     p = r; // pin = 1
     r = r && globalOperation_1(b, l + 1);
@@ -569,64 +636,94 @@ public class TEALParser implements PsiParser, LightPsiParser {
     return r || p;
   }
 
-  // NUMBER | GLOBAL_FIELD
+  // NUMBER | GLOBAL_FIELD | VAR_TMPL
   private static boolean globalOperation_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "globalOperation_1")) return false;
     boolean r;
     r = consumeToken(b, NUMBER);
     if (!r) r = consumeToken(b, GLOBAL_FIELD);
+    if (!r) r = consumeToken(b, VAR_TMPL);
     return r;
   }
 
   /* ********************************************************** */
-  // GTXN_OPCODE NUMBER (NUMBER | TxnFieldArg)
-  static boolean gtxnLoadingOperation(PsiBuilder b, int l) {
+  // GTXN_OPCODE (NUMBER | VAR_TMPL) (NUMBER | TxnFieldArg | VAR_TMPL)
+  public static boolean gtxnLoadingOperation(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "gtxnLoadingOperation")) return false;
     boolean r, p;
-    Marker m = enter_section_(b, l, _NONE_);
+    Marker m = enter_section_(b, l, _NONE_, GTXN_LOADING_OPERATION, "<gtxn loading operation>");
     r = GTXN_OPCODE(b, l + 1);
     p = r; // pin = 1
-    r = r && report_error_(b, consumeToken(b, NUMBER));
+    r = r && report_error_(b, gtxnLoadingOperation_1(b, l + 1));
     r = p && gtxnLoadingOperation_2(b, l + 1) && r;
     exit_section_(b, l, m, r, p, null);
     return r || p;
   }
 
-  // NUMBER | TxnFieldArg
+  // NUMBER | VAR_TMPL
+  private static boolean gtxnLoadingOperation_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "gtxnLoadingOperation_1")) return false;
+    boolean r;
+    r = consumeToken(b, NUMBER);
+    if (!r) r = consumeToken(b, VAR_TMPL);
+    return r;
+  }
+
+  // NUMBER | TxnFieldArg | VAR_TMPL
   private static boolean gtxnLoadingOperation_2(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "gtxnLoadingOperation_2")) return false;
     boolean r;
     r = consumeToken(b, NUMBER);
     if (!r) r = TxnFieldArg(b, l + 1);
+    if (!r) r = consumeToken(b, VAR_TMPL);
     return r;
   }
 
   /* ********************************************************** */
-  // GTXNA_OPCODE NUMBER (NUMBER | TxnFieldArg) NUMBER
-  static boolean gtxnaLoadingOperation(PsiBuilder b, int l) {
+  // GTXNA_OPCODE (NUMBER | VAR_TMPL) (NUMBER | TxnFieldArg | VAR_TMPL) (NUMBER | VAR_TMPL)
+  public static boolean gtxnaLoadingOperation(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "gtxnaLoadingOperation")) return false;
     boolean r, p;
-    Marker m = enter_section_(b, l, _NONE_);
+    Marker m = enter_section_(b, l, _NONE_, GTXNA_LOADING_OPERATION, "<gtxna loading operation>");
     r = GTXNA_OPCODE(b, l + 1);
     p = r; // pin = 1
-    r = r && report_error_(b, consumeToken(b, NUMBER));
+    r = r && report_error_(b, gtxnaLoadingOperation_1(b, l + 1));
     r = p && report_error_(b, gtxnaLoadingOperation_2(b, l + 1)) && r;
-    r = p && consumeToken(b, NUMBER) && r;
+    r = p && gtxnaLoadingOperation_3(b, l + 1) && r;
     exit_section_(b, l, m, r, p, null);
     return r || p;
   }
 
-  // NUMBER | TxnFieldArg
+  // NUMBER | VAR_TMPL
+  private static boolean gtxnaLoadingOperation_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "gtxnaLoadingOperation_1")) return false;
+    boolean r;
+    r = consumeToken(b, NUMBER);
+    if (!r) r = consumeToken(b, VAR_TMPL);
+    return r;
+  }
+
+  // NUMBER | TxnFieldArg | VAR_TMPL
   private static boolean gtxnaLoadingOperation_2(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "gtxnaLoadingOperation_2")) return false;
     boolean r;
     r = consumeToken(b, NUMBER);
     if (!r) r = TxnFieldArg(b, l + 1);
+    if (!r) r = consumeToken(b, VAR_TMPL);
+    return r;
+  }
+
+  // NUMBER | VAR_TMPL
+  private static boolean gtxnaLoadingOperation_3(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "gtxnaLoadingOperation_3")) return false;
+    boolean r;
+    r = consumeToken(b, NUMBER);
+    if (!r) r = consumeToken(b, VAR_TMPL);
     return r;
   }
 
   /* ********************************************************** */
-  // INT (HEX | OCTAL | NUMBER | NAMED_INTEGER_CONSTANT | TYPENUM_CONSTANT)
+  // INT (HEX | OCTAL | NUMBER | NAMED_INTEGER_CONSTANT | TYPENUM_CONSTANT | VAR_TMPL)
   static boolean int_statement(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "int_statement")) return false;
     if (!nextTokenIs(b, INT)) return false;
@@ -639,7 +736,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
     return r || p;
   }
 
-  // HEX | OCTAL | NUMBER | NAMED_INTEGER_CONSTANT | TYPENUM_CONSTANT
+  // HEX | OCTAL | NUMBER | NAMED_INTEGER_CONSTANT | TYPENUM_CONSTANT | VAR_TMPL
   private static boolean int_statement_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "int_statement_1")) return false;
     boolean r;
@@ -648,33 +745,52 @@ public class TEALParser implements PsiParser, LightPsiParser {
     if (!r) r = consumeToken(b, NUMBER);
     if (!r) r = consumeToken(b, NAMED_INTEGER_CONSTANT);
     if (!r) r = consumeToken(b, TYPENUM_CONSTANT);
+    if (!r) r = consumeToken(b, VAR_TMPL);
     return r;
   }
 
   /* ********************************************************** */
-  // 'intc' NUMBER
-  static boolean intcOperation(PsiBuilder b, int l) {
+  // 'intc' (NUMBER | VAR_TMPL)
+  public static boolean intcOperation(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "intcOperation")) return false;
     boolean r, p;
-    Marker m = enter_section_(b, l, _NONE_);
+    Marker m = enter_section_(b, l, _NONE_, INTC_OPERATION, "<intc operation>");
     r = consumeToken(b, "intc");
     p = r; // pin = 1
-    r = r && consumeToken(b, NUMBER);
+    r = r && intcOperation_1(b, l + 1);
     exit_section_(b, l, m, r, p, null);
     return r || p;
   }
 
+  // NUMBER | VAR_TMPL
+  private static boolean intcOperation_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "intcOperation_1")) return false;
+    boolean r;
+    r = consumeToken(b, NUMBER);
+    if (!r) r = consumeToken(b, VAR_TMPL);
+    return r;
+  }
+
   /* ********************************************************** */
-  // 'load' NUMBER
-  static boolean loadOperation(PsiBuilder b, int l) {
+  // 'load' (NUMBER | VAR_TMPL)
+  public static boolean loadOperation(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "loadOperation")) return false;
     boolean r, p;
-    Marker m = enter_section_(b, l, _NONE_);
+    Marker m = enter_section_(b, l, _NONE_, LOAD_OPERATION, "<load operation>");
     r = consumeToken(b, "load");
     p = r; // pin = 1
-    r = r && consumeToken(b, NUMBER);
+    r = r && loadOperation_1(b, l + 1);
     exit_section_(b, l, m, r, p, null);
     return r || p;
+  }
+
+  // NUMBER | VAR_TMPL
+  private static boolean loadOperation_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "loadOperation_1")) return false;
+    boolean r;
+    r = consumeToken(b, NUMBER);
+    if (!r) r = consumeToken(b, VAR_TMPL);
+    return r;
   }
 
   /* ********************************************************** */
@@ -776,6 +892,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
   //                     | GeneralOperation
   //                     | pseudo_op
   //                     | branch
+  //                     | VAR_TMPL
   //                     | NL
   //                     | EOF
   public static boolean statement(PsiBuilder b, int l) {
@@ -789,6 +906,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
     if (!r) r = GeneralOperation(b, l + 1);
     if (!r) r = pseudo_op(b, l + 1);
     if (!r) r = branch(b, l + 1);
+    if (!r) r = consumeToken(b, VAR_TMPL);
     if (!r) r = consumeToken(b, NL);
     if (!r) r = consumeToken(b, EOF);
     exit_section_(b, l, m, r, false, statement_recover_parser_);
@@ -804,6 +922,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
   //                                         | GeneralOperation
   //                                         | pseudo_op
   //                                         | branch
+  //                                         | VAR_TMPL
   //                                         | NL
   //                                         | EOF
   // )
@@ -823,6 +942,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
   //                                         | GeneralOperation
   //                                         | pseudo_op
   //                                         | branch
+  //                                         | VAR_TMPL
   //                                         | NL
   //                                         | EOF
   private static boolean statement_recover_0(PsiBuilder b, int l) {
@@ -835,35 +955,65 @@ public class TEALParser implements PsiParser, LightPsiParser {
     if (!r) r = GeneralOperation(b, l + 1);
     if (!r) r = pseudo_op(b, l + 1);
     if (!r) r = branch(b, l + 1);
+    if (!r) r = consumeToken(b, VAR_TMPL);
     if (!r) r = consumeToken(b, NL);
     if (!r) r = consumeToken(b, EOF);
     return r;
   }
 
   /* ********************************************************** */
-  // 'store' NUMBER
-  static boolean storeOperation(PsiBuilder b, int l) {
+  // 'store' (NUMBER | VAR_TMPL)
+  public static boolean storeOperation(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "storeOperation")) return false;
     boolean r, p;
-    Marker m = enter_section_(b, l, _NONE_);
+    Marker m = enter_section_(b, l, _NONE_, STORE_OPERATION, "<store operation>");
     r = consumeToken(b, "store");
     p = r; // pin = 1
-    r = r && consumeToken(b, NUMBER);
+    r = r && storeOperation_1(b, l + 1);
     exit_section_(b, l, m, r, p, null);
     return r || p;
   }
 
+  // NUMBER | VAR_TMPL
+  private static boolean storeOperation_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "storeOperation_1")) return false;
+    boolean r;
+    r = consumeToken(b, NUMBER);
+    if (!r) r = consumeToken(b, VAR_TMPL);
+    return r;
+  }
+
   /* ********************************************************** */
-  // SUBSTRING NUMBER NUMBER
+  // SUBSTRING (NUMBER | VAR_TMPL) (NUMBER | VAR_TMPL)
   public static boolean substringOperation(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "substringOperation")) return false;
     if (!nextTokenIs(b, SUBSTRING)) return false;
     boolean r, p;
     Marker m = enter_section_(b, l, _NONE_, SUBSTRING_OPERATION, null);
-    r = consumeTokens(b, 1, SUBSTRING, NUMBER, NUMBER);
+    r = consumeToken(b, SUBSTRING);
     p = r; // pin = 1
+    r = r && report_error_(b, substringOperation_1(b, l + 1));
+    r = p && substringOperation_2(b, l + 1) && r;
     exit_section_(b, l, m, r, p, null);
     return r || p;
+  }
+
+  // NUMBER | VAR_TMPL
+  private static boolean substringOperation_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "substringOperation_1")) return false;
+    boolean r;
+    r = consumeToken(b, NUMBER);
+    if (!r) r = consumeToken(b, VAR_TMPL);
+    return r;
+  }
+
+  // NUMBER | VAR_TMPL
+  private static boolean substringOperation_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "substringOperation_2")) return false;
+    boolean r;
+    r = consumeToken(b, NUMBER);
+    if (!r) r = consumeToken(b, VAR_TMPL);
+    return r;
   }
 
   /* ********************************************************** */
@@ -873,11 +1023,11 @@ public class TEALParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // TXN_OPCODE (NUMBER | TxnFieldArg)
-  static boolean txnLoadingOperation(PsiBuilder b, int l) {
+  // TXN_OPCODE (NUMBER | TxnFieldArg | VAR_TMPL)
+  public static boolean txnLoadingOperation(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "txnLoadingOperation")) return false;
     boolean r, p;
-    Marker m = enter_section_(b, l, _NONE_);
+    Marker m = enter_section_(b, l, _NONE_, TXN_LOADING_OPERATION, "<txn loading operation>");
     r = TXN_OPCODE(b, l + 1);
     p = r; // pin = 1
     r = r && txnLoadingOperation_1(b, l + 1);
@@ -885,35 +1035,46 @@ public class TEALParser implements PsiParser, LightPsiParser {
     return r || p;
   }
 
-  // NUMBER | TxnFieldArg
+  // NUMBER | TxnFieldArg | VAR_TMPL
   private static boolean txnLoadingOperation_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "txnLoadingOperation_1")) return false;
     boolean r;
     r = consumeToken(b, NUMBER);
     if (!r) r = TxnFieldArg(b, l + 1);
+    if (!r) r = consumeToken(b, VAR_TMPL);
     return r;
   }
 
   /* ********************************************************** */
-  // TXNA_OPCODE (NUMBER | TxnFieldArg) NUMBER
-  static boolean txnaLoadingOperation(PsiBuilder b, int l) {
+  // TXNA_OPCODE (NUMBER | TxnFieldArg | VAR_TMPL) (NUMBER | VAR_TMPL)
+  public static boolean txnaLoadingOperation(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "txnaLoadingOperation")) return false;
     boolean r, p;
-    Marker m = enter_section_(b, l, _NONE_);
+    Marker m = enter_section_(b, l, _NONE_, TXNA_LOADING_OPERATION, "<txna loading operation>");
     r = TXNA_OPCODE(b, l + 1);
     p = r; // pin = 1
     r = r && report_error_(b, txnaLoadingOperation_1(b, l + 1));
-    r = p && consumeToken(b, NUMBER) && r;
+    r = p && txnaLoadingOperation_2(b, l + 1) && r;
     exit_section_(b, l, m, r, p, null);
     return r || p;
   }
 
-  // NUMBER | TxnFieldArg
+  // NUMBER | TxnFieldArg | VAR_TMPL
   private static boolean txnaLoadingOperation_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "txnaLoadingOperation_1")) return false;
     boolean r;
     r = consumeToken(b, NUMBER);
     if (!r) r = TxnFieldArg(b, l + 1);
+    if (!r) r = consumeToken(b, VAR_TMPL);
+    return r;
+  }
+
+  // NUMBER | VAR_TMPL
+  private static boolean txnaLoadingOperation_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "txnaLoadingOperation_2")) return false;
+    boolean r;
+    r = consumeToken(b, NUMBER);
+    if (!r) r = consumeToken(b, VAR_TMPL);
     return r;
   }
 

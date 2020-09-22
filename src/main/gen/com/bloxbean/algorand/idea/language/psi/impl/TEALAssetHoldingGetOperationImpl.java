@@ -44,4 +44,10 @@ public class TEALAssetHoldingGetOperationImpl extends ASTWrapperPsiElement imple
     return findChildByType(NUMBER);
   }
 
+  @Override
+  @Nullable
+  public PsiElement getVarTmpl() {
+    return findChildByType(VAR_TMPL);
+  }
+
 }

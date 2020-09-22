@@ -5,13 +5,13 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface TEALAssetHoldingGetOperation extends PsiElement {
+public interface TEALGlobalOperation extends PsiElement {
 
   @NotNull
-  TEALAssetHoldingGetOP getAssetHoldingGetOP();
+  TEALGlobalOpCode getGlobalOpCode();
 
   @Nullable
-  PsiElement getAssetHoldingGetField();
+  PsiElement getGlobalField();
 
   @Nullable
   PsiElement getNumber();

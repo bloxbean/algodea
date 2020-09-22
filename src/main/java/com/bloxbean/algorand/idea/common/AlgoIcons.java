@@ -30,4 +30,6 @@ public class AlgoIcons {
     public final static Icon ALGO_ICON = IconLoader.getIcon("/icons/algo16x16.png");
     public final static Icon TEAL_FILE_ICON = IconLoader.getIcon("/icons/teal_file.png");
     public final static Icon MODULE_ICON = IconLoader.getIcon("/icons/module.png");
+    public final static Icon OPCODE_ICON = IconLoader.getIcon("/icons/opcode.png");
+    public static final Icon FIELD_ICON = IconLoader.getIcon("/icons/field.png");;
 }

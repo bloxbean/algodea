@@ -11,31 +11,19 @@ import static com.bloxbean.algorand.idea.language.psi.TEALTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.bloxbean.algorand.idea.language.psi.*;
 
-public class TEALBranchOperationImpl extends ASTWrapperPsiElement implements TEALBranchOperation {
+public class TEALTxnaLoadingOperationImpl extends ASTWrapperPsiElement implements TEALTxnaLoadingOperation {
 
-  public TEALBranchOperationImpl(@NotNull ASTNode node) {
+  public TEALTxnaLoadingOperationImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull TEALVisitor visitor) {
-    visitor.visitBranchOperation(this);
+    visitor.visitTxnaLoadingOperation(this);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof TEALVisitor) accept((TEALVisitor)visitor);
     else super.accept(visitor);
-  }
-
-  @Override
-  @Nullable
-  public PsiElement getId() {
-    return findChildByType(ID);
-  }
-
-  @Override
-  @Nullable
-  public PsiElement getVarTmpl() {
-    return findChildByType(VAR_TMPL);
   }
 
 }

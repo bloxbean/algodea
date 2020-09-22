@@ -22,6 +22,7 @@
 
 package com.bloxbean.algorand.idea.language.completion.metadata.atoms;
 
+import com.bloxbean.algorand.idea.language.completion.metadata.elements.TEALFieldElement;
 import com.bloxbean.algorand.idea.language.completion.metadata.elements.TEALKeywordElement;
 import com.bloxbean.algorand.idea.language.opcode.TEALOpCodeFactory;
 import com.google.common.collect.Sets;
@@ -36,6 +37,13 @@ import static com.bloxbean.algorand.idea.language.psi.TEALTypes.*;
 
 public final class TEALKeywords {
     public final static LookupElement PRAGMA_LINE = new TEALKeywordElement("#pragma version 2").getLookupElement();
+
+    public final static String TXN_FIELDS = "txn_fields";
+    public final static String TYPE_ENUM_MAPPING = "type_enum_mapping";
+    public final static String GLOBAL_FIELDS = "global_fields";
+    public final static String ASSET_HOLDING_GET_FIELDS = "asset_holding_get_fields";
+    public final static String ASSET_PARAMS_GET_FIELDS = "asset_params_get_fields";
+
 //    public static final Collection<String> LOADING_OPERATIONS = Sets.newHashSet(
 //            "intcblock", "intc", "intc_0", "intc_1", "intc_2", "intc_3", "bytecblock", "bytec", "bytec_0"
 //            , "bytec_1", "bytec_2", "bytec_3", "arg", "arg_0", "arg_1", "arg_2", "arg_3", "global", "load", "store"
@@ -83,16 +91,16 @@ public final class TEALKeywords {
             SUBSTRING3
     );
 
-    public static final Collection<String> TXN_ARGS = Sets.newHashSet(
-            "Sender", "Fee", "FirstValid", "FirstValidTime", "LastValid", "Note", "Lease", "Receiver", "Amount"
-            , "CloseRemainderTo", "VotePK", "SelectionPK", "VoteFirst", "VoteLast", "VoteKeyDilution", "Type"
-            , "TypeEnum", "XferAsset", "AssetAmount", "AssetSender", "AssetReceiver", "AssetCloseTo", "GroupIndex"
-            , "TxID", "ApplicationID", "OnCompletion", "ApplicationArgs", "NumAppArgs", "Accounts", "NumAccounts"
-            , "ApprovalProgram", "ClearStateProgram", "RekeyTo", "ConfigAsset", "ConfigAssetTotal", "ConfigAssetDecimals"
-            , "ConfigAssetDefaultFrozen", "ConfigAssetUnitName", "ConfigAssetName", "ConfigAssetURL", "ConfigAssetMetadataHash"
-            , "ConfigAssetManager", "ConfigAssetReserve", "ConfigAssetFreeze", "ConfigAssetClawback", "FreezeAsset"
-            , "FreezeAssetAccount", "FreezeAssetFrozen"
-    );
+//    public static final Collection<String> TXN_ARGS = Sets.newHashSet(
+//            "Sender", "Fee", "FirstValid", "FirstValidTime", "LastValid", "Note", "Lease", "Receiver", "Amount"
+//            , "CloseRemainderTo", "VotePK", "SelectionPK", "VoteFirst", "VoteLast", "VoteKeyDilution", "Type"
+//            , "TypeEnum", "XferAsset", "AssetAmount", "AssetSender", "AssetReceiver", "AssetCloseTo", "GroupIndex"
+//            , "TxID", "ApplicationID", "OnCompletion", "ApplicationArgs", "NumAppArgs", "Accounts", "NumAccounts"
+//            , "ApprovalProgram", "ClearStateProgram", "RekeyTo", "ConfigAsset", "ConfigAssetTotal", "ConfigAssetDecimals"
+//            , "ConfigAssetDefaultFrozen", "ConfigAssetUnitName", "ConfigAssetName", "ConfigAssetURL", "ConfigAssetMetadataHash"
+//            , "ConfigAssetManager", "ConfigAssetReserve", "ConfigAssetFreeze", "ConfigAssetClawback", "FreezeAsset"
+//            , "FreezeAssetAccount", "FreezeAssetFrozen"
+//    );
 
 
 //    public static final List<LookupElement> KEYWORD_LOOKUP_ELEMENTS = LOADING_OPERATIONS.stream()
@@ -101,13 +109,44 @@ public final class TEALKeywords {
 //            .collect(Collectors.toList());
     public static final List<LookupElement> KEYWORD_LOOKUP_ELEMENTS = TEALOpCodeFactory.getInstance()
             .getOps().stream()
+//            .getOpCodes().parallelStream()
             .sorted()
             .map(TEALKeywordElement::new)
             .map(TEALKeywordElement::getLookupElement)
             .collect(Collectors.toList());
 
-    public static final List<LookupElement> TXNARGS_LOOKUP_ELEMENTS = TXN_ARGS.stream()
-            .map(TEALKeywordElement::new)
-            .map(TEALKeywordElement::getLookupElement)
+    public static final List<LookupElement> TXNARGS_LOOKUP_ELEMENTS = TEALOpCodeFactory.getInstance()
+            .getFields(TXN_FIELDS)
+            .stream()
+            .map(f -> new TEALFieldElement(f))
+            .map(TEALFieldElement::getLookupElement)
+            .collect(Collectors.toList());
+
+    public static final List<LookupElement> TYPE_ENUM_MAPPING_ELEMENTS = TEALOpCodeFactory.getInstance()
+            .getFields(TYPE_ENUM_MAPPING)
+            .stream()
+            .map(f -> new TEALFieldElement(f))
+            .map(TEALFieldElement::getLookupElement)
+            .collect(Collectors.toList());
+
+    public static final List<LookupElement> GLOBAL_FIELDS_ELEMENTS = TEALOpCodeFactory.getInstance()
+            .getFields(GLOBAL_FIELDS)
+            .stream()
+            .map(f -> new TEALFieldElement(f))
+            .map(TEALFieldElement::getLookupElement)
+            .collect(Collectors.toList());
+
+    public static final List<LookupElement> ASSET_HOLDING_GET_FIELDS_ELEMENTS = TEALOpCodeFactory.getInstance()
+            .getFields(ASSET_HOLDING_GET_FIELDS)
+            .stream()
+            .map(f -> new TEALFieldElement(f))
+            .map(TEALFieldElement::getLookupElement)
+            .collect(Collectors.toList());
+
+    public static final List<LookupElement> ASSET_PARAMS_GET_FIELDS_ELEMENTS = TEALOpCodeFactory.getInstance()
+            .getFields(ASSET_PARAMS_GET_FIELDS)
+            .stream()
+            .map(f -> new TEALFieldElement(f))
+            .map(TEALFieldElement::getLookupElement)
             .collect(Collectors.toList());
 }

@@ -1,0 +1,474 @@
+{
+  "txn_fields": [
+    {
+      "index": 0,
+      "name": "Sender",
+      "type": "[]byte",
+      "note": "32 byte address"
+    },
+    {
+      "index": 1,
+      "name": "Fee",
+      "type": "uint64",
+      "note": "micro-Algos"
+    },
+    {
+      "index": 2,
+      "name": "FirstValid",
+      "type": "uint64",
+      "note": "round number"
+    },
+    {
+      "index": 3,
+      "name": "FirstValidTime",
+      "type": "uint64",
+      "note": "Causes program to fail; reserved for future use"
+    },
+    {
+      "index": 4,
+      "name": "LastValid",
+      "type": "uint64",
+      "note": "round number"
+    },
+    {
+      "index": 5,
+      "name": "Note",
+      "type": "[]byte",
+      "note": ""
+    },
+    {
+      "index": 6,
+      "name": "Lease",
+      "type": "[]byte",
+      "note": ""
+    },
+    {
+      "index": 7,
+      "name": "Receiver",
+      "type": "[]byte",
+      "note": "32 byte address"
+    },
+    {
+      "index": 8,
+      "name": "Amount",
+      "type": "uint64",
+      "note": "micro-Algos"
+    },
+    {
+      "index": 9,
+      "name": "CloseRemainderTo",
+      "type": "[]byte",
+      "note": "32 byte address"
+    },
+    {
+      "index": 10,
+      "name": "VotePK",
+      "type": "[]byte",
+      "note": "32 byte address"
+    },
+    {
+      "index": 11,
+      "name": "SelectionPK",
+      "type": "[]byte",
+      "note": "32 byte address"
+    },
+    {
+      "index": 12,
+      "name": "VoteFirst",
+      "type": "uint64",
+      "note": ""
+    },
+    {
+      "index": 13,
+      "name": "VoteLast",
+      "type": "uint64",
+      "note": ""
+    },
+    {
+      "index": 14,
+      "name": "VoteKeyDilution",
+      "type": "uint64",
+      "note": ""
+    },
+    {
+      "index": 15,
+      "name": "Type",
+      "type": "[]byte",
+      "note": ""
+    },
+    {
+      "index": 16,
+      "name": "TypeEnum",
+      "type": "uint64",
+      "note": ""
+    },
+    {
+      "index": 17,
+      "name": "XferAsset",
+      "type": "uint64",
+      "note": "Asset ID"
+    },
+    {
+      "index": 18,
+      "name": "AssetAmount",
+      "type": "uint64",
+      "note": "value in Asset's units"
+    },
+    {
+      "index": 19,
+      "name": "AssetSender",
+      "type": "[]byte",
+      "note": "32 byte address. Causes clawback of all value of asset from AssetSender if Sender is the Clawback address of the asset."
+    },
+    {
+      "index": 20,
+      "name": "AssetReceiver",
+      "type": "[]byte",
+      "note": "32 byte address"
+    },
+    {
+      "index": 21,
+      "name": "AssetCloseTo",
+      "type": "[]byte",
+      "note": "32 byte address"
+    },
+    {
+      "index": 22,
+      "name": "GroupIndex",
+      "type": "uint64",
+      "note": "Position of this transaction within an atomic transaction group. A stand-alone transaction is implicitly element 0 in a group of 1"
+    },
+    {
+      "index": 23,
+      "name": "TxID",
+      "type": "[]byte",
+      "note": "The computed ID for this transaction. 32 bytes."
+    },
+    {
+      "index": 24,
+      "name": "ApplicationID",
+      "type": "uint64",
+      "note": "ApplicationID from ApplicationCall transaction. LogicSigVersion >= 2."
+    },
+    {
+      "index": 25,
+      "name": "OnCompletion",
+      "type": "uint64",
+      "note": "ApplicationCall transaction on completion action. LogicSigVersion >= 2."
+    },
+    {
+      "index": 26,
+      "name": "ApplicationArgs",
+      "type": "[]byte",
+      "note": "Arguments passed to the application in the ApplicationCall transaction. LogicSigVersion >= 2."
+    },
+    {
+      "index": 27,
+      "name": "NumAppArgs",
+      "type": "uint64",
+      "note": "Number of ApplicationArgs. LogicSigVersion >= 2."
+    },
+    {
+      "index": 28,
+      "name": "Accounts",
+      "type": "[]byte",
+      "note": "Accounts listed in the ApplicationCall transaction. LogicSigVersion >= 2."
+    },
+    {
+      "index": 29,
+      "name": "NumAccounts",
+      "type": "uint64",
+      "note": "Number of Accounts. LogicSigVersion >= 2."
+    },
+    {
+      "index": 30,
+      "name": "ApprovalProgram",
+      "type": "[]byte",
+      "note": "Approval program. LogicSigVersion >= 2."
+    },
+    {
+      "index": 31,
+      "name": "ClearStateProgram",
+      "type": "[]byte",
+      "note": "Clear state program. LogicSigVersion >= 2."
+    },
+    {
+      "index": 32,
+      "name": "RekeyTo",
+      "type": "[]byte",
+      "note": "32 byte Sender's new AuthAddr. LogicSigVersion >= 2."
+    },
+    {
+      "index": 33,
+      "name": "ConfigAsset",
+      "type": "uint64",
+      "note": "Asset ID in asset config transaction. LogicSigVersion >= 2."
+    },
+    {
+      "index": 34,
+      "name": "ConfigAssetTotal",
+      "type": "uint64",
+      "note": "Total number of units of this asset created. LogicSigVersion >= 2."
+    },
+    {
+      "index": 35,
+      "name": "ConfigAssetDecimals",
+      "type": "uint64",
+      "note": "Number of digits to display after the decimal place when displaying the asset. LogicSigVersion >= 2."
+    },
+    {
+      "index": 36,
+      "name": "ConfigAssetDefaultFrozen",
+      "type": "uint64",
+      "note": "Whether the asset's slots are frozen by default or not, 0 or 1. LogicSigVersion >= 2."
+    },
+    {
+      "index": 37,
+      "name": "ConfigAssetUnitName",
+      "type": "[]byte",
+      "note": "Unit name of the asset. LogicSigVersion >= 2."
+    },
+    {
+      "index": 38,
+      "name": "ConfigAssetName",
+      "type": "[]byte",
+      "note": "The asset name. LogicSigVersion >= 2."
+    },
+    {
+      "index": 39,
+      "name": "ConfigAssetURL",
+      "type": "[]byte",
+      "note": "URL. LogicSigVersion >= 2."
+    },
+    {
+      "index": 40,
+      "name": "ConfigAssetMetadataHash",
+      "type": "[]byte",
+      "note": "32 byte commitment to some unspecified asset metadata. LogicSigVersion >= 2."
+    },
+    {
+      "index": 41,
+      "name": "ConfigAssetManager",
+      "type": "[]byte",
+      "note": "32 byte address. LogicSigVersion >= 2."
+    },
+    {
+      "index": 42,
+      "name": "ConfigAssetReserve",
+      "type": "[]byte",
+      "note": "32 byte address. LogicSigVersion >= 2."
+    },
+    {
+      "index": 43,
+      "name": "ConfigAssetFreeze",
+      "type": "[]byte",
+      "note": "32 byte address. LogicSigVersion >= 2."
+    },
+    {
+      "index": 44,
+      "name": "ConfigAssetClawback",
+      "type": "[]byte",
+      "note": "32 byte address. LogicSigVersion >= 2."
+    },
+    {
+      "index": 45,
+      "name": "FreezeAsset",
+      "type": "uint64",
+      "note": "Asset ID being frozen or un-frozen. LogicSigVersion >= 2."
+    },
+    {
+      "index": 46,
+      "name": "FreezeAssetAccount",
+      "type": "[]byte",
+      "note": "32 byte address of the account whose asset slot is being frozen or un-frozen. LogicSigVersion >= 2."
+    },
+    {
+      "index": 47,
+      "name": "FreezeAssetFrozen",
+      "type": "uint64",
+      "note": "The new frozen value, 0 or 1. LogicSigVersion >= 2."
+    }
+  ],
+  "type_enum_mapping": [
+    {
+      "index": 0,
+      "name": "unknown",
+      "type": "unknown",
+      "desc": "Unknown type. Invalid transaction"
+    },
+    {
+      "index": 1,
+      "name": "pay",
+      "type": "pay",
+      "desc": "Payment"
+    },
+    {
+      "index": 2,
+      "name": "keyreg",
+      "type": "keyreg",
+      "desc": "KeyRegistration"
+    },
+    {
+      "index": 3,
+      "name": "acfg",
+      "type": "acfg",
+      "desc": "AssetConfig"
+    },
+    {
+      "index": 4,
+      "name": "axfer",
+      "type": "axfer",
+      "desc": "AssetTransfer"
+    },
+    {
+      "index": 5,
+      "name": "afrz",
+      "type": "afrz",
+      "desc": "AssetFreeze"
+    },
+    {
+      "index": 6,
+      "name": "appl",
+      "type": "appl",
+      "desc": "ApplicationCall"
+    }
+  ],
+  "global_fields": [
+    {
+      "index": 0,
+      "name": "MinTxnFee",
+      "type": "uint64",
+      "note": "micro Algos"
+    },
+    {
+      "index": 1,
+      "name": "MinBalance",
+      "type": "uint64",
+      "note": "micro Algos"
+    },
+    {
+      "index": 2,
+      "name": "MaxTxnLife",
+      "type": "uint64",
+      "note": "rounds"
+    },
+    {
+      "index": 3,
+      "name": "ZeroAddress",
+      "type": "[]byte",
+      "note": "32 byte address of all zero bytes"
+    },
+    {
+      "index": 4,
+      "name": "GroupSize",
+      "type": "uint64",
+      "note": "Number of transactions in this atomic transaction group. At least 1"
+    },
+    {
+      "index": 5,
+      "name": "LogicSigVersion",
+      "type": "uint64",
+      "note": "Maximum supported TEAL version. LogicSigVersion >= 2."
+    },
+    {
+      "index": 6,
+      "name": "Round",
+      "type": "uint64",
+      "note": "Current round number. LogicSigVersion >= 2."
+    },
+    {
+      "index": 7,
+      "name": "LatestTimestamp",
+      "type": "uint64",
+      "note": "Last confirmed block UNIX timestamp. Fails if negative. LogicSigVersion >= 2."
+    },
+    {
+      "index": 8,
+      "name": "CurrentApplicationID",
+      "type": "uint64",
+      "note": "ID of current application executing. Fails if no such application is executing. LogicSigVersion >= 2."
+    }
+  ],
+  "asset_holding_get_fields": [
+    {
+      "index": 0,
+      "name": "AssetBalance",
+      "type": "uint64",
+      "note": "Amount of the asset unit held by this account"
+    },
+    {
+      "index": 1,
+      "name": "AssetFrozen",
+      "type": "uint64",
+      "note": "Is the asset frozen or not"
+    }
+  ],
+  "asset_params_get_fields": [
+    {
+      "index": 0,
+      "name": "AssetTotal",
+      "type": "uint64",
+      "note": "Total number of units of this asset"
+    },
+    {
+      "index": 1,
+      "name": "AssetDecimals",
+      "type": "uint64",
+      "note": "See AssetParams.Decimals"
+    },
+    {
+      "index": 2,
+      "name": "AssetDefaultFrozen",
+      "type": "uint64",
+      "note": "Frozen by default or not"
+    },
+    {
+      "index": 3,
+      "name": "AssetUnitName",
+      "type": "[]byte",
+      "note": "Asset unit name"
+    },
+    {
+      "index": 4,
+      "name": "AssetName",
+      "type": "[]byte",
+      "note": "Asset name"
+    },
+    {
+      "index": 5,
+      "name": "AssetURL",
+      "type": "[]byte",
+      "note": "URL with additional info about the asset"
+    },
+    {
+      "index": 6,
+      "name": "AssetMetadataHash",
+      "type": "[]byte",
+      "note": "Arbitrary commitment"
+    },
+    {
+      "index": 7,
+      "name": "AssetManager",
+      "type": "[]byte",
+      "note": "Manager commitment"
+    },
+    {
+      "index": 8,
+      "name": "AssetReserve",
+      "type": "[]byte",
+      "note": "Reserve address"
+    },
+    {
+      "index": 9,
+      "name": "AssetFreeze",
+      "type": "[]byte",
+      "note": "Freeze address"
+    },
+    {
+      "index": 10,
+      "name": "AssetClawback",
+      "type": "[]byte",
+      "note": "Clawback address"
+    }
+  ]
+}

@@ -28,4 +28,7 @@ public interface TEALPseudoOp extends PsiElement {
   @Nullable
   PsiElement getTypenumConstant();
 
+  @Nullable
+  PsiElement getVarTmpl();
+
 }

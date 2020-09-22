@@ -23,40 +23,34 @@
 package com.bloxbean.algorand.idea.language.completion.metadata.elements;
 
 import com.bloxbean.algorand.idea.common.AlgoIcons;
-import com.bloxbean.algorand.idea.language.opcode.TEALOpCodeFactory;
-import com.bloxbean.algorand.idea.language.opcode.model.OpCode;
+import com.bloxbean.algorand.idea.language.opcode.model.Field;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.openapi.diagnostic.Logger;
 
-public class TEALKeywordElement implements TEALElement {
-    private final static Logger LOG = Logger.getInstance(TEALKeywordElement.class);
+public class TEALFieldElement implements TEALElement {
+    private final static Logger LOG = Logger.getInstance(TEALFieldElement.class);
 
-    private final String keyword;
+    private final Field field;
 
-    public TEALKeywordElement(String keyword) {
-        this.keyword = keyword;
+    public TEALFieldElement(Field field) {
+        this.field = field;
     }
 
     @Override
     public LookupElement getLookupElement() {
-        if(keyword == null)
+        if(field == null)
             return null;
 
-        OpCode opCode = TEALOpCodeFactory.getInstance().getOpCode(keyword);
-
-        if(opCode == null) {
-            return LookupElementBuilder
-                    .create(keyword)
-                    .withIcon(AlgoIcons.OPCODE_ICON);
-        } else  {
-            if(LOG.isDebugEnabled() && keyword == null)
-                LOG.error("keyword cannot be null");
-
-            return LookupElementBuilder
-                    .create(keyword)
-                    .withIcon(AlgoIcons.OPCODE_ICON)
-                    . withTypeText(opCode.getOpcode());
+        if(LOG.isDebugEnabled()) {
+            if (field.getName() == null) {
+                LOG.error("Field.getName() cannot be null" + field);
+            }
         }
+        return LookupElementBuilder
+                .create(field.getName())
+                .withIcon(AlgoIcons.FIELD_ICON)
+                .withTypeText(field.getType());
+
     }
 }

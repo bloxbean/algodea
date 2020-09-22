@@ -80,4 +80,10 @@ public class TEALStatementImpl extends ASTWrapperPsiElement implements TEALState
     return findChildByType(NL);
   }
 
+  @Override
+  @Nullable
+  public PsiElement getVarTmpl() {
+    return findChildByType(VAR_TMPL);
+  }
+
 }

@@ -27,9 +27,15 @@ public class TEALAddrParamImpl extends ASTWrapperPsiElement implements TEALAddrP
   }
 
   @Override
-  @NotNull
+  @Nullable
   public PsiElement getId() {
-    return findNotNullChildByType(ID);
+    return findChildByType(ID);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getVarTmpl() {
+    return findChildByType(VAR_TMPL);
   }
 
 }

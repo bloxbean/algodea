@@ -7,7 +7,10 @@ import com.intellij.psi.PsiElement;
 
 public interface TEALAddrParam extends PsiElement {
 
-  @NotNull
+  @Nullable
   PsiElement getId();
+
+  @Nullable
+  PsiElement getVarTmpl();
 
 }

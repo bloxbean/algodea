@@ -52,6 +52,12 @@ public class TEALByteStatementImpl extends ASTWrapperPsiElement implements TEALB
 
   @Override
   @Nullable
+  public PsiElement getVarTmpl() {
+    return findChildByType(VAR_TMPL);
+  }
+
+  @Override
+  @Nullable
   public PsiElement getLString() {
     return findChildByType(L_STRING);
   }

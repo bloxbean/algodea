@@ -23,26 +23,30 @@
 package com.bloxbean.algorand.idea.language.opcode;
 
 import com.bloxbean.algorand.idea.language.documentation.database.DocumentationStorage;
+import com.bloxbean.algorand.idea.language.opcode.model.Field;
 import com.bloxbean.algorand.idea.language.opcode.model.OpCode;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.intellij.openapi.diagnostic.Logger;
+import com.thoughtworks.xstream.core.util.Fields;
 
 import java.net.URL;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class TEALOpCodeFactory {
     private static final Logger LOG = Logger.getInstance(TEALOpCodeFactory.class);
     private static String OPCODE_FILE = "/opcodes/opcodes.json";
+    private static String FIELDS_FILE ="/opcodes/fields.json";
 
     private static TEALOpCodeFactory instance;
     private Map<String, OpCode> opCodeMap;
     private Set<String> ops;
 
+    private Map<String, Map<String, Field>> fields;
+
     private TEALOpCodeFactory() {
-        load();
+        loadOpCodes();
+        loadFields();
     }
 
     public static TEALOpCodeFactory getInstance() {
@@ -59,7 +63,7 @@ public class TEALOpCodeFactory {
         return instance;
     }
 
-    private void load() {
+    private void loadOpCodes() {
         try {
             URL opcodeJsonUrl = DocumentationStorage.class.getResource(OPCODE_FILE);
             ObjectMapper mapper = new ObjectMapper();
@@ -78,6 +82,33 @@ public class TEALOpCodeFactory {
         }
     }
 
+    private void loadFields() {
+        try {
+            URL opcodeJsonUrl = DocumentationStorage.class.getResource(FIELDS_FILE);
+            ObjectMapper mapper = new ObjectMapper();
+            TypeReference<HashMap<String, List<Field>>> typeRef
+                    = new TypeReference<HashMap<String, List<Field>>>() {};
+
+            fields = new HashMap<>();
+
+            Map<String, List<Field>> _fields = mapper.readValue(opcodeJsonUrl, typeRef);
+            _fields.entrySet()
+                    .stream()
+                    .forEach(e -> {
+                        List<Field> fls = e.getValue();
+                        if(fls != null) {
+                            Map<String, Field> typeFieldMap = new HashMap();
+                            fls.forEach(fl -> typeFieldMap.put(fl.getName(), fl));
+
+                            fields.put(e.getKey(), typeFieldMap);
+                        }
+                    });
+        } catch (Exception e) {
+            LOG.error("Error parsing fields.json at " + FIELDS_FILE, e);
+            fields = new HashMap<>();
+        }
+    }
+
     public Map<String, OpCode> getOpCodeMap() {
         return opCodeMap;
     }
@@ -86,11 +117,22 @@ public class TEALOpCodeFactory {
         return ops;
     }
 
+    public Collection<OpCode> getOpCodes() {
+        return opCodeMap.values();
+    }
+
     public OpCode getOpCode(String op) {
         if(op == null || op.isEmpty())
             return null;
 
         return opCodeMap.get(op);
+    }
+
+    public Collection<Field> getFields(String type) {
+        Map<String, Field> typeFields = fields.get(type);
+        if(typeFields == null) return Collections.EMPTY_LIST;
+        else
+            return typeFields.values();
     }
 
 }

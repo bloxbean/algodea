@@ -31,6 +31,10 @@ public class TEALVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitArgOperation(@NotNull TEALArgOperation o) {
+    visitPsiElement(o);
+  }
+
   public void visitAssetHoldingGetOP(@NotNull TEALAssetHoldingGetOP o) {
     visitPsiElement(o);
   }
@@ -59,7 +63,31 @@ public class TEALVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitBytecOperation(@NotNull TEALBytecOperation o) {
+    visitPsiElement(o);
+  }
+
   public void visitGlobalOpCode(@NotNull TEALGlobalOpCode o) {
+    visitPsiElement(o);
+  }
+
+  public void visitGlobalOperation(@NotNull TEALGlobalOperation o) {
+    visitPsiElement(o);
+  }
+
+  public void visitGtxnLoadingOperation(@NotNull TEALGtxnLoadingOperation o) {
+    visitPsiElement(o);
+  }
+
+  public void visitGtxnaLoadingOperation(@NotNull TEALGtxnaLoadingOperation o) {
+    visitPsiElement(o);
+  }
+
+  public void visitIntcOperation(@NotNull TEALIntcOperation o) {
+    visitPsiElement(o);
+  }
+
+  public void visitLoadOperation(@NotNull TEALLoadOperation o) {
     visitPsiElement(o);
   }
 
@@ -83,7 +111,19 @@ public class TEALVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitStoreOperation(@NotNull TEALStoreOperation o) {
+    visitPsiElement(o);
+  }
+
   public void visitSubstringOperation(@NotNull TEALSubstringOperation o) {
+    visitPsiElement(o);
+  }
+
+  public void visitTxnLoadingOperation(@NotNull TEALTxnLoadingOperation o) {
+    visitPsiElement(o);
+  }
+
+  public void visitTxnaLoadingOperation(@NotNull TEALTxnaLoadingOperation o) {
     visitPsiElement(o);
   }
 

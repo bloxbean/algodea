@@ -68,4 +68,10 @@ public class TEALPseudoOpImpl extends ASTWrapperPsiElement implements TEALPseudo
     return findChildByType(TYPENUM_CONSTANT);
   }
 
+  @Override
+  @Nullable
+  public PsiElement getVarTmpl() {
+    return findChildByType(VAR_TMPL);
+  }
+
 }

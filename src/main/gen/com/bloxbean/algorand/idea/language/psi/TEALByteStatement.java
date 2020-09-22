@@ -20,6 +20,9 @@ public interface TEALByteStatement extends PsiElement {
   PsiElement getId();
 
   @Nullable
+  PsiElement getVarTmpl();
+
+  @Nullable
   PsiElement getLString();
 
 }

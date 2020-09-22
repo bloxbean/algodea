@@ -22,6 +22,7 @@
 
 package com.bloxbean.algorand.idea.language.completion;
 
+import com.bloxbean.algorand.idea.language.completion.providers.GlobalFieldsCompletionProvider;
 import com.bloxbean.algorand.idea.language.completion.providers.KeywordCompletionProvider;
 import com.bloxbean.algorand.idea.language.completion.providers.TxnArgCompletionProvider;
 import com.intellij.codeInsight.completion.CompletionContributor;
@@ -41,10 +42,12 @@ public class TEALCompletionContributor extends CompletionContributor {
                 new KeywordCompletionProvider());
 
 
-
         extend(CompletionType.BASIC,
                 TxnArgCompletionProvider.PATTERN,
                 new TxnArgCompletionProvider());
+        extend(CompletionType.BASIC,
+                GlobalFieldsCompletionProvider.PATTERN,
+                new GlobalFieldsCompletionProvider());
     }
 
 }

@@ -8,12 +8,33 @@ import com.intellij.psi.PsiElement;
 public interface TEALLoadingOperation extends PsiElement {
 
   @Nullable
-  TEALGlobalOpCode getGlobalOpCode();
+  TEALArgOperation getArgOperation();
 
   @Nullable
-  PsiElement getGlobalField();
+  TEALBytecOperation getBytecOperation();
 
   @Nullable
-  PsiElement getNumber();
+  TEALGlobalOperation getGlobalOperation();
+
+  @Nullable
+  TEALGtxnLoadingOperation getGtxnLoadingOperation();
+
+  @Nullable
+  TEALGtxnaLoadingOperation getGtxnaLoadingOperation();
+
+  @Nullable
+  TEALIntcOperation getIntcOperation();
+
+  @Nullable
+  TEALLoadOperation getLoadOperation();
+
+  @Nullable
+  TEALStoreOperation getStoreOperation();
+
+  @Nullable
+  TEALTxnLoadingOperation getTxnLoadingOperation();
+
+  @Nullable
+  TEALTxnaLoadingOperation getTxnaLoadingOperation();
 
 }

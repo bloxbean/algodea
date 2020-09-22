@@ -16,4 +16,7 @@ public interface TEALAssetParamsGetOperation extends PsiElement {
   @Nullable
   PsiElement getNumber();
 
+  @Nullable
+  PsiElement getVarTmpl();
+
 }

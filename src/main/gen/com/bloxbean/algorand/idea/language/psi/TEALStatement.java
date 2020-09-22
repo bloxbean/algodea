@@ -34,4 +34,7 @@ public interface TEALStatement extends PsiElement {
   @Nullable
   PsiElement getNl();
 
+  @Nullable
+  PsiElement getVarTmpl();
+
 }

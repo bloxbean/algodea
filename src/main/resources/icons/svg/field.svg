@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="123px" height="123px" viewBox="0 0 123 123" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Group 8</title>
+    <g id="Welcome" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Desktop-HD" transform="translate(-1134.000000, -825.000000)">
+            <g id="Group-8" transform="translate(1135.000000, 826.000000)">
+                <circle id="Oval" stroke="#979797" fill="#F3B596" cx="60.5" cy="60.5" r="60.5"></circle>
+                <text id="F" font-family="TimesNewRomanPSMT, Times New Roman" font-size="72" font-weight="normal" fill="#000000">
+                    <tspan x="40" y="85">F</tspan>
+                </text>
+            </g>
+        </g>
+    </g>
+</svg>

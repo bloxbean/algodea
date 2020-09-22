@@ -28,20 +28,62 @@ public class TEALLoadingOperationImpl extends ASTWrapperPsiElement implements TE
 
   @Override
   @Nullable
-  public TEALGlobalOpCode getGlobalOpCode() {
-    return findChildByClass(TEALGlobalOpCode.class);
+  public TEALArgOperation getArgOperation() {
+    return findChildByClass(TEALArgOperation.class);
   }
 
   @Override
   @Nullable
-  public PsiElement getGlobalField() {
-    return findChildByType(GLOBAL_FIELD);
+  public TEALBytecOperation getBytecOperation() {
+    return findChildByClass(TEALBytecOperation.class);
   }
 
   @Override
   @Nullable
-  public PsiElement getNumber() {
-    return findChildByType(NUMBER);
+  public TEALGlobalOperation getGlobalOperation() {
+    return findChildByClass(TEALGlobalOperation.class);
+  }
+
+  @Override
+  @Nullable
+  public TEALGtxnLoadingOperation getGtxnLoadingOperation() {
+    return findChildByClass(TEALGtxnLoadingOperation.class);
+  }
+
+  @Override
+  @Nullable
+  public TEALGtxnaLoadingOperation getGtxnaLoadingOperation() {
+    return findChildByClass(TEALGtxnaLoadingOperation.class);
+  }
+
+  @Override
+  @Nullable
+  public TEALIntcOperation getIntcOperation() {
+    return findChildByClass(TEALIntcOperation.class);
+  }
+
+  @Override
+  @Nullable
+  public TEALLoadOperation getLoadOperation() {
+    return findChildByClass(TEALLoadOperation.class);
+  }
+
+  @Override
+  @Nullable
+  public TEALStoreOperation getStoreOperation() {
+    return findChildByClass(TEALStoreOperation.class);
+  }
+
+  @Override
+  @Nullable
+  public TEALTxnLoadingOperation getTxnLoadingOperation() {
+    return findChildByClass(TEALTxnLoadingOperation.class);
+  }
+
+  @Override
+  @Nullable
+  public TEALTxnaLoadingOperation getTxnaLoadingOperation() {
+    return findChildByClass(TEALTxnaLoadingOperation.class);
   }
 
 }
