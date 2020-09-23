@@ -196,10 +196,10 @@ globalOperation ::= globalOpCode (NUMBER | GLOBAL_FIELD | VAR_TMPL) {pin=1}
 loadOperation ::= 'load' (NUMBER | VAR_TMPL) {pin=1}
 storeOperation ::= 'store' (NUMBER | VAR_TMPL) {pin=1}
 
-private TXN_OPCODE ::= 'txn'
-private GTXN_OPCODE ::= 'gtxn'
-private TXNA_OPCODE ::= 'txna'
-private GTXNA_OPCODE ::= 'gtxna';
+TXN_OPCODE ::= 'txn'
+GTXN_OPCODE ::= 'gtxn'
+TXNA_OPCODE ::= 'txna'
+GTXNA_OPCODE ::= 'gtxna';
 
 txnLoadingOperation ::= TXN_OPCODE (NUMBER | TxnFieldArg | VAR_TMPL) {pin=1}
 gtxnLoadingOperation ::= GTXN_OPCODE (NUMBER | VAR_TMPL) (NUMBER | TxnFieldArg | VAR_TMPL) {pin=1}
@@ -210,7 +210,7 @@ gtxnaLoadingOperation ::= GTXNA_OPCODE (NUMBER | VAR_TMPL) (NUMBER | TxnFieldArg
 argOperation ::= 'arg' (NUMBER | VAR_TMPL) {pin=1}
 
 
-private TxnFieldArg ::= 'Sender'| 'Fee'| 'FirstValid'| 'FirstValidTime'| 'LastValid'| 'Note'| 'Lease'| 'Receiver'| 'Amount'
+TxnFieldArg ::= 'Sender'| 'Fee'| 'FirstValid'| 'FirstValidTime'| 'LastValid'| 'Note'| 'Lease'| 'Receiver'| 'Amount'
                        | 'CloseRemainderTo'|'VotePK'|'SelectionPK'|'VoteFirst'|'VoteLast'|'VoteKeyDilution'|'Type'
                        | 'TypeEnum'|'XferAsset'|'AssetAmount'|'AssetSender'|'AssetReceiver'|'AssetCloseTo'|'GroupIndex'
                        | 'TxID'|'ApplicationID'|'OnCompletion'|'ApplicationArgs'|'NumAppArgs'|'Accounts'|'NumAccounts'
