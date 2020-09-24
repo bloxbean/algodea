@@ -5,12 +5,6 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface TEALLoadOperation extends PsiElement {
-
-  @Nullable
-  TEALUnsignedInteger getUnsignedInteger();
-
-  @Nullable
-  PsiElement getVarTmpl();
+public interface TEALGtxnaOpcode extends PsiElement {
 
 }

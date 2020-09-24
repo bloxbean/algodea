@@ -25,6 +25,7 @@ package com.bloxbean.algorand.idea.language.completion.metadata.atoms;
 import com.bloxbean.algorand.idea.language.completion.metadata.elements.TEALFieldElement;
 import com.bloxbean.algorand.idea.language.completion.metadata.elements.TEALKeywordElement;
 import com.bloxbean.algorand.idea.language.opcode.TEALOpCodeFactory;
+import com.bloxbean.algorand.idea.language.opcode.model.Field;
 import com.google.common.collect.Sets;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.psi.tree.IElementType;
@@ -32,6 +33,7 @@ import com.intellij.psi.tree.IElementType;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.bloxbean.algorand.idea.language.psi.TEALTypes.*;
 
@@ -122,6 +124,12 @@ public final class TEALKeywords {
             .map(TEALFieldElement::getLookupElement)
             .collect(Collectors.toList());
 
+    public static final List<TEALFieldElement> TXNARGS_LOOKUP_ELEMENTS_STREAM = TEALOpCodeFactory.getInstance()
+            .getFields(TXN_FIELDS)
+            .stream()
+            .map(f -> new TEALFieldElement(f))
+            .collect(Collectors.toList());
+
     public static final List<LookupElement> TYPE_ENUM_MAPPING_ELEMENTS = TEALOpCodeFactory.getInstance()
             .getFields(TYPE_ENUM_MAPPING)
             .stream()
@@ -149,4 +157,5 @@ public final class TEALKeywords {
             .map(f -> new TEALFieldElement(f))
             .map(TEALFieldElement::getLookupElement)
             .collect(Collectors.toList());
+
 }

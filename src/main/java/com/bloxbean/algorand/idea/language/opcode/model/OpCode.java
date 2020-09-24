@@ -38,6 +38,7 @@ public class OpCode {
     Map<String, String> metadata;
     String mode;
     String additionalDesc;
+    ParamType[] params;
     Cost[] costs;
 
     public OpCode() {
@@ -114,6 +115,14 @@ public class OpCode {
 
     public void setAdditionalDesc(String additionalDesc) {
         this.additionalDesc = additionalDesc;
+    }
+
+    public ParamType[] getParams() {
+        return params;
+    }
+
+    public void setParams(ParamType[] params) {
+        this.params = params;
     }
 
     public Cost[] getCosts() {

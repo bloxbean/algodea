@@ -34,7 +34,6 @@ public class TEALSyntaxHighlighterFactory extends SyntaxHighlighterFactory {
     @NotNull
     @Override
     public SyntaxHighlighter getSyntaxHighlighter(Project project, VirtualFile virtualFile) {
-        System.out.println("Get syntax highlighter......");
         return new TEALSyntaxHighlighter();
     }
 

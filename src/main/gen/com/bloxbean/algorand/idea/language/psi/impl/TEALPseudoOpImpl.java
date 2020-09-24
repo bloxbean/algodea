@@ -40,6 +40,12 @@ public class TEALPseudoOpImpl extends ASTWrapperPsiElement implements TEALPseudo
 
   @Override
   @Nullable
+  public TEALUnsignedInteger getUnsignedInteger() {
+    return findChildByClass(TEALUnsignedInteger.class);
+  }
+
+  @Override
+  @Nullable
   public PsiElement getHex() {
     return findChildByType(HEX);
   }
@@ -48,12 +54,6 @@ public class TEALPseudoOpImpl extends ASTWrapperPsiElement implements TEALPseudo
   @Nullable
   public PsiElement getNamedIntegerConstant() {
     return findChildByType(NAMED_INTEGER_CONSTANT);
-  }
-
-  @Override
-  @Nullable
-  public PsiElement getNumber() {
-    return findChildByType(NUMBER);
   }
 
   @Override

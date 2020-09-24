@@ -11,10 +11,10 @@ public interface TEALAssetParamsGetOperation extends PsiElement {
   TEALAssetParamsGetOp getAssetParamsGetOp();
 
   @Nullable
-  PsiElement getAssetParamsGetField();
+  TEALUnsignedInteger getUnsignedInteger();
 
   @Nullable
-  PsiElement getNumber();
+  PsiElement getAssetParamsGetField();
 
   @Nullable
   PsiElement getVarTmpl();

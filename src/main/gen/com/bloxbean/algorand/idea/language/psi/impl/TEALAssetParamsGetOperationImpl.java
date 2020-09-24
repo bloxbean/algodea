@@ -34,14 +34,14 @@ public class TEALAssetParamsGetOperationImpl extends ASTWrapperPsiElement implem
 
   @Override
   @Nullable
-  public PsiElement getAssetParamsGetField() {
-    return findChildByType(ASSET_PARAMS_GET_FIELD);
+  public TEALUnsignedInteger getUnsignedInteger() {
+    return findChildByClass(TEALUnsignedInteger.class);
   }
 
   @Override
   @Nullable
-  public PsiElement getNumber() {
-    return findChildByType(NUMBER);
+  public PsiElement getAssetParamsGetField() {
+    return findChildByType(ASSET_PARAMS_GET_FIELD);
   }
 
   @Override

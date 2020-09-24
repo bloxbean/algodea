@@ -22,15 +22,19 @@
 
 package com.bloxbean.algorand.idea.language.completion;
 
-import com.bloxbean.algorand.idea.language.completion.providers.GlobalFieldsCompletionProvider;
-import com.bloxbean.algorand.idea.language.completion.providers.KeywordCompletionProvider;
-import com.bloxbean.algorand.idea.language.completion.providers.TxnArgCompletionProvider;
+import com.bloxbean.algorand.idea.language.completion.providers.*;
 import com.intellij.codeInsight.completion.CompletionContributor;
 import com.intellij.codeInsight.completion.CompletionType;
 
 public class TEALCompletionContributor extends CompletionContributor {
 
     public TEALCompletionContributor() {
+        //byte
+        extend(CompletionType.BASIC,
+                ByteCompletionProvider.PATTERN,
+                new ByteCompletionProvider());
+
+        //opcode
         extend(CompletionType.BASIC,
                 KeywordCompletionProvider.PATTERN,
                 new KeywordCompletionProvider());
@@ -45,9 +49,30 @@ public class TEALCompletionContributor extends CompletionContributor {
         extend(CompletionType.BASIC,
                 TxnArgCompletionProvider.PATTERN,
                 new TxnArgCompletionProvider());
+
         extend(CompletionType.BASIC,
                 GlobalFieldsCompletionProvider.PATTERN,
                 new GlobalFieldsCompletionProvider());
+
+        //Gtxn, Gtxna
+        extend(CompletionType.BASIC,
+                GTxnArgCompletionProvider.FIRSTARG_PATTERN,
+                new GTxnArgCompletionProvider());
+        extend(CompletionType.BASIC,
+                GTxnArgCompletionProvider.SECONDARG_PATTERN,
+                new GTxnArgCompletionProvider());
+
+        //asset_holding_get
+        extend(CompletionType.BASIC,
+                AssetHoldingGetCompletionProvider.PATTERN,
+                new AssetHoldingGetCompletionProvider());
+
+        //asset_params_get
+        extend(CompletionType.BASIC,
+                AssetParamsGetCompletionProvider.PATTERN,
+                new AssetParamsGetCompletionProvider());
+
+
     }
 
 }

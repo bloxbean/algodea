@@ -14,13 +14,13 @@ public interface TEALPseudoOp extends PsiElement {
   TEALByteStatement getByteStatement();
 
   @Nullable
+  TEALUnsignedInteger getUnsignedInteger();
+
+  @Nullable
   PsiElement getHex();
 
   @Nullable
   PsiElement getNamedIntegerConstant();
-
-  @Nullable
-  PsiElement getNumber();
 
   @Nullable
   PsiElement getOctal();

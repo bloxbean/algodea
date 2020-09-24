@@ -11,37 +11,19 @@ import static com.bloxbean.algorand.idea.language.psi.TEALTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.bloxbean.algorand.idea.language.psi.*;
 
-public class TEALGtxnaLoadingOperationImpl extends ASTWrapperPsiElement implements TEALGtxnaLoadingOperation {
+public class TEALTxnaOpcodeImpl extends ASTWrapperPsiElement implements TEALTxnaOpcode {
 
-  public TEALGtxnaLoadingOperationImpl(@NotNull ASTNode node) {
+  public TEALTxnaOpcodeImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull TEALVisitor visitor) {
-    visitor.visitGtxnaLoadingOperation(this);
+    visitor.visitTxnaOpcode(this);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof TEALVisitor) accept((TEALVisitor)visitor);
     else super.accept(visitor);
-  }
-
-  @Override
-  @NotNull
-  public TEALGtxnaOpcode getGtxnaOpcode() {
-    return findNotNullChildByClass(TEALGtxnaOpcode.class);
-  }
-
-  @Override
-  @Nullable
-  public TEALTxnFieldArg getTxnFieldArg() {
-    return findChildByClass(TEALTxnFieldArg.class);
-  }
-
-  @Override
-  @NotNull
-  public List<TEALUnsignedInteger> getUnsignedIntegerList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, TEALUnsignedInteger.class);
   }
 
 }

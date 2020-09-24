@@ -26,4 +26,22 @@ public class TEALTxnaLoadingOperationImpl extends ASTWrapperPsiElement implement
     else super.accept(visitor);
   }
 
+  @Override
+  @NotNull
+  public TEALTxnaOpcode getTxnaOpcode() {
+    return findNotNullChildByClass(TEALTxnaOpcode.class);
+  }
+
+  @Override
+  @Nullable
+  public TEALTxnFieldArg getTxnFieldArg() {
+    return findChildByClass(TEALTxnFieldArg.class);
+  }
+
+  @Override
+  @NotNull
+  public List<TEALUnsignedInteger> getUnsignedIntegerList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, TEALUnsignedInteger.class);
+  }
+
 }

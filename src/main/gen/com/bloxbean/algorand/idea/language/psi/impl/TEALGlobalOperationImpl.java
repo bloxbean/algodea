@@ -34,14 +34,14 @@ public class TEALGlobalOperationImpl extends ASTWrapperPsiElement implements TEA
 
   @Override
   @Nullable
-  public PsiElement getGlobalField() {
-    return findChildByType(GLOBAL_FIELD);
+  public TEALUnsignedInteger getUnsignedInteger() {
+    return findChildByClass(TEALUnsignedInteger.class);
   }
 
   @Override
   @Nullable
-  public PsiElement getNumber() {
-    return findChildByType(NUMBER);
+  public PsiElement getGlobalField() {
+    return findChildByType(GLOBAL_FIELD);
   }
 
   @Override

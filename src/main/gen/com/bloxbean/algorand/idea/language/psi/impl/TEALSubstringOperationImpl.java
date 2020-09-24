@@ -26,4 +26,10 @@ public class TEALSubstringOperationImpl extends ASTWrapperPsiElement implements 
     else super.accept(visitor);
   }
 
+  @Override
+  @NotNull
+  public List<TEALUnsignedInteger> getUnsignedIntegerList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, TEALUnsignedInteger.class);
+  }
+
 }

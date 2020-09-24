@@ -28,8 +28,8 @@ public class TEALIntcOperationImpl extends ASTWrapperPsiElement implements TEALI
 
   @Override
   @Nullable
-  public PsiElement getNumber() {
-    return findChildByType(NUMBER);
+  public TEALUnsignedInteger getUnsignedInteger() {
+    return findChildByClass(TEALUnsignedInteger.class);
   }
 
   @Override

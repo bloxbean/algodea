@@ -31,7 +31,7 @@
 //        l_identifier="regexp:[a-zA-Z_][a-zA-Z_$0-9]*"
 //        l_identifier_text="regexp:\`[^`]+\`"
 //        l_decimal="regexp:(0|[1-9][0-9]*)\.[0-9]+"
-//        l_integer="regexp:0|[1-9][0-9]*"
+        l_integer="regexp:0|[1-9][0-9]*"
         l_string="regexp:('([^'\\]|\\.)*'|\"([^\"\\]|\\.)*\")"
 
     LOADING_OP = "regexp:(intcblock|intc|intc_0|intc_1|intc_2|intc_3|bytecblock|bytec|bytec_0|bytec_1|bytec_2|bytec_3|arg|arg_0|arg_1|arg_2|arg_3|global|load|store)"
@@ -98,7 +98,7 @@
 
     OCTAL ='regexp:(0)[0-9]+'
 
-    NUMBER ='regexp:\d+(\.\d*)?'
+//    NUMBER ='regexp:\d+(\.\d*)?'
 
     HEX ='regexp:(0x|0X)[a-fA-F0-9]*'
 
@@ -118,7 +118,7 @@ tealFile ::= program
 program ::= [pragma NL*] statement*
 
 pragma ::= "#pragma" VERSION pragma_version {pin=1 recoverWhile=statement_recover}
-pragma_version ::= NUMBER
+pragma_version ::= unsignedInteger
 statement ::= COMMENT
                     | LoadingOperation
                     | FlowControlOperation
@@ -146,7 +146,7 @@ private statement_recover ::= !(
 branch ::= ID COLON
 
 pseudo_op ::= int_statement | byte_statement | addr_statement
-private int_statement ::= INT (HEX | OCTAL | NUMBER | NAMED_INTEGER_CONSTANT | TYPENUM_CONSTANT | VAR_TMPL) {pin=1}
+private int_statement ::= INT (HEX | OCTAL | unsignedInteger | NAMED_INTEGER_CONSTANT | TYPENUM_CONSTANT | VAR_TMPL) {pin=1}
 
 //TODO No strict check for byte pseudo opcode for now
 private byte_base64_encoding_type ::=  'base64' | 'b64'
@@ -189,25 +189,25 @@ LoadingOperation ::=  'intcblock'
                                   | txnaLoadingOperation
                                   | gtxnaLoadingOperation {pin=1}
 
-intcOperation ::= 'intc' (NUMBER | VAR_TMPL) {pin=1}
-bytecOperation ::= 'bytec' (NUMBER | VAR_TMPL) {pin=1}
+intcOperation ::= 'intc' (unsignedInteger | VAR_TMPL) {pin=1}
+bytecOperation ::= 'bytec' (unsignedInteger | VAR_TMPL) {pin=1}
 globalOpCode ::= 'global'
-globalOperation ::= globalOpCode (NUMBER | GLOBAL_FIELD | VAR_TMPL) {pin=1}
-loadOperation ::= 'load' (NUMBER | VAR_TMPL) {pin=1}
-storeOperation ::= 'store' (NUMBER | VAR_TMPL) {pin=1}
+globalOperation ::= globalOpCode (unsignedInteger | GLOBAL_FIELD | VAR_TMPL) {pin=1}
+loadOperation ::= 'load' (unsignedInteger | VAR_TMPL) {pin=1}
+storeOperation ::= 'store' (unsignedInteger | VAR_TMPL) {pin=1}
 
 TXN_OPCODE ::= 'txn'
 GTXN_OPCODE ::= 'gtxn'
 TXNA_OPCODE ::= 'txna'
 GTXNA_OPCODE ::= 'gtxna';
 
-txnLoadingOperation ::= TXN_OPCODE (NUMBER | TxnFieldArg | VAR_TMPL) {pin=1}
-gtxnLoadingOperation ::= GTXN_OPCODE (NUMBER | VAR_TMPL) (NUMBER | TxnFieldArg | VAR_TMPL) {pin=1}
+txnLoadingOperation ::= TXN_OPCODE (unsignedInteger | TxnFieldArg | VAR_TMPL) {pin=1}
+gtxnLoadingOperation ::= GTXN_OPCODE (unsignedInteger | VAR_TMPL) (unsignedInteger | TxnFieldArg | VAR_TMPL) {pin=1}
 
-txnaLoadingOperation ::= TXNA_OPCODE (NUMBER | TxnFieldArg | VAR_TMPL) (NUMBER | VAR_TMPL) {pin=1}
-gtxnaLoadingOperation ::= GTXNA_OPCODE (NUMBER | VAR_TMPL) (NUMBER | TxnFieldArg | VAR_TMPL) (NUMBER | VAR_TMPL) {pin=1}
+txnaLoadingOperation ::= TXNA_OPCODE (unsignedInteger | TxnFieldArg | VAR_TMPL) (unsignedInteger | VAR_TMPL) {pin=1}
+gtxnaLoadingOperation ::= GTXNA_OPCODE (unsignedInteger | VAR_TMPL) (unsignedInteger | TxnFieldArg | VAR_TMPL) (unsignedInteger | VAR_TMPL) {pin=1}
 
-argOperation ::= 'arg' (NUMBER | VAR_TMPL) {pin=1}
+argOperation ::= 'arg' (unsignedInteger | VAR_TMPL) {pin=1}
 
 
 TxnFieldArg ::= 'Sender'| 'Fee'| 'FirstValid'| 'FirstValidTime'| 'LastValid'| 'Note'| 'Lease'| 'Receiver'| 'Amount'
@@ -250,7 +250,7 @@ GeneralOperation                   ::= SHA256
                                      | substringOperation
                                      | SUBSTRING3
 
-substringOperation ::= SUBSTRING (NUMBER | VAR_TMPL) (NUMBER | VAR_TMPL) {pin=1}
+substringOperation ::= SUBSTRING (unsignedInteger | VAR_TMPL) (unsignedInteger | VAR_TMPL) {pin=1}
 
 FlowControlOperation ::= 'err' | 'return' | 'pop' | 'dup' | 'dup2'
                                 | branchOperation {pin=1}
@@ -263,7 +263,9 @@ StateAccessOperation ::=  'balance' | 'app_opted_in' | 'app_local_get'| 'app_loc
                             | assetHoldingGetOperation
                             | assetParamsGetOperation
 
-assetHoldingGetOperation ::= assetHoldingGetOP (NUMBER | ASSET_HOLDING_GET_FIELD | VAR_TMPL) {pin=1}
-assetParamsGetOperation ::=  assetParamsGetOp (NUMBER | ASSET_PARAMS_GET_FIELD | VAR_TMPL) {pin=1}
+assetHoldingGetOperation ::= assetHoldingGetOP (unsignedInteger | ASSET_HOLDING_GET_FIELD | VAR_TMPL) {pin=1}
+assetParamsGetOperation ::=  assetParamsGetOp (unsignedInteger | ASSET_PARAMS_GET_FIELD | VAR_TMPL) {pin=1}
 assetHoldingGetOP    ::= 'asset_holding_get'
 assetParamsGetOp     ::= 'asset_params_get'
+
+unsignedInteger ::= l_integer {name="uint8"}

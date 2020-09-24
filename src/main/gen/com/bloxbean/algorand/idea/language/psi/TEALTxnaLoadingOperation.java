@@ -7,4 +7,13 @@ import com.intellij.psi.PsiElement;
 
 public interface TEALTxnaLoadingOperation extends PsiElement {
 
+  @NotNull
+  TEALTxnaOpcode getTxnaOpcode();
+
+  @Nullable
+  TEALTxnFieldArg getTxnFieldArg();
+
+  @NotNull
+  List<TEALUnsignedInteger> getUnsignedIntegerList();
+
 }

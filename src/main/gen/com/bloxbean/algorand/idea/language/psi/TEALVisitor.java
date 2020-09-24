@@ -11,6 +11,14 @@ public class TEALVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitGtxnaOpcode(@NotNull TEALGtxnaOpcode o) {
+    visitPsiElement(o);
+  }
+
+  public void visitGtxnOpcode(@NotNull TEALGtxnOpcode o) {
+    visitPsiElement(o);
+  }
+
   public void visitGeneralOperation(@NotNull TEALGeneralOperation o) {
     visitPsiElement(o);
   }
@@ -20,6 +28,18 @@ public class TEALVisitor extends PsiElementVisitor {
   }
 
   public void visitStateAccessOperation(@NotNull TEALStateAccessOperation o) {
+    visitPsiElement(o);
+  }
+
+  public void visitTxnaOpcode(@NotNull TEALTxnaOpcode o) {
+    visitPsiElement(o);
+  }
+
+  public void visitTxnOpcode(@NotNull TEALTxnOpcode o) {
+    visitPsiElement(o);
+  }
+
+  public void visitTxnFieldArg(@NotNull TEALTxnFieldArg o) {
     visitPsiElement(o);
   }
 
@@ -124,6 +144,10 @@ public class TEALVisitor extends PsiElementVisitor {
   }
 
   public void visitTxnaLoadingOperation(@NotNull TEALTxnaLoadingOperation o) {
+    visitPsiElement(o);
+  }
+
+  public void visitUnsignedInteger(@NotNull TEALUnsignedInteger o) {
     visitPsiElement(o);
   }
 

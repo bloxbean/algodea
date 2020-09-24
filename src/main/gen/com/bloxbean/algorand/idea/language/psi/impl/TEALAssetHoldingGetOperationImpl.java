@@ -34,14 +34,14 @@ public class TEALAssetHoldingGetOperationImpl extends ASTWrapperPsiElement imple
 
   @Override
   @Nullable
-  public PsiElement getAssetHoldingGetField() {
-    return findChildByType(ASSET_HOLDING_GET_FIELD);
+  public TEALUnsignedInteger getUnsignedInteger() {
+    return findChildByClass(TEALUnsignedInteger.class);
   }
 
   @Override
   @Nullable
-  public PsiElement getNumber() {
-    return findChildByType(NUMBER);
+  public PsiElement getAssetHoldingGetField() {
+    return findChildByType(ASSET_HOLDING_GET_FIELD);
   }
 
   @Override

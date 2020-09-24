@@ -28,8 +28,8 @@ public class TEALPragmaVersionImpl extends ASTWrapperPsiElement implements TEALP
 
   @Override
   @NotNull
-  public PsiElement getNumber() {
-    return findNotNullChildByType(NUMBER);
+  public TEALUnsignedInteger getUnsignedInteger() {
+    return findNotNullChildByClass(TEALUnsignedInteger.class);
   }
 
 }

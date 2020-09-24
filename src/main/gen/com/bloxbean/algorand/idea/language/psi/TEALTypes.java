@@ -24,7 +24,9 @@ public interface TEALTypes {
   IElementType GLOBAL_OPERATION = new TEALElementType("GLOBAL_OPERATION");
   IElementType GLOBAL_OP_CODE = new TEALElementType("GLOBAL_OP_CODE");
   IElementType GTXNA_LOADING_OPERATION = new TEALElementType("GTXNA_LOADING_OPERATION");
+  IElementType GTXNA_OPCODE = new TEALElementType("GTXNA_OPCODE");
   IElementType GTXN_LOADING_OPERATION = new TEALElementType("GTXN_LOADING_OPERATION");
+  IElementType GTXN_OPCODE = new TEALElementType("GTXN_OPCODE");
   IElementType INTC_OPERATION = new TEALElementType("INTC_OPERATION");
   IElementType LOADING_OPERATION = new TEALElementType("LOADING_OPERATION");
   IElementType LOAD_OPERATION = new TEALElementType("LOAD_OPERATION");
@@ -37,7 +39,11 @@ public interface TEALTypes {
   IElementType STORE_OPERATION = new TEALElementType("STORE_OPERATION");
   IElementType SUBSTRING_OPERATION = new TEALElementType("SUBSTRING_OPERATION");
   IElementType TXNA_LOADING_OPERATION = new TEALElementType("TXNA_LOADING_OPERATION");
+  IElementType TXNA_OPCODE = new TEALElementType("TXNA_OPCODE");
+  IElementType TXN_FIELD_ARG = new TEALElementType("TXN_FIELD_ARG");
   IElementType TXN_LOADING_OPERATION = new TEALElementType("TXN_LOADING_OPERATION");
+  IElementType TXN_OPCODE = new TEALElementType("TXN_OPCODE");
+  IElementType UNSIGNED_INTEGER = new TEALElementType("UNSIGNED_INTEGER");
 
   IElementType ADDR = new TEALTokenType("addr");
   IElementType ADDW = new TEALTokenType("addw");
@@ -74,6 +80,7 @@ public interface TEALTypes {
   IElementType LOGICAL_EQUAL = new TEALTokenType("==");
   IElementType LOGICAL_NOTEQUAL = new TEALTokenType("!=");
   IElementType LOGICAL_OR = new TEALTokenType("||");
+  IElementType L_INTEGER = new TEALTokenType("l_integer");
   IElementType L_STRING = new TEALTokenType("l_string");
   IElementType MINUS = new TEALTokenType("-");
   IElementType MODULO = new TEALTokenType("%");
@@ -81,7 +88,6 @@ public interface TEALTypes {
   IElementType NAMED_INTEGER_CONSTANT = new TEALTokenType("NAMED_INTEGER_CONSTANT");
   IElementType NL = new TEALTokenType("NL");
   IElementType NOT = new TEALTokenType("!");
-  IElementType NUMBER = new TEALTokenType("NUMBER");
   IElementType OCTAL = new TEALTokenType("OCTAL");
   IElementType PLUS = new TEALTokenType("+");
   IElementType SHA256 = new TEALTokenType("sha256");
@@ -146,8 +152,14 @@ public interface TEALTypes {
       else if (type == GTXNA_LOADING_OPERATION) {
         return new TEALGtxnaLoadingOperationImpl(node);
       }
+      else if (type == GTXNA_OPCODE) {
+        return new TEALGtxnaOpcodeImpl(node);
+      }
       else if (type == GTXN_LOADING_OPERATION) {
         return new TEALGtxnLoadingOperationImpl(node);
+      }
+      else if (type == GTXN_OPCODE) {
+        return new TEALGtxnOpcodeImpl(node);
       }
       else if (type == INTC_OPERATION) {
         return new TEALIntcOperationImpl(node);
@@ -185,8 +197,20 @@ public interface TEALTypes {
       else if (type == TXNA_LOADING_OPERATION) {
         return new TEALTxnaLoadingOperationImpl(node);
       }
+      else if (type == TXNA_OPCODE) {
+        return new TEALTxnaOpcodeImpl(node);
+      }
+      else if (type == TXN_FIELD_ARG) {
+        return new TEALTxnFieldArgImpl(node);
+      }
       else if (type == TXN_LOADING_OPERATION) {
         return new TEALTxnLoadingOperationImpl(node);
+      }
+      else if (type == TXN_OPCODE) {
+        return new TEALTxnOpcodeImpl(node);
+      }
+      else if (type == UNSIGNED_INTEGER) {
+        return new TEALUnsignedIntegerImpl(node);
       }
       throw new AssertionError("Unknown element type: " + type);
     }

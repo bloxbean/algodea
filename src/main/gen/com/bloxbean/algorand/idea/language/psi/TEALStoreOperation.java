@@ -8,7 +8,7 @@ import com.intellij.psi.PsiElement;
 public interface TEALStoreOperation extends PsiElement {
 
   @Nullable
-  PsiElement getNumber();
+  TEALUnsignedInteger getUnsignedInteger();
 
   @Nullable
   PsiElement getVarTmpl();

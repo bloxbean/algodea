@@ -438,6 +438,7 @@
       "desc": "push value from uint64 constants to stack by index into constants",
       "error": "",
       "additionalDesc": "",
+      "params": ["uint8"],
       "costs": [
         {
           "cost": 1,
@@ -528,6 +529,7 @@
       "desc": "push bytes constant to stack by index into constants",
       "error": "",
       "additionalDesc": "",
+      "params": ["uint8"],
       "costs": [
         {
           "cost": 1,
@@ -604,6 +606,7 @@
       "error": "",
       "additionalDesc": "",
       "mode": "Signature",
+      "params": ["uint8"],
       "costs": [
         {
           "cost": 1,
@@ -683,6 +686,7 @@
       "desc": "push field from current transaction to stack",
       "error": "",
       "additionalDesc": "",
+      "params": ["txn_fields"],
       "costs": [
         {
           "cost": 1,
@@ -698,6 +702,7 @@
       "desc": "push value from globals to stack",
       "error": "",
       "additionalDesc": "",
+      "params": ["global_fields"],
       "costs": [
         {
           "cost": 1,
@@ -713,6 +718,7 @@
       "desc": "push field to the stack from a transaction in the current transaction group",
       "error": "",
       "additionalDesc": "for notes on transaction fields available, see <code>txn</code>. If this transaction is <em>i</em> in the group, <code>gtxn i field</code> is equivalent to <code>txn field</code>.",
+      "params": ["uint8", "txn_fields"],
       "costs": [
         {
           "cost": 1,
@@ -728,6 +734,7 @@
       "desc": "copy a value from scratch space to the stack",
       "error": "",
       "additionalDesc": "",
+      "params": ["uint8"],
       "costs": [
         {
           "cost": 1,
@@ -743,6 +750,7 @@
       "desc": "pop a value from the stack and store to scratch space",
       "error": "",
       "additionalDesc": "",
+      "params": ["uint8"],
       "costs": [
         {
           "cost": 1,
@@ -758,6 +766,7 @@
       "desc": "push value of an array field from current transaction to stack",
       "error": "",
       "additionalDesc": "",
+      "params": ["txn_fields", "uint8"],
       "metadata": {
         "LogicSigVersion": ">=2"
       },
@@ -776,6 +785,7 @@
       "desc": "push value of a field to the stack from a transaction in the current transaction group",
       "error": "",
       "additionalDesc": "",
+      "params": ["uint8", "txn_fields", "uint8"],
       "metadata": {
         "LogicSigVersion": ">=2"
       },
@@ -794,6 +804,7 @@
       "desc": "branch if value X is not zero",
       "error": "",
       "additionalDesc": "The <code>bnz</code> instruction opcode 0x40 is followed by two immediate data bytes which are a high byte first and low byte second which together form a 16 bit offset which the instruction may branch to. For a bnz instruction at <code>pc</code>, if the last element of the stack is not zero then branch to instruction at <code>pc + 3 + N</code>, else proceed to next instruction at <code>pc + 3</code>. Branch targets must be well aligned instructions. (e.g. Branching to the second byte of a 2 byte op will be rejected.) Branch offsets are currently limited to forward branches only, 0-0x7fff. A future expansion might make this a signed 16 bit integer allowing for backward branches and looping.</p>\n<p>At LogicSigVersion 2 it became allowed to branch to the end of the program exactly after the last instruction: bnz to byte N (with 0-indexing) was illegal for a TEAL program with N bytes before LogicSigVersion 2, and is legal after it. This change eliminates the need for a last instruction of no-op as a branch target at the end. (Branching beyond the end--in other words, to a byte larger than N--is still illegal and will cause the program to fail.)",
+      "params": ["string"],
       "costs": [
         {
           "cost": 1,
@@ -809,6 +820,7 @@
       "desc": "branch if value X is zero",
       "error": "",
       "additionalDesc": "See <code>bnz</code> for details on how branches work. <code>bz</code> inverts the behavior of <code>bnz</code>.",
+      "params": ["string"],
       "metadata": {
         "LogicSigVersion": ">=2"
       },
@@ -830,6 +842,7 @@
       },
       "error": "",
       "additionalDesc": "See <code>bnz</code> for details on how branches work. <code>b</code> always jumps to the offset.",
+      "params": ["string"],
       "costs": [
         {
           "cost": 1,
@@ -929,6 +942,7 @@
       "desc": "pop a byte string X. For immediate values in 0..255 M and N: extract a range of bytes from it starting at M up to but not including N, push the substring result. If N &lt; M, or either is larger than the string length, the program fails",
       "error": "",
       "additionalDesc": "",
+      "params": ["uint8", "uint8"],
       "metadata": {
         "LogicSigVersion": ">=2"
       },
@@ -1159,6 +1173,7 @@
       },
       "mode": "Application",
       "additionalDesc": "params: account index, asset id. Return: did_exist flag (1 if exist and 0 otherwise), value.",
+      "params": ["asset_holding_get_fields"],
       "costs": [
         {
           "cost": 1,
@@ -1178,6 +1193,7 @@
       },
       "mode": "Application",
       "additionalDesc": "params: txn.ForeignAssets offset. Return: did_exist flag (1 if exist and 0 otherwise), value.",
+      "params": ["asset_params_get_fields"],
       "costs": [
         {
           "cost": 1,

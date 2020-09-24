@@ -11,10 +11,10 @@ public interface TEALGlobalOperation extends PsiElement {
   TEALGlobalOpCode getGlobalOpCode();
 
   @Nullable
-  PsiElement getGlobalField();
+  TEALUnsignedInteger getUnsignedInteger();
 
   @Nullable
-  PsiElement getNumber();
+  PsiElement getGlobalField();
 
   @Nullable
   PsiElement getVarTmpl();

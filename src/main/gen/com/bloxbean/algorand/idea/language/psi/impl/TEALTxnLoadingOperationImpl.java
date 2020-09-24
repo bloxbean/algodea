@@ -27,9 +27,21 @@ public class TEALTxnLoadingOperationImpl extends ASTWrapperPsiElement implements
   }
 
   @Override
+  @NotNull
+  public TEALTxnOpcode getTxnOpcode() {
+    return findNotNullChildByClass(TEALTxnOpcode.class);
+  }
+
+  @Override
   @Nullable
-  public PsiElement getNumber() {
-    return findChildByType(NUMBER);
+  public TEALTxnFieldArg getTxnFieldArg() {
+    return findChildByClass(TEALTxnFieldArg.class);
+  }
+
+  @Override
+  @Nullable
+  public TEALUnsignedInteger getUnsignedInteger() {
+    return findChildByClass(TEALUnsignedInteger.class);
   }
 
   @Override

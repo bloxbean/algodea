@@ -29,6 +29,7 @@ NL=\r\n
 EOF=\Z
 SPACE=[ \t\n\x0B\f\r]+
 COMMENT="//".*
+L_INTEGER=0|[1-9][0-9]*
 L_STRING=('([^'\\]|\\.)*'|\"([^\"\\]|\\.)*\")
 LOADING_OP=(intcblock|intc|intc_0|intc_1|intc_2|intc_3|bytecblock|bytec|bytec_0|bytec_1|bytec_2|bytec_3|arg|arg_0|arg_1|arg_2|arg_3|global|load|store)
 FLOWCONTROL_OP=(err|return|pop|dup|dup2|bnz|bz|b)
@@ -40,7 +41,6 @@ GLOBAL_FIELD=(MinTxnFee|MinBalance|MaxTxnLife|ZeroAddress|GroupSize|LogicSigVers
 ASSET_HOLDING_GET_FIELD=(AssetBalance|AssetFrozen)
 ASSET_PARAMS_GET_FIELD=(AssetTotal|AssetDecimals|AssetDefaultFrozen|AssetUnitName|AssetName|AssetURL|AssetMetadataHash|AssetManager|AssetReserve|AssetFreeze|AssetClawback)
 OCTAL=(0)[0-9]+
-NUMBER=[0-9]+(\.[0-9]*)?
 HEX=(0x|0X)[a-fA-F0-9]*
 VAR_TMPL=(VAR_TMPL_)([a-zA-Z0-9_$.#@~?]+)
 ID=([a-zA-Z_?]+[a-zA-Z0-9_$.#@~?]*)
@@ -91,6 +91,7 @@ BASE64=[-A-Za-z0-9+=]{1,50}|=[^=]|={3}
   {EOF}                          { return EOF; }
   {SPACE}                        { return SPACE; }
   {COMMENT}                      { return COMMENT; }
+  {L_INTEGER}                    { return L_INTEGER; }
   {L_STRING}                     { return L_STRING; }
   {LOADING_OP}                   { return LOADING_OP; }
   {FLOWCONTROL_OP}               { return FLOWCONTROL_OP; }
@@ -102,7 +103,6 @@ BASE64=[-A-Za-z0-9+=]{1,50}|=[^=]|={3}
   {ASSET_HOLDING_GET_FIELD}      { return ASSET_HOLDING_GET_FIELD; }
   {ASSET_PARAMS_GET_FIELD}       { return ASSET_PARAMS_GET_FIELD; }
   {OCTAL}                        { return OCTAL; }
-  {NUMBER}                       { return NUMBER; }
   {HEX}                          { return HEX; }
   {VAR_TMPL}                     { return VAR_TMPL; }
   {ID}                           { return ID; }

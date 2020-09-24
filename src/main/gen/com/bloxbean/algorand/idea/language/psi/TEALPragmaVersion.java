@@ -8,6 +8,6 @@ import com.intellij.psi.PsiElement;
 public interface TEALPragmaVersion extends PsiElement {
 
   @NotNull
-  PsiElement getNumber();
+  TEALUnsignedInteger getUnsignedInteger();
 
 }

@@ -11,10 +11,10 @@ public interface TEALAssetHoldingGetOperation extends PsiElement {
   TEALAssetHoldingGetOP getAssetHoldingGetOP();
 
   @Nullable
-  PsiElement getAssetHoldingGetField();
+  TEALUnsignedInteger getUnsignedInteger();
 
   @Nullable
-  PsiElement getNumber();
+  PsiElement getAssetHoldingGetField();
 
   @Nullable
   PsiElement getVarTmpl();

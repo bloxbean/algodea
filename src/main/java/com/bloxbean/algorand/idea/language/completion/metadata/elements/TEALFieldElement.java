@@ -53,4 +53,34 @@ public class TEALFieldElement implements TEALElement {
                 .withTypeText(field.getType());
 
     }
+
+    public LookupElement getCompositeLookupElement(String prefix, String suffix) {
+
+        if(field == null)
+            return null;
+
+        if(LOG.isDebugEnabled()) {
+            if (field.getName() == null) {
+                LOG.error("Field.getName() cannot be null" + field);
+            }
+        }
+
+        StringBuilder sb = new StringBuilder();
+
+        if(prefix != null) {
+            sb.append(prefix)
+                    .append(" ");
+        }
+
+        sb.append(field.getName());
+
+        if(suffix != null)
+            sb.append(" ")
+                .append(suffix);
+
+        return LookupElementBuilder
+                .create(sb.toString())
+                .withIcon(AlgoIcons.FIELD_ICON);
+
+    }
 }

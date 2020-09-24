@@ -7,4 +7,7 @@ import com.intellij.psi.PsiElement;
 
 public interface TEALSubstringOperation extends PsiElement {
 
+  @NotNull
+  List<TEALUnsignedInteger> getUnsignedIntegerList();
+
 }

@@ -68,14 +68,12 @@ public class TEALDocumentationProvider extends AbstractDocumentationProvider  {
     @Nullable
     @Override
     public String getQuickNavigateInfo(PsiElement element, PsiElement originalElement) {
-        System.out.println("Inside get Quick navigateInfo....");
         return super.getQuickNavigateInfo(element, originalElement);
     }
 
     @Nullable
     @Override
     public String generateDoc(PsiElement element, @Nullable PsiElement originalElement) {
-        System.out.println("Inside generate doc...." );
         Optional<String> opcodeDocumentation = loadingOpcodeDocumentation(element);
         if (opcodeDocumentation.isPresent()) {
             return opcodeDocumentation.get();

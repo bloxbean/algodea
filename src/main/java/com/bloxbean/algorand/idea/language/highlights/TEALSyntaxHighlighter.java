@@ -131,7 +131,6 @@ public class TEALSyntaxHighlighter extends SyntaxHighlighterBase {
     @NotNull
     @Override
     public TextAttributesKey[] getTokenHighlights(IElementType tokenType) {
-        System.out.println("*** " + tokenType.toString());
         TextAttributesKey tak = keys.get(tokenType);
         return tak != null ? pack(keys.get(tokenType)) : EMPTY_KEYS;
 //        if (tokenType.equals(LOADING_OP)) {

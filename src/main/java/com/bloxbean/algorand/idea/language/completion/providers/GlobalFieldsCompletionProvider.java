@@ -25,26 +25,26 @@ package com.bloxbean.algorand.idea.language.completion.providers;
 import com.bloxbean.algorand.idea.language.TEALLanguage;
 import com.bloxbean.algorand.idea.language.TEALParserDefinition;
 import com.bloxbean.algorand.idea.language.completion.metadata.atoms.TEALKeywords;
-import com.bloxbean.algorand.idea.language.psi.TEALGlobalOpCode;
-import com.bloxbean.algorand.idea.language.psi.TEALGlobalOperation;
 import com.bloxbean.algorand.idea.language.psi.TEALTypes;
 import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.codeInsight.completion.CompletionResultSet;
 import com.intellij.patterns.ElementPattern;
-import com.intellij.patterns.PlatformPatterns;
 import com.intellij.psi.PsiElement;
 import com.intellij.util.ProcessingContext;
 import org.jetbrains.annotations.NotNull;
 
+import static com.intellij.patterns.PlatformPatterns.psiElement;
+
 public final class GlobalFieldsCompletionProvider extends BaseCompletionProvider {
 
-    public static final ElementPattern<PsiElement> PATTERN = PlatformPatterns
-            .psiElement()
-            .inside(TEALGlobalOperation.class)
-            .atStartOf(PlatformPatterns.psiElement(TEALTypes.GLOBAL_FIELD))
+    public static final ElementPattern<PsiElement> PATTERN = psiElement()
+            .afterLeaf(
+                psiElement(TEALTypes.LOADING_OP)
+                                        .withParent(psiElement(TEALTypes.GLOBAL_OP_CODE))
+                )
             .withLanguage(TEALLanguage.INSTANCE)
-            .andNot(PlatformPatterns.psiElement(TEALParserDefinition.LINE_COMMENT))
-            .andNot(PlatformPatterns.psiElement(TEALParserDefinition.BLOCK_COMMENT));
+            .andNot(psiElement(TEALParserDefinition.LINE_COMMENT))
+            .andNot(psiElement(TEALParserDefinition.BLOCK_COMMENT));
 
     @Override
     protected void addCompletions(@NotNull CompletionParameters parameters,
