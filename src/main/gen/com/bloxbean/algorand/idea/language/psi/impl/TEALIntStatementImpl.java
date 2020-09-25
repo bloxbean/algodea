@@ -11,14 +11,14 @@ import static com.bloxbean.algorand.idea.language.psi.TEALTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.bloxbean.algorand.idea.language.psi.*;
 
-public class TEALPseudoOpImpl extends ASTWrapperPsiElement implements TEALPseudoOp {
+public class TEALIntStatementImpl extends ASTWrapperPsiElement implements TEALIntStatement {
 
-  public TEALPseudoOpImpl(@NotNull ASTNode node) {
+  public TEALIntStatementImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull TEALVisitor visitor) {
-    visitor.visitPseudoOp(this);
+    visitor.visitIntStatement(this);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
@@ -28,20 +28,38 @@ public class TEALPseudoOpImpl extends ASTWrapperPsiElement implements TEALPseudo
 
   @Override
   @Nullable
-  public TEALAddrStatement getAddrStatement() {
-    return findChildByClass(TEALAddrStatement.class);
+  public TEALUnsignedInteger getUnsignedInteger() {
+    return findChildByClass(TEALUnsignedInteger.class);
   }
 
   @Override
   @Nullable
-  public TEALByteStatement getByteStatement() {
-    return findChildByClass(TEALByteStatement.class);
+  public PsiElement getHex() {
+    return findChildByType(HEX);
   }
 
   @Override
   @Nullable
-  public TEALIntStatement getIntStatement() {
-    return findChildByClass(TEALIntStatement.class);
+  public PsiElement getNamedIntegerConstant() {
+    return findChildByType(NAMED_INTEGER_CONSTANT);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getOctal() {
+    return findChildByType(OCTAL);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getTypenumConstant() {
+    return findChildByType(TYPENUM_CONSTANT);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getVarTmpl() {
+    return findChildByType(VAR_TMPL);
   }
 
 }

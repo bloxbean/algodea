@@ -140,5 +140,7 @@ public final class GTxnArgCompletionProvider extends BaseCompletionProvider {
                 result.addAllElements(TEALKeywords.TXNARGS_LOOKUP_ELEMENTS);
             }
         }
+
+        result.stopHere();
     }
 }

@@ -1,7 +1,0 @@
-<ul>
-    <li>Opcode: 0x20 {varuint length} [{varuint value}, ...]</li>
-    <li>Pops: <em>None</em></li>
-    <li>Pushes: <em>None</em></li>
-    <li>load block of uint64 constants</li>
-</ul>
-<p><code>intcblock</code> loads following program bytes into an array of integer constants in the evaluator. These integer constants can be referred to by <code>intc</code> and <code>intc_*</code> which will push the value onto the stack. Subsequent calls to <code>intcblock</code> reset and replace the integer constants available to the script.</p>

@@ -1,8 +1,0 @@
-<ul>
-    <li>Opcode: 0x40 {0..0x7fff forward branch offset, big endian}</li>
-    <li>Pops: <em>... stack</em>, uint64</li>
-    <li>Pushes: <em>None</em></li>
-    <li>branch if value X is not zero</li>
-</ul>
-<p>The <code>bnz</code> instruction opcode 0x40 is followed by two immediate data bytes which are a high byte first and low byte second which together form a 16 bit offset which the instruction may branch to. For a bnz instruction at <code>pc</code>, if the last element of the stack is not zero then branch to instruction at <code>pc + 3 + N</code>, else proceed to next instruction at <code>pc + 3</code>. Branch targets must be well aligned instructions. (e.g. Branching to the second byte of a 2 byte op will be rejected.) Branch offsets are currently limited to forward branches only, 0-0x7fff. A future expansion might make this a signed 16 bit integer allowing for backward branches and looping.</p>
-<p>At LogicSigVersion 2 it became allowed to branch to the end of the program exactly after the last instruction: bnz to byte N (with 0-indexing) was illegal for a TEAL program with N bytes before LogicSigVersion 2, and is legal after it. This change eliminates the need for a last instruction of no-op as a branch target at the end. (Branching beyond the end--in other words, to a byte larger than N--is still illegal and will cause the program to fail.)</p>

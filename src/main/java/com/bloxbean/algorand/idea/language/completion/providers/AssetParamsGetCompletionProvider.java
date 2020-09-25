@@ -25,5 +25,6 @@ public class AssetParamsGetCompletionProvider extends BaseCompletionProvider{
     @Override
     protected void addCompletions(@NotNull CompletionParameters parameters, @NotNull ProcessingContext context, @NotNull CompletionResultSet result) {
         result.addAllElements(TEALKeywords.ASSET_PARAMS_GET_FIELDS_ELEMENTS);
+        result.stopHere();
     }
 }

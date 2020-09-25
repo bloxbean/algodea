@@ -26,5 +26,6 @@ public class AssetHoldingGetCompletionProvider extends BaseCompletionProvider {
     @Override
     protected void addCompletions(@NotNull CompletionParameters parameters, @NotNull ProcessingContext context, @NotNull CompletionResultSet result) {
         result.addAllElements(TEALKeywords.ASSET_HOLDING_GET_FIELDS_ELEMENTS);
+        result.stopHere();
     }
 }

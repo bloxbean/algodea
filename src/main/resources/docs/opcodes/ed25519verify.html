@@ -1,9 +1,0 @@
-<ul>
-    <li>Opcode: 0x04</li>
-    <li>Pops: <em>... stack</em>, {[]byte A}, {[]byte B}, {[]byte C}</li>
-    <li>Pushes: uint64</li>
-    <li>for (data A, signature B, pubkey C) verify the signature of ("ProgData" || program_hash || data) against the pubkey =&gt; {0 or 1}</li>
-    <li><strong>Cost</strong>: 1900</li>
-    <li>Mode: Signature</li>
-</ul>
-<p>The 32 byte public key is the last element on the stack, preceded by the 64 byte signature at the second-to-last element on the stack, preceded by the data which was signed at the third-to-last element on the stack.</p>

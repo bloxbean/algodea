@@ -14,21 +14,6 @@ public interface TEALPseudoOp extends PsiElement {
   TEALByteStatement getByteStatement();
 
   @Nullable
-  TEALUnsignedInteger getUnsignedInteger();
-
-  @Nullable
-  PsiElement getHex();
-
-  @Nullable
-  PsiElement getNamedIntegerConstant();
-
-  @Nullable
-  PsiElement getOctal();
-
-  @Nullable
-  PsiElement getTypenumConstant();
-
-  @Nullable
-  PsiElement getVarTmpl();
+  TEALIntStatement getIntStatement();
 
 }

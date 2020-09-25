@@ -79,5 +79,7 @@ public final class TxnArgCompletionProvider extends BaseCompletionProvider {
         } else {
             result.addAllElements(TEALKeywords.TXNARGS_LOOKUP_ELEMENTS);
         }
+
+        result.stopHere();
     }
 }

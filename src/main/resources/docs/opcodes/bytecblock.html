@@ -1,7 +1,0 @@
-<ul>
-    <li>Opcode: 0x26 {varuint length} [({varuint value length} bytes), ...]</li>
-    <li>Pops: <em>None</em></li>
-    <li>Pushes: <em>None</em></li>
-    <li>load block of byte-array constants</li>
-</ul>
-<p><code>bytecblock</code> loads the following program bytes into an array of byte string constants in the evaluator. These constants can be referred to by <code>bytec</code> and <code>bytec_*</code> which will push the value onto the stack. Subsequent calls to <code>bytecblock</code> reset and replace the bytes constants available to the script.</p>

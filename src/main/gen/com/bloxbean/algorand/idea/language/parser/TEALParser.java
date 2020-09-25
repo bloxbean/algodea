@@ -746,11 +746,11 @@ public class TEALParser implements PsiParser, LightPsiParser {
 
   /* ********************************************************** */
   // INT (HEX | OCTAL | unsignedInteger | NAMED_INTEGER_CONSTANT | TYPENUM_CONSTANT | VAR_TMPL)
-  static boolean int_statement(PsiBuilder b, int l) {
+  public static boolean int_statement(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "int_statement")) return false;
     if (!nextTokenIs(b, INT)) return false;
     boolean r, p;
-    Marker m = enter_section_(b, l, _NONE_);
+    Marker m = enter_section_(b, l, _NONE_, INT_STATEMENT, null);
     r = consumeToken(b, INT);
     p = r; // pin = 1
     r = r && int_statement_1(b, l + 1);

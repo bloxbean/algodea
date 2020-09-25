@@ -1,9 +1,0 @@
-<ul>
-    <li>Opcode: 0x62</li>
-    <li>Pops: <em>... stack</em>, {uint64 A}, {[]byte B}</li>
-    <li>Pushes: any</li>
-    <li>read from account specified by Txn.Accounts[A] from local state of the current application key B =&gt; value</li>
-    <li>LogicSigVersion &gt;= 2</li>
-    <li>Mode: Application</li>
-</ul>
-<p>params: account index, state key. Return: value. The value is zero if the key does not exist.</p>

@@ -28,6 +28,7 @@ public interface TEALTypes {
   IElementType GTXN_LOADING_OPERATION = new TEALElementType("GTXN_LOADING_OPERATION");
   IElementType GTXN_OPCODE = new TEALElementType("GTXN_OPCODE");
   IElementType INTC_OPERATION = new TEALElementType("INTC_OPERATION");
+  IElementType INT_STATEMENT = new TEALElementType("INT_STATEMENT");
   IElementType LOADING_OPERATION = new TEALElementType("LOADING_OPERATION");
   IElementType LOAD_OPERATION = new TEALElementType("LOAD_OPERATION");
   IElementType PRAGMA = new TEALElementType("PRAGMA");
@@ -163,6 +164,9 @@ public interface TEALTypes {
       }
       else if (type == INTC_OPERATION) {
         return new TEALIntcOperationImpl(node);
+      }
+      else if (type == INT_STATEMENT) {
+        return new TEALIntStatementImpl(node);
       }
       else if (type == LOADING_OPERATION) {
         return new TEALLoadingOperationImpl(node);

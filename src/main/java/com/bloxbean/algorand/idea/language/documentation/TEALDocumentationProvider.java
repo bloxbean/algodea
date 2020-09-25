@@ -35,6 +35,7 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.tree.IElementType;
+import com.sun.javafx.scene.control.skin.CellSkinBase;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -49,7 +50,8 @@ public class TEALDocumentationProvider extends AbstractDocumentationProvider  {
             TEALTypes.LOADING_OP,
             TEALTypes.TXN_LOADING_OP,
             TEALTypes.FLOWCONTROL_OP,
-            TEALTypes.STATEACCESS_OP
+            TEALTypes.STATEACCESS_OP,
+            TEALTypes.PSEUDO_OP
     );
 
     static {
@@ -88,17 +90,29 @@ public class TEALDocumentationProvider extends AbstractDocumentationProvider  {
                 || TEALTypes.FLOWCONTROL_OP.equals(element.getNode().getElementType())
                 || TEALTypes.STATEACCESS_OP.equals(element.getNode().getElementType())
                 || TEALKeywords.GENERAL_OPERATIONS_ELEMENTS.contains(element.getNode().getElementType()))
+
         {
             String value = element.getNode().getText();
-            OpCode opCode = TEALOpCodeFactory.getInstance().getOpCode(value);
-            if(opCode == null)
-                return Optional.empty();
-            else
-                return opCode.formatHtml();
-        } else if(element instanceof TEALGeneralOperation) {
-            String value = element.getNode().getText();
-            return TEALDocumentation.OPCODES.lookup(value);
+            return getDocumentHtmlForKey(value);
+        } else if(TEALTypes.PSEUDO_OP.equals(element.getNode().getElementType())) {
+            if(element.getFirstChild() != null && element.getFirstChild().getFirstChild() != null) {
+                String nodeText = element.getFirstChild().getFirstChild().getText();
+                return getDocumentHtmlForKey(nodeText);
+            }
+
         }
+//        else if(element instanceof TEALGeneralOperation) {
+//            String value = element.getNode().getText();
+//            return TEALDocumentation.OPCODES.lookup(value);
+//        }
         return Optional.empty();
+    }
+
+    private Optional<String> getDocumentHtmlForKey(String nodeText) {
+        OpCode opCode = TEALOpCodeFactory.getInstance().getOpCode(nodeText);
+        if (opCode == null)
+            return Optional.empty();
+        else
+            return opCode.formatHtml();
     }
 }

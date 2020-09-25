@@ -103,6 +103,10 @@ public class TEALVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitIntStatement(@NotNull TEALIntStatement o) {
+    visitPsiElement(o);
+  }
+
   public void visitIntcOperation(@NotNull TEALIntcOperation o) {
     visitPsiElement(o);
   }

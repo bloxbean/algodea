@@ -51,5 +51,6 @@ public final class GlobalFieldsCompletionProvider extends BaseCompletionProvider
                                   ProcessingContext context,
                                   @NotNull CompletionResultSet result) {
         result.addAllElements(TEALKeywords.GLOBAL_FIELDS_ELEMENTS);
+        result.stopHere();
     }
 }

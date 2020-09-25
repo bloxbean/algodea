@@ -1,9 +1,0 @@
-<ul>
-    <li>Opcode: 0x63</li>
-    <li>Pops: <em>... stack</em>, {uint64 A}, {uint64 B}, {[]byte C}</li>
-    <li>Pushes: uint64, any</li>
-    <li>read from account specified by Txn.Accounts[A] from local state of the application B key C =&gt; {0 or 1 (top), value}</li>
-    <li>LogicSigVersion &gt;= 2</li>
-    <li>Mode: Application</li>
-</ul>
-<p>params: account index, application id, state key. Return: did_exist flag (top of the stack, 1 if exist and 0 otherwise), value.</p>

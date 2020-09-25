@@ -82,7 +82,8 @@ public final class KeywordCompletionProvider extends BaseCompletionProvider {
 
         if(parameters.getPosition() != null) {
 
-            LOG.info("Offset >>> " + parameters.getPosition().getStartOffsetInParent());
+            if(LOG.isDebugEnabled())
+                LOG.info("Offset >>> " + parameters.getPosition().getStartOffsetInParent());
 
            PsiElement parentElement = parameters.getPosition().getParent();
 
@@ -92,5 +93,6 @@ public final class KeywordCompletionProvider extends BaseCompletionProvider {
         }
 
         result.addAllElements(TEALKeywords.KEYWORD_LOOKUP_ELEMENTS);
+        result.stopHere();
     }
 }

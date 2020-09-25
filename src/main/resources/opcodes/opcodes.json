@@ -1206,20 +1206,23 @@
      "opcode": "Pseudo opcode",
      "pops": [],
      "pushes": [],
-     "desc":"int pseudo opcode"
+     "desc":"int pseudo opcode",
+     "additionalDesc" : "int constants may be 0x prefixed for hex, 0 prefixed for octal, or decimal numbers."
    },
    {
      "op": "byte",
      "opcode": "Pseudo opcode",
      "pops": [],
      "pushes": [],
-     "desc":"byte pseudo opcode"
+     "desc":"byte pseudo opcode",
+     "additionalDesc" : "byte base64 AAAA...<br>byte b64 AAAA...<br>byte base64(AAAA...)<br>byte b64(AAAA...)<br>byte base32 AAAA...<br>byte b32 AAAA...<br>byte base32(AAAA...)<br>byte b32(AAAA...)<br>byte 0x0123456789abcdef...<br>byte \"\\x01\\x02\"<br>byte \"string literal\""
    },
    {
      "op": "addr",
      "opcode": "Pseudo opcode",
      "pops": [],
      "pushes": [],
-     "desc":"addr pseudo opcode"
+     "desc":"addr pseudo opcode",
+     "additionalDesc" : "addr {address}"
    }
  ]
