@@ -25,7 +25,7 @@
 
         <lang.documentationProvider language="TEAL" implementationClass="com.bloxbean.algorand.idea.language.documentation.TEALDocumentationProvider"/>
 
-
+        <lang.commenter language="TEAL" implementationClass="com.bloxbean.algorand.idea.language.TEALProgramCommenter"/>
 
         <moduleType id="ALGORAND_ASC_MODULE_TYPE" implementationClass="com.bloxbean.algorand.idea.module.AlgorandModuleType"/>
 
