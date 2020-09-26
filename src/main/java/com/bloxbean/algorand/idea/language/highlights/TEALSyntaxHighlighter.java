@@ -88,9 +88,13 @@ public class TEALSyntaxHighlighter extends SyntaxHighlighterBase {
         fillMap(keys, PSEUDO_OP_CODES, TEALSyntaxColors.KEYWORD);
         keys.put(PSEUDO_OP, TEALSyntaxColors.KEYWORD);
         keys.put(TXN_LOADING_OP, TEALSyntaxColors.KEYWORD);
+        keys.put(LOADING_OP, TEALSyntaxColors.KEYWORD);
         keys.put(FLOWCONTROL_OP, TEALSyntaxColors.KEYWORD);
         keys.put(STATEACCESS_OP, TEALSyntaxColors.KEYWORD);
 
+        keys.put(VERSION, TEALSyntaxColors.KEYWORD);
+        keys.put(PRAGMA_KEYWORD, TEALSyntaxColors.KEYWORD);
+        keys.put(PRAGMA_VERSION, TEALSyntaxColors.LABEL);
         keys.put(TEALTypes.COMMENT, TEALSyntaxColors.LINE_COMMENT);
         keys.put(TokenType.BAD_CHARACTER, TEALSyntaxColors.BAD_CHARACTER);
     }

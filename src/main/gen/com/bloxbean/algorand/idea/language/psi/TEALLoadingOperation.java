@@ -14,6 +14,9 @@ public interface TEALLoadingOperation extends PsiElement {
   TEALBytecOperation getBytecOperation();
 
   @Nullable
+  TEALBytecblockOperation getBytecblockOperation();
+
+  @Nullable
   TEALGlobalOperation getGlobalOperation();
 
   @Nullable
@@ -24,6 +27,9 @@ public interface TEALLoadingOperation extends PsiElement {
 
   @Nullable
   TEALIntcOperation getIntcOperation();
+
+  @Nullable
+  TEALIntcblockOperation getIntcblockOperation();
 
   @Nullable
   TEALLoadOperation getLoadOperation();

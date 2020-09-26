@@ -17,6 +17,7 @@ public interface TEALTypes {
   IElementType ASSET_PARAMS_GET_OPERATION = new TEALElementType("ASSET_PARAMS_GET_OPERATION");
   IElementType BRANCH = new TEALElementType("BRANCH");
   IElementType BRANCH_OPERATION = new TEALElementType("BRANCH_OPERATION");
+  IElementType BYTECBLOCK_OPERATION = new TEALElementType("BYTECBLOCK_OPERATION");
   IElementType BYTEC_OPERATION = new TEALElementType("BYTEC_OPERATION");
   IElementType BYTE_STATEMENT = new TEALElementType("BYTE_STATEMENT");
   IElementType FLOW_CONTROL_OPERATION = new TEALElementType("FLOW_CONTROL_OPERATION");
@@ -27,6 +28,7 @@ public interface TEALTypes {
   IElementType GTXNA_OPCODE = new TEALElementType("GTXNA_OPCODE");
   IElementType GTXN_LOADING_OPERATION = new TEALElementType("GTXN_LOADING_OPERATION");
   IElementType GTXN_OPCODE = new TEALElementType("GTXN_OPCODE");
+  IElementType INTCBLOCK_OPERATION = new TEALElementType("INTCBLOCK_OPERATION");
   IElementType INTC_OPERATION = new TEALElementType("INTC_OPERATION");
   IElementType INT_STATEMENT = new TEALElementType("INT_STATEMENT");
   IElementType LOADING_OPERATION = new TEALElementType("LOADING_OPERATION");
@@ -91,6 +93,7 @@ public interface TEALTypes {
   IElementType NOT = new TEALTokenType("!");
   IElementType OCTAL = new TEALTokenType("OCTAL");
   IElementType PLUS = new TEALTokenType("+");
+  IElementType PRAGMA_KEYWORD = new TEALTokenType("#pragma");
   IElementType SHA256 = new TEALTokenType("sha256");
   IElementType SHA512_256 = new TEALTokenType("sha512_256");
   IElementType STATEACCESS_OP = new TEALTokenType("STATEACCESS_OP");
@@ -132,6 +135,9 @@ public interface TEALTypes {
       else if (type == BRANCH_OPERATION) {
         return new TEALBranchOperationImpl(node);
       }
+      else if (type == BYTECBLOCK_OPERATION) {
+        return new TEALBytecblockOperationImpl(node);
+      }
       else if (type == BYTEC_OPERATION) {
         return new TEALBytecOperationImpl(node);
       }
@@ -161,6 +167,9 @@ public interface TEALTypes {
       }
       else if (type == GTXN_OPCODE) {
         return new TEALGtxnOpcodeImpl(node);
+      }
+      else if (type == INTCBLOCK_OPERATION) {
+        return new TEALIntcblockOperationImpl(node);
       }
       else if (type == INTC_OPERATION) {
         return new TEALIntcOperationImpl(node);

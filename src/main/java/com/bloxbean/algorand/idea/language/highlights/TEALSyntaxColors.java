@@ -48,4 +48,7 @@ public class TEALSyntaxColors {
 
     public static final TextAttributesKey BAD_CHARACTER =
             createTextAttributesKey("SIMPLE_BAD_CHARACTER", HighlighterColors.BAD_CHARACTER);
+
+    public static final TextAttributesKey LABEL =
+            createTextAttributesKey("TEAL_LABEL", DefaultLanguageHighlighterColors.LABEL);
 }

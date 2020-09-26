@@ -87,6 +87,10 @@ public class TEALVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitBytecblockOperation(@NotNull TEALBytecblockOperation o) {
+    visitPsiElement(o);
+  }
+
   public void visitGlobalOpCode(@NotNull TEALGlobalOpCode o) {
     visitPsiElement(o);
   }
@@ -108,6 +112,10 @@ public class TEALVisitor extends PsiElementVisitor {
   }
 
   public void visitIntcOperation(@NotNull TEALIntcOperation o) {
+    visitPsiElement(o);
+  }
+
+  public void visitIntcblockOperation(@NotNull TEALIntcblockOperation o) {
     visitPsiElement(o);
   }
 

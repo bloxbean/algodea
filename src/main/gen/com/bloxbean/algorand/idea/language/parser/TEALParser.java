@@ -144,14 +144,14 @@ public class TEALParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // 'intcblock'
+  // intcblockOperation
   //                                   | intcOperation
   //                                   | 'intc_0'
   //                                   | 'intc_1'
   //                                   | 'intc_2'
   //                                   | 'intc_3'
   //                                   
-  //                                   | 'bytecblock'
+  //                                   | bytecblockOperation
   //                                   | bytecOperation
   //                                   | 'bytec_0'
   //                                   | 'bytec_1'
@@ -173,13 +173,13 @@ public class TEALParser implements PsiParser, LightPsiParser {
     if (!recursion_guard_(b, l, "LoadingOperation")) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, LOADING_OPERATION, "<loading operation>");
-    r = consumeToken(b, "intcblock");
+    r = intcblockOperation(b, l + 1);
     if (!r) r = intcOperation(b, l + 1);
     if (!r) r = consumeToken(b, "intc_0");
     if (!r) r = consumeToken(b, "intc_1");
     if (!r) r = consumeToken(b, "intc_2");
     if (!r) r = consumeToken(b, "intc_3");
-    if (!r) r = consumeToken(b, "bytecblock");
+    if (!r) r = bytecblockOperation(b, l + 1);
     if (!r) r = bytecOperation(b, l + 1);
     if (!r) r = consumeToken(b, "bytec_0");
     if (!r) r = consumeToken(b, "bytec_1");
@@ -635,6 +635,51 @@ public class TEALParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // 'bytecblock' (VAR_TMPL | (ID | l_integer | BASE64)*)
+  public static boolean bytecblockOperation(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "bytecblockOperation")) return false;
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, BYTECBLOCK_OPERATION, "<bytecblock operation>");
+    r = consumeToken(b, "bytecblock");
+    p = r; // pin = 1
+    r = r && bytecblockOperation_1(b, l + 1);
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
+  }
+
+  // VAR_TMPL | (ID | l_integer | BASE64)*
+  private static boolean bytecblockOperation_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "bytecblockOperation_1")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, VAR_TMPL);
+    if (!r) r = bytecblockOperation_1_1(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // (ID | l_integer | BASE64)*
+  private static boolean bytecblockOperation_1_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "bytecblockOperation_1_1")) return false;
+    while (true) {
+      int c = current_position_(b);
+      if (!bytecblockOperation_1_1_0(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "bytecblockOperation_1_1", c)) break;
+    }
+    return true;
+  }
+
+  // ID | l_integer | BASE64
+  private static boolean bytecblockOperation_1_1_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "bytecblockOperation_1_1_0")) return false;
+    boolean r;
+    r = consumeToken(b, ID);
+    if (!r) r = consumeToken(b, L_INTEGER);
+    if (!r) r = consumeToken(b, BASE64);
+    return r;
+  }
+
+  /* ********************************************************** */
   // 'global'
   public static boolean globalOpCode(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "globalOpCode")) return false;
@@ -794,6 +839,50 @@ public class TEALParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // 'intcblock' (VAR_TMPL | (ID | l_integer)*)
+  public static boolean intcblockOperation(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "intcblockOperation")) return false;
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, INTCBLOCK_OPERATION, "<intcblock operation>");
+    r = consumeToken(b, "intcblock");
+    p = r; // pin = 1
+    r = r && intcblockOperation_1(b, l + 1);
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
+  }
+
+  // VAR_TMPL | (ID | l_integer)*
+  private static boolean intcblockOperation_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "intcblockOperation_1")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, VAR_TMPL);
+    if (!r) r = intcblockOperation_1_1(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // (ID | l_integer)*
+  private static boolean intcblockOperation_1_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "intcblockOperation_1_1")) return false;
+    while (true) {
+      int c = current_position_(b);
+      if (!intcblockOperation_1_1_0(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "intcblockOperation_1_1", c)) break;
+    }
+    return true;
+  }
+
+  // ID | l_integer
+  private static boolean intcblockOperation_1_1_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "intcblockOperation_1_1_0")) return false;
+    boolean r;
+    r = consumeToken(b, ID);
+    if (!r) r = consumeToken(b, L_INTEGER);
+    return r;
+  }
+
+  /* ********************************************************** */
   // 'load' (unsignedInteger | VAR_TMPL)
   public static boolean loadOperation(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "loadOperation")) return false;
@@ -816,15 +905,14 @@ public class TEALParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // "#pragma" VERSION pragma_version
+  // PRAGMA_KEYWORD VERSION pragma_version
   public static boolean pragma(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "pragma")) return false;
     boolean r, p;
     Marker m = enter_section_(b, l, _NONE_, PRAGMA, "<pragma>");
-    r = consumeToken(b, "#pragma");
+    r = consumeTokens(b, 1, PRAGMA_KEYWORD, VERSION);
     p = r; // pin = 1
-    r = r && report_error_(b, consumeToken(b, VERSION));
-    r = p && pragma_version(b, l + 1) && r;
+    r = r && pragma_version(b, l + 1);
     exit_section_(b, l, m, r, p, statement_recover_parser_);
     return r || p;
   }

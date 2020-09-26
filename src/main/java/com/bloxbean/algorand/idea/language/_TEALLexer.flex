@@ -43,7 +43,7 @@ ASSET_PARAMS_GET_FIELD=(AssetTotal|AssetDecimals|AssetDefaultFrozen|AssetUnitNam
 OCTAL=(0)[0-9]+
 HEX=(0x|0X)[a-fA-F0-9]*
 VAR_TMPL=(VAR_TMPL_)([a-zA-Z0-9_$.#@~?]+)
-ID=([a-zA-Z_?]+[a-zA-Z0-9_$.#@~?]*)
+ID=([a-zA-Z0-9_$.#@~?]+[a-zA-Z0-9_$.#@~?]*)
 BASE32=([A-Z2-7]{8})*([A-Z2-7]{2}={6}|[A-Z2-7]{4}={4}|[A-Z2-7]{5}={3}|[A-Z2-7]{7}=)?
 BASE64=[-A-Za-z0-9+=]{1,50}|=[^=]|={3}
 
@@ -85,6 +85,7 @@ BASE64=[-A-Za-z0-9+=]{1,50}|=[^=]|={3}
   "int"                          { return INT; }
   "byte"                         { return BYTE; }
   "addr"                         { return ADDR; }
+  "#pragma"                      { return PRAGMA_KEYWORD; }
   ":"                            { return COLON; }
 
   {NL}                           { return NL; }

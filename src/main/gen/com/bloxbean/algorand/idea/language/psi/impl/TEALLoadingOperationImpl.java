@@ -40,6 +40,12 @@ public class TEALLoadingOperationImpl extends ASTWrapperPsiElement implements TE
 
   @Override
   @Nullable
+  public TEALBytecblockOperation getBytecblockOperation() {
+    return findChildByClass(TEALBytecblockOperation.class);
+  }
+
+  @Override
+  @Nullable
   public TEALGlobalOperation getGlobalOperation() {
     return findChildByClass(TEALGlobalOperation.class);
   }
@@ -60,6 +66,12 @@ public class TEALLoadingOperationImpl extends ASTWrapperPsiElement implements TE
   @Nullable
   public TEALIntcOperation getIntcOperation() {
     return findChildByClass(TEALIntcOperation.class);
+  }
+
+  @Override
+  @Nullable
+  public TEALIntcblockOperation getIntcblockOperation() {
+    return findChildByClass(TEALIntcblockOperation.class);
   }
 
   @Override
