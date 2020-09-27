@@ -10,9 +10,11 @@
 
     <idea-version since-build="202"/>
 
-<!--    <depends>com.intellij.modules.java</depends>-->
+    <depends>com.intellij.modules.java</depends>
 
     <extensions defaultExtensionNs="com.intellij">
+        <sdkType implementation="com.bloxbean.algorand.idea.module.sdk.AlgoSdkType"/>
+
         <fileType name="TEAL File" implementationClass="com.bloxbean.algorand.idea.language.TEALFileType"
                   fieldName="INSTANCE" language="TEAL" extensions="teal"/>
         <lang.parserDefinition language="TEAL"
@@ -27,14 +29,24 @@
 
         <lang.commenter language="TEAL" implementationClass="com.bloxbean.algorand.idea.language.TEALProgramCommenter"/>
 
-        <moduleType id="ALGORAND_ASC_MODULE_TYPE" implementationClass="com.bloxbean.algorand.idea.module.AlgorandModuleType"/>
+        <!-- module extensions -->
+        <moduleType id="Algorand_Module" implementationClass="com.bloxbean.algorand.idea.module.AlgorandModuleType"/>
+<!--        <facetType implementation="com.bloxbean.algorand.idea.module.facet.AlgoFacetType"/>-->
+<!--        <framework.type implementation="com.bloxbean.algorand.idea.module.framework.AlgoFrameworkType"/>-->
+<!--        <projectStructureDetector implementation="com.bloxbean.algorand.idea.module.detector.AlgoProjectStructureDetector"/>-->
 
+<!--        <toolWindow id="Algorand_Tool_Window"-->
+<!--                        anchor="right"-->
+<!--                        factoryClass="com.bloxbean.algorand.idea.module.toolwindow.AlgoToolWindowFactory"/>-->
+
+
+        <!-- file templates -->
         <internalFileTemplate name="Algo.Empty"/>
 <!--    <internalFileTemplate name="Algo.VotingContract"/>-->
 
         <internalFileTemplate name="Algo.Dynamic Fee"/>
         <internalFileTemplate name="Algo.Hash Time Lock"/>
-        <internalFileTemplate name="Algo.Delegation Key Registration"/>
+        <internalFileTemplate name="Algo.Delegate Key Registration"/>
         <internalFileTemplate name="Algo.Limit Order A"/>
         <internalFileTemplate name="Algo.Limit Order B"/>
         <internalFileTemplate name="Algo.Periodic Payment Escrow"/>
@@ -45,6 +57,18 @@
         <action id="Algorand.NewTEALFile" class="com.bloxbean.algorand.idea.action.NewTEALFileAction"
                 text="TEAL File" description="Create new TEAL file">
             <add-to-group group-id="NewGroup" anchor="first" />
+        </action>
+
+        <group id="com.bloxbean.algorand.idea.action.AlgoActionGroup" class="com.bloxbean.algorand.idea.action.AlgoActionGroup"
+               popup="true"
+               text="Algorand" description="Algorand">
+            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
+        </group>
+        <action id="Algo.teal.compile" class="com.bloxbean.algorand.idea.action.TEALCompileAction" text="Compile TEAL"
+                description="Compile TEAL file">
+            <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl T" second-keystroke="C"/>
+            <add-to-group group-id="com.bloxbean.algorand.idea.action.AlgoActionGroup"/>
         </action>
 
     </actions>

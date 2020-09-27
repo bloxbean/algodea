@@ -34,7 +34,7 @@ import javax.swing.*;
 
 public class AlgorandModuleType extends ModuleType<AlgorandModuleBuilder> {
 
-    private static final String ID = "ALGORAND_ASC_MODULE_TYPE";
+    private static final String ID = "Algorand_Module";
 
     public AlgorandModuleType() {
         super(ID);

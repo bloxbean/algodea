@@ -23,17 +23,35 @@
 package com.bloxbean.algorand.idea.module;
 
 import com.intellij.ide.util.projectWizard.ModuleWizardStep;
+import com.intellij.openapi.options.ConfigurationException;
 
 import javax.swing.*;
 
 public class AlgorandModuleWizardStep extends ModuleWizardStep {
+
+    private final AlgoSdkPanel sdkPanel = new AlgoSdkPanel();
+    private AlgorandModuleBuilder myBuilder;
+
+    public AlgorandModuleWizardStep(AlgorandModuleBuilder builder) {
+        myBuilder = builder;
+    }
+
     @Override
     public JComponent getComponent() {
-        return new JLabel("Provide some setting here");
+        return sdkPanel;
     }
 
     @Override
     public void updateDataModel() {
-        //todo update model according to UI
+        myBuilder.setSdk(sdkPanel.getSdk());
+    }
+
+
+    @Override
+    public boolean validate() throws ConfigurationException {
+//        if (StringUtil.isEmpty(sdkPanel.getSdkName())) {
+//            throw new ConfigurationException("Specify Algorand SDK");
+//        }
+        return super.validate();
     }
 }

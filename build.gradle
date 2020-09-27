@@ -46,7 +46,7 @@ String changeLogAsHtml() {
 
 intellij {
     version '2020.2'
-    plugins = []
+    plugins = ['java']
 
     publishPlugin {
         username System.getProperty('ij_plugin_portal_login')
