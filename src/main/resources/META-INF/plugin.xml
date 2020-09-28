@@ -35,9 +35,9 @@
 <!--        <framework.type implementation="com.bloxbean.algorand.idea.module.framework.AlgoFrameworkType"/>-->
 <!--        <projectStructureDetector implementation="com.bloxbean.algorand.idea.module.detector.AlgoProjectStructureDetector"/>-->
 
-<!--        <toolWindow id="Algorand_Tool_Window"-->
-<!--                        anchor="right"-->
-<!--                        factoryClass="com.bloxbean.algorand.idea.module.toolwindow.AlgoToolWindowFactory"/>-->
+        <toolWindow id="Algorand"
+                        anchor="bottom"
+                        factoryClass="com.bloxbean.algorand.idea.module.toolwindow.AlgoToolWindowFactory"/>
 
 
         <!-- file templates -->
@@ -57,6 +57,12 @@
         <action id="Algorand.NewTEALFile" class="com.bloxbean.algorand.idea.action.NewTEALFileAction"
                 text="TEAL File" description="Create new TEAL file">
             <add-to-group group-id="NewGroup" anchor="first" />
+        </action>
+
+        <action id="Algo.teal.editor_context.compile" class="com.bloxbean.algorand.idea.action.TEALCompileAction" text="Compile TEAL"
+                description="Compile TEAL file">
+            <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl T" second-keystroke="C"/>
+            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
         </action>
 
         <group id="com.bloxbean.algorand.idea.action.AlgoActionGroup" class="com.bloxbean.algorand.idea.action.AlgoActionGroup"

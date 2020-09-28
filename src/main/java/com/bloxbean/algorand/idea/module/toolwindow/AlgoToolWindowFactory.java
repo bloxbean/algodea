@@ -18,7 +18,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collection;
 
 public class AlgoToolWindowFactory implements ToolWindowFactory {
-    public final static String ALGO_TOOL_WINDOW_ID = "Algorand_Tool_Window";
+    public final static String ALGO_WINDOW_ID = "Algorand";
 
     @Override
     public boolean isApplicable(@NotNull Project project) {
