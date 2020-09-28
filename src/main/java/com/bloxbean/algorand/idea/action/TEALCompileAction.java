@@ -5,6 +5,7 @@ import com.bloxbean.algorand.idea.action.ui.VarParam;
 import com.bloxbean.algorand.idea.action.util.VarTmplUtil;
 import com.bloxbean.algorand.idea.language.psi.TEALFile;
 import com.bloxbean.algorand.idea.module.sdk.AlgoSdkType;
+import com.bloxbean.algorand.idea.service.AlgoCacheService;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.filters.TextConsoleBuilder;
@@ -18,6 +19,7 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.actionSystem.LangDataKeys;
+import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
@@ -36,7 +38,9 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.bloxbean.algorand.idea.module.toolwindow.AlgoToolWindowFactory.ALGO_WINDOW_ID;
 
@@ -56,6 +60,7 @@ public class TEALCompileAction extends AnAction {
         if (file != null && file instanceof TEALFile) {
             e.getPresentation().setEnabled(true);
         } else {
+            e.getPresentation().setVisible(false);
             e.getPresentation().setEnabled(false);
         }
     }
@@ -164,6 +169,19 @@ public class TEALCompileAction extends AnAction {
             return;
         }
 
+        AlgoCacheService algoCacheService = project.getComponent(AlgoCacheService.class);
+        if(algoCacheService != null) { //Get cached var values
+            Map<String, String> cacheVars = algoCacheService.getVarsFromCache(psiFile.getName());
+            if(cacheVars != null) {
+                varParams.stream().forEach(v -> {
+                    String value = cacheVars.get(v.getName());
+                    if (value != null)
+                        v.setDefaultValue(value);
+                });
+            }
+        }
+
+
         //If VAR_TMPL_* found
         if(varParams != null && varParams.size() > 0) {
             CompileVarTmplInputDialog compileVarTmplInputDialog =  new CompileVarTmplInputDialog(psiFile.getName(), varParams);
@@ -189,6 +207,13 @@ public class TEALCompileAction extends AnAction {
                 view.print("Compilation failed. VAR_TMPL_ values could not be merged", ConsoleViewContentType.ERROR_OUTPUT);
                 return;
             }
+
+            //Update cache
+            Map<String, String> varValuesToStoreInCache = new HashMap<>();
+            varParamsValues.stream().forEach(varParam -> {
+                varValuesToStoreInCache.put(varParam.getName(), varParam.getValue());
+            });
+            algoCacheService.updateVarsToCache(psiFile.getName(), varValuesToStoreInCache);
         }
 
         //Compilation configuration setup

@@ -12,6 +12,12 @@
 
     <depends>com.intellij.modules.java</depends>
 
+    <project-components>
+        <component>
+            <implementation-class>com.bloxbean.algorand.idea.service.AlgoCacheService</implementation-class>
+        </component>
+    </project-components>
+
     <extensions defaultExtensionNs="com.intellij">
         <sdkType implementation="com.bloxbean.algorand.idea.module.sdk.AlgoSdkType"/>
 
@@ -38,7 +44,6 @@
         <toolWindow id="Algorand"
                         anchor="bottom"
                         factoryClass="com.bloxbean.algorand.idea.module.toolwindow.AlgoToolWindowFactory"/>
-
 
         <!-- file templates -->
         <internalFileTemplate name="Algo.Empty"/>
