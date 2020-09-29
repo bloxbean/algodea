@@ -6,6 +6,7 @@ import com.bloxbean.algorand.idea.action.util.VarTmplUtil;
 import com.bloxbean.algorand.idea.language.psi.TEALFile;
 import com.bloxbean.algorand.idea.module.sdk.AlgoSdkType;
 import com.bloxbean.algorand.idea.service.AlgoCacheService;
+import com.bloxbean.algorand.idea.toolwindow.AlgoToolWindowFactory;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.filters.TextConsoleBuilder;
@@ -19,7 +20,6 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.actionSystem.LangDataKeys;
-import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
@@ -41,8 +41,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static com.bloxbean.algorand.idea.module.toolwindow.AlgoToolWindowFactory.ALGO_WINDOW_ID;
 
 public class TEALCompileAction extends AnAction {
     private final static Logger LOG = Logger.getInstance(TEALCompileAction.class);
@@ -99,7 +97,7 @@ public class TEALCompileAction extends AnAction {
         }
 
         ToolWindowManager manager = ToolWindowManager.getInstance(project);
-        ToolWindow window = manager.getToolWindow(ALGO_WINDOW_ID);
+        ToolWindow window = manager.getToolWindow(AlgoToolWindowFactory.ALGO_WINDOW_ID);
 
         if (window != null) {
             final ContentManager contentManager = window.getContentManager();

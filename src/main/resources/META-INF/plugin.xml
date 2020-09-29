@@ -43,7 +43,7 @@
 
         <toolWindow id="Algorand"
                         anchor="bottom"
-                        factoryClass="com.bloxbean.algorand.idea.module.toolwindow.AlgoToolWindowFactory"/>
+                        factoryClass="com.bloxbean.algorand.idea.toolwindow.AlgoToolWindowFactory"/>
 
         <!-- file templates -->
         <internalFileTemplate name="Algo.Empty"/>
@@ -75,6 +75,9 @@
                text="Algorand" description="Algorand">
             <add-to-group group-id="EditorPopupMenu" anchor="last"/>
             <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
+
+            <group id="AlgoActionGroup.Accounts" text="Accounts" description="Accounts" popup="true">
+            </group>
         </group>
         <action id="Algo.teal.compile" class="com.bloxbean.algorand.idea.action.TEALCompileAction" text="Compile TEAL"
                 description="Compile TEAL file">
@@ -82,5 +85,17 @@
             <add-to-group group-id="com.bloxbean.algorand.idea.action.AlgoActionGroup"/>
         </action>
 
+        <action id="Algo.account.create" class="com.bloxbean.algorand.idea.action.account.CreateAccountAction" text="Create a New Account"
+                description="Create New Account">
+            <add-to-group group-id="AlgoActionGroup.Accounts"/>
+        </action>
+        <action id="Algo.account.createMultisig" class="com.bloxbean.algorand.idea.action.account.CreateMultisigAccountAction" text="Create a Multisig Account"
+                description="Create New Multisig Account">
+            <add-to-group group-id="AlgoActionGroup.Accounts"/>
+        </action>
+        <action id="Algo.account.list" class="com.bloxbean.algorand.idea.action.account.AccountListAction" text="List Accounts"
+                description="List Accounts">
+            <add-to-group group-id="AlgoActionGroup.Accounts"/>
+        </action>
     </actions>
 </idea-plugin>

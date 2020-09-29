@@ -22,7 +22,7 @@ public class AlgoActionGroup extends DefaultActionGroup {
 
         PsiFile psiFile = event.getData(CommonDataKeys.PSI_FILE);
 
-        if(isAlgorandModule && (psiFile != null && psiFile instanceof TEALFile)) {
+        if(isAlgorandModule) {
             event.getPresentation().setVisible(true);
             event.getPresentation().setIcon(AlgoIcons.ALGO_ICON);
         } else {
