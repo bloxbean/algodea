@@ -14,7 +14,7 @@
 
     <project-components>
         <component>
-            <implementation-class>com.bloxbean.algorand.idea.service.AlgoCacheService</implementation-class>
+            <implementation-class>com.bloxbean.algorand.idea.core.service.AlgoCacheService</implementation-class>
         </component>
     </project-components>
 
@@ -59,18 +59,18 @@
 
     </extensions>
     <actions>
-        <action id="Algorand.NewTEALFile" class="com.bloxbean.algorand.idea.action.NewTEALFileAction"
+        <action id="Algorand.NewTEALFile" class="com.bloxbean.algorand.idea.core.action.NewTEALFileAction"
                 text="TEAL File" description="Create new TEAL file">
             <add-to-group group-id="NewGroup" anchor="first" />
         </action>
 
-        <action id="Algo.teal.editor_context.compile" class="com.bloxbean.algorand.idea.action.TEALCompileAction" text="Compile TEAL"
+        <action id="Algo.teal.editor_context.compile" class="com.bloxbean.algorand.idea.compile.action.TEALCompileAction" text="Compile TEAL"
                 description="Compile TEAL file">
             <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl T" second-keystroke="C"/>
             <add-to-group group-id="EditorPopupMenu" anchor="last"/>
         </action>
 
-        <group id="com.bloxbean.algorand.idea.action.AlgoActionGroup" class="com.bloxbean.algorand.idea.action.AlgoActionGroup"
+        <group id="com.bloxbean.algorand.idea.core.action.AlgoActionGroup" class="com.bloxbean.algorand.idea.core.action.AlgoActionGroup"
                popup="true"
                text="Algorand" description="Algorand">
             <add-to-group group-id="EditorPopupMenu" anchor="last"/>
@@ -79,22 +79,26 @@
             <group id="AlgoActionGroup.Accounts" text="Accounts" description="Accounts" popup="true">
             </group>
         </group>
-        <action id="Algo.teal.compile" class="com.bloxbean.algorand.idea.action.TEALCompileAction" text="Compile TEAL"
+        <action id="Algo.teal.compile" class="com.bloxbean.algorand.idea.compile.action.TEALCompileAction" text="Compile TEAL"
                 description="Compile TEAL file">
             <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl T" second-keystroke="C"/>
-            <add-to-group group-id="com.bloxbean.algorand.idea.action.AlgoActionGroup"/>
+            <add-to-group group-id="com.bloxbean.algorand.idea.core.action.AlgoActionGroup"/>
         </action>
 
-        <action id="Algo.account.create" class="com.bloxbean.algorand.idea.action.account.CreateAccountAction" text="Create a New Account"
+        <action id="Algo.account.create" class="com.bloxbean.algorand.idea.account.action.CreateAccountAction" text="Create a New Account"
                 description="Create New Account">
             <add-to-group group-id="AlgoActionGroup.Accounts"/>
         </action>
-        <action id="Algo.account.createMultisig" class="com.bloxbean.algorand.idea.action.account.CreateMultisigAccountAction" text="Create a Multisig Account"
+        <action id="Algo.account.createMultisig" class="com.bloxbean.algorand.idea.account.action.CreateMultisigAccountAction" text="Create a Multisig Account"
                 description="Create New Multisig Account">
             <add-to-group group-id="AlgoActionGroup.Accounts"/>
         </action>
-        <action id="Algo.account.list" class="com.bloxbean.algorand.idea.action.account.AccountListAction" text="List Accounts"
+        <action id="Algo.account.list" class="com.bloxbean.algorand.idea.account.action.AccountListAction" text="List Accounts"
                 description="List Accounts">
+            <add-to-group group-id="AlgoActionGroup.Accounts"/>
+        </action>
+        <action id="Algo.multisig-account.list" class="com.bloxbean.algorand.idea.account.action.MultisigAccountListAction" text="List Multi-Sig Accounts"
+                description="List Multi-Sig Accounts">
             <add-to-group group-id="AlgoActionGroup.Accounts"/>
         </action>
     </actions>

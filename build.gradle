@@ -8,6 +8,12 @@ buildscript {
     repositories {
         mavenLocal()
         mavenCentral()
+        maven{
+            url 'https://jetbrains.bintray.com/intellij-plugin-service'
+        }
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
     }
     dependencies {
         classpath group: 'com.vladsch.flexmark', name: 'flexmark', version: '0.28.12'
@@ -17,7 +23,7 @@ buildscript {
 plugins {
     id 'java'
     id 'idea'
-    id 'org.jetbrains.intellij' version '0.4.21'
+    id 'org.jetbrains.intellij' version '0.4.26'
 }
 
 group 'com.bloxbean'

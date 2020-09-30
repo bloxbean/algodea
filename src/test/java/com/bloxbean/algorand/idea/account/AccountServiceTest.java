@@ -1,7 +1,8 @@
 package com.bloxbean.algorand.idea.account;
 
-import com.bloxbean.algorand.idea.action.account.service.AccountService;
-import com.bloxbean.algorand.idea.action.account.model.AlgoAccount;
+import com.bloxbean.algorand.idea.account.model.AlgoAccount;
+import com.bloxbean.algorand.idea.account.service.AccountService;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -12,7 +13,7 @@ public class AccountServiceTest {
     @Test
     public void testGenerateAddress() throws NoSuchAlgorithmException {
         AccountService accountService = new AccountService();
-        AlgoAccount algoAccount = accountService.generateAccount();
+        AlgoAccount algoAccount = accountService.createNewAccount();
 
         Assert.assertTrue(algoAccount.getAddress() != null);
         Assert.assertTrue(algoAccount.getAddress().length() > 0);
