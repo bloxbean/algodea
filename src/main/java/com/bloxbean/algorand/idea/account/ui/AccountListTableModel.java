@@ -26,6 +26,7 @@ import com.bloxbean.algorand.idea.account.model.AlgoAccount;
 
 import javax.swing.table.AbstractTableModel;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 
 public class AccountListTableModel extends AbstractTableModel {
@@ -35,8 +36,8 @@ public class AccountListTableModel extends AbstractTableModel {
     protected String[] columnNames = new String[] {"Account", "Balance"};
     protected Class[] columnClasses = new Class[] {String.class, String.class};
 
-    public AccountListTableModel(List<AlgoAccount> accounts, boolean showBalance) {
-        this.accounts = accounts;
+    public AccountListTableModel(boolean showBalance) {
+        this.accounts = new ArrayList<>();
         this.showBalance = showBalance;
 
         if(!showBalance) { //Balance is not shown for local mode
@@ -96,5 +97,16 @@ public class AccountListTableModel extends AbstractTableModel {
         } else {
             return false;
         }
+    }
+
+    public void addElement(AlgoAccount account) {
+        accounts.add(account);
+        fireTableRowsUpdated(accounts.size()-1, accounts.size()-1);
+    }
+
+    public void setElements(List<AlgoAccount> accounts) {
+        this.accounts.clear();
+        this.accounts.addAll(accounts);
+        fireTableRowsUpdated(0, this.accounts.size()-1);
     }
 }

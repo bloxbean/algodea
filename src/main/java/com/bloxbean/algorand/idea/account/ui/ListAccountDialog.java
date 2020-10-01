@@ -22,8 +22,10 @@
 
 package com.bloxbean.algorand.idea.account.ui;
 
-import com.bloxbean.algorand.idea.account.service.AccountService;
 import com.bloxbean.algorand.idea.account.model.AlgoAccount;
+import com.bloxbean.algorand.idea.account.service.AccountService;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.project.Project;
@@ -31,7 +33,6 @@ import com.intellij.openapi.ui.DialogWrapper;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -41,33 +42,35 @@ public class ListAccountDialog extends DialogWrapper {
     private JPanel mainPanel;
     private JTable accListTable;
     private JButton fetchBalanceButton;
+    private JLabel messageLabel;
     private Project project;
     private List<AlgoAccount> accounts;
     private AccountListTableModel tableModel;
     private boolean isRemote;
     private boolean showBalance;
+    private AccountService accountService;
 
-    public ListAccountDialog(Project project, List<AlgoAccount> accounts, boolean isRemote) {
-        this(project, accounts, isRemote, true);
+    public ListAccountDialog(Project project, boolean isRemote) {
+        this(project, isRemote, true);
     }
 
-    public ListAccountDialog(Project project, List<AlgoAccount> accounts, boolean isRemote, boolean showBalance) {
+    public ListAccountDialog(Project project, boolean isRemote, boolean showBalance) {
         super(project, true);
         init();
         setTitle("Accounts (" + (isRemote ? "Remote Mode": "Embedded Mode") + ")");
 
+        this.accountService = AccountService.getAccountService(project);
         this.project = project;
-        this.accounts = accounts;
         this.isRemote = isRemote;
         this.showBalance = showBalance;
 
-        populateAccount(accounts);
+        initialize();
 
         if(showBalance) {
             //Right align balance column
-            DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
-            rightRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
-            accListTable.getColumnModel().getColumn(1).setCellRenderer(rightRenderer);
+//            DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
+//            rightRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
+//            accListTable.getColumnModel().getColumn(1).setCellRenderer(rightRenderer);
         } else {
             fetchBalanceButton.setVisible(false);
         }
@@ -142,14 +145,30 @@ public class ListAccountDialog extends DialogWrapper {
         tableModel.fireTableDataChanged();
     }
 
-    private void populateAccount(List<AlgoAccount> accounts) {
-        tableModel = new AccountListTableModel(accounts, showBalance);
+    private void initialize() {
+        tableModel = new AccountListTableModel(showBalance);
         accListTable.setModel(tableModel);
+
+        messageLabel.setText("Loading account ...");
+        ApplicationManager.getApplication().invokeLater(() -> {
+            try {
+                List<AlgoAccount> accs = accountService.getAccounts();
+                tableModel.setElements(accs);
+                messageLabel.setText("");
+            } catch(Exception e) {
+                messageLabel.setText("Account loading failed !!!");
+            }
+
+        }, ModalityState.stateForComponent(accListTable));
     }
 
     @Nullable
     @Override
     protected JComponent createCenterPanel() {
         return mainPanel;
+    }
+
+    private void createUIComponents() {
+        // TODO: place custom component creation code here
     }
 }
