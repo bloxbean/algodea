@@ -1,13 +1,42 @@
 package com.bloxbean.algorand.idea.module.sdk;
 
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.projectRoots.Sdk;
+import com.intellij.openapi.vfs.LocalFileSystem;
+import com.intellij.openapi.vfs.VirtualFile;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
 public class AlgoSdkUtil {
     private final static Logger LOG = Logger.getInstance(AlgoSdkUtil.class);
+
+    public static String getVersionString(String algoHome) {
+        if (algoHome == null) return null;
+
+        File file = new File(algoHome);
+        VirtualFile home = LocalFileSystem.getInstance().findFileByIoFile(file);
+        if (home != null) {
+            VirtualFile bin = home.findChild("bin");
+            if (bin != null) {
+                String binPath = bin.getCanonicalPath();
+                try {
+                    String result = AlgoSdkUtil.runProcessAndExit(binPath + File.separator + "goal", "--version");
+                    result.split(" ");
+                    LOG.debug(result);
+                    return result;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return null;
+    }
 
     public static String runProcessAndExit(String program, String command) throws IOException, InterruptedException {
         ProcessBuilder processBuilder = new ProcessBuilder();

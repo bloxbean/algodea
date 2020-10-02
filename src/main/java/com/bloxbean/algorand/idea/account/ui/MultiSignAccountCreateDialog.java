@@ -86,7 +86,7 @@ public class MultiSignAccountCreateDialog extends DialogWrapper {
 
     private void populateData() {
 
-        for(int i=2; i <= 10; i++)
+        for(int i=2; i <= 50; i++)
             thresholdCBModel.addElement(i);
 
         messageLabel.setText("Loading available accounts ...");

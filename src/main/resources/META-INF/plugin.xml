@@ -45,6 +45,10 @@
                         anchor="bottom"
                         factoryClass="com.bloxbean.algorand.idea.toolwindow.AlgoToolWindowFactory"/>
 
+        <toolWindow id="Algorand Service"
+                    anchor="right"
+                    factoryClass="com.bloxbean.algorand.idea.toolwindow.AlgoServiceToolWindowFactory"/>
+
         <!-- file templates -->
         <internalFileTemplate name="Algo.Empty"/>
 <!--    <internalFileTemplate name="Algo.VotingContract"/>-->
@@ -57,6 +61,16 @@
         <internalFileTemplate name="Algo.Periodic Payment Escrow"/>
         <internalFileTemplate name="Algo.Split Contract"/>
 
+<!--        <applicationService-->
+<!--                            serviceImplementation="com.bloxbean.algorand.idea.serverint.service.NodeConfigState" />-->
+
+<!--        <applicationConfigurable parentId="tools" instance="com.bloxbean.algorand.idea.serverint.NodeSettingsConfigurable"-->
+<!--                                 id="com.bloxbean.algorand.idea.serverint.NodeSettingsConfigurable"-->
+<!--                                 displayName="Algorand"/>-->
+
+        <applicationService serviceImplementation="com.bloxbean.algorand.idea.serverint.service.NodeConfigState"/>
+        <applicationService serviceImplementation="com.bloxbean.algorand.idea.serverint.service.AlgoLocalSDKState"/>
+        <projectService serviceImplementation="com.bloxbean.algorand.idea.serverint.service.AlgoProjectState"/>
     </extensions>
     <actions>
         <action id="Algorand.NewTEALFile" class="com.bloxbean.algorand.idea.core.action.NewTEALFileAction"
@@ -100,6 +114,14 @@
         <action id="Algo.multisig-account.list" class="com.bloxbean.algorand.idea.account.action.MultisigAccountListAction" text="List Multi-Sig Accounts"
                 description="List Multi-Sig Accounts">
             <add-to-group group-id="AlgoActionGroup.Accounts"/>
+        </action>
+        <action id="Algo.servers.create" class="com.bloxbean.algorand.idea.serverint.action.CreateNewServerAction" text="Configure New Server"
+                description="Configure New Server">
+<!--            <add-to-group group-id="AlgoActionGroup.configuration"/>-->
+        </action>
+        <action id="Algo.servers.configure" class="com.bloxbean.algorand.idea.serverint.action.ConfigurationAction" text="Configuration"
+                description="Configure New Server">
+            <add-to-group group-id="com.bloxbean.algorand.idea.core.action.AlgoActionGroup" anchor="last"/>
         </action>
     </actions>
 </idea-plugin>

@@ -24,7 +24,6 @@ package com.bloxbean.algorand.idea.account.service;
 
 import com.bloxbean.algorand.idea.account.model.AlgoAccount;
 import com.bloxbean.algorand.idea.account.model.AlgoMultisigAccount;
-import com.bloxbean.algorand.idea.account.service.AccountService;
 import com.bloxbean.algorand.idea.account.ui.ListAccountDialog;
 import com.bloxbean.algorand.idea.account.ui.ListMultisigAccountDialog;
 import com.intellij.openapi.project.Project;
@@ -37,28 +36,35 @@ public class AccountChooser {
         AccountService accountCacheService = AccountService.getAccountService(project);
         List<AlgoAccount> accounts = accountCacheService.getAccounts();
 
-        ListAccountDialog listAccountDialog = new ListAccountDialog(project, accounts, true, showBalance);
+        ListAccountDialog listAccountDialog = new ListAccountDialog(project, true, showBalance);
+        try {
+            boolean result = listAccountDialog.showAndGet();
 
-        boolean result = listAccountDialog.showAndGet();
+            if (!result) {
+                return null;
+            }
 
-        if(!result) {
-            return null;
+            AlgoAccount selectedAccount = listAccountDialog.getSelectAccount();
+            return selectedAccount;
+        } finally {
+            listAccountDialog.disposeIfNeeded();
         }
-
-        AlgoAccount selectedAccount = listAccountDialog.getSelectAccount();
-        return selectedAccount;
     }
 
     public static AlgoMultisigAccount getSelectedMultisigAccount(Project project, boolean showBalance) {
         ListMultisigAccountDialog listAccountDialog = new ListMultisigAccountDialog(project, showBalance);
-        boolean result = listAccountDialog.showAndGet();
+        try {
+            boolean result = listAccountDialog.showAndGet();
 
-        if(!result) {
-            return null;
+            if (!result) {
+                return null;
+            }
+
+            AlgoMultisigAccount selectedAccount = listAccountDialog.getSelectAccount();
+            return selectedAccount;
+        } finally {
+            listAccountDialog.disposeIfNeeded();
         }
-
-        AlgoMultisigAccount selectedAccount = listAccountDialog.getSelectAccount();
-        return selectedAccount;
     }
 
 //    public static Account getLocalAvmSelectedAccount(Project project) {
