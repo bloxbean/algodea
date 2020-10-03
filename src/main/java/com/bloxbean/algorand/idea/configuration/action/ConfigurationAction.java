@@ -1,6 +1,5 @@
 package com.bloxbean.algorand.idea.configuration.action;
 
-import com.bloxbean.algorand.idea.common.Tuple;
 import com.bloxbean.algorand.idea.configuration.service.AlgoProjectState;
 import com.bloxbean.algorand.idea.configuration.ui.AlgoProjectConfigurationDialog;
 import com.bloxbean.algorand.idea.util.IdeaUtil;
@@ -28,22 +27,7 @@ public class ConfigurationAction extends AnAction {
 
         boolean ok = dialog.showAndGet();
         if(ok) {
-            if(algoProjectState == null) {
-                IdeaUtil.showNotification(project, "Algorand node configuration",
-                        "Unable to save Algorand configuration for the project", NotificationType.ERROR, null);
-                return;
-            } else {
-                AlgoProjectState.State state = algoProjectState.getState();
-                Tuple<AlgoProjectState.ConfigType, String> compilerSetting = dialog.getCompilerSdkId();
-
-                if(compilerSetting != null) {
-                    state.setCompilerType(compilerSetting._1());
-                    state.setCompilerId(compilerSetting._2());
-                }
-                state.setDeploymentServerId(dialog.getDeployementNodeId());
-
-                algoProjectState.setState(state);
-            }
+            dialog.save(project);
         } else {
 
         }

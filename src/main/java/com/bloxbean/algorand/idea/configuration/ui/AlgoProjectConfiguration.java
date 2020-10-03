@@ -7,9 +7,16 @@ import com.bloxbean.algorand.idea.configuration.service.AlgoLocalSDKState;
 import com.bloxbean.algorand.idea.configuration.service.AlgoProjectState;
 import com.bloxbean.algorand.idea.configuration.service.ConfiguraionHelperService;
 import com.bloxbean.algorand.idea.configuration.service.NodeConfigState;
+import com.bloxbean.algorand.idea.module.AlgorandModuleType;
+import com.bloxbean.algorand.idea.util.AlgoModuleUtils;
+import com.bloxbean.algorand.idea.util.IdeaUtil;
+import com.intellij.notification.NotificationType;
 import com.intellij.openapi.components.ServiceManager;
+import com.intellij.openapi.module.Module;
+import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
+import com.intellij.ui.components.JBPanel;
 import com.intellij.ui.components.JBRadioButton;
 import com.twelvemonkeys.lang.StringUtil;
 
@@ -30,7 +37,10 @@ public class AlgoProjectConfiguration {
     private JButton localSDKDetailBtn;
     private JButton algorandNodeDetailBtn;
     private JButton deployNodeDetailBtn;
+    private JPanel contractSettingsTab;
     private ButtonGroup compileRadioBtnGroup;
+
+    private ContractSettingsConfigurationPanel contractSettingsPanel;
 
     private NodeInfo emptyNodeInfo = new NodeInfo();
     private AlgoLocalSDK emptyLocalSDK = new AlgoLocalSDK();
@@ -44,6 +54,7 @@ public class AlgoProjectConfiguration {
     private void initializeData(Project project) {
         populateAvilableNodes();
         populateAvailableLocalSDKs();
+        populateContractSettingsPanel(project);
     }
 
     private void setCurrentSelection(Project project) {
@@ -51,7 +62,7 @@ public class AlgoProjectConfiguration {
         AlgoProjectState.State state = algoProjectState.getState();
 
         //set compiler setting
-        if(AlgoProjectState.ConfigType.remote_node == state.getCompilerType()) {
+        if (AlgoProjectState.ConfigType.remote_node == state.getCompilerType()) {
             algorandNodeRB.setSelected(true);
 
             setSelectedNode(algorandNodeCB, state.getCompilerId());
@@ -60,11 +71,11 @@ public class AlgoProjectConfiguration {
             setSelectedLocalSDK(localSDKCB, state.getCompilerId());
         }
 
-        if(!StringUtil.isEmpty(state.getDeploymentServerId())) {
+        if (!StringUtil.isEmpty(state.getDeploymentServerId())) {
             setSelectedNode(deployNodeCB, state.getDeploymentServerId());
         }
 
-        if(AlgoProjectState.ConfigType.remote_node.equals(state.getCompilerType())) {
+        if (AlgoProjectState.ConfigType.remote_node.equals(state.getCompilerType())) {
             algorandNodeRB.setSelected(true);
         } else {
             localAlgorandSDKRB.setSelected(true);
@@ -74,11 +85,11 @@ public class AlgoProjectConfiguration {
     }
 
     private void setSelectedLocalSDK(JComboBox cb, String id) {
-        for(int i=0; i < cb.getItemCount(); i++) {
-            AlgoLocalSDK algoLocalSDK = (AlgoLocalSDK)cb.getItemAt(i);
-            if(algoLocalSDK == null) continue;
+        for (int i = 0; i < cb.getItemCount(); i++) {
+            AlgoLocalSDK algoLocalSDK = (AlgoLocalSDK) cb.getItemAt(i);
+            if (algoLocalSDK == null) continue;
 
-            if(algoLocalSDK.getId() != null && algoLocalSDK.getId().equals(id)) {
+            if (algoLocalSDK.getId() != null && algoLocalSDK.getId().equals(id)) {
                 cb.setSelectedIndex(i);
                 break;
             }
@@ -86,11 +97,11 @@ public class AlgoProjectConfiguration {
     }
 
     private void setSelectedNode(JComboBox cb, String id) {
-        for(int i=0; i < cb.getItemCount(); i++) {
+        for (int i = 0; i < cb.getItemCount(); i++) {
             NodeInfo nodeI = (NodeInfo) cb.getItemAt(i);
-            if(nodeI == null) continue;
+            if (nodeI == null) continue;
 
-            if(nodeI.getId() != null && nodeI.getId().equals(id)) {
+            if (nodeI.getId() != null && nodeI.getId().equals(id)) {
                 cb.setSelectedIndex(i);
                 break;
             }
@@ -104,7 +115,7 @@ public class AlgoProjectConfiguration {
         algorandNodeCB.removeAllItems();
         deployNodeCB.removeAllItems();
 
-        if(nodes != null) {
+        if (nodes != null) {
             algorandNodeCB.addItem(emptyNodeInfo);
             deployNodeCB.addItem(emptyNodeInfo);
             for (NodeInfo node : nodes) {
@@ -119,18 +130,32 @@ public class AlgoProjectConfiguration {
         List<AlgoLocalSDK> localSdks = localSDKState.getLocalSDKs();
 
         localSDKCB.removeAllItems();
-        if(localSdks != null) {
+        if (localSdks != null) {
             localSDKCB.addItem(emptyLocalSDK);
-            for(AlgoLocalSDK localSDK: localSdks) {
+            for (AlgoLocalSDK localSDK : localSdks) {
                 localSDKCB.addItem(localSDK);
             }
+        }
+    }
+
+    private void populateContractSettingsPanel(Project project) {
+        AlgoProjectState.State state = AlgoProjectState.getInstance(project).getState();
+        contractSettingsPanel.poulateData(state);
+
+        String sourcePath = AlgoModuleUtils.getFirstSourceRootPath(project);
+        if(sourcePath == null) {
+            sourcePath = AlgoModuleUtils.getModuleDirPath(project);
+        }
+
+        if(!StringUtil.isEmpty(sourcePath)) {
+            contractSettingsPanel.setSourceRootPath(sourcePath);
         }
     }
 
     private void attachHandlers(Project project) {
         newCompileNodeBtn.addActionListener(e -> {
             NodeInfo nodeInfo = ConfiguraionHelperService.createOrUpdateNewNodeConfiguration(project, null);
-            if(nodeInfo != null) {
+            if (nodeInfo != null) {
                 //do something. Refresh
                 populateAvilableNodes();
                 setSelectedNode(algorandNodeCB, nodeInfo.getId());
@@ -140,7 +165,7 @@ public class AlgoProjectConfiguration {
 
         newLocalSDKBtn.addActionListener(e -> {
             AlgoLocalSDK localSDK = ConfiguraionHelperService.createOrUpdateLocalSDKConfiguration(project, null);
-            if(localSDK != null) {
+            if (localSDK != null) {
                 populateAvailableLocalSDKs();
                 setSelectedLocalSDK(localSDKCB, localSDK.getId());
             }
@@ -149,7 +174,7 @@ public class AlgoProjectConfiguration {
         //New deploy target
         newDeployNodeBtn.addActionListener(e -> {
             NodeInfo nodeInfo = ConfiguraionHelperService.createOrUpdateNewNodeConfiguration(project, null);
-            if(nodeInfo != null) {
+            if (nodeInfo != null) {
                 //do something. Refresh
                 populateAvilableNodes();
 
@@ -167,40 +192,40 @@ public class AlgoProjectConfiguration {
         });
 
         localSDKDetailBtn.addActionListener(e -> { //Update if required.
-            AlgoLocalSDK localSDK = (AlgoLocalSDK)localSDKCB.getSelectedItem();
-            if(localSDK == null || StringUtil.isEmpty(localSDK.getId())) {
+            AlgoLocalSDK localSDK = (AlgoLocalSDK) localSDKCB.getSelectedItem();
+            if (localSDK == null || StringUtil.isEmpty(localSDK.getId())) {
                 Messages.showWarningDialog("Please select a Algorand Local SDK first to see the details", "");
                 return;
             }
 
             AlgoLocalSDK updatedSDK = ConfiguraionHelperService.createOrUpdateLocalSDKConfiguration(project, localSDK);
-            if(updatedSDK != null) {
+            if (updatedSDK != null) {
                 updateLocalSDKInComboBox(localSDKCB, updatedSDK);
             }
         });
 
         algorandNodeDetailBtn.addActionListener(e -> {
             NodeInfo nodeInfo = (NodeInfo) algorandNodeCB.getSelectedItem();
-            if(nodeInfo == null || StringUtil.isEmpty(nodeInfo.getId())) {
+            if (nodeInfo == null || StringUtil.isEmpty(nodeInfo.getId())) {
                 Messages.showWarningDialog("Please select a Algorand node first to see the details", "");
                 return;
             }
 
             NodeInfo updatedNodeInfo = ConfiguraionHelperService.createOrUpdateNewNodeConfiguration(project, nodeInfo);
-            if(updatedNodeInfo != null) {
+            if (updatedNodeInfo != null) {
                 updateNodeInfoInComboBox(algorandNodeCB, updatedNodeInfo);
             }
         });
 
         deployNodeDetailBtn.addActionListener(e -> {
             NodeInfo nodeInfo = (NodeInfo) deployNodeCB.getSelectedItem();
-            if(nodeInfo == null || StringUtil.isEmpty(nodeInfo.getId())) {
+            if (nodeInfo == null || StringUtil.isEmpty(nodeInfo.getId())) {
                 Messages.showWarningDialog("Please select a Algorand node first to see the details", "");
                 return;
             }
 
             NodeInfo updatedNodeInfo = ConfiguraionHelperService.createOrUpdateNewNodeConfiguration(project, nodeInfo);
-            if(updatedNodeInfo != null) {
+            if (updatedNodeInfo != null) {
                 updateNodeInfoInComboBox(deployNodeCB, updatedNodeInfo);
             }
         });
@@ -209,13 +234,13 @@ public class AlgoProjectConfiguration {
     //For update operation
     private void updateNodeInfoInComboBox(JComboBox cb, NodeInfo updatedNodeInfo) {
         int count = cb.getItemCount();
-        if(count == 0) return;
+        if (count == 0) return;
 
-        for(int i=0; i<count; i++) {
+        for (int i = 0; i < count; i++) {
             NodeInfo nd = (NodeInfo) cb.getItemAt(i);
-            if(nd == null || StringUtil.isEmpty(nd.getId()))
+            if (nd == null || StringUtil.isEmpty(nd.getId()))
                 continue;
-            if(nd.getId().equals(updatedNodeInfo.getId())) {
+            if (nd.getId().equals(updatedNodeInfo.getId())) {
                 nd.updateValues(updatedNodeInfo);
                 break;
             }
@@ -225,13 +250,13 @@ public class AlgoProjectConfiguration {
 
     private void updateLocalSDKInComboBox(JComboBox cb, AlgoLocalSDK updatedLocalSDK) {
         int count = cb.getItemCount();
-        if(count == 0) return;
+        if (count == 0) return;
 
-        for(int i=0; i<count; i++) {
+        for (int i = 0; i < count; i++) {
             AlgoLocalSDK lsdk = (AlgoLocalSDK) cb.getItemAt(i);
-            if(lsdk == null || StringUtil.isEmpty(lsdk.getId()))
+            if (lsdk == null || StringUtil.isEmpty(lsdk.getId()))
                 continue;
-            if(lsdk.getId().equals(updatedLocalSDK.getId())) {
+            if (lsdk.getId().equals(updatedLocalSDK.getId())) {
                 lsdk.updateValues(updatedLocalSDK);
                 break;
             }
@@ -240,9 +265,9 @@ public class AlgoProjectConfiguration {
     }
 
     private void enableDisableCompilationType() {
-        if(localAlgorandSDKRB.isSelected()) {
+        if (localAlgorandSDKRB.isSelected()) {
             //clean remote node
-            if(algorandNodeCB.getItemCount() >= 1)
+            if (algorandNodeCB.getItemCount() >= 1)
                 algorandNodeCB.setSelectedIndex(0);
             algorandNodeCB.setEnabled(false);
             newCompileNodeBtn.setEnabled(false);
@@ -251,8 +276,8 @@ public class AlgoProjectConfiguration {
             localSDKCB.setEnabled(true);
             newLocalSDKBtn.setEnabled(true);
             localSDKDetailBtn.setEnabled(true);
-        } else if(algorandNodeRB.isSelected()) {
-            if(localSDKCB.getItemCount() >= 1)
+        } else if (algorandNodeRB.isSelected()) {
+            if (localSDKCB.getItemCount() >= 1)
                 localSDKCB.setSelectedIndex(0);
             localSDKCB.setEnabled(false);
             newLocalSDKBtn.setEnabled(false);
@@ -265,15 +290,15 @@ public class AlgoProjectConfiguration {
     }
 
     public Tuple<AlgoProjectState.ConfigType, String> getCompilerSdkId() {
-        if(localAlgorandSDKRB.isSelected()) {
+        if (localAlgorandSDKRB.isSelected()) {
             AlgoLocalSDK algoLocalSDK = (AlgoLocalSDK) localSDKCB.getSelectedItem();
-            if(algoLocalSDK != null)
+            if (algoLocalSDK != null)
                 return new Tuple(AlgoProjectState.ConfigType.local_sdk, algoLocalSDK.getId());
             else
                 return null;
-        } else if(algorandNodeRB.isSelected()) {
+        } else if (algorandNodeRB.isSelected()) {
             NodeInfo nodeInfo = (NodeInfo) algorandNodeCB.getSelectedItem();
-            if(nodeInfo != null)
+            if (nodeInfo != null)
                 return new Tuple<>(AlgoProjectState.ConfigType.remote_node, nodeInfo.getId());
             else
                 return null;
@@ -283,13 +308,28 @@ public class AlgoProjectConfiguration {
 
     public String getDeployementNodeId() {
         NodeInfo nodeInfo = (NodeInfo) deployNodeCB.getSelectedItem();
-        if(nodeInfo != null)
+        if (nodeInfo != null)
             return nodeInfo.getId();
         else
             return null;
     }
 
+    public void updateDataToState(AlgoProjectState.State state) {
 
+        //Save Compile / Build settings
+
+        Tuple<AlgoProjectState.ConfigType, String> compilerSetting = getCompilerSdkId();
+
+        if (compilerSetting != null) {
+            state.setCompilerType(compilerSetting._1());
+            state.setCompilerId(compilerSetting._2());
+        }
+        state.setDeploymentServerId(getDeployementNodeId());
+
+        //Save Contract Settings panel
+        contractSettingsPanel.updateDataToState(state);
+
+    }
 
     public JPanel getMainPanel() {
         return mainPanel;
@@ -303,6 +343,8 @@ public class AlgoProjectConfiguration {
         compileRadioBtnGroup = new ButtonGroup();
         compileRadioBtnGroup.add(localAlgorandSDKRB);
         compileRadioBtnGroup.add(algorandNodeRB);
+
+        contractSettingsPanel = new ContractSettingsConfigurationPanel();
 
     }
 }
