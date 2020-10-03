@@ -38,7 +38,8 @@ public class AlgoFileTemplateUtil {
     return getApplicableTemplates(new Condition<FileTemplate>() {
       @Override
       public boolean value(FileTemplate fileTemplate) {
-        return TEALFileType.INSTANCE.getDefaultExtension().equals(fileTemplate.getExtension());
+        return TEALFileType.INSTANCE.getDefaultExtension().equals(fileTemplate.getExtension())
+                && fileTemplate.getName().startsWith(ALGORAND_TEMPLATE_PREFIX);
       }
     });
   }

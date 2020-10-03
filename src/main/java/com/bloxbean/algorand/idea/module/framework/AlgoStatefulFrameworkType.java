@@ -7,10 +7,10 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 
-public class AlgoFrameworkType extends FrameworkTypeEx {
-    public static final String ID = "Algorand Framework";
+public class AlgoStatefulFrameworkType extends FrameworkTypeEx {
+    public static final String ID = "com.bloxbean.algorand.framework.AlgorandStatefulSmartContract";
 
-    protected AlgoFrameworkType() {
+    protected AlgoStatefulFrameworkType() {
         super(ID);
     }
 
@@ -23,7 +23,7 @@ public class AlgoFrameworkType extends FrameworkTypeEx {
     @NotNull
     @Override
     public String getPresentableName() {
-        return "Algorand Framework";
+        return "Stateful Contract";
     }
 
     @NotNull

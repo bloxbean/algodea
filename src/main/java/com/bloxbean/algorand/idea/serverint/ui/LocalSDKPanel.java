@@ -1,7 +1,6 @@
 package com.bloxbean.algorand.idea.serverint.ui;
 
-import com.bloxbean.algorand.idea.module.sdk.AlgoSdkUtil;
-import com.bloxbean.algorand.idea.serverint.model.AlgoLocalSDK;
+import com.bloxbean.algorand.idea.core.util.AlgoSdkUtil;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.twelvemonkeys.lang.StringUtil;

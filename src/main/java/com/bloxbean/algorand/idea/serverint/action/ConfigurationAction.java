@@ -33,7 +33,7 @@ public class ConfigurationAction extends AnAction {
                         "Unable to save Algorand configuration for the project", NotificationType.ERROR, null);
                 return;
             } else {
-                AlgoProjectState.State state = new AlgoProjectState.State();
+                AlgoProjectState.State state = algoProjectState.getState();
                 Tuple<AlgoProjectState.ConfigType, String> compilerSetting = dialog.getCompilerSdkId();
 
                 if(compilerSetting != null) {

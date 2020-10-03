@@ -19,7 +19,7 @@
     </project-components>
 
     <extensions defaultExtensionNs="com.intellij">
-        <sdkType implementation="com.bloxbean.algorand.idea.module.sdk.AlgoSdkType"/>
+<!--        <sdkType implementation="com.bloxbean.algorand.idea.module.sdk.AlgoSdkType"/>-->
 
         <fileType name="TEAL File" implementationClass="com.bloxbean.algorand.idea.language.TEALFileType"
                   fieldName="INSTANCE" language="TEAL" extensions="teal"/>
@@ -38,7 +38,7 @@
         <!-- module extensions -->
         <moduleType id="Algorand_Module" implementationClass="com.bloxbean.algorand.idea.module.AlgorandModuleType"/>
 <!--        <facetType implementation="com.bloxbean.algorand.idea.module.facet.AlgoFacetType"/>-->
-<!--        <framework.type implementation="com.bloxbean.algorand.idea.module.framework.AlgoFrameworkType"/>-->
+        <framework.type implementation="com.bloxbean.algorand.idea.module.framework.AlgoStatefulFrameworkType"/>
 <!--        <projectStructureDetector implementation="com.bloxbean.algorand.idea.module.detector.AlgoProjectStructureDetector"/>-->
 
         <toolWindow id="Algorand"
@@ -60,6 +60,9 @@
         <internalFileTemplate name="Algo.Limit Order B"/>
         <internalFileTemplate name="Algo.Periodic Payment Escrow"/>
         <internalFileTemplate name="Algo.Split Contract"/>
+
+        <internalFileTemplate name="_Algo.ApprovalProgram"/>
+        <internalFileTemplate name="_Algo.ClearStateProgram"/>
 
 <!--        <applicationService-->
 <!--                            serviceImplementation="com.bloxbean.algorand.idea.serverint.service.NodeConfigState" />-->

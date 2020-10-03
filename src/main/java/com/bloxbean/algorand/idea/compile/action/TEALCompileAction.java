@@ -4,7 +4,7 @@ import com.bloxbean.algorand.idea.compile.ui.CompileVarTmplInputDialog;
 import com.bloxbean.algorand.idea.compile.model.VarParam;
 import com.bloxbean.algorand.idea.compile.util.VarTmplUtil;
 import com.bloxbean.algorand.idea.language.psi.TEALFile;
-import com.bloxbean.algorand.idea.module.sdk.AlgoSdkType;
+//import com.bloxbean.algorand.idea.module.sdk.AlgoSdkType;
 import com.bloxbean.algorand.idea.core.service.AlgoCacheService;
 import com.bloxbean.algorand.idea.toolwindow.AlgoToolWindowFactory;
 import com.intellij.execution.ExecutionException;
@@ -79,10 +79,10 @@ public class TEALCompileAction extends AnAction {
         ModuleRootManager moduleRootManager = ModuleRootManager.getInstance(module);
         Sdk sdk = moduleRootManager.getSdk();
 
-        if (sdk == null || !AlgoSdkType.getInstance().equals(sdk.getSdkType())) {
-            Messages.showErrorDialog("Algorand SDK is not set for this module.", "TEAL Compilation");
-            return;
-        }
+//        if (sdk == null || !AlgoSdkType.getInstance().equals(sdk.getSdkType())) {
+//            Messages.showErrorDialog("Algorand SDK is not set for this module.", "TEAL Compilation");
+//            return;
+//        }
 
         PsiFile psiFile = e.getData(CommonDataKeys.PSI_FILE);
         if (!(psiFile instanceof TEALFile)) {

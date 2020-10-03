@@ -26,6 +26,11 @@ public class AlgoProjectState implements PersistentStateComponent<AlgoProjectSta
         private String compilerId;
         private String deploymentServerId;
 
+        //Stateful contracts
+        private boolean supportStatefulContract;
+        private String approvalProgramName;
+        private String clearStateProgramName;
+
         public ConfigType getCompilerType() {
             return compilerType;
         }
@@ -49,6 +54,31 @@ public class AlgoProjectState implements PersistentStateComponent<AlgoProjectSta
         public void setDeploymentServerId(String deploymentServerId) {
             this.deploymentServerId = deploymentServerId;
         }
+
+        public boolean isSupportStatefulContract() {
+            return supportStatefulContract;
+        }
+
+        public void setSupportStatefulContract(boolean supportStatefulContract) {
+            this.supportStatefulContract = supportStatefulContract;
+        }
+
+        public String getApprovalProgramName() {
+            return approvalProgramName;
+        }
+
+        public void setApprovalProgramName(String approvalProgramName) {
+            this.approvalProgramName = approvalProgramName;
+        }
+
+        public String getClearStateProgramName() {
+            return clearStateProgramName;
+        }
+
+        public void setClearStateProgramName(String clearStateProgramName) {
+            this.clearStateProgramName = clearStateProgramName;
+        }
+
     }
 
     private State state = new State();
