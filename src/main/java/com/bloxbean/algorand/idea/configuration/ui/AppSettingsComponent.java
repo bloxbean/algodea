@@ -1,4 +1,4 @@
-package com.bloxbean.algorand.idea.serverint.ui;
+package com.bloxbean.algorand.idea.configuration.ui;
 
 import com.intellij.ui.components.JBCheckBox;
 import com.intellij.ui.components.JBLabel;

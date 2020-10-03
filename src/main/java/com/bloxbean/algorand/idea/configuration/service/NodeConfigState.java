@@ -1,6 +1,6 @@
-package com.bloxbean.algorand.idea.serverint.service;
+package com.bloxbean.algorand.idea.configuration.service;
 
-import com.bloxbean.algorand.idea.serverint.model.NodeInfo;
+import com.bloxbean.algorand.idea.configuration.model.NodeInfo;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.components.State;

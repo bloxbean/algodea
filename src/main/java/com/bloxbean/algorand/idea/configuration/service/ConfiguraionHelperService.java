@@ -1,9 +1,9 @@
-package com.bloxbean.algorand.idea.serverint.service;
+package com.bloxbean.algorand.idea.configuration.service;
 
-import com.bloxbean.algorand.idea.serverint.model.AlgoLocalSDK;
-import com.bloxbean.algorand.idea.serverint.model.NodeInfo;
-import com.bloxbean.algorand.idea.serverint.ui.LocalSDKDialog;
-import com.bloxbean.algorand.idea.serverint.ui.RemoteNodeConfigDialog;
+import com.bloxbean.algorand.idea.configuration.model.AlgoLocalSDK;
+import com.bloxbean.algorand.idea.configuration.model.NodeInfo;
+import com.bloxbean.algorand.idea.configuration.ui.LocalSDKDialog;
+import com.bloxbean.algorand.idea.configuration.ui.RemoteNodeConfigDialog;
 import com.intellij.openapi.project.Project;
 
 import java.util.UUID;

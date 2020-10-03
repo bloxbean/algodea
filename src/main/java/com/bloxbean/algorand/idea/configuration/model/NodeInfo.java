@@ -1,4 +1,4 @@
-package com.bloxbean.algorand.idea.serverint.model;
+package com.bloxbean.algorand.idea.configuration.model;
 
 import java.util.Objects;
 

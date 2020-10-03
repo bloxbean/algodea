@@ -1,7 +1,7 @@
 package com.bloxbean.algorand.idea.module.framework;
 
 import com.bloxbean.algorand.idea.module.framework.ui.StatefulContractPanel;
-import com.bloxbean.algorand.idea.serverint.service.AlgoProjectState;
+import com.bloxbean.algorand.idea.configuration.service.AlgoProjectState;
 import com.intellij.framework.addSupport.FrameworkSupportInModuleConfigurable;
 import com.intellij.ide.fileTemplates.FileTemplate;
 import com.intellij.ide.fileTemplates.FileTemplateManager;

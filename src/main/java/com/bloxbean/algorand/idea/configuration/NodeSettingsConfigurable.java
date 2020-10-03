@@ -1,8 +1,7 @@
-package com.bloxbean.algorand.idea.serverint;
+package com.bloxbean.algorand.idea.configuration;
 
-import com.bloxbean.algorand.idea.serverint.service.NodeConfigState;
-import com.bloxbean.algorand.idea.serverint.ui.AppSettingsComponent;
-import com.bloxbean.algorand.idea.serverint.ui.NodeConfigurableComponent;
+import com.bloxbean.algorand.idea.configuration.service.NodeConfigState;
+import com.bloxbean.algorand.idea.configuration.ui.NodeConfigurableComponent;
 import com.intellij.openapi.options.Configurable;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.Nullable;

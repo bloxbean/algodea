@@ -1,4 +1,4 @@
-package com.bloxbean.algorand.idea.serverint.ui;
+package com.bloxbean.algorand.idea.configuration.ui;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
@@ -7,7 +7,6 @@ import com.twelvemonkeys.lang.StringUtil;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import java.awt.event.*;
 
 public class RemoteNodeConfigDialog extends DialogWrapper{
     private JPanel contentPane;

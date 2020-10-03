@@ -1,9 +1,4 @@
-package com.bloxbean.algorand.idea.serverint.ui;
-
-import com.intellij.icons.AllIcons;
-import com.intellij.openapi.ui.SimpleToolWindowPanel;
-import com.intellij.ui.BalloonImpl;
-import org.jdesktop.swingx.action.ActionManager;
+package com.bloxbean.algorand.idea.configuration.ui;
 
 import javax.swing.*;
 

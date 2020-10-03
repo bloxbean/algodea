@@ -1,8 +1,8 @@
-package com.bloxbean.algorand.idea.serverint.action;
+package com.bloxbean.algorand.idea.configuration.action;
 
 import com.bloxbean.algorand.idea.common.Tuple;
-import com.bloxbean.algorand.idea.serverint.service.AlgoProjectState;
-import com.bloxbean.algorand.idea.serverint.ui.AlgoProjectConfigurationDialog;
+import com.bloxbean.algorand.idea.configuration.service.AlgoProjectState;
+import com.bloxbean.algorand.idea.configuration.ui.AlgoProjectConfigurationDialog;
 import com.bloxbean.algorand.idea.util.IdeaUtil;
 import com.intellij.notification.NotificationType;
 import com.intellij.openapi.actionSystem.AnAction;

@@ -1,6 +1,6 @@
-package com.bloxbean.algorand.idea.serverint.action;
+package com.bloxbean.algorand.idea.configuration.action;
 
-import com.bloxbean.algorand.idea.serverint.service.ConfiguraionHelperService;
+import com.bloxbean.algorand.idea.configuration.service.ConfiguraionHelperService;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;

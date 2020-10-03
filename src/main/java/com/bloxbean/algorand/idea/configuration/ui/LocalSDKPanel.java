@@ -1,4 +1,4 @@
-package com.bloxbean.algorand.idea.serverint.ui;
+package com.bloxbean.algorand.idea.configuration.ui;
 
 import com.bloxbean.algorand.idea.core.util.AlgoSdkUtil;
 import com.intellij.openapi.diagnostic.Logger;

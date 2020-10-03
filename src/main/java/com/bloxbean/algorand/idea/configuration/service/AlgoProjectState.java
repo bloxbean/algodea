@@ -1,4 +1,4 @@
-package com.bloxbean.algorand.idea.serverint.service;
+package com.bloxbean.algorand.idea.configuration.service;
 
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.ServiceManager;

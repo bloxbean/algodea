@@ -1,7 +1,7 @@
-package com.bloxbean.algorand.idea.serverint.ui;
+package com.bloxbean.algorand.idea.configuration.ui;
 
 import com.bloxbean.algorand.idea.common.Tuple;
-import com.bloxbean.algorand.idea.serverint.service.AlgoProjectState;
+import com.bloxbean.algorand.idea.configuration.service.AlgoProjectState;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import org.jetbrains.annotations.Nullable;
