@@ -1,5 +1,6 @@
 package com.bloxbean.algorand.idea.configuration.service;
 
+import com.bloxbean.algorand.idea.configuration.model.AlgoLocalSDK;
 import com.bloxbean.algorand.idea.configuration.model.NodeInfo;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.ServiceManager;
@@ -87,6 +88,15 @@ final public class NodeConfigState implements PersistentStateComponent<Element> 
 
     private void setNodes(List<NodeInfo> list) {
         nodes = list;
+    }
+
+    public void updateNodeInfo(NodeInfo updatedInfo) {
+        for(NodeInfo nd: nodes) {
+            if(nd.getId() != null && nd.getId().equals(updatedInfo.getId())) {
+                nd.updateValues(updatedInfo);
+                break;
+            }
+        }
     }
 
 }

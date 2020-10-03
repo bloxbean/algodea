@@ -54,6 +54,8 @@
                         <colspec value="fill:d:grow"/>
                         <colspec value="left:4dlu:noGrow"/>
                         <colspec value="fill:max(d;4px):noGrow"/>
+                        <colspec value="left:4dlu:noGrow"/>
+                        <colspec value="fill:max(d;4px):noGrow"/>
                         <constraints>
                           <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                         </constraints>
@@ -113,6 +115,24 @@
                               <text value="New"/>
                             </properties>
                           </component>
+                          <component id="f8a43" class="javax.swing.JButton" binding="localSDKDetailBtn">
+                            <constraints>
+                              <grid row="0" column="6" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                              <forms/>
+                            </constraints>
+                            <properties>
+                              <text value="Detail"/>
+                            </properties>
+                          </component>
+                          <component id="3da03" class="javax.swing.JButton" binding="algorandNodeDetailBtn">
+                            <constraints>
+                              <grid row="2" column="6" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                              <forms/>
+                            </constraints>
+                            <properties>
+                              <text value="Detail"/>
+                            </properties>
+                          </component>
                         </children>
                       </grid>
                     </children>
@@ -130,6 +150,8 @@
                         <colspec value="fill:max(d;4px):noGrow"/>
                         <colspec value="left:4dlu:noGrow"/>
                         <colspec value="fill:d:grow"/>
+                        <colspec value="left:4dlu:noGrow"/>
+                        <colspec value="fill:max(d;4px):noGrow"/>
                         <colspec value="left:4dlu:noGrow"/>
                         <colspec value="fill:max(d;4px):noGrow"/>
                         <constraints>
@@ -161,6 +183,15 @@
                             </constraints>
                             <properties>
                               <text value="New"/>
+                            </properties>
+                          </component>
+                          <component id="acc46" class="javax.swing.JButton" binding="deployNodeDetailBtn">
+                            <constraints>
+                              <grid row="0" column="6" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                              <forms/>
+                            </constraints>
+                            <properties>
+                              <text value="Detail"/>
                             </properties>
                           </component>
                         </children>

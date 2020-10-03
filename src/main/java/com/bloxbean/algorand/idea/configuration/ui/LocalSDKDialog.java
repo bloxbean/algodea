@@ -1,5 +1,6 @@
 package com.bloxbean.algorand.idea.configuration.ui;
 
+import com.bloxbean.algorand.idea.configuration.model.AlgoLocalSDK;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.ValidationInfo;
@@ -13,11 +14,16 @@ public class LocalSDKDialog extends DialogWrapper {
     private LocalSDKPanel localSDKPanel;
 
     public LocalSDKDialog(Project project) {
+        this(project, null);
+    }
+
+    public LocalSDKDialog(Project project, AlgoLocalSDK algoLocalSDK) {
         super(project);
-        localSDKPanel = new LocalSDKPanel();
+        localSDKPanel = new LocalSDKPanel(algoLocalSDK);
         init();
         setTitle("Local Algorand SDK");
     }
+
     @Override
     protected @Nullable JComponent createCenterPanel() {
         return localSDKPanel.getMainPanel();

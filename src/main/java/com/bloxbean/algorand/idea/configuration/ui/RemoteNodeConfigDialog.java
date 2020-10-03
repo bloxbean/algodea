@@ -1,5 +1,6 @@
 package com.bloxbean.algorand.idea.configuration.ui;
 
+import com.bloxbean.algorand.idea.configuration.model.NodeInfo;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.ValidationInfo;
@@ -16,9 +17,20 @@ public class RemoteNodeConfigDialog extends DialogWrapper{
     private JTextField indexerApiEndpoint;
 
     public RemoteNodeConfigDialog(Project project) {
+        this(project, null);
+    }
+
+    public RemoteNodeConfigDialog(Project project, NodeInfo existingNodeInfo) {
         super(project);
         init();
         setTitle("Algorand Node Configuration");
+
+        if(existingNodeInfo != null) {
+            serverName.setText(existingNodeInfo.getName());
+            nodeApiEndpoint.setText(existingNodeInfo.getNodeAPIUrl());
+            apiKey.setText(existingNodeInfo.getApiKey());
+            indexerApiEndpoint.setText(existingNodeInfo.getIndexerAPIUrl());
+        }
     }
 
     public String getServerName() {

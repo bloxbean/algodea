@@ -1,11 +1,13 @@
 package com.bloxbean.algorand.idea.configuration.ui;
 
+import com.bloxbean.algorand.idea.configuration.model.AlgoLocalSDK;
 import com.bloxbean.algorand.idea.core.util.AlgoSdkUtil;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.twelvemonkeys.lang.StringUtil;
 
 import javax.swing.*;
+import java.awt.*;
 import java.io.File;
 
 public class LocalSDKPanel {
@@ -15,10 +17,21 @@ public class LocalSDKPanel {
     private JPanel mainPanel;
     private JTextField nameTf;
     private TextFieldWithBrowseButton homeTfWithBrowserBtn;
+    private JLabel errorMsgLabel;
     private JTextField homeTf;
 
     public LocalSDKPanel() {
+        this(null);
+    }
+
+    public LocalSDKPanel(AlgoLocalSDK algoLocalSDK) {
         super();
+
+        if(algoLocalSDK != null) {
+            nameTf.setText(algoLocalSDK.getName());
+            homeTf.setText(algoLocalSDK.getHome());
+            versionTf.setText(algoLocalSDK.getVersion());
+        }
     }
 
     public JPanel getMainPanel() {
@@ -48,16 +61,23 @@ public class LocalSDKPanel {
             if (file == null) {
                 return;
             }
+            errorMsgLabel.setText(""); //reset error msg
+            versionTf.setText("");
+
             homeTf.setText(file.getAbsolutePath());
 
             String version = AlgoSdkUtil.getVersionString(homeTf.getText());
             if(StringUtil.isEmpty(version)) {
+                versionTf.setText("");
                 //Invalid version
-                LOG.info("Invalid sdk path : " + homeTf.getText());
+                //LOG.info("Invalid sdk path : " + homeTf.getText());
+                errorMsgLabel.setText("<html>Invalid Algorand home. Version could not be determined. " +
+                        "<br/> Make sure \'goal\' is available under $ALGORAND_HOME/bin</html>");
+                errorMsgLabel.setForeground(Color.red);
                 return;
+            } else {
+                versionTf.setText(version);
             }
-            versionTf.setText(version);
-            //Get goal version.
         });
     }
 

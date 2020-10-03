@@ -1,5 +1,7 @@
 package com.bloxbean.algorand.idea.configuration.model;
 
+import java.util.Objects;
+
 public class AlgoLocalSDK {
     private String id;
     private String name;
@@ -48,6 +50,14 @@ public class AlgoLocalSDK {
 
     public void setVersion(String version) {
         this.version = version;
+    }
+
+    public void updateValues(AlgoLocalSDK algoLocalSDK) { //Update everything except id
+        if(algoLocalSDK == null) return;
+
+        this.setName(algoLocalSDK.getName());
+        this.setHome(algoLocalSDK.getHome());
+        this.setVersion(algoLocalSDK.getVersion());
     }
 
     public String toString() {

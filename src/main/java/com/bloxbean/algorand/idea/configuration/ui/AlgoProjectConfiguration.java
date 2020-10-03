@@ -9,6 +9,7 @@ import com.bloxbean.algorand.idea.configuration.service.ConfiguraionHelperServic
 import com.bloxbean.algorand.idea.configuration.service.NodeConfigState;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.ui.components.JBRadioButton;
 import com.twelvemonkeys.lang.StringUtil;
 
@@ -26,6 +27,9 @@ public class AlgoProjectConfiguration {
     private JComboBox deployNodeCB;
     private JButton newDeployNodeBtn;
     private JButton newCompileNodeBtn;
+    private JButton localSDKDetailBtn;
+    private JButton algorandNodeDetailBtn;
+    private JButton deployNodeDetailBtn;
     private ButtonGroup compileRadioBtnGroup;
 
     private NodeInfo emptyNodeInfo = new NodeInfo();
@@ -125,7 +129,7 @@ public class AlgoProjectConfiguration {
 
     private void attachHandlers(Project project) {
         newCompileNodeBtn.addActionListener(e -> {
-            NodeInfo nodeInfo = ConfiguraionHelperService.createNewNodeConfiguration(project);
+            NodeInfo nodeInfo = ConfiguraionHelperService.createOrUpdateNewNodeConfiguration(project, null);
             if(nodeInfo != null) {
                 //do something. Refresh
                 populateAvilableNodes();
@@ -135,7 +139,7 @@ public class AlgoProjectConfiguration {
         });
 
         newLocalSDKBtn.addActionListener(e -> {
-            AlgoLocalSDK localSDK = ConfiguraionHelperService.createNewLocalSDKConfiguration(project);
+            AlgoLocalSDK localSDK = ConfiguraionHelperService.createOrUpdateLocalSDKConfiguration(project, null);
             if(localSDK != null) {
                 populateAvailableLocalSDKs();
                 setSelectedLocalSDK(localSDKCB, localSDK.getId());
@@ -144,7 +148,7 @@ public class AlgoProjectConfiguration {
 
         //New deploy target
         newDeployNodeBtn.addActionListener(e -> {
-            NodeInfo nodeInfo = ConfiguraionHelperService.createNewNodeConfiguration(project);
+            NodeInfo nodeInfo = ConfiguraionHelperService.createOrUpdateNewNodeConfiguration(project, null);
             if(nodeInfo != null) {
                 //do something. Refresh
                 populateAvilableNodes();
@@ -161,6 +165,78 @@ public class AlgoProjectConfiguration {
         algorandNodeRB.addActionListener(e -> {
             enableDisableCompilationType();
         });
+
+        localSDKDetailBtn.addActionListener(e -> { //Update if required.
+            AlgoLocalSDK localSDK = (AlgoLocalSDK)localSDKCB.getSelectedItem();
+            if(localSDK == null || StringUtil.isEmpty(localSDK.getId())) {
+                Messages.showWarningDialog("Please select a Algorand Local SDK first to see the details", "");
+                return;
+            }
+
+            AlgoLocalSDK updatedSDK = ConfiguraionHelperService.createOrUpdateLocalSDKConfiguration(project, localSDK);
+            if(updatedSDK != null) {
+                updateLocalSDKInComboBox(localSDKCB, updatedSDK);
+            }
+        });
+
+        algorandNodeDetailBtn.addActionListener(e -> {
+            NodeInfo nodeInfo = (NodeInfo) algorandNodeCB.getSelectedItem();
+            if(nodeInfo == null || StringUtil.isEmpty(nodeInfo.getId())) {
+                Messages.showWarningDialog("Please select a Algorand node first to see the details", "");
+                return;
+            }
+
+            NodeInfo updatedNodeInfo = ConfiguraionHelperService.createOrUpdateNewNodeConfiguration(project, nodeInfo);
+            if(updatedNodeInfo != null) {
+                updateNodeInfoInComboBox(algorandNodeCB, updatedNodeInfo);
+            }
+        });
+
+        deployNodeDetailBtn.addActionListener(e -> {
+            NodeInfo nodeInfo = (NodeInfo) deployNodeCB.getSelectedItem();
+            if(nodeInfo == null || StringUtil.isEmpty(nodeInfo.getId())) {
+                Messages.showWarningDialog("Please select a Algorand node first to see the details", "");
+                return;
+            }
+
+            NodeInfo updatedNodeInfo = ConfiguraionHelperService.createOrUpdateNewNodeConfiguration(project, nodeInfo);
+            if(updatedNodeInfo != null) {
+                updateNodeInfoInComboBox(deployNodeCB, updatedNodeInfo);
+            }
+        });
+    }
+
+    //For update operation
+    private void updateNodeInfoInComboBox(JComboBox cb, NodeInfo updatedNodeInfo) {
+        int count = cb.getItemCount();
+        if(count == 0) return;
+
+        for(int i=0; i<count; i++) {
+            NodeInfo nd = (NodeInfo) cb.getItemAt(i);
+            if(nd == null || StringUtil.isEmpty(nd.getId()))
+                continue;
+            if(nd.getId().equals(updatedNodeInfo.getId())) {
+                nd.updateValues(updatedNodeInfo);
+                break;
+            }
+        }
+
+    }
+
+    private void updateLocalSDKInComboBox(JComboBox cb, AlgoLocalSDK updatedLocalSDK) {
+        int count = cb.getItemCount();
+        if(count == 0) return;
+
+        for(int i=0; i<count; i++) {
+            AlgoLocalSDK lsdk = (AlgoLocalSDK) cb.getItemAt(i);
+            if(lsdk == null || StringUtil.isEmpty(lsdk.getId()))
+                continue;
+            if(lsdk.getId().equals(updatedLocalSDK.getId())) {
+                lsdk.updateValues(updatedLocalSDK);
+                break;
+            }
+        }
+
     }
 
     private void enableDisableCompilationType() {
@@ -170,17 +246,21 @@ public class AlgoProjectConfiguration {
                 algorandNodeCB.setSelectedIndex(0);
             algorandNodeCB.setEnabled(false);
             newCompileNodeBtn.setEnabled(false);
+            algorandNodeDetailBtn.setEnabled(false);
 
             localSDKCB.setEnabled(true);
             newLocalSDKBtn.setEnabled(true);
+            localSDKDetailBtn.setEnabled(true);
         } else if(algorandNodeRB.isSelected()) {
             if(localSDKCB.getItemCount() >= 1)
                 localSDKCB.setSelectedIndex(0);
             localSDKCB.setEnabled(false);
             newLocalSDKBtn.setEnabled(false);
+            localSDKDetailBtn.setEnabled(false);
 
             algorandNodeCB.setEnabled(true);
             newCompileNodeBtn.setEnabled(true);
+            algorandNodeDetailBtn.setEnabled(true);
         }
     }
 
@@ -223,5 +303,6 @@ public class AlgoProjectConfiguration {
         compileRadioBtnGroup = new ButtonGroup();
         compileRadioBtnGroup.add(localAlgorandSDKRB);
         compileRadioBtnGroup.add(algorandNodeRB);
+
     }
 }

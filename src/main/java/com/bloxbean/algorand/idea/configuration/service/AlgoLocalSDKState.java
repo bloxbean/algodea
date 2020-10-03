@@ -75,6 +75,15 @@ public class AlgoLocalSDKState implements PersistentStateComponent<Element> {
         localSDKs.add(sdk);
     }
 
+    public void updateLocalSdk(AlgoLocalSDK sdk) {
+        for(AlgoLocalSDK lsdk: localSDKs) {
+            if(lsdk.getId() != null && lsdk.getId().equals(sdk.getId())) {
+                lsdk.updateValues(sdk);
+                break;
+            }
+        }
+    }
+
     private void setLocalSDKs(List<AlgoLocalSDK> list) {
         localSDKs = list;
     }

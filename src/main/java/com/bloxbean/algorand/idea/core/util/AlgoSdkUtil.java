@@ -27,9 +27,9 @@ public class AlgoSdkUtil {
                     LOG.debug(result);
                     return result;
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    LOG.error(e);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    LOG.error(e);
                 }
             }
         }

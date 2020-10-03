@@ -12,6 +12,6 @@ public class CreateNewServerAction extends AnAction {
     public void actionPerformed(@NotNull AnActionEvent e) {
         Project project = e.getProject();
 
-        ConfiguraionHelperService.createNewNodeConfiguration(project);
+        ConfiguraionHelperService.createOrUpdateNewNodeConfiguration(project, null);
     }
 }

@@ -93,5 +93,13 @@ public class NodeInfo {
                 '}';
     }
 
+    public void updateValues(NodeInfo updatedInfo) {
+        if(updatedInfo == null) return;
+
+        this.setName(updatedInfo.getName());
+        this.setNodeAPIUrl(updatedInfo.getNodeAPIUrl());
+        this.setIndexerAPIUrl(updatedInfo.getIndexerAPIUrl());
+        this.setApiKey(updatedInfo.getApiKey());
+    }
 }
 
