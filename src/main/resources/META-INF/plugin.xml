@@ -45,9 +45,9 @@
                         anchor="bottom"
                         factoryClass="com.bloxbean.algorand.idea.toolwindow.AlgoToolWindowFactory"/>
 
-        <toolWindow id="Algorand Service"
+        <toolWindow id="Algorand Explorer"
                     anchor="right"
-                    factoryClass="com.bloxbean.algorand.idea.toolwindow.AlgoServiceToolWindowFactory"/>
+                    factoryClass="com.bloxbean.algorand.idea.toolwindow.AlgoExplorerToolWindowFactory"/>
 
         <!-- file templates -->
         <internalFileTemplate name="Algo.Empty"/>
@@ -118,12 +118,14 @@
                 description="List Multi-Sig Accounts">
             <add-to-group group-id="AlgoActionGroup.Accounts"/>
         </action>
-        <action id="Algo.servers.create" class="com.bloxbean.algorand.idea.configuration.action.CreateNewServerAction" text="Configure New Server"
+        <action id="com.bloxbean.algorand.idea.configuration.action.CreateNewServerAction" class="com.bloxbean.algorand.idea.configuration.action.CreateNewServerAction" text="Configure New Server"
                 description="Configure New Server">
-<!--            <add-to-group group-id="AlgoActionGroup.configuration"/>-->
         </action>
-        <action id="Algo.servers.configure" class="com.bloxbean.algorand.idea.configuration.action.ConfigurationAction" text="Configuration"
-                description="Configure New Server">
+        <action id="com.bloxbean.algorand.idea.configuration.action.CreateNewLocalSDKAction" class="com.bloxbean.algorand.idea.configuration.action.CreateNewLocalSDKAction" text="New Algorand Local SDK"
+                description="New Algorand Local SDK">
+        </action>
+        <action id="com.bloxbean.algorand.idea.configuration.action.ConfigurationAction" class="com.bloxbean.algorand.idea.configuration.action.ConfigurationAction" text="Configuration"
+                description="Configure Algorand Server">
             <add-to-group group-id="com.bloxbean.algorand.idea.core.action.AlgoActionGroup" anchor="last"/>
         </action>
     </actions>

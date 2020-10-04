@@ -90,13 +90,20 @@ final public class NodeConfigState implements PersistentStateComponent<Element> 
         nodes = list;
     }
 
-    public void updateNodeInfo(NodeInfo updatedInfo) {
+    public NodeInfo updateNodeInfo(NodeInfo updatedInfo) {
         for(NodeInfo nd: nodes) {
             if(nd.getId() != null && nd.getId().equals(updatedInfo.getId())) {
                 nd.updateValues(updatedInfo);
-                break;
+                return nd;
+//                break;
             }
         }
+
+        return null;
     }
 
+    public void removeNode(NodeInfo node) {
+        if(nodes == null || node == null) return;
+        nodes.remove(node);
+    }
 }

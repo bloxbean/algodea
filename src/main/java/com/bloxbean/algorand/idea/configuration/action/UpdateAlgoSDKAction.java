@@ -1,5 +1,6 @@
 package com.bloxbean.algorand.idea.configuration.action;
 
+import com.bloxbean.algorand.idea.configuration.model.AlgoLocalSDK;
 import com.bloxbean.algorand.idea.configuration.service.ConfiguraionHelperService;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -7,20 +8,19 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.*;
+public class UpdateAlgoSDKAction extends AnAction {
+    private AlgoLocalSDK sdk;
 
-public class CreateNewServerAction extends AnAction {
-    public final static String ACTION_ID = CreateNewServerAction.class.getName();
-
-    public CreateNewServerAction() {
-        super("Add Algorand Node", "Add a New Algorand Node", AllIcons.General.Add);
+    public UpdateAlgoSDKAction(AlgoLocalSDK sdk) {
+        super("Edit", "Edit this Algorand SDK", AllIcons.General.Settings);
+        this.sdk = sdk;
     }
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
         Project project = e.getProject();
 
-        ConfiguraionHelperService.createOrUpdateNewNodeConfiguration(project, null);
+        if(sdk != null)
+            ConfiguraionHelperService.createOrUpdateLocalSDKConfiguration(project, sdk);
     }
-
 }

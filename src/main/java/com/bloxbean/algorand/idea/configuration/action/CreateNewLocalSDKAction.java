@@ -7,20 +7,18 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.*;
+public class CreateNewLocalSDKAction extends AnAction {
+    public final static String ACTION_ID = CreateNewLocalSDKAction.class.getName();
 
-public class CreateNewServerAction extends AnAction {
-    public final static String ACTION_ID = CreateNewServerAction.class.getName();
-
-    public CreateNewServerAction() {
-        super("Add Algorand Node", "Add a New Algorand Node", AllIcons.General.Add);
+    public CreateNewLocalSDKAction() {
+        super("Add Algorand Local SDK", "Add a new Algorand Local SDK", AllIcons.General.AddJdk);
     }
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
         Project project = e.getProject();
 
-        ConfiguraionHelperService.createOrUpdateNewNodeConfiguration(project, null);
+        ConfiguraionHelperService.createOrUpdateLocalSDKConfiguration(project, null);
     }
 
 }

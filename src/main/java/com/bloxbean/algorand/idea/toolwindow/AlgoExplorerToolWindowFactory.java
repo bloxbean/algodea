@@ -1,6 +1,7 @@
 package com.bloxbean.algorand.idea.toolwindow;
 
 import com.bloxbean.algorand.idea.module.AlgorandModuleType;
+import com.bloxbean.algorand.idea.toolwindow.ui.AlgoExplorer;
 import com.bloxbean.algorand.idea.toolwindow.ui.AlgoToolServicePanel;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtil;
@@ -13,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 
-public class AlgoServiceToolWindowFactory implements ToolWindowFactory {
+public class AlgoExplorerToolWindowFactory implements ToolWindowFactory {
     public final static String ALGO_WINDOW_ID = "Algorand Service";
 
     @Override
@@ -23,13 +24,19 @@ public class AlgoServiceToolWindowFactory implements ToolWindowFactory {
 
     @Override
     public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
-        AlgoToolServicePanel algoToolServicePanel = new AlgoToolServicePanel();
-
-        final ContentManager contentManager = toolWindow.getContentManager();
-                Content content = contentManager
-                .getFactory()
-                .createContent(algoToolServicePanel, "Nodes", false);
+//        AlgoToolServicePanel algoToolServicePanel = new AlgoToolServicePanel();
+//
+//        final ContentManager contentManager = toolWindow.getContentManager();
+//                Content content = contentManager
+//                .getFactory()
+//                .createContent(algoToolServicePanel, "Nodes", false);
+//        contentManager.addContent(content);
+        AlgoExplorer explorer = new AlgoExplorer(project);
+        ContentManager contentManager = toolWindow.getContentManager();
+        Content content = contentManager.getFactory().createContent(explorer, null, false);
         contentManager.addContent(content);
+        //toolWindow.setHelpId(HelpID.ANT);
+        content.setDisposer(explorer);
     }
 
     @Override

@@ -87,4 +87,9 @@ public class AlgoLocalSDKState implements PersistentStateComponent<Element> {
     private void setLocalSDKs(List<AlgoLocalSDK> list) {
         localSDKs = list;
     }
+
+    public void removeSdk(AlgoLocalSDK sdk) {
+        if(localSDKs == null || sdk == null) return;
+        localSDKs.remove(sdk);
+    }
 }
