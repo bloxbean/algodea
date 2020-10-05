@@ -10,6 +10,8 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 
 public class ConfigurationAction extends AnAction {
+    public static final String ACTION_ID = ConfigurationAction.class.getName();
+
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
         Project project = e.getProject();

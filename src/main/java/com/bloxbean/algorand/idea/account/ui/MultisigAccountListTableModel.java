@@ -25,8 +25,8 @@ package com.bloxbean.algorand.idea.account.ui;
 import com.bloxbean.algorand.idea.account.model.AlgoMultisigAccount;
 
 import javax.swing.table.AbstractTableModel;
-import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class MultisigAccountListTableModel extends AbstractTableModel {
@@ -86,11 +86,11 @@ public class MultisigAccountListTableModel extends AbstractTableModel {
         if(columnIndex == 0)
             return account.getAddress();
         else if(columnIndex == 1) {
-            BigInteger balance = account.getBalance();
+            Long balance = account.getBalance();
             if(balance == null)
                 return "..";
             else {
-                if(balance == BigInteger.ZERO)
+                if(balance == 0L)
                     return balance;
                 else {
                    //TODO float aionValue = AionConversionUtil.nAmpToAion(balance);
@@ -108,5 +108,11 @@ public class MultisigAccountListTableModel extends AbstractTableModel {
         } else {
             return false;
         }
+    }
+
+    public List<AlgoMultisigAccount> getAccounts() {
+        if(accounts == null)
+            return Collections.emptyList();
+        return accounts;
     }
 }

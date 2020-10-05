@@ -25,8 +25,8 @@ package com.bloxbean.algorand.idea.account.ui;
 import com.bloxbean.algorand.idea.account.model.AlgoAccount;
 
 import javax.swing.table.AbstractTableModel;
-import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class AccountListTableModel extends AbstractTableModel {
@@ -75,11 +75,11 @@ public class AccountListTableModel extends AbstractTableModel {
         if(columnIndex == 0)
             return account.getAddress();
         else if(columnIndex == 1) {
-            BigInteger balance = account.getBalance();
+            Long balance = account.getBalance();
             if(balance == null)
                 return "..";
             else {
-                if(balance == BigInteger.ZERO)
+                if(balance == 0)
                     return balance;
                 else {
                    //TODO float aionValue = AionConversionUtil.nAmpToAion(balance);
@@ -108,5 +108,12 @@ public class AccountListTableModel extends AbstractTableModel {
         this.accounts.clear();
         this.accounts.addAll(accounts);
         fireTableRowsUpdated(0, this.accounts.size()-1);
+    }
+
+    public List<AlgoAccount> getAccounts() {
+        if(this.accounts == null)
+            return Collections.emptyList();
+
+        return this.accounts;
     }
 }

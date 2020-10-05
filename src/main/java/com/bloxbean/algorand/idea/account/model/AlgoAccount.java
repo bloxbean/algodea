@@ -5,7 +5,7 @@ import java.math.BigInteger;
 public class AlgoAccount {
     private String address;
     private String mnemonic;
-    private BigInteger balance;
+    private Long balance;
 
     public AlgoAccount() {
 
@@ -32,11 +32,11 @@ public class AlgoAccount {
         this.mnemonic = mnemonic;
     }
 
-    public BigInteger getBalance() {
+    public Long getBalance() {
         return balance;
     }
 
-    public void setBalance(BigInteger balance) {
+    public void setBalance(Long balance) {
         this.balance = balance;
     }
 

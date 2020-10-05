@@ -24,8 +24,16 @@ package com.bloxbean.algorand.idea.account.ui;
 
 import com.bloxbean.algorand.idea.account.model.AlgoMultisigAccount;
 import com.bloxbean.algorand.idea.account.service.AccountService;
+import com.bloxbean.algorand.idea.configuration.action.ConfigurationAction;
+import com.bloxbean.algorand.idea.nodeint.service.AlgoAccountService;
+import com.bloxbean.algorand.idea.nodeint.exception.DeploymentTargetNotConfigured;
+import com.bloxbean.algorand.idea.toolwindow.AlgoConsoleMessages;
+import com.bloxbean.algorand.idea.util.IdeaUtil;
+import com.intellij.notification.NotificationType;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.ui.components.JBList;
@@ -45,7 +53,6 @@ public class ListMultisigAccountDialog extends DialogWrapper {
     private JTextField thresholdTf;
     private JLabel messageLabel;
     private Project project;
-    private List<AlgoMultisigAccount> accounts;
     private MultisigAccountListTableModel tableModel;
     private boolean isRemote;
     private boolean showBalance;
@@ -84,47 +91,65 @@ public class ListMultisigAccountDialog extends DialogWrapper {
     }
 
     public void fetchBalance(boolean isRemote) {
-//        if (accounts == null) return;
-//
-//        if(isRemote) {
-//            AccountService accountListFetcher = new AccountService();
-//
-//            try {
-//                ProgressManager.getInstance().runProcessWithProgressSynchronously(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        ProgressIndicator progressIndicator = ProgressManager.getInstance().getProgressIndicator();
-//                        float counter = 0;
-//                        for (AlgoAccount account : accounts) {
-//                            //TODO fetch balance
-////                           //TO BigInteger balance = accountListFetcher.getBalance(account, isRemote);
-////                            progressIndicator.setFraction(counter++ / accounts.size());
-////                            if (balance != null) {
-////                                account.setBalance(balance);
-////                            }
-//                        }
-//                        progressIndicator.setFraction(1.0);
-//                        tableModel.fireTableDataChanged();
-//                    }
-//                }, "Fetching balance from remote kernel ...", true, project);
-//
-//            } finally {
-//
-//            }
-//        } else {
-//
-//        }
+
+
+            AccountService accountListFetcher = new AccountService();
+
+            try {
+                ProgressManager.getInstance().runProcessWithProgressSynchronously(new Runnable() {
+                    @Override
+                    public void run() {
+                        ProgressIndicator progressIndicator = ProgressManager.getInstance().getProgressIndicator();
+                        float counter = 0;
+
+                        AlgoAccountService accountService = null;
+                        try {
+                            accountService = new AlgoAccountService(project);
+                        } catch (DeploymentTargetNotConfigured deploymentTargetNotConfigured) {
+                            deploymentTargetNotConfigured.printStackTrace();
+                            IdeaUtil.showNotification(project, "Algorand Configuration",
+                                    "Algorand deployment node is not configured.", NotificationType.ERROR, ConfigurationAction.ACTION_ID);
+                        }
+                        if(accountService == null)
+                            return;
+
+                        for (AlgoMultisigAccount account : tableModel.getAccounts()) {
+                            try {
+                                Long balance = accountService.getBalance(account.getAddress());
+
+                                progressIndicator.setFraction(counter++ / tableModel.getAccounts().size());
+                                if(progressIndicator.isCanceled()) {
+                                    break;
+                                }
+
+                                if (balance != null) {
+                                    account.setBalance(balance);
+                                }
+                                tableModel.fireTableRowsUpdated((int)counter - 1, (int)counter-1);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                AlgoConsoleMessages.showErrorMessage(project,"Error getting balance for account : " + account.getAddress());
+                                AlgoConsoleMessages.showErrorMessage(project, e.getMessage());
+                            }
+                        }
+                        progressIndicator.setFraction(1.0);
+                        tableModel.fireTableDataChanged();
+                    }
+                }, "Fetching balance from remote kernel ...", true, project);
+
+            } finally {
+
+            }
+
     }
 
     public AlgoMultisigAccount getSelectAccount() {
-        if (accounts == null)
-            return null;
 
         int selectedRow = accListTable.getSelectedRow();
         if (selectedRow == -1)
             return null;
-        else if (selectedRow <= accounts.size() - 1) {
-            return accounts.get(selectedRow);
+        else if (selectedRow <= tableModel.getAccounts().size() - 1) {
+            return tableModel.getAccounts().get(selectedRow);
         } else {
             return null;
         }
@@ -140,7 +165,8 @@ public class ListMultisigAccountDialog extends DialogWrapper {
 
         ApplicationManager.getApplication().invokeLater(() -> {
             try {
-                accounts = accountService.getMultisigAccounts();
+                List<AlgoMultisigAccount> accounts = accountService.getMultisigAccounts();
+
                 tableModel.setElements(accounts);
             } catch(Exception e) {
                 messageLabel.setText("Account loading failed !!!");
@@ -152,8 +178,8 @@ public class ListMultisigAccountDialog extends DialogWrapper {
         ListSelectionModel listSelectionModel = accListTable.getSelectionModel();
         listSelectionModel.addListSelectionListener(e -> {
             int index = accListTable.getSelectedRow();
-            if(index != -1 && index <= accounts.size() - 1) {
-                AlgoMultisigAccount multisigAccount = accounts.get(index);
+            if(index != -1 && index <= tableModel.getAccounts().size() - 1) {
+                AlgoMultisigAccount multisigAccount = tableModel.getAccounts().get(index);
                 multisigAccTf.setText(multisigAccount.getAddress());
                 thresholdTf.setText(multisigAccount.getThreshold() + "");
                 defaultAccountsListModel.clear();

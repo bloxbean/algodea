@@ -24,6 +24,12 @@ package com.bloxbean.algorand.idea.account.ui;
 
 import com.bloxbean.algorand.idea.account.model.AlgoAccount;
 import com.bloxbean.algorand.idea.account.service.AccountService;
+import com.bloxbean.algorand.idea.configuration.action.ConfigurationAction;
+import com.bloxbean.algorand.idea.nodeint.service.AlgoAccountService;
+import com.bloxbean.algorand.idea.nodeint.exception.DeploymentTargetNotConfigured;
+import com.bloxbean.algorand.idea.toolwindow.AlgoConsoleMessages;
+import com.bloxbean.algorand.idea.util.IdeaUtil;
+import com.intellij.notification.NotificationType;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.progress.ProgressIndicator;
@@ -35,7 +41,6 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.util.List;
 
 public class ListAccountDialog extends DialogWrapper {
@@ -44,7 +49,6 @@ public class ListAccountDialog extends DialogWrapper {
     private JButton fetchBalanceButton;
     private JLabel messageLabel;
     private Project project;
-    private List<AlgoAccount> accounts;
     private AccountListTableModel tableModel;
     private boolean isRemote;
     private boolean showBalance;
@@ -85,7 +89,7 @@ public class ListAccountDialog extends DialogWrapper {
     }
 
     public void fetchBalance(boolean isRemote) {
-        if (accounts == null) return;
+        if (tableModel.getAccounts() == null) return;
 
         if(isRemote) {
             AccountService accountListFetcher = new AccountService();
@@ -96,13 +100,37 @@ public class ListAccountDialog extends DialogWrapper {
                     public void run() {
                         ProgressIndicator progressIndicator = ProgressManager.getInstance().getProgressIndicator();
                         float counter = 0;
-                        for (AlgoAccount account : accounts) {
+                        AlgoAccountService accountService = null;
+                        try {
+                             accountService = new AlgoAccountService(project);
+                        } catch (DeploymentTargetNotConfigured deploymentTargetNotConfigured) {
+                            deploymentTargetNotConfigured.printStackTrace();
+                            IdeaUtil.showNotification(project, "Algorand Configuration",
+                                    "Algorand deployment node is not configured.", NotificationType.ERROR, ConfigurationAction.ACTION_ID);
+                        }
+                        if(accountService == null)
+                            return;
+
+                        for (AlgoAccount account : tableModel.getAccounts()) {
                             //TODO fetch balance
+                            try {
+                                Long balance = accountService.getBalance(account.getAddress());
+
+                                progressIndicator.setFraction(counter++ / tableModel.getAccounts().size());
+                                if(progressIndicator.isCanceled()) {
+                                    break;
+                                }
+
+                                if (balance != null) {
+                                    account.setBalance(balance);
+                                }
+                                tableModel.fireTableRowsUpdated((int)counter - 1, (int)counter-1);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                AlgoConsoleMessages.showErrorMessage(project,"Error getting balance for account : " + account.getAddress());
+                                AlgoConsoleMessages.showErrorMessage(project, e.getMessage());
+                            }
 //                           //TO BigInteger balance = accountListFetcher.getBalance(account, isRemote);
-//                            progressIndicator.setFraction(counter++ / accounts.size());
-//                            if (balance != null) {
-//                                account.setBalance(balance);
-//                            }
                         }
                         progressIndicator.setFraction(1.0);
                         tableModel.fireTableDataChanged();
@@ -118,20 +146,18 @@ public class ListAccountDialog extends DialogWrapper {
     }
 
     public AlgoAccount getSelectAccount() {
-        if (accounts == null)
-            return null;
 
         int selectedRow = accListTable.getSelectedRow();
         if (selectedRow == -1)
             return null;
-        else if (selectedRow <= accounts.size() - 1) {
-            return accounts.get(selectedRow);
+        else if (selectedRow <= tableModel.getAccounts().size() - 1) {
+            return tableModel.getAccounts().get(selectedRow);
         } else {
             return null;
         }
     }
 
-    public void updateAccount(List<AlgoAccount> accs) {
+   /* public void updateAccount(List<AlgoAccount> accs) {
         if(accs == null) return;
 
         if(this.accounts == null)
@@ -143,7 +169,7 @@ public class ListAccountDialog extends DialogWrapper {
         }
 
         tableModel.fireTableDataChanged();
-    }
+    }*/
 
     private void initialize() {
         tableModel = new AccountListTableModel(showBalance);

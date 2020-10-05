@@ -7,7 +7,7 @@ public class AlgoMultisigAccount {
     private String address;
     private List<String> accounts;
     private int threshold;
-    private BigInteger balance;
+    private Long balance;
 
     public AlgoMultisigAccount() {
 
@@ -42,11 +42,11 @@ public class AlgoMultisigAccount {
         this.threshold = threshold;
     }
 
-    public BigInteger getBalance() {
+    public Long getBalance() {
         return balance;
     }
 
-    public void setBalance(BigInteger balance) {
+    public void setBalance(Long balance) {
         this.balance = balance;
     }
 }
