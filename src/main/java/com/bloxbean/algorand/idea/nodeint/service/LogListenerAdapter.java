@@ -19,28 +19,35 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.bloxbean.algorand.idea.nodeint;
+package com.bloxbean.algorand.idea.nodeint.service;
 
-import com.bloxbean.algorand.idea.nodeint.purestake.CustomAlgodClient;
-import com.squareup.okhttp.HttpUrl;
+import com.bloxbean.algorand.idea.toolwindow.AlgoConsole;
 
-public class AlgoConnectionFactory {
+public class LogListenerAdapter implements LogListener {
+    private AlgoConsole console;
 
-    private String apiUrl;
-    private String apiKey;
-
-    public AlgoConnectionFactory(String apiUrl, String apiKey) {
-        this.apiUrl = apiUrl;
-        this.apiKey = apiKey;
+    public LogListenerAdapter(AlgoConsole console) {
+        this.console = console;
     }
 
-    public CustomAlgodClient connect() {
-        HttpUrl url = HttpUrl.parse(apiUrl);
-
-        CustomAlgodClient algodClient = new CustomAlgodClient(url.host(), url.port(), apiKey);
-
-//        client.addDefaultHeader("x-api-key", apiKey);
-        return algodClient;
+    @Override
+    public void info(String msg) {
+        console.showInfoMessage(msg);
     }
 
+    @Override
+    public void error(String msg) {
+        console.showErrorMessage(msg);
+    }
+
+    @Override
+    public void warn(String msg) {
+        console.showWarningMessage(msg);
+    }
+
+    @Override
+    public void error(String msg, Throwable t) {
+        console.showErrorMessage(msg);
+        console.showWarningMessage(t.getMessage());
+    }
 }

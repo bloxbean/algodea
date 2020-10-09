@@ -27,7 +27,7 @@ import com.bloxbean.algorand.idea.account.service.AccountService;
 import com.bloxbean.algorand.idea.configuration.action.ConfigurationAction;
 import com.bloxbean.algorand.idea.nodeint.service.AlgoAccountService;
 import com.bloxbean.algorand.idea.nodeint.exception.DeploymentTargetNotConfigured;
-import com.bloxbean.algorand.idea.toolwindow.AlgoConsoleMessages;
+import com.bloxbean.algorand.idea.toolwindow.AlgoConsole;
 import com.bloxbean.algorand.idea.util.IdeaUtil;
 import com.intellij.notification.NotificationType;
 import com.intellij.openapi.application.ApplicationManager;
@@ -53,9 +53,11 @@ public class ListAccountDialog extends DialogWrapper {
     private boolean isRemote;
     private boolean showBalance;
     private AccountService accountService;
+    private AlgoConsole console;
 
     public ListAccountDialog(Project project, boolean isRemote) {
         this(project, isRemote, true);
+        console = AlgoConsole.getConsole(project);
     }
 
     public ListAccountDialog(Project project, boolean isRemote, boolean showBalance) {
@@ -127,8 +129,8 @@ public class ListAccountDialog extends DialogWrapper {
                                 tableModel.fireTableRowsUpdated((int)counter - 1, (int)counter-1);
                             } catch (Exception e) {
                                 e.printStackTrace();
-                                AlgoConsoleMessages.showErrorMessage(project,"Error getting balance for account : " + account.getAddress());
-                                AlgoConsoleMessages.showErrorMessage(project, e.getMessage());
+                                console.showErrorMessage("Error getting balance for account : " + account.getAddress());
+                                console.showErrorMessage(e.getMessage());
                             }
 //                           //TO BigInteger balance = accountListFetcher.getBalance(account, isRemote);
                         }

@@ -49,6 +49,8 @@
                     anchor="right"
                     factoryClass="com.bloxbean.algorand.idea.toolwindow.AlgoExplorerToolWindowFactory"/>
 
+        <projectService serviceImplementation="com.bloxbean.algorand.idea.toolwindow.AlgoConsole"/>
+
         <!-- file templates -->
         <internalFileTemplate name="Algo.Empty"/>
 <!--    <internalFileTemplate name="Algo.VotingContract"/>-->
@@ -128,5 +130,15 @@
                 description="Configure Algorand Server">
             <add-to-group group-id="com.bloxbean.algorand.idea.core.action.AlgoActionGroup" anchor="last"/>
         </action>
+        <action id="com.bloxbean.algorand.idea.contracts.action.CreateStatefulAppAction"
+                class="com.bloxbean.algorand.idea.contracts.action.CreateStatefulAppAction" text="Create App"
+                description="Create Stateful App">
+            <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl T" second-keystroke="A"/>
+            <add-to-group group-id="com.bloxbean.algorand.idea.core.action.AlgoActionGroup"/>
+        </action>
     </actions>
+
+    <applicationListeners>
+        <listener class="com.bloxbean.algorand.idea.toolwindow.messaging.AlgoConsoleListener"  topic="com.bloxbean.algorand.idea.toolwindow.messaging.AlgoConsoleNotifier.ALGO_NEW_MESSAGE"/>
+    </applicationListeners>
 </idea-plugin>

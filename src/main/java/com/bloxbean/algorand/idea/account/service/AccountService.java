@@ -75,6 +75,16 @@ public class AccountService {
         return accountCacheService.getAccounts();
     }
 
+    public AlgoAccount getAccountByAddress(String address) {
+        List<AlgoAccount> accounts = accountCacheService.getAccounts();
+        for(AlgoAccount acc: accounts) {
+            if(acc.getAddress().equals(address))
+                return acc;
+        }
+
+        return null;
+    }
+
     public List<AlgoMultisigAccount> getMultisigAccounts() {
         return accountCacheService.getMultisigAccounts();
     }

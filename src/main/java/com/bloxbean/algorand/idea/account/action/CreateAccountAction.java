@@ -24,7 +24,7 @@ package com.bloxbean.algorand.idea.account.action;
 
 import com.bloxbean.algorand.idea.account.model.AlgoAccount;
 import com.bloxbean.algorand.idea.account.service.AccountService;
-import com.bloxbean.algorand.idea.toolwindow.AlgoConsoleMessages;
+import com.bloxbean.algorand.idea.toolwindow.AlgoConsole;
 import com.bloxbean.algorand.idea.util.IdeaUtil;
 import com.intellij.notification.NotificationType;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -48,19 +48,21 @@ public class CreateAccountAction extends AnAction {
         Project project = e.getProject();
         AccountService accountService = new AccountService();
 
+        AlgoConsole console = AlgoConsole.getConsole(project);
+
         try {
             AlgoAccount algoAccount = accountService.createNewAccount();
 
-            AlgoConsoleMessages.clearAndshow(project);
-            AlgoConsoleMessages.showInfoMessage(project, String.format("Address: %s", algoAccount.getAddress()));
-            AlgoConsoleMessages.showInfoMessage(project, String.format("Mnemonic: %s", algoAccount.getMnemonic()));
-            AlgoConsoleMessages.showSuccessMessage( project, "New account created successfully");
+            console.clearAndshow();
+            console.showInfoMessage(String.format("Address: %s", algoAccount.getAddress()));
+            console.showInfoMessage(String.format("Mnemonic: %s", algoAccount.getMnemonic()));
+            console.showSuccessMessage("New account created successfully");
 
             IdeaUtil.showNotification(project, "Account Create",
                     "A new account created successfully", NotificationType.INFORMATION, IdeaUtil.ACCOUNT_LIST_ACTION);
         } catch (NoSuchAlgorithmException ex) {
             LOG.error("Unable to create new Algorand Account", ex);
-            AlgoConsoleMessages.showErrorMessage( project, "Account creation failed");
+            console.showErrorMessage("Account creation failed");
         }
     }
 

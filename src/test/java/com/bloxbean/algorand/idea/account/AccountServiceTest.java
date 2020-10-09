@@ -15,6 +15,8 @@ public class AccountServiceTest {
         AccountService accountService = new AccountService();
         AlgoAccount algoAccount = accountService.createNewAccount();
 
+        System.out.println(algoAccount.getMnemonic());
+
         Assert.assertTrue(algoAccount.getAddress() != null);
         Assert.assertTrue(algoAccount.getAddress().length() > 0);
         Assert.assertTrue(algoAccount.getMnemonic() != null && algoAccount.getMnemonic().length() > 0);

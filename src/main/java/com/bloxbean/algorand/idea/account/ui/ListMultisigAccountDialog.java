@@ -27,7 +27,7 @@ import com.bloxbean.algorand.idea.account.service.AccountService;
 import com.bloxbean.algorand.idea.configuration.action.ConfigurationAction;
 import com.bloxbean.algorand.idea.nodeint.service.AlgoAccountService;
 import com.bloxbean.algorand.idea.nodeint.exception.DeploymentTargetNotConfigured;
-import com.bloxbean.algorand.idea.toolwindow.AlgoConsoleMessages;
+import com.bloxbean.algorand.idea.toolwindow.AlgoConsole;
 import com.bloxbean.algorand.idea.util.IdeaUtil;
 import com.intellij.notification.NotificationType;
 import com.intellij.openapi.application.ApplicationManager;
@@ -58,9 +58,11 @@ public class ListMultisigAccountDialog extends DialogWrapper {
     private boolean showBalance;
     private AccountService accountService;
     private DefaultListModel defaultAccountsListModel;
+    private AlgoConsole console;
 
     public ListMultisigAccountDialog(Project project) {
         this(project, true);
+        console = AlgoConsole.getConsole(project);
     }
 
     public ListMultisigAccountDialog(Project project, boolean showBalance) {
@@ -128,8 +130,8 @@ public class ListMultisigAccountDialog extends DialogWrapper {
                                 tableModel.fireTableRowsUpdated((int)counter - 1, (int)counter-1);
                             } catch (Exception e) {
                                 e.printStackTrace();
-                                AlgoConsoleMessages.showErrorMessage(project,"Error getting balance for account : " + account.getAddress());
-                                AlgoConsoleMessages.showErrorMessage(project, e.getMessage());
+                                console.showErrorMessage("Error getting balance for account : " + account.getAddress());
+                                console.showErrorMessage(e.getMessage());
                             }
                         }
                         progressIndicator.setFraction(1.0);

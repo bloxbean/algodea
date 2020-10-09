@@ -33,8 +33,8 @@ import java.util.List;
 public class AccountChooser {
 
     public static AlgoAccount getSelectedAccount(Project project, boolean showBalance) {
-        AccountService accountCacheService = AccountService.getAccountService(project);
-        List<AlgoAccount> accounts = accountCacheService.getAccounts();
+        AccountService accountService = AccountService.getAccountService(project);
+        List<AlgoAccount> accounts = accountService.getAccounts();
 
         ListAccountDialog listAccountDialog = new ListAccountDialog(project, true, showBalance);
         try {

@@ -19,28 +19,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.bloxbean.algorand.idea.nodeint;
 
-import com.bloxbean.algorand.idea.nodeint.purestake.CustomAlgodClient;
-import com.squareup.okhttp.HttpUrl;
+package com.bloxbean.algorand.idea.nodeint.service;
 
-public class AlgoConnectionFactory {
+public interface LogListener {
+    public void info(String msg);
+    public void error(String msg);
+    public void warn(String msg);
+    default public void error(String msg, Throwable t) {
 
-    private String apiUrl;
-    private String apiKey;
-
-    public AlgoConnectionFactory(String apiUrl, String apiKey) {
-        this.apiUrl = apiUrl;
-        this.apiKey = apiKey;
     }
+    default public void warn(String msg, Throwable t) {
 
-    public CustomAlgodClient connect() {
-        HttpUrl url = HttpUrl.parse(apiUrl);
-
-        CustomAlgodClient algodClient = new CustomAlgodClient(url.host(), url.port(), apiKey);
-
-//        client.addDefaultHeader("x-api-key", apiKey);
-        return algodClient;
     }
-
 }

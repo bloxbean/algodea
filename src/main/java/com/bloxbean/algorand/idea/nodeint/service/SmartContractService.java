@@ -21,34 +21,11 @@
  */
 package com.bloxbean.algorand.idea.nodeint.service;
 
-import com.algorand.algosdk.crypto.Address;
-import com.algorand.algosdk.v2.client.algod.AccountInformation;
-import com.algorand.algosdk.v2.client.common.Response;
-import com.algorand.algosdk.v2.client.model.Account;
-import com.bloxbean.algorand.idea.nodeint.exception.ApiCallException;
 import com.bloxbean.algorand.idea.nodeint.exception.DeploymentTargetNotConfigured;
-import com.bloxbean.algorand.idea.nodeint.purestake.CustomAlgodClient;
 import com.intellij.openapi.project.Project;
 
-public class AlgoAccountService extends AlgoBaseService {
-
-    public AlgoAccountService(Project project) throws DeploymentTargetNotConfigured {
+public class SmartContractService extends AlgoBaseService {
+    public SmartContractService(Project project) throws DeploymentTargetNotConfigured {
         super(project);
-    }
-
-    public Long getBalance(String address) throws Exception {
-        CustomAlgodClient algodClient = getAlgodClient();
-        AccountInformation accountInformation = algodClient.AccountInformation(new Address(address));
-        Response<Account> accountResponse = accountInformation.execute();
-        if(accountResponse.isSuccessful()) {
-            Account account = accountResponse.body();
-            if(account != null)
-                return account.amount;
-            else
-                throw new ApiCallException("Unable to get the accoung balance: Response " + accountResponse);
-        } else {
-            throw new ApiCallException("Unable to get the accoung balance: Response " + accountResponse);
-        }
-
     }
 }

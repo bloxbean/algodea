@@ -21,7 +21,7 @@ import com.algorand.algosdk.crypto.Address;
 import com.algorand.algosdk.v2.client.common.Client;
 
 //TEMPORARY workaround till the x-api-key fix is availble in V2 Java SDK
-public class BloxBeanAlgodClient extends Client {
+public class CustomAlgodClient extends Client {
 
     /**
      * Construct an AlgodClient for communicating with the REST API.
@@ -29,9 +29,10 @@ public class BloxBeanAlgodClient extends Client {
      * @param port REST server port.
      * @param token authentication token.
      */
-    public BloxBeanAlgodClient(String host, int port, String token) {
-        super(host, port, token, "x-api-key");
+    public CustomAlgodClient(String host, int port, String token) {
+        super(host, port, token, host.contains("purestake") ? "x-api-key": "X-Algo-API-Token");
     }
+
     /**
      * Returns OK if healthy.
      * /health
