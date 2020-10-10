@@ -1,2 +1,4 @@
 #pragma version 2
-//Clear state program
+// This program clears program state
+
+int 1

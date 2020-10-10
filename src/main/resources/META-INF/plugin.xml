@@ -1,7 +1,7 @@
 <idea-plugin>
-    <id>com.bloxbean.algorand</id>
-    <name>BloxBean Algorand Smart Contract Integration</name>
-    <vendor email="info@bloxbean.com" url="https://github.com/bloxbean/algorand-idea-plugin/">Algorand Idea Project
+    <id>com.bloxbean.algodea</id>
+    <name>AlgoDea - Algorand Smart Contract Integration</name>
+    <vendor email="info@bloxbean.com" url="https://github.com/bloxbean/algodea/">Algorand Idea Project
     </vendor>
 
     <description><![CDATA[
@@ -14,42 +14,42 @@
 
     <project-components>
         <component>
-            <implementation-class>com.bloxbean.algorand.idea.core.service.AlgoCacheService</implementation-class>
+            <implementation-class>com.bloxbean.algodea.idea.core.service.AlgoCacheService</implementation-class>
         </component>
     </project-components>
 
     <extensions defaultExtensionNs="com.intellij">
 <!--        <sdkType implementation="com.bloxbean.algorand.idea.module.sdk.AlgoSdkType"/>-->
 
-        <fileType name="TEAL File" implementationClass="com.bloxbean.algorand.idea.language.TEALFileType"
+        <fileType name="TEAL File" implementationClass="com.bloxbean.algodea.idea.language.TEALFileType"
                   fieldName="INSTANCE" language="TEAL" extensions="teal"/>
         <lang.parserDefinition language="TEAL"
-                               implementationClass="com.bloxbean.algorand.idea.language.TEALParserDefinition"/>
+                               implementationClass="com.bloxbean.algodea.idea.language.TEALParserDefinition"/>
         <lang.syntaxHighlighterFactory language="TEAL"
-                                       implementationClass="com.bloxbean.algorand.idea.language.TEALSyntaxHighlighterFactory"/>
-<!--        <colorSettingsPage implementation="com.bloxbean.algorand.idea.language.TEALColorSettingsPage"/>-->
+                                       implementationClass="com.bloxbean.algodea.idea.language.TEALSyntaxHighlighterFactory"/>
+<!--        <colorSettingsPage implementation="TEALColorSettingsPage"/>-->
         <completion.contributor language="TEAL"
-                                implementationClass="com.bloxbean.algorand.idea.language.completion.TEALCompletionContributor"/>
+                                implementationClass="com.bloxbean.algodea.idea.language.completion.TEALCompletionContributor"/>
 
-        <lang.documentationProvider language="TEAL" implementationClass="com.bloxbean.algorand.idea.language.documentation.TEALDocumentationProvider"/>
+        <lang.documentationProvider language="TEAL" implementationClass="com.bloxbean.algodea.idea.language.documentation.TEALDocumentationProvider"/>
 
-        <lang.commenter language="TEAL" implementationClass="com.bloxbean.algorand.idea.language.TEALProgramCommenter"/>
+        <lang.commenter language="TEAL" implementationClass="com.bloxbean.algodea.idea.language.TEALProgramCommenter"/>
 
         <!-- module extensions -->
-        <moduleType id="Algorand_Module" implementationClass="com.bloxbean.algorand.idea.module.AlgorandModuleType"/>
+        <moduleType id="Algorand_Module" implementationClass="com.bloxbean.algodea.idea.module.AlgorandModuleType"/>
 <!--        <facetType implementation="com.bloxbean.algorand.idea.module.facet.AlgoFacetType"/>-->
-        <framework.type implementation="com.bloxbean.algorand.idea.module.framework.AlgoStatefulFrameworkType"/>
-<!--        <projectStructureDetector implementation="com.bloxbean.algorand.idea.module.detector.AlgoProjectStructureDetector"/>-->
+        <framework.type implementation="com.bloxbean.algodea.idea.module.framework.AlgoStatefulFrameworkType"/>
+<!--        <projectStructureDetector implementation="AlgoProjectStructureDetector"/>-->
 
         <toolWindow id="Algorand"
                         anchor="bottom"
-                        factoryClass="com.bloxbean.algorand.idea.toolwindow.AlgoToolWindowFactory"/>
+                        factoryClass="com.bloxbean.algodea.idea.toolwindow.AlgoToolWindowFactory"/>
 
         <toolWindow id="Algorand Explorer"
                     anchor="right"
-                    factoryClass="com.bloxbean.algorand.idea.toolwindow.AlgoExplorerToolWindowFactory"/>
+                    factoryClass="com.bloxbean.algodea.idea.toolwindow.AlgoExplorerToolWindowFactory"/>
 
-        <projectService serviceImplementation="com.bloxbean.algorand.idea.toolwindow.AlgoConsole"/>
+        <projectService serviceImplementation="com.bloxbean.algodea.idea.toolwindow.AlgoConsole"/>
 
         <!-- file templates -->
         <internalFileTemplate name="Algo.Empty"/>
@@ -67,29 +67,29 @@
         <internalFileTemplate name="_Algo.ClearStateProgram"/>
 
 <!--        <applicationService-->
-<!--                            serviceImplementation="com.bloxbean.algorand.idea.configuration.service.NodeConfigState" />-->
+<!--                            serviceImplementation="NodeConfigState" />-->
 
-<!--        <applicationConfigurable parentId="tools" instance="com.bloxbean.algorand.idea.configuration.NodeSettingsConfigurable"-->
-<!--                                 id="com.bloxbean.algorand.idea.configuration.NodeSettingsConfigurable"-->
+<!--        <applicationConfigurable parentId="tools" instance="NodeSettingsConfigurable"-->
+<!--                                 id="NodeSettingsConfigurable"-->
 <!--                                 displayName="Algorand"/>-->
 
-        <applicationService serviceImplementation="com.bloxbean.algorand.idea.configuration.service.NodeConfigState"/>
-        <applicationService serviceImplementation="com.bloxbean.algorand.idea.configuration.service.AlgoLocalSDKState"/>
-        <projectService serviceImplementation="com.bloxbean.algorand.idea.configuration.service.AlgoProjectState"/>
+        <applicationService serviceImplementation="com.bloxbean.algodea.idea.configuration.service.NodeConfigState"/>
+        <applicationService serviceImplementation="com.bloxbean.algodea.idea.configuration.service.AlgoLocalSDKState"/>
+        <projectService serviceImplementation="com.bloxbean.algodea.idea.configuration.service.AlgoProjectState"/>
     </extensions>
     <actions>
-        <action id="Algorand.NewTEALFile" class="com.bloxbean.algorand.idea.core.action.NewTEALFileAction"
+        <action id="Algorand.NewTEALFile" class="com.bloxbean.algodea.idea.core.action.NewTEALFileAction"
                 text="TEAL File" description="Create new TEAL file">
             <add-to-group group-id="NewGroup" anchor="first" />
         </action>
 
-        <action id="Algo.teal.editor_context.compile" class="com.bloxbean.algorand.idea.compile.action.TEALCompileAction" text="Compile TEAL"
+        <action id="Algo.teal.editor_context.compile" class="com.bloxbean.algodea.idea.compile.action.TEALCompileAction" text="Compile TEAL"
                 description="Compile TEAL file">
             <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl T" second-keystroke="C"/>
             <add-to-group group-id="EditorPopupMenu" anchor="last"/>
         </action>
 
-        <group id="com.bloxbean.algorand.idea.core.action.AlgoActionGroup" class="com.bloxbean.algorand.idea.core.action.AlgoActionGroup"
+        <group id="com.bloxbean.algodea.idea.core.action.AlgoActionGroup" class="com.bloxbean.algodea.idea.core.action.AlgoActionGroup"
                popup="true"
                text="Algorand" description="Algorand">
             <add-to-group group-id="EditorPopupMenu" anchor="last"/>
@@ -98,48 +98,48 @@
             <group id="AlgoActionGroup.Accounts" text="Accounts" description="Accounts" popup="true">
             </group>
         </group>
-        <action id="Algo.teal.compile" class="com.bloxbean.algorand.idea.compile.action.TEALCompileAction" text="Compile TEAL"
+        <action id="Algo.teal.compile" class="com.bloxbean.algodea.idea.compile.action.TEALCompileAction" text="Compile TEAL"
                 description="Compile TEAL file">
             <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl T" second-keystroke="C"/>
-            <add-to-group group-id="com.bloxbean.algorand.idea.core.action.AlgoActionGroup"/>
+            <add-to-group group-id="com.bloxbean.algodea.idea.core.action.AlgoActionGroup"/>
         </action>
 
-        <action id="Algo.account.create" class="com.bloxbean.algorand.idea.account.action.CreateAccountAction" text="Create a New Account"
+        <action id="Algo.account.create" class="com.bloxbean.algodea.idea.account.action.CreateAccountAction" text="Create a New Account"
                 description="Create New Account">
             <add-to-group group-id="AlgoActionGroup.Accounts"/>
         </action>
-        <action id="Algo.account.createMultisig" class="com.bloxbean.algorand.idea.account.action.CreateMultisigAccountAction" text="Create a Multisig Account"
+        <action id="Algo.account.createMultisig" class="com.bloxbean.algodea.idea.account.action.CreateMultisigAccountAction" text="Create a Multisig Account"
                 description="Create New Multisig Account">
             <add-to-group group-id="AlgoActionGroup.Accounts"/>
         </action>
-        <action id="Algo.account.list" class="com.bloxbean.algorand.idea.account.action.AccountListAction" text="List Accounts"
+        <action id="Algo.account.list" class="com.bloxbean.algodea.idea.account.action.AccountListAction" text="List Accounts"
                 description="List Accounts">
             <add-to-group group-id="AlgoActionGroup.Accounts"/>
         </action>
-        <action id="Algo.multisig-account.list" class="com.bloxbean.algorand.idea.account.action.MultisigAccountListAction" text="List Multi-Sig Accounts"
+        <action id="Algo.multisig-account.list" class="com.bloxbean.algodea.idea.account.action.MultisigAccountListAction" text="List Multi-Sig Accounts"
                 description="List Multi-Sig Accounts">
             <add-to-group group-id="AlgoActionGroup.Accounts"/>
         </action>
-        <action id="com.bloxbean.algorand.idea.configuration.action.CreateNewServerAction" class="com.bloxbean.algorand.idea.configuration.action.CreateNewServerAction" text="Configure New Server"
+        <action id="com.bloxbean.algodea.idea.configuration.action.CreateNewServerAction" class="com.bloxbean.algodea.idea.configuration.action.CreateNewServerAction" text="Configure New Server"
                 description="Configure New Server">
         </action>
-        <action id="com.bloxbean.algorand.idea.configuration.action.CreateNewLocalSDKAction" class="com.bloxbean.algorand.idea.configuration.action.CreateNewLocalSDKAction" text="New Algorand Local SDK"
+        <action id="com.bloxbean.algodea.idea.configuration.action.CreateNewLocalSDKAction" class="com.bloxbean.algodea.idea.configuration.action.CreateNewLocalSDKAction" text="New Algorand Local SDK"
                 description="New Algorand Local SDK">
         </action>
-        <action id="com.bloxbean.algorand.idea.configuration.action.ConfigurationAction" class="com.bloxbean.algorand.idea.configuration.action.ConfigurationAction" text="Configuration"
+        <action id="com.bloxbean.algodea.idea.configuration.action.ConfigurationAction" class="com.bloxbean.algodea.idea.configuration.action.ConfigurationAction" text="Configuration"
                 description="Configure Algorand Server">
-            <add-to-group group-id="com.bloxbean.algorand.idea.core.action.AlgoActionGroup" anchor="last"/>
+            <add-to-group group-id="com.bloxbean.algodea.idea.core.action.AlgoActionGroup" anchor="last"/>
         </action>
-        <action id="com.bloxbean.algorand.idea.contracts.action.CreateStatefulAppAction"
-                class="com.bloxbean.algorand.idea.contracts.action.CreateStatefulAppAction" text="Create App"
+        <action id="com.bloxbean.algodea.idea.contracts.action.CreateStatefulAppAction"
+                class="com.bloxbean.algodea.idea.contracts.action.CreateStatefulAppAction" text="Create App"
                 description="Create Stateful App">
             <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl T" second-keystroke="A"/>
-            <add-to-group group-id="com.bloxbean.algorand.idea.core.action.AlgoActionGroup"/>
+            <add-to-group group-id="com.bloxbean.algodea.idea.core.action.AlgoActionGroup"/>
         </action>
-        <action id="com.bloxbean.algorand.idea.account.action.AccountDumpAction"
-                class="com.bloxbean.algorand.idea.account.action.AccountDumpAction" text="Dump Account"
+        <action id="com.bloxbean.algodea.idea.account.action.AccountDumpAction"
+                class="com.bloxbean.algodea.idea.account.action.AccountDumpAction" text="Dump Account"
                 description="Dump Account">
-            <add-to-group group-id="com.bloxbean.algorand.idea.core.action.AlgoActionGroup"/>
+            <add-to-group group-id="com.bloxbean.algodea.idea.core.action.AlgoActionGroup"/>
         </action>
     </actions>
 
