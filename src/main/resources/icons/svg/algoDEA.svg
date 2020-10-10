@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="225px" height="72px" viewBox="0 0 225 72" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>algoDEA</title>
+    <g id="Welcome" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" font-family="OktaNeue-Bold, Okta Neue" font-size="72" font-weight="bold" opacity="0.764741">
+        <g id="Desktop-HD" transform="translate(-856.000000, -714.000000)" fill-rule="nonzero">
+            <text id="algoDEA">
+                <tspan x="855" y="768" fill="#030303">algo</tspan>
+                <tspan x="1006.92" y="768" font-size="36" fill="#695F5C">DEA</tspan>
+            </text>
+        </g>
+    </g>
+</svg>
