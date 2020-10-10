@@ -35,11 +35,8 @@ import com.bloxbean.algorand.idea.nodeint.purestake.CustomAlgodClient;
 import com.intellij.openapi.project.Project;
 
 public class StatefulContractService extends AlgoBaseService {
-    CustomAlgodClient client;
-
     public StatefulContractService(Project project, LogListener logListener) throws DeploymentTargetNotConfigured {
         super(project, logListener);
-        client = getAlgodClient();
     }
 
     public Long createApp(String approvalProgram, String clearStateProgram, Account creator,

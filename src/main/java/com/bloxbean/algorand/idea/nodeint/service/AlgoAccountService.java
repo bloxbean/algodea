@@ -28,12 +28,16 @@ import com.algorand.algosdk.v2.client.model.Account;
 import com.bloxbean.algorand.idea.nodeint.exception.ApiCallException;
 import com.bloxbean.algorand.idea.nodeint.exception.DeploymentTargetNotConfigured;
 import com.bloxbean.algorand.idea.nodeint.purestake.CustomAlgodClient;
+import com.bloxbean.algorand.idea.util.JsonUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.intellij.openapi.project.Project;
+import com.twelvemonkeys.lang.StringUtil;
+
+import java.security.NoSuchAlgorithmException;
 
 public class AlgoAccountService extends AlgoBaseService {
-
-    public AlgoAccountService(Project project) throws DeploymentTargetNotConfigured {
-        super(project);
+    public AlgoAccountService(Project project, LogListener logListener) throws DeploymentTargetNotConfigured {
+        super(project, logListener);
     }
 
     public Long getBalance(String address) throws Exception {
@@ -47,8 +51,48 @@ public class AlgoAccountService extends AlgoBaseService {
             else
                 throw new ApiCallException("Unable to get the accoung balance: Response " + accountResponse);
         } else {
+            logListener.error("Unable to get the accoung balance: Response " + accountResponse);
             throw new ApiCallException("Unable to get the accoung balance: Response " + accountResponse);
         }
 
     }
+
+    public Account getAccount(String address) throws ApiCallException {
+        try {
+            Response<Account> accountResponse = client.AccountInformation(new Address(address)).execute();
+
+            if(!accountResponse.isSuccessful()) {
+                printErrorMessage("Unable to fetch account information for address : " + address, accountResponse);
+                return null;
+            }
+
+            Account account = accountResponse.body();
+            if(account != null) {
+                return account;
+            } else
+                return null;
+        } catch (NoSuchAlgorithmException e) {
+            logListener.error("Invalid address : " + address);
+            throw new ApiCallException("Invalid address : " + address);
+        } catch (Exception e) {
+            logListener.error("Unable to get account information for address : " + address, e);
+            throw new ApiCallException("Unable to get account information for address : " + address, e);
+        }
+    }
+
+    public String getAccountDump(String address) throws ApiCallException {
+        if(StringUtil.isEmpty(address)) {
+            logListener.error("Account can not be fetched for empty address");
+            return null;
+        }
+
+        Account account = getAccount(address);
+        if(account == null) {
+            logListener.error("Unable to get account information for address : " + address);
+            return null;
+        }
+
+        return JsonUtil.getPrettyJson(account);
+    }
+
 }

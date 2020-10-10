@@ -26,6 +26,7 @@ import com.bloxbean.algorand.idea.account.model.AlgoAccount;
 import com.bloxbean.algorand.idea.account.service.AccountService;
 import com.bloxbean.algorand.idea.configuration.service.AlgoProjectState;
 import com.bloxbean.algorand.idea.contracts.ui.CreateAppDiaglog;
+import com.bloxbean.algorand.idea.core.action.AlgoBaseAction;
 import com.bloxbean.algorand.idea.core.action.util.AlgoContractModuleHelper;
 import com.bloxbean.algorand.idea.core.service.AlgoCacheService;
 import com.bloxbean.algorand.idea.nodeint.exception.DeploymentTargetNotConfigured;
@@ -54,7 +55,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 
-public class CreateStatefulAppAction extends AnAction {
+public class CreateStatefulAppAction extends AlgoBaseAction {
     private final static Logger LOG = Logger.getInstance(CreateStatefulAppAction.class);
 
     @Override
@@ -187,6 +188,7 @@ public class CreateStatefulAppAction extends AnAction {
 
         } catch (DeploymentTargetNotConfigured | Exception deploymentTargetNotConfigured) {
             deploymentTargetNotConfigured.printStackTrace();
+            warnDeploymentTargetNotConfigured(project, "Create App");
         }
     }
 }

@@ -27,14 +27,19 @@ import com.bloxbean.algorand.idea.nodeint.AlgoConnectionFactory;
 import com.bloxbean.algorand.idea.nodeint.AlgoServerConfigurationHelper;
 import com.bloxbean.algorand.idea.nodeint.exception.DeploymentTargetNotConfigured;
 import com.bloxbean.algorand.idea.nodeint.purestake.CustomAlgodClient;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 
 public class AlgoBaseService {
     private final static Logger LOG = Logger.getInstance(AlgoBaseService.class);
 
+    protected Project project;
     protected AlgoConnectionFactory algoConnectionFactory;
     protected LogListener logListener;
+    protected CustomAlgodClient client;
 
     public AlgoBaseService(Project project) throws DeploymentTargetNotConfigured {
         this(project, new LogListener() {
@@ -62,6 +67,8 @@ public class AlgoBaseService {
         algoConnectionFactory
                 = new AlgoConnectionFactory(nodeInfo.getNodeAPIUrl(), nodeInfo.getApiKey());
         this.logListener = logListener;
+
+        this.client = algoConnectionFactory.connect();
     }
 
     public CustomAlgodClient getAlgodClient() {

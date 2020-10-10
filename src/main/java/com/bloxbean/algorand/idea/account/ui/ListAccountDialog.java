@@ -27,6 +27,7 @@ import com.bloxbean.algorand.idea.account.service.AccountService;
 import com.bloxbean.algorand.idea.configuration.action.ConfigurationAction;
 import com.bloxbean.algorand.idea.nodeint.service.AlgoAccountService;
 import com.bloxbean.algorand.idea.nodeint.exception.DeploymentTargetNotConfigured;
+import com.bloxbean.algorand.idea.nodeint.service.LogListenerAdapter;
 import com.bloxbean.algorand.idea.toolwindow.AlgoConsole;
 import com.bloxbean.algorand.idea.util.IdeaUtil;
 import com.intellij.notification.NotificationType;
@@ -95,6 +96,8 @@ public class ListAccountDialog extends DialogWrapper {
 
         if(isRemote) {
             AccountService accountListFetcher = new AccountService();
+            AlgoConsole console = AlgoConsole.getConsole(project);
+            console.clearAndshow();
 
             try {
                 ProgressManager.getInstance().runProcessWithProgressSynchronously(new Runnable() {
@@ -104,7 +107,7 @@ public class ListAccountDialog extends DialogWrapper {
                         float counter = 0;
                         AlgoAccountService accountService = null;
                         try {
-                             accountService = new AlgoAccountService(project);
+                             accountService = new AlgoAccountService(project, new LogListenerAdapter(console));
                         } catch (DeploymentTargetNotConfigured deploymentTargetNotConfigured) {
                             deploymentTargetNotConfigured.printStackTrace();
                             IdeaUtil.showNotification(project, "Algorand Configuration",

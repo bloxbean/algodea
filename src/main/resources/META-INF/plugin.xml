@@ -136,9 +136,11 @@
             <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl T" second-keystroke="A"/>
             <add-to-group group-id="com.bloxbean.algorand.idea.core.action.AlgoActionGroup"/>
         </action>
+        <action id="com.bloxbean.algorand.idea.account.action.AccountDumpAction"
+                class="com.bloxbean.algorand.idea.account.action.AccountDumpAction" text="Dump Account"
+                description="Dump Account">
+            <add-to-group group-id="com.bloxbean.algorand.idea.core.action.AlgoActionGroup"/>
+        </action>
     </actions>
 
-    <applicationListeners>
-        <listener class="com.bloxbean.algorand.idea.toolwindow.messaging.AlgoConsoleListener"  topic="com.bloxbean.algorand.idea.toolwindow.messaging.AlgoConsoleNotifier.ALGO_NEW_MESSAGE"/>
-    </applicationListeners>
 </idea-plugin>
