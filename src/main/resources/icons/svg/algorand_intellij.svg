@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="274px" height="117px" viewBox="0 0 274 117" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Group 9</title>
+    <g id="Welcome" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" font-family="OktaNeue-Bold, Okta Neue" font-weight="bold">
+        <g id="Desktop-HD" transform="translate(-853.000000, -793.000000)">
+            <g id="Group-9" transform="translate(855.000000, 793.000000)">
+                <text id="{algoDEA}" opacity="0.764741" fill-rule="nonzero" font-size="72">
+                    <tspan x="0" y="84" fill="#010101">{algo</tspan>
+                    <tspan x="174.168" y="84" font-size="36" fill="#928C88">DEA</tspan>
+                    <tspan x="247.86" y="84" fill="#000000">}</tspan>
+                </text>
+                <text id="Algorand-IntelliJ-Pl" font-size="10" fill="#010101">
+                    <tspan x="136" y="96">Algorand IntelliJ Plugin</tspan>
+                </text>
+            </g>
+        </g>
+    </g>
+</svg>
