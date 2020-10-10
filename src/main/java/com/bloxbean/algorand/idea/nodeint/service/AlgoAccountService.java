@@ -29,7 +29,6 @@ import com.bloxbean.algorand.idea.nodeint.exception.ApiCallException;
 import com.bloxbean.algorand.idea.nodeint.exception.DeploymentTargetNotConfigured;
 import com.bloxbean.algorand.idea.nodeint.purestake.CustomAlgodClient;
 import com.bloxbean.algorand.idea.util.JsonUtil;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.intellij.openapi.project.Project;
 import com.twelvemonkeys.lang.StringUtil;
 

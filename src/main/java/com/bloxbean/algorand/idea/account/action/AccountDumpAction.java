@@ -7,8 +7,6 @@ import com.bloxbean.algorand.idea.nodeint.exception.DeploymentTargetNotConfigure
 import com.bloxbean.algorand.idea.nodeint.service.AlgoAccountService;
 import com.bloxbean.algorand.idea.nodeint.service.LogListenerAdapter;
 import com.bloxbean.algorand.idea.toolwindow.AlgoConsole;
-import com.bloxbean.algorand.idea.util.IdeaUtil;
-import com.intellij.notification.NotificationType;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
