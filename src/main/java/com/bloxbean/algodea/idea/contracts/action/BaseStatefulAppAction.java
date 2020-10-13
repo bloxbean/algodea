@@ -5,7 +5,6 @@ import com.algorand.algosdk.crypto.Address;
 import com.bloxbean.algodea.idea.configuration.service.AlgoProjectState;
 import com.bloxbean.algodea.idea.contracts.ui.AppTxnBaseParamEntryForm;
 import com.bloxbean.algodea.idea.contracts.ui.AppTxnParamEntryDialog;
-import com.bloxbean.algodea.idea.contracts.ui.AppTxnParamEntryForm;
 import com.bloxbean.algodea.idea.contracts.ui.TxnDetailsEntryForm;
 import com.bloxbean.algodea.idea.core.action.AlgoBaseAction;
 import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;

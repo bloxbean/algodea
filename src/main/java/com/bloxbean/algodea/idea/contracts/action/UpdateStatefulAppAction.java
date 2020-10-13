@@ -38,7 +38,7 @@ import java.io.File;
 import java.util.List;
 
 public class UpdateStatefulAppAction extends AlgoBaseAction {
-    private final static Logger LOG = Logger.getInstance(CreateStatefulAppAction.class);
+    private final static Logger LOG = Logger.getInstance(UpdateStatefulAppAction.class);
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
@@ -135,6 +135,16 @@ public class UpdateStatefulAppAction extends AlgoBaseAction {
             VirtualFile appProgVF = VfsUtil.findRelativeFile(sourceRoot, approvalProgramName);
             VirtualFile clearProgVF = VfsUtil.findRelativeFile(sourceRoot, clearStateProgramName);
 
+            if(appProgVF == null || !appProgVF.exists()) {
+                console.showErrorMessage(String.format("Approval Program doesn't exist: %s", appProgVF != null ? appProgVF.getCanonicalPath(): approvalProgramName));
+                return;
+            }
+
+            if(clearProgVF == null || !clearProgVF.exists()) {
+                console.showErrorMessage(String.format("Clear State Program doesn't exist: %s", clearProgVF != null? clearProgVF.getCanonicalPath(): clearStateProgramName));
+                return;
+            }
+
             VirtualFile moduleOutFolder = AlgoContractModuleHelper.getModuleOutputFolder(console, module);
 
             //Merge Approval Program if there is any variable template available
@@ -199,10 +209,10 @@ public class UpdateStatefulAppAction extends AlgoBaseAction {
 
         } catch (DeploymentTargetNotConfigured deploymentTargetNotConfigured) {
             deploymentTargetNotConfigured.printStackTrace();
-            warnDeploymentTargetNotConfigured(project, "Create App");
+            warnDeploymentTargetNotConfigured(project, "UpdateApplication");
         } catch (Exception ex) {
             LOG.error(ex);
-            IdeaUtil.showNotification(project, "Create App", "Create App failed : " + ex.getMessage(), NotificationType.ERROR, null);
+            IdeaUtil.showNotification(project, "UpdateApplication", "Update App failed : " + ex.getMessage(), NotificationType.ERROR, null);
         }
     }
 }

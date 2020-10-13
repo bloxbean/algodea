@@ -149,6 +149,16 @@ public class CreateStatefulAppAction extends AlgoBaseAction {
             VirtualFile appProgVF = VfsUtil.findRelativeFile(sourceRoot, approvalProgramName);
             VirtualFile clearProgVF = VfsUtil.findRelativeFile(sourceRoot, clearStateProgramName);
 
+            if(appProgVF == null || !appProgVF.exists()) {
+                console.showErrorMessage(String.format("Approval Program doesn't exist: %s", appProgVF != null ? appProgVF.getCanonicalPath(): approvalProgramName));
+                return;
+            }
+
+            if(clearProgVF == null || !clearProgVF.exists()) {
+                console.showErrorMessage(String.format("Clear State Program doesn't exist: %s", clearProgVF != null? clearProgVF.getCanonicalPath(): clearStateProgramName));
+                return;
+            }
+
             VirtualFile moduleOutFolder = AlgoContractModuleHelper.getModuleOutputFolder(console, module);
 
             //Merge Approval Program if there is any variable template available
