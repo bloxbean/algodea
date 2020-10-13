@@ -27,7 +27,6 @@ import com.bloxbean.algodea.idea.account.service.AccountChooser;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.openapi.util.text.StringUtil;
 import org.apache.commons.lang.math.NumberUtils;
@@ -51,10 +50,11 @@ public class CreateAppEntryForm {
     private JButton accountChooser;
     private JTextField mnemonicTf;
 
-    public CreateAppEntryForm(Project project,
-                              AlgoAccount creatorAccount, String approvalProgram, String clearStateProgram,
-                              int globalByteslices, int globalInts, int localByteslices, int localInts) {
+    public CreateAppEntryForm() {
+    }
 
+    public void initializeData(Project project, AlgoAccount creatorAccount, String approvalProgram, String clearStateProgram,
+                               int globalByteslices, int globalInts, int localByteslices, int localInts) {
         if(creatorAccount != null) {
             accountTf.setText(creatorAccount.getAddress().toString());
 
@@ -150,12 +150,10 @@ public class CreateAppEntryForm {
         }
     }
 
-//    @Override
     protected @Nullable JComponent getMainPanel() {
         return mainPanel;
     }
 
-//    @Override
     protected @Nullable ValidationInfo doValidate() {
 
         if(!NumberUtils.isNumber(globalByteslicesTf.getText())) {
@@ -192,4 +190,5 @@ public class CreateAppEntryForm {
         // TODO: place custom component creation code here
         mnemonicTf = new JTextField();
     }
+
 }

@@ -31,15 +31,11 @@ import com.algorand.algosdk.transaction.Transaction;
 import com.algorand.algosdk.util.Encoder;
 import com.algorand.algosdk.v2.client.common.Response;
 import com.algorand.algosdk.v2.client.model.*;
-import com.bloxbean.algodea.idea.nodeint.model.ApplArg;
-import com.bloxbean.algodea.idea.nodeint.model.Lease;
-import com.bloxbean.algodea.idea.nodeint.model.Note;
-import com.bloxbean.algodea.idea.nodeint.purestake.CustomAlgodClient;
 import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
-import com.bloxbean.algodea.idea.nodeint.util.ArgTypeToByteConverter;
+import com.bloxbean.algodea.idea.nodeint.model.TxnDetailsParameters;
+import com.bloxbean.algodea.idea.nodeint.purestake.CustomAlgodClient;
 import com.bloxbean.algodea.idea.util.JsonUtil;
 import com.intellij.openapi.project.Project;
-import org.apache.commons.lang.math.NumberUtils;
 
 import java.util.List;
 
@@ -49,7 +45,8 @@ public class StatefulContractService extends AlgoBaseService {
     }
 
     public Long createApp(String approvalProgram, String clearStateProgram, Account creator,
-                          int globalBytes, int globalInts, int localBytes, int localInts) throws Exception {
+                          int globalBytes, int globalInts, int localBytes, int localInts,
+                          TxnDetailsParameters txnDetailsParameters) throws Exception {
         if(creator == null) {
             logListener.error("Creator account cannot be null");
             return null;
@@ -75,12 +72,12 @@ public class StatefulContractService extends AlgoBaseService {
             logListener.info("Clear State Program compiled successfully.");
         }
 
-        Long appId = _createApp(creator, new TEALProgram(approvalProgramBytes), new TEALProgram(clearProgramBytes), globalInts, globalBytes, localInts, localBytes);
+        Long appId = _createApp(creator, new TEALProgram(approvalProgramBytes), new TEALProgram(clearProgramBytes),
+                globalInts, globalBytes, localInts, localBytes, txnDetailsParameters);
         return appId;
     }
 
-    public boolean updateApp(Long appId, Account fromAccount, String approvalProgram, String clearStateProgram, List<byte[]> appArgs, byte[] note, byte[] lease,
-                             List<Address> accounts, List<Long> foreignApps, List<Long> foreignAssets) throws Exception {
+    public boolean updateApp(Long appId, Account fromAccount, String approvalProgram, String clearStateProgram, TxnDetailsParameters txnDetailsParameters) throws Exception {
         if(fromAccount == null) {
             logListener.error("From account cannot be null");
             return false;
@@ -110,7 +107,7 @@ public class StatefulContractService extends AlgoBaseService {
         txnBuilder.approvalProgram(new TEALProgram(approvalProgramBytes));
         txnBuilder.clearStateProgram(new TEALProgram(clearProgramBytes));
 
-        Transaction txn = populateBaseTransaction( txnBuilder, appId, fromAccount, null, null, null, null, null, null);
+        Transaction txn = populateBaseTransaction( txnBuilder, appId, fromAccount, txnDetailsParameters);
         if(txn == null) {
             logListener.error("Transaction could not be built");
             return false;
@@ -119,12 +116,11 @@ public class StatefulContractService extends AlgoBaseService {
         return postApplicationTransaction(fromAccount, txn);
     }
 
-    public boolean optIn(Long appId, Account fromAccount, List<byte[]> appArgs, byte[] note, byte[] lease,
-                  List<Address> accounts, List<Long> foreignApps, List<Long> foreignAssets)  throws Exception {
+    public boolean optIn(Long appId, Account fromAccount, TxnDetailsParameters txnDetailsParameters)  throws Exception {
 
         ApplicationOptInTransactionBuilder txnBuilder = Transaction.ApplicationOptInTransactionBuilder();
 
-        Transaction txn = populateBaseTransaction( txnBuilder, appId, fromAccount, appArgs, note, lease, accounts, foreignApps, foreignAssets);
+        Transaction txn = populateBaseTransaction( txnBuilder, appId, fromAccount, txnDetailsParameters);
         if(txn == null) {
             logListener.error("Transaction could not be built");
             return false;
@@ -133,11 +129,10 @@ public class StatefulContractService extends AlgoBaseService {
         return postApplicationTransaction(fromAccount, txn);
     }
 
-    public boolean call(Long appId, Account fromAccount, List<byte[]> appArgs, byte[] note, byte[] lease, List<Address> accounts,
-                        List<Long> foreignApps, List<Long> foreignAssets) throws Exception {
+    public boolean call(Long appId, Account fromAccount, TxnDetailsParameters txnDetailsParameters) throws Exception {
         ApplicationCallTransactionBuilder txnBuilder = Transaction.ApplicationCallTransactionBuilder();
 
-        Transaction txn = populateBaseTransaction( txnBuilder, appId, fromAccount, appArgs, note, lease, accounts, foreignApps, foreignAssets);
+        Transaction txn = populateBaseTransaction( txnBuilder, appId, fromAccount, txnDetailsParameters);
         if(txn == null) {
             logListener.error("Transaction could not be built");
             return false;
@@ -146,11 +141,10 @@ public class StatefulContractService extends AlgoBaseService {
         return postApplicationTransaction(fromAccount, txn);
     }
 
-    public boolean closeOut(Long appId, Account fromAccount, List<byte[]> appArgs, byte[] note, byte[] lease, List<Address> accounts,
-                        List<Long> foreignApps, List<Long> foreignAssets) throws Exception {
+    public boolean closeOut(Long appId, Account fromAccount, TxnDetailsParameters txnDetailsParameters) throws Exception {
         ApplicationCloseTransactionBuilder txnBuilder = Transaction.ApplicationCloseTransactionBuilder();
 
-        Transaction txn = populateBaseTransaction( txnBuilder, appId, fromAccount, appArgs, note, lease, accounts, foreignApps, foreignAssets);
+        Transaction txn = populateBaseTransaction( txnBuilder, appId, fromAccount, txnDetailsParameters);
         if(txn == null) {
             logListener.error("Transaction could not be built");
             return false;
@@ -159,11 +153,10 @@ public class StatefulContractService extends AlgoBaseService {
         return postApplicationTransaction(fromAccount, txn);
     }
 
-    public boolean clear(Long appId, Account fromAccount, List<byte[]> appArgs, byte[] note, byte[] lease, List<Address> accounts,
-                        List<Long> foreignApps, List<Long> foreignAssets) throws Exception {
+    public boolean clear(Long appId, Account fromAccount, TxnDetailsParameters txnDetailsParameters) throws Exception {
         ApplicationClearTransactionBuilder txnBuilder = Transaction.ApplicationClearTransactionBuilder();
 
-        Transaction txn = populateBaseTransaction( txnBuilder, appId, fromAccount, appArgs, note, lease, accounts, foreignApps, foreignAssets);
+        Transaction txn = populateBaseTransaction( txnBuilder, appId, fromAccount, txnDetailsParameters);
         if(txn == null) {
             logListener.error("Transaction could not be built");
             return false;
@@ -172,11 +165,10 @@ public class StatefulContractService extends AlgoBaseService {
         return postApplicationTransaction(fromAccount, txn);
     }
 
-    public boolean delete(Long appId, Account fromAccount, List<byte[]> appArgs, byte[] note, byte[] lease, List<Address> accounts,
-                          List<Long> foreignApps, List<Long> foreignAssets) throws Exception {
+    public boolean delete(Long appId, Account fromAccount, TxnDetailsParameters txnDetailsParameters) throws Exception {
         ApplicationDeleteTransactionBuilder txnBuilder = Transaction.ApplicationDeleteTransactionBuilder();
 
-        Transaction txn = populateBaseTransaction( txnBuilder, appId, fromAccount, appArgs, note, lease, accounts, foreignApps, foreignAssets);
+        Transaction txn = populateBaseTransaction( txnBuilder, appId, fromAccount, txnDetailsParameters);
         if(txn == null) {
             logListener.error("Transaction could not be built");
             return false;
@@ -220,18 +212,21 @@ public class StatefulContractService extends AlgoBaseService {
         return true;
     }
 
-    public Transaction populateBaseTransaction(ApplicationBaseTransactionBuilder appTransactionBuilder, Long appId, Account fromAccount, List<byte[]> appArgs, byte[] note, byte[] lease, List<Address> accounts, List<Long> foreignApps, List<Long> foreignAssets) throws Exception {
+    public Transaction populateBaseTransaction(ApplicationBaseTransactionBuilder appTransactionBuilder, Long appId, Account fromAccount, TxnDetailsParameters txnDetailsParameters) throws Exception {
         if(fromAccount == null) {
             logListener.error("From Account cannot be null");
             return null;
         }
 
-        if(appId == null || appId == 0) {
-            logListener.error("Invalid application id");
-            return null;
+//        if(appId == null || appId == 0) {
+//            logListener.error("Invalid application id");
+//            return null;
+//        }
+
+        if(appId != null) {
+            logListener.info("Application : " + appId);
         }
 
-        logListener.info("Application : " + appId);
         logListener.info("From Account : " + fromAccount.getAddress().toString());
         // define sender
         Address sender = fromAccount.getAddress();
@@ -249,11 +244,20 @@ public class StatefulContractService extends AlgoBaseService {
 
         logListener.info("Signing transaction ...");
         // create unsigned transaction
-//        ApplicationOptInTransactionBuilder txnBuilder = Transaction.ApplicationOptInTransactionBuilder()
         appTransactionBuilder
-                .applicationId(appId)
                 .sender(sender)
                 .suggestedParams(params);
+
+        if(appId != null && appId != 0) {
+            appTransactionBuilder.applicationId(appId);
+        }
+
+        List<byte[]> appArgs = txnDetailsParameters.getAppArgs();
+        byte[] note = txnDetailsParameters.getNote();
+        byte[] lease = txnDetailsParameters.getLease();
+        List<Address> accounts = txnDetailsParameters.getAccounts();
+        List<Long> foreignApps = txnDetailsParameters.getForeignApps();
+        List<Long> foreignAssets = txnDetailsParameters.getForeignAssets();
 
         if(appArgs != null && appArgs.size() > 0) {
             appTransactionBuilder.args(appArgs);
@@ -280,7 +284,7 @@ public class StatefulContractService extends AlgoBaseService {
     }
 
     private Long _createApp(Account creator, TEALProgram approvalProgramSource,
-                          TEALProgram clearProgramSource, int globalInts, int globalBytes, int localInts, int localBytes)
+                          TEALProgram clearProgramSource, int globalInts, int globalBytes, int localInts, int localBytes, TxnDetailsParameters txnDetailsParameters)
             throws Exception {
         // define sender as creator
         Address sender = creator.getAddress();
@@ -298,14 +302,17 @@ public class StatefulContractService extends AlgoBaseService {
 
         logListener.info("Signing transaction ...");
         // create unsigned transaction
-        Transaction txn = Transaction.ApplicationCreateTransactionBuilder()
+//        ApplicationCreateTransactionBuilderTransaction.ApplicationCreateTransactionBuilder();
+        ApplicationCreateTransactionBuilder transactionBuilder = Transaction.ApplicationCreateTransactionBuilder()
                 .sender(sender)
                 .suggestedParams(params)
                 .approvalProgram(approvalProgramSource)
                 .clearStateProgram(clearProgramSource)
                 .globalStateSchema(new StateSchema(globalInts, globalBytes))
-                .localStateSchema(new StateSchema(localInts, localBytes))
-                .build();
+                .localStateSchema(new StateSchema(localInts, localBytes));
+                //.build();
+
+        Transaction txn = populateBaseTransaction(transactionBuilder, null, creator, txnDetailsParameters);
 
         // sign transaction
         SignedTransaction signedTxn = creator.signTransaction(txn);

@@ -1,33 +1,20 @@
 package com.bloxbean.algodea.idea.contracts.ui;
 
 import com.algorand.algosdk.account.Account;
-import com.algorand.algosdk.crypto.Address;
 import com.bloxbean.algodea.idea.account.model.AlgoAccount;
 import com.bloxbean.algodea.idea.account.service.AccountChooser;
 import com.bloxbean.algodea.idea.configuration.service.AlgoProjectState;
 import com.bloxbean.algodea.idea.core.service.AlgoCacheService;
-import com.bloxbean.algodea.idea.nodeint.exception.InvalidContractInputParamException;
-import com.bloxbean.algodea.idea.nodeint.model.ApplArg;
-import com.bloxbean.algodea.idea.nodeint.model.ArgType;
-import com.bloxbean.algodea.idea.nodeint.model.Lease;
-import com.bloxbean.algodea.idea.nodeint.model.Note;
-import com.bloxbean.algodea.idea.nodeint.util.ArgTypeToByteConverter;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.ui.components.JBList;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class AppTxnBaseParamEntryForm {
     private JTextField fromAccountTf;
@@ -42,8 +29,7 @@ public class AppTxnBaseParamEntryForm {
     Project project;
 
     public AppTxnBaseParamEntryForm() {
-//        this.project = project;
-//        initializeData();
+
     }
 
     public void initializeData(Project project) {

@@ -5,9 +5,12 @@ import com.algorand.algosdk.crypto.Address;
 import com.bloxbean.algodea.idea.account.model.AlgoAccount;
 import com.bloxbean.algodea.idea.account.service.AccountChooser;
 import com.bloxbean.algodea.idea.configuration.service.AlgoProjectState;
-import com.bloxbean.algodea.idea.nodeint.exception.InvalidContractInputParamException;
-import com.bloxbean.algodea.idea.nodeint.model.*;
 import com.bloxbean.algodea.idea.core.service.AlgoCacheService;
+import com.bloxbean.algodea.idea.nodeint.exception.InvalidContractInputParamException;
+import com.bloxbean.algodea.idea.nodeint.model.ApplArg;
+import com.bloxbean.algodea.idea.nodeint.model.ArgType;
+import com.bloxbean.algodea.idea.nodeint.model.Lease;
+import com.bloxbean.algodea.idea.nodeint.model.Note;
 import com.bloxbean.algodea.idea.nodeint.util.ArgTypeToByteConverter;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
@@ -19,7 +22,6 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -60,10 +62,6 @@ public class AppTxnParamEntryForm  {
     Project project;
 
     public AppTxnParamEntryForm(Project project) {
-//        super(project, false);
-//        init();
-//        setTitle(title);
-
         this.project = project;
         initializeData();
     }

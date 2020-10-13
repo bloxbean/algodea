@@ -22,11 +22,14 @@
 package com.bloxbean.algodea.idea.contracts.action;
 
 import com.algorand.algosdk.account.Account;
+import com.algorand.algosdk.crypto.Address;
 import com.bloxbean.algodea.idea.account.model.AlgoAccount;
 import com.bloxbean.algodea.idea.account.service.AccountService;
 import com.bloxbean.algodea.idea.configuration.service.AlgoProjectState;
 import com.bloxbean.algodea.idea.contracts.ui.CreateAppDialog;
+import com.bloxbean.algodea.idea.contracts.ui.TxnDetailsEntryForm;
 import com.bloxbean.algodea.idea.core.action.AlgoBaseAction;
+import com.bloxbean.algodea.idea.nodeint.model.TxnDetailsParameters;
 import com.bloxbean.algodea.idea.toolwindow.AlgoConsole;
 import com.bloxbean.algodea.idea.contracts.ui.CreateAppEntryForm;
 import com.bloxbean.algodea.idea.core.action.util.AlgoContractModuleHelper;
@@ -54,6 +57,7 @@ import com.twelvemonkeys.lang.StringUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.util.List;
 
 public class CreateStatefulAppAction extends AlgoBaseAction {
     private final static Logger LOG = Logger.getInstance(CreateStatefulAppAction.class);
@@ -106,6 +110,8 @@ public class CreateStatefulAppAction extends AlgoBaseAction {
             }
 
             CreateAppEntryForm createForm = createDialog.getCreateForm();
+            TxnDetailsEntryForm txnDetailsEntryForm = createDialog.getTxnDetailsEntryForm();
+
             Account account = createForm.getAccount();
             if(account == null) {
                 console.showErrorMessage("Invalid or null creator account");
@@ -117,6 +123,21 @@ public class CreateStatefulAppAction extends AlgoBaseAction {
             int globalInts = createForm.getGlobalInts();
             int localByteslices = createForm.getLocalByteslices();
             int localInts = createForm.getLocalInts();
+
+            List<byte[]> appArgs = txnDetailsEntryForm.getArgsAsBytes();
+            byte[] note = txnDetailsEntryForm.getNoteBytes();
+            byte[] lease = txnDetailsEntryForm.getLeaseBytes();
+            List<Address> accounts = txnDetailsEntryForm.getAccounts();
+            List<Long> foreignApps = txnDetailsEntryForm.getForeignApps();
+            List<Long> foreignAssets = txnDetailsEntryForm.getForeignAssets();
+
+            TxnDetailsParameters txnDetailsParameters = new TxnDetailsParameters();
+            txnDetailsParameters.setAppArgs(appArgs);
+            txnDetailsParameters.setNote(note);
+            txnDetailsParameters.setLease(lease);
+            txnDetailsParameters.setAccounts(accounts);
+            txnDetailsParameters.setForeignApps(foreignApps);
+            txnDetailsParameters.setForeignAssets(foreignAssets);
 
             //update cache
             cacheService.updateSfGlobalBytesInts(globalByteslices, globalInts, localByteslices, localInts);
@@ -168,7 +189,8 @@ public class CreateStatefulAppAction extends AlgoBaseAction {
                     Long appId = null;
                     try {
                         appId = sfService.createApp(appProgText, clearProgText, account,
-                                globalByteslices, globalInts, localByteslices, localInts);
+                                globalByteslices, globalInts, localByteslices, localInts,
+                                txnDetailsParameters);
                     } catch (Exception exception) {
                         exception.printStackTrace();
                     }

@@ -3,10 +3,13 @@ package com.bloxbean.algodea.idea.contracts.action;
 import com.algorand.algosdk.account.Account;
 import com.algorand.algosdk.crypto.Address;
 import com.bloxbean.algodea.idea.configuration.service.AlgoProjectState;
+import com.bloxbean.algodea.idea.contracts.ui.AppTxnBaseParamEntryForm;
 import com.bloxbean.algodea.idea.contracts.ui.AppTxnParamEntryDialog;
 import com.bloxbean.algodea.idea.contracts.ui.AppTxnParamEntryForm;
+import com.bloxbean.algodea.idea.contracts.ui.TxnDetailsEntryForm;
 import com.bloxbean.algodea.idea.core.action.AlgoBaseAction;
 import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
+import com.bloxbean.algodea.idea.nodeint.model.TxnDetailsParameters;
 import com.bloxbean.algodea.idea.nodeint.service.LogListenerAdapter;
 import com.bloxbean.algodea.idea.nodeint.service.StatefulContractService;
 import com.bloxbean.algodea.idea.toolwindow.AlgoConsole;
@@ -38,8 +41,8 @@ public abstract class  BaseStatefulAppAction extends AlgoBaseAction {
         return "Application - " + getApplicationTxnCommand();
     }
 
-    public abstract boolean invokeTransaction(StatefulContractService statefulContractService, Long appId, Account fromAccount, List<byte[]> appArgs, byte[] note, byte[] lease, List<Address> accounts,
-                                     List<Long> foreignApps, List<Long> foreignAssets) throws Exception;
+    public abstract boolean invokeTransaction(StatefulContractService statefulContractService, Long appId, Account fromAccount,
+                                              TxnDetailsParameters txnDetailsParameters) throws Exception;
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
@@ -63,10 +66,10 @@ public abstract class  BaseStatefulAppAction extends AlgoBaseAction {
         }
 
         if(LOG.isDebugEnabled()) {
-            LOG.debug("*****  App Id: " + dialog.getAppTxnParamEntryForm().getAppId());
-            LOG.debug("****** From Account: " + dialog.getAppTxnParamEntryForm().getFromAccount());
-            LOG.debug("******* Args : " + dialog.getAppTxnParamEntryForm().getArgs());
-            LOG.debug("******** Note : " + dialog.getAppTxnParamEntryForm().getNote());
+            LOG.debug("*****  App Id: " + dialog.getAppTxnBaseEntryForm().getAppId());
+            LOG.debug("****** From Account: " + dialog.getAppTxnBaseEntryForm().getFromAccount());
+            LOG.debug("******* Args : " + dialog.getTxnDetailsEntryForm().getArgs());
+            LOG.debug("******** Note : " + dialog.getTxnDetailsEntryForm().getNote());
         }
 
         AlgoProjectState projectState = AlgoProjectState.getInstance(project);
@@ -81,15 +84,26 @@ public abstract class  BaseStatefulAppAction extends AlgoBaseAction {
             StatefulContractService sfService
                     = new StatefulContractService(project, new LogListenerAdapter(console));
 
-            AppTxnParamEntryForm entryForm = dialog.getAppTxnParamEntryForm();
-            Long appId = entryForm.getAppId();
-            Account fromAccount = entryForm.getFromAccount();
-            List<byte[]> appArgs = entryForm.getArgsAsBytes();
-            byte[] note = entryForm.getNoteBytes();
-            byte[] lease = entryForm.getLeaseBytes();
-            List<Address> accounts = entryForm.getAccounts();
-            List<Long> foreignApps = entryForm.getForeignApps();
-            List<Long> foreignAssets = entryForm.getForeignAssets();
+            AppTxnBaseParamEntryForm appBaseEntryForm = dialog.getAppTxnBaseEntryForm();
+            TxnDetailsEntryForm txnDetailsEntryForm = dialog.getTxnDetailsEntryForm();
+
+            Long appId = appBaseEntryForm.getAppId();
+            Account fromAccount = appBaseEntryForm.getFromAccount();
+            List<byte[]> appArgs = txnDetailsEntryForm.getArgsAsBytes();
+
+            byte[] note = txnDetailsEntryForm.getNoteBytes();
+            byte[] lease = txnDetailsEntryForm.getLeaseBytes();
+            List<Address> accounts = txnDetailsEntryForm.getAccounts();
+            List<Long> foreignApps = txnDetailsEntryForm.getForeignApps();
+            List<Long> foreignAssets = txnDetailsEntryForm.getForeignAssets();
+
+            TxnDetailsParameters txnDetailsParameters = new TxnDetailsParameters();
+            txnDetailsParameters.setAppArgs(appArgs);
+            txnDetailsParameters.setNote(note);
+            txnDetailsParameters.setLease(lease);
+            txnDetailsParameters.setAccounts(accounts);
+            txnDetailsParameters.setForeignApps(foreignApps);
+            txnDetailsParameters.setForeignAssets(foreignAssets);
 
             Task.Backgroundable task = new Task.Backgroundable(project, getApplicationTxnDescription()) {
 
@@ -97,7 +111,7 @@ public abstract class  BaseStatefulAppAction extends AlgoBaseAction {
                 public void run(@NotNull ProgressIndicator indicator) {
                     console.showInfoMessage(String.format("Starting %s transaction ...", getApplicationTxnCommand()));
                     try {
-                        boolean status = invokeTransaction(sfService, appId, fromAccount, appArgs, note, lease, accounts, foreignApps, foreignAssets);
+                        boolean status = invokeTransaction(sfService, appId, fromAccount, txnDetailsParameters);
 
                         String fromAccountAddress = fromAccount != null ? fromAccount.getAddress().toString(): "";
 

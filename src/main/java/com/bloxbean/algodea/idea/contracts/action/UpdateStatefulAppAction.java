@@ -11,6 +11,7 @@ import com.bloxbean.algodea.idea.core.action.AlgoBaseAction;
 import com.bloxbean.algodea.idea.core.action.util.AlgoContractModuleHelper;
 import com.bloxbean.algodea.idea.core.service.AlgoCacheService;
 import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
+import com.bloxbean.algodea.idea.nodeint.model.TxnDetailsParameters;
 import com.bloxbean.algodea.idea.nodeint.service.LogListenerAdapter;
 import com.bloxbean.algodea.idea.nodeint.service.StatefulContractService;
 import com.bloxbean.algodea.idea.toolwindow.AlgoConsole;
@@ -30,6 +31,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.twelvemonkeys.lang.StringUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -95,12 +97,34 @@ public class UpdateStatefulAppAction extends AlgoBaseAction {
                 return;
             }
 
+            approvalProgramName = updateForm.getApprovalProgram();
+            clearStateProgramName = updateForm.getClearStateProgram();
+            if(StringUtil.isEmpty(approvalProgramName)) {
+                console.showErrorMessage("Approval program name cannot be empty");
+                console.showErrorMessage("UpdateApplication Failed");
+                return;
+            }
+
+            if(StringUtil.isEmpty(clearStateProgramName)) {
+                console.showErrorMessage("Clear state program name cannot be empty");
+                console.showErrorMessage("UpdateApplication Failed");
+                return;
+            }
+
             List<byte[]> appArgs = txnDetailsEntryForm.getArgsAsBytes();
             byte[] note = txnDetailsEntryForm.getNoteBytes();
             byte[] lease = txnDetailsEntryForm.getLeaseBytes();
             List<Address> accounts = txnDetailsEntryForm.getAccounts();
             List<Long> foreignApps = txnDetailsEntryForm.getForeignApps();
             List<Long> foreignAssets = txnDetailsEntryForm.getForeignAssets();
+
+            TxnDetailsParameters txnDetailsParameters = new TxnDetailsParameters();
+            txnDetailsParameters.setAppArgs(appArgs);
+            txnDetailsParameters.setNote(note);
+            txnDetailsParameters.setLease(lease);
+            txnDetailsParameters.setAccounts(accounts);
+            txnDetailsParameters.setForeignApps(foreignApps);
+            txnDetailsParameters.setForeignAssets(foreignAssets);
 
             //update cache.. For update from account, save it inside creator account for now.
             cacheService.setSfCreatorAccount(account.getAddress().toString());
@@ -151,7 +175,7 @@ public class UpdateStatefulAppAction extends AlgoBaseAction {
                     Long appId = appTxnBaseForm.getAppId();
                     boolean success = false;
                     try {
-                       success = sfService.updateApp(appId, account, appProgText, clearProgText, appArgs, note, lease, accounts, foreignApps, foreignAssets);
+                       success = sfService.updateApp(appId, account, appProgText, clearProgText, txnDetailsParameters);
                     } catch (Exception exception) {
                         exception.printStackTrace();
                     }
