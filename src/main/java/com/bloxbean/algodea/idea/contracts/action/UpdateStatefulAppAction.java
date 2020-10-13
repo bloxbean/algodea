@@ -1,39 +1,19 @@
-/*
- * Copyright (c) 2020 BloxBean Project
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
 package com.bloxbean.algodea.idea.contracts.action;
 
 import com.algorand.algosdk.account.Account;
-import com.bloxbean.algodea.idea.account.model.AlgoAccount;
-import com.bloxbean.algodea.idea.account.service.AccountService;
+import com.algorand.algosdk.crypto.Address;
 import com.bloxbean.algodea.idea.configuration.service.AlgoProjectState;
-import com.bloxbean.algodea.idea.contracts.ui.CreateAppDialog;
+import com.bloxbean.algodea.idea.contracts.ui.AppTxnBaseParamEntryForm;
+import com.bloxbean.algodea.idea.contracts.ui.TxnDetailsEntryForm;
+import com.bloxbean.algodea.idea.contracts.ui.UpdateAppDialog;
+import com.bloxbean.algodea.idea.contracts.ui.UpdateAppEntryForm;
 import com.bloxbean.algodea.idea.core.action.AlgoBaseAction;
-import com.bloxbean.algodea.idea.toolwindow.AlgoConsole;
-import com.bloxbean.algodea.idea.contracts.ui.CreateAppEntryForm;
 import com.bloxbean.algodea.idea.core.action.util.AlgoContractModuleHelper;
 import com.bloxbean.algodea.idea.core.service.AlgoCacheService;
 import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
 import com.bloxbean.algodea.idea.nodeint.service.LogListenerAdapter;
 import com.bloxbean.algodea.idea.nodeint.service.StatefulContractService;
+import com.bloxbean.algodea.idea.toolwindow.AlgoConsole;
 import com.bloxbean.algodea.idea.util.AlgoModuleUtils;
 import com.bloxbean.algodea.idea.util.IdeaUtil;
 import com.intellij.notification.NotificationType;
@@ -50,12 +30,12 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.twelvemonkeys.lang.StringUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.util.List;
 
-public class CreateStatefulAppAction extends AlgoBaseAction {
+public class UpdateStatefulAppAction extends AlgoBaseAction {
     private final static Logger LOG = Logger.getInstance(CreateStatefulAppAction.class);
 
     @Override
@@ -79,7 +59,7 @@ public class CreateStatefulAppAction extends AlgoBaseAction {
             AlgoProjectState projectState = AlgoProjectState.getInstance(project);
             if(projectState == null) {
                 LOG.error("Project state is null");
-                IdeaUtil.showNotificationWithAction(project, "Create App",
+                IdeaUtil.showNotificationWithAction(project, "UpdateApplication",
                         "Project data could not be found. Something is wrong", NotificationType.ERROR, null);
                 return;
             }
@@ -89,37 +69,40 @@ public class CreateStatefulAppAction extends AlgoBaseAction {
             String deploymentServerId = projectState.getState().getDeploymentServerId();
 
             AlgoCacheService cacheService = AlgoCacheService.getInstance(project);
-            AccountService accountService = AccountService.getAccountService(project);
 
-            String cacheCreatorAccount = cacheService.getSfCreatorAccount();
-            AlgoAccount cacheAlgoAccount = null;
-            if(!StringUtil.isEmpty(cacheCreatorAccount)) {
-                cacheAlgoAccount = accountService.getAccountByAddress(cacheCreatorAccount);
-            }
-
-            CreateAppDialog createDialog = new CreateAppDialog(project, cacheAlgoAccount, approvalProgramName, clearStateProgramName, cacheService.getSfGlobalByteslices(),
-                    cacheService.getSfGlobalInts(), cacheService.getSfLocalByteslices(), cacheService.getSfLocalInts());
-            boolean ok = createDialog.showAndGet();
+            UpdateAppDialog dialog = new UpdateAppDialog(project, approvalProgramName, clearStateProgramName);
+            boolean ok = dialog.showAndGet();
             if(!ok) {
-                IdeaUtil.showNotification(project, "Create App", "Create App operation was cancelled", NotificationType.INFORMATION, null);
+                IdeaUtil.showNotification(project, "UpdateApplication", "UpdateApplication operation was cancelled", NotificationType.INFORMATION, null);
                 return;
             }
 
-            CreateAppEntryForm createForm = createDialog.getCreateForm();
-            Account account = createForm.getAccount();
+            UpdateAppEntryForm updateForm = dialog.getUpdateAppEntryForm();
+            AppTxnBaseParamEntryForm appTxnBaseForm = dialog.getAppTxnBaseEntryForm();
+            TxnDetailsEntryForm txnDetailsEntryForm = dialog.getTxnDetailsEntryForm();
+
+            Long appId = appTxnBaseForm.getAppId();
+            if(appId == null) {
+                console.showErrorMessage("Invalid or null App Id");
+                console.showErrorMessage("UpdateApplication Failed");
+                return;
+            }
+
+            Account account = appTxnBaseForm.getFromAccount();
             if(account == null) {
-                console.showErrorMessage("Invalid or null creator account");
-                console.showErrorMessage("Create App Failed");
+                console.showErrorMessage("Invalid or null from account");
+                console.showErrorMessage("UpdateApplication Failed");
                 return;
             }
 
-            int globalByteslices = createForm.getGlobalByteslices();
-            int globalInts = createForm.getGlobalInts();
-            int localByteslices = createForm.getLocalByteslices();
-            int localInts = createForm.getLocalInts();
+            List<byte[]> appArgs = txnDetailsEntryForm.getArgsAsBytes();
+            byte[] note = txnDetailsEntryForm.getNoteBytes();
+            byte[] lease = txnDetailsEntryForm.getLeaseBytes();
+            List<Address> accounts = txnDetailsEntryForm.getAccounts();
+            List<Long> foreignApps = txnDetailsEntryForm.getForeignApps();
+            List<Long> foreignAssets = txnDetailsEntryForm.getForeignAssets();
 
-            //update cache
-            cacheService.updateSfGlobalBytesInts(globalByteslices, globalInts, localByteslices, localInts);
+            //update cache.. For update from account, save it inside creator account for now.
             cacheService.setSfCreatorAccount(account.getAddress().toString());
 
             VirtualFile sourceRoot = AlgoModuleUtils.getFirstSourceRoot(project);
@@ -160,28 +143,28 @@ public class CreateStatefulAppAction extends AlgoBaseAction {
             final String appProgText = appProgSource;
             final String clearProgText = clearProgSource;
 
-            Task.Backgroundable task = new Task.Backgroundable(project, "Creating Stateful Smart Contract app") {
+            Task.Backgroundable task = new Task.Backgroundable(project, "Updating Stateful Smart Contract app") {
 
                 @Override
                 public void run(@NotNull ProgressIndicator indicator) {
-                    console.showInfoMessage("Creating stateful smart contract ...");
-                    Long appId = null;
+                    console.showInfoMessage("Updating stateful smart contract ...");
+                    Long appId = appTxnBaseForm.getAppId();
+                    boolean success = false;
                     try {
-                        appId = sfService.createApp(appProgText, clearProgText, account,
-                                globalByteslices, globalInts, localByteslices, localInts);
+                       success = sfService.updateApp(appId, account, appProgText, clearProgText, appArgs, note, lease, accounts, foreignApps, foreignAssets);
                     } catch (Exception exception) {
                         exception.printStackTrace();
                     }
-                    if(appId != null) {
+                    if(success) {
                         LOG.info(appId + "");
 
                         cacheService.addAppId(deploymentServerId, String.valueOf(appId));
 
-                        console.showInfoMessage("Stateful smart contract app created with app Id : " + appId);
-                        IdeaUtil.showNotification(project, "Create App", "App Created Successfully with appId: " + appId, NotificationType.INFORMATION, null);
+                        console.showInfoMessage("Stateful smart contract app updated with app Id : " + appId);
+                        IdeaUtil.showNotification(project, "Update App", "Application updated Successfully with appId: " + appId, NotificationType.INFORMATION, null);
                     } else {
-                        console.showErrorMessage("Create App failed");
-                        IdeaUtil.showNotification(project, "Create App", "Create App failed", NotificationType.ERROR, null);
+                        console.showErrorMessage("Update App failed");
+                        IdeaUtil.showNotification(project, "Update App", "Update App failed", NotificationType.ERROR, null);
                     }
                 }
             };

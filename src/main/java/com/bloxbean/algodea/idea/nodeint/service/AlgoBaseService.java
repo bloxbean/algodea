@@ -27,6 +27,7 @@ import com.bloxbean.algodea.idea.configuration.model.NodeInfo;
 import com.bloxbean.algodea.idea.nodeint.AlgoConnectionFactory;
 import com.bloxbean.algodea.idea.nodeint.AlgoServerConfigurationHelper;
 import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
+import com.bloxbean.algodea.idea.util.JsonUtil;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 
@@ -76,7 +77,12 @@ public class AlgoBaseService {
         if(!response.isSuccessful()) {
             logListener.error(message);
             logListener.error("Failure code    : " + response.code());
-            logListener.error("Failure message : " + response.message());
+
+            String failureMsg = JsonUtil.getPrettyJson(response.message());
+            if(failureMsg == null)
+                failureMsg = response.message();
+
+            logListener.error("Failure message : " + failureMsg);
         }
     }
 }

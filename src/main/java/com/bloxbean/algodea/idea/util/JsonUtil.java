@@ -15,4 +15,16 @@ public class JsonUtil {
             return obj.toString();
         }
     }
+
+    public static String getPrettyJson(String jsonStr) {
+        if(jsonStr == null)
+            return null;
+
+        try {
+            Object json = mapper.readValue(jsonStr, Object.class);
+            return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(json);
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }

@@ -97,6 +97,8 @@
 
             <group id="AlgoActionGroup.Accounts" text="Accounts" description="Accounts" popup="true">
             </group>
+            <group id="AlgoActionGroup.StatefulContract" text="Stateful Contract" description="Stateful Contract" popup="true">
+            </group>
         </group>
         <action id="Algo.teal.compile" class="com.bloxbean.algodea.idea.compile.action.TEALCompileAction" text="Compile TEAL"
                 description="Compile TEAL file">
@@ -120,27 +122,64 @@
                 description="List Multi-Sig Accounts">
             <add-to-group group-id="AlgoActionGroup.Accounts"/>
         </action>
+        <action id="com.bloxbean.algodea.idea.account.action.AccountDumpAction"
+                class="com.bloxbean.algodea.idea.account.action.AccountDumpAction" text="Dump Account"
+                description="Dump Account">
+            <add-to-group group-id="AlgoActionGroup.Accounts"/>
+        </action>
+
         <action id="com.bloxbean.algodea.idea.configuration.action.CreateNewServerAction" class="com.bloxbean.algodea.idea.configuration.action.CreateNewServerAction" text="Configure New Server"
                 description="Configure New Server">
         </action>
         <action id="com.bloxbean.algodea.idea.configuration.action.CreateNewLocalSDKAction" class="com.bloxbean.algodea.idea.configuration.action.CreateNewLocalSDKAction" text="New Algorand Local SDK"
                 description="New Algorand Local SDK">
         </action>
-        <action id="com.bloxbean.algodea.idea.configuration.action.ConfigurationAction" class="com.bloxbean.algodea.idea.configuration.action.ConfigurationAction" text="Configuration"
-                description="Configure Algorand Server">
-            <add-to-group group-id="com.bloxbean.algodea.idea.core.action.AlgoActionGroup" anchor="last"/>
-        </action>
+
         <action id="com.bloxbean.algodea.idea.contracts.action.CreateStatefulAppAction"
                 class="com.bloxbean.algodea.idea.contracts.action.CreateStatefulAppAction" text="Create App"
                 description="Create Stateful App">
             <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl T" second-keystroke="A"/>
-            <add-to-group group-id="com.bloxbean.algodea.idea.core.action.AlgoActionGroup"/>
+            <add-to-group group-id="AlgoActionGroup.StatefulContract"/>
         </action>
-        <action id="com.bloxbean.algodea.idea.account.action.AccountDumpAction"
-                class="com.bloxbean.algodea.idea.account.action.AccountDumpAction" text="Dump Account"
-                description="Dump Account">
-            <add-to-group group-id="com.bloxbean.algodea.idea.core.action.AlgoActionGroup"/>
+
+        <!-- Stateful contract actions -->
+        <action id="com.bloxbean.algodea.idea.contracts.action.CallStatefulAppAction"
+                class="com.bloxbean.algodea.idea.contracts.action.CallStatefulAppAction"
+                text="Call (NoOp)">
+            <add-to-group group-id="AlgoActionGroup.StatefulContract"/>
         </action>
+        <action id="com.bloxbean.algodea.idea.contracts.action.OptInStatefulAppAction"
+                class="com.bloxbean.algodea.idea.contracts.action.OptInStatefulAppAction" text="OptIn"
+                description="OptIn">
+            <add-to-group group-id="AlgoActionGroup.StatefulContract"/>
+        </action>
+        <action id="com.bloxbean.algodea.idea.contracts.action.DeleteStatefulAppAction"
+                class="com.bloxbean.algodea.idea.contracts.action.DeleteStatefulAppAction"
+                text="DeleteApplication">
+            <add-to-group group-id="AlgoActionGroup.StatefulContract"/>
+        </action>
+        <action id="com.bloxbean.algodea.idea.contracts.action.UpdateStatefulAppAction"
+                class="com.bloxbean.algodea.idea.contracts.action.UpdateStatefulAppAction"
+                text="UpdateApplication">
+            <add-to-group group-id="AlgoActionGroup.StatefulContract"/>
+        </action>
+        <action id="com.bloxbean.algodea.idea.contracts.action.CloseOutStatefulAppAction"
+                class="com.bloxbean.algodea.idea.contracts.action.CloseOutStatefulAppAction"
+                text="CloseOut">
+            <add-to-group group-id="AlgoActionGroup.StatefulContract"/>
+        </action>
+        <action id="com.bloxbean.algodea.idea.contracts.action.ClearStatefulAppAction"
+                class="com.bloxbean.algodea.idea.contracts.action.ClearStateStatefulAppAction"
+                text="ClearState">
+            <add-to-group group-id="AlgoActionGroup.StatefulContract"/>
+        </action>
+        <!-- Stateful contract actions ends here-->
+
+        <action id="com.bloxbean.algodea.idea.configuration.action.ConfigurationAction" class="com.bloxbean.algodea.idea.configuration.action.ConfigurationAction" text="Configuration"
+                description="Configure Algorand Server">
+            <add-to-group group-id="com.bloxbean.algodea.idea.core.action.AlgoActionGroup" anchor="last"/>
+        </action>
+
     </actions>
 
 </idea-plugin>

@@ -39,7 +39,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 
-public class CreateAppDiaglog extends DialogWrapper {
+public class CreateAppEntryForm {
     private JPanel mainPanel;
     private JTextField accountTf;
     private JTextField approvalProgramTf;
@@ -51,12 +51,9 @@ public class CreateAppDiaglog extends DialogWrapper {
     private JButton accountChooser;
     private JTextField mnemonicTf;
 
-    public CreateAppDiaglog(Project project,
-                            AlgoAccount creatorAccount, String approvalProgram, String clearStateProgram,
-                            int globalByteslices, int globalInts, int localByteslices, int localInts) {
-        super(false);
-        init();
-        setTitle("Create Stateful Smart Contract App");
+    public CreateAppEntryForm(Project project,
+                              AlgoAccount creatorAccount, String approvalProgram, String clearStateProgram,
+                              int globalByteslices, int globalInts, int localByteslices, int localInts) {
 
         if(creatorAccount != null) {
             accountTf.setText(creatorAccount.getAddress().toString());
@@ -153,12 +150,12 @@ public class CreateAppDiaglog extends DialogWrapper {
         }
     }
 
-    @Override
-    protected @Nullable JComponent createCenterPanel() {
+//    @Override
+    protected @Nullable JComponent getMainPanel() {
         return mainPanel;
     }
 
-    @Override
+//    @Override
     protected @Nullable ValidationInfo doValidate() {
 
         if(!NumberUtils.isNumber(globalByteslicesTf.getText())) {

@@ -22,6 +22,7 @@
 package com.bloxbean.algodea.idea.nodeint.service;
 
 import com.algorand.algosdk.account.Account;
+import com.algorand.algosdk.builder.transaction.*;
 import com.algorand.algosdk.crypto.Address;
 import com.algorand.algosdk.crypto.TEALProgram;
 import com.algorand.algosdk.logic.StateSchema;
@@ -30,9 +31,17 @@ import com.algorand.algosdk.transaction.Transaction;
 import com.algorand.algosdk.util.Encoder;
 import com.algorand.algosdk.v2.client.common.Response;
 import com.algorand.algosdk.v2.client.model.*;
+import com.bloxbean.algodea.idea.nodeint.model.ApplArg;
+import com.bloxbean.algodea.idea.nodeint.model.Lease;
+import com.bloxbean.algodea.idea.nodeint.model.Note;
 import com.bloxbean.algodea.idea.nodeint.purestake.CustomAlgodClient;
 import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
+import com.bloxbean.algodea.idea.nodeint.util.ArgTypeToByteConverter;
+import com.bloxbean.algodea.idea.util.JsonUtil;
 import com.intellij.openapi.project.Project;
+import org.apache.commons.lang.math.NumberUtils;
+
+import java.util.List;
 
 public class StatefulContractService extends AlgoBaseService {
     public StatefulContractService(Project project, LogListener logListener) throws DeploymentTargetNotConfigured {
@@ -68,6 +77,206 @@ public class StatefulContractService extends AlgoBaseService {
 
         Long appId = _createApp(creator, new TEALProgram(approvalProgramBytes), new TEALProgram(clearProgramBytes), globalInts, globalBytes, localInts, localBytes);
         return appId;
+    }
+
+    public boolean updateApp(Long appId, Account fromAccount, String approvalProgram, String clearStateProgram, List<byte[]> appArgs, byte[] note, byte[] lease,
+                             List<Address> accounts, List<Long> foreignApps, List<Long> foreignAssets) throws Exception {
+        if(fromAccount == null) {
+            logListener.error("From account cannot be null");
+            return false;
+        }
+
+        // compile programs
+        logListener.info("Compiling Approval Program ...");
+        String approvalProgramBytes = compileProgram(client, approvalProgram.getBytes("UTF-8"));
+        if(approvalProgramBytes == null) {
+            logListener.error("Approval Program compilation failed");
+            return false;
+        } else {
+            logListener.info("Approval Program compiled successfully.");
+        }
+
+        logListener.info("Compiling Clear State Program ...");
+        String clearProgramBytes = compileProgram(client, clearStateProgram.getBytes("UTF-8"));
+
+        if(clearProgramBytes == null) {
+            logListener.error("Clear State Program compilation failed");
+            return false;
+        } else {
+            logListener.info("Clear State Program compiled successfully.");
+        }
+
+        ApplicationUpdateTransactionBuilder txnBuilder = Transaction.ApplicationUpdateTransactionBuilder();
+        txnBuilder.approvalProgram(new TEALProgram(approvalProgramBytes));
+        txnBuilder.clearStateProgram(new TEALProgram(clearProgramBytes));
+
+        Transaction txn = populateBaseTransaction( txnBuilder, appId, fromAccount, null, null, null, null, null, null);
+        if(txn == null) {
+            logListener.error("Transaction could not be built");
+            return false;
+        }
+
+        return postApplicationTransaction(fromAccount, txn);
+    }
+
+    public boolean optIn(Long appId, Account fromAccount, List<byte[]> appArgs, byte[] note, byte[] lease,
+                  List<Address> accounts, List<Long> foreignApps, List<Long> foreignAssets)  throws Exception {
+
+        ApplicationOptInTransactionBuilder txnBuilder = Transaction.ApplicationOptInTransactionBuilder();
+
+        Transaction txn = populateBaseTransaction( txnBuilder, appId, fromAccount, appArgs, note, lease, accounts, foreignApps, foreignAssets);
+        if(txn == null) {
+            logListener.error("Transaction could not be built");
+            return false;
+        }
+
+        return postApplicationTransaction(fromAccount, txn);
+    }
+
+    public boolean call(Long appId, Account fromAccount, List<byte[]> appArgs, byte[] note, byte[] lease, List<Address> accounts,
+                        List<Long> foreignApps, List<Long> foreignAssets) throws Exception {
+        ApplicationCallTransactionBuilder txnBuilder = Transaction.ApplicationCallTransactionBuilder();
+
+        Transaction txn = populateBaseTransaction( txnBuilder, appId, fromAccount, appArgs, note, lease, accounts, foreignApps, foreignAssets);
+        if(txn == null) {
+            logListener.error("Transaction could not be built");
+            return false;
+        }
+
+        return postApplicationTransaction(fromAccount, txn);
+    }
+
+    public boolean closeOut(Long appId, Account fromAccount, List<byte[]> appArgs, byte[] note, byte[] lease, List<Address> accounts,
+                        List<Long> foreignApps, List<Long> foreignAssets) throws Exception {
+        ApplicationCloseTransactionBuilder txnBuilder = Transaction.ApplicationCloseTransactionBuilder();
+
+        Transaction txn = populateBaseTransaction( txnBuilder, appId, fromAccount, appArgs, note, lease, accounts, foreignApps, foreignAssets);
+        if(txn == null) {
+            logListener.error("Transaction could not be built");
+            return false;
+        }
+
+        return postApplicationTransaction(fromAccount, txn);
+    }
+
+    public boolean clear(Long appId, Account fromAccount, List<byte[]> appArgs, byte[] note, byte[] lease, List<Address> accounts,
+                        List<Long> foreignApps, List<Long> foreignAssets) throws Exception {
+        ApplicationClearTransactionBuilder txnBuilder = Transaction.ApplicationClearTransactionBuilder();
+
+        Transaction txn = populateBaseTransaction( txnBuilder, appId, fromAccount, appArgs, note, lease, accounts, foreignApps, foreignAssets);
+        if(txn == null) {
+            logListener.error("Transaction could not be built");
+            return false;
+        }
+
+        return postApplicationTransaction(fromAccount, txn);
+    }
+
+    public boolean delete(Long appId, Account fromAccount, List<byte[]> appArgs, byte[] note, byte[] lease, List<Address> accounts,
+                          List<Long> foreignApps, List<Long> foreignAssets) throws Exception {
+        ApplicationDeleteTransactionBuilder txnBuilder = Transaction.ApplicationDeleteTransactionBuilder();
+
+        Transaction txn = populateBaseTransaction( txnBuilder, appId, fromAccount, appArgs, note, lease, accounts, foreignApps, foreignAssets);
+        if(txn == null) {
+            logListener.error("Transaction could not be built");
+            return false;
+        }
+
+        return postApplicationTransaction(fromAccount, txn);
+    }
+
+    private boolean postApplicationTransaction(Account fromAccount, Transaction txn) throws Exception {
+        // sign transaction
+        SignedTransaction signedTxn = fromAccount.signTransaction(txn);
+        logListener.info("Signed transaction with txid: " + signedTxn.transactionID);
+
+        // send to network
+        byte[] encodedTxBytes = Encoder.encodeToMsgPack(signedTxn);
+        logListener.info("Posting transaction to the network ...");
+        Response<PostTransactionsResponse> postTransactionsResponse = client.RawTransaction().rawtxn(encodedTxBytes).execute();
+        if(!postTransactionsResponse.isSuccessful()) {
+            printErrorMessage("Transaction could not be posted to the network", postTransactionsResponse);
+            return false;
+        }
+
+        String id = postTransactionsResponse.body().txId;
+        logListener.info("Successfully sent tx with ID: " + id);
+
+        // await confirmation
+        waitForConfirmation(id);
+
+        // display results
+        Response<PendingTransactionResponse> pendingTransactionResponse = client.PendingTransactionInformation(id).execute();
+        if(!pendingTransactionResponse.isSuccessful()) {
+            printErrorMessage("Unable to get pending transaction info", pendingTransactionResponse);
+            return false;
+        }
+
+        if(pendingTransactionResponse.body() != null) {
+            logListener.info("\nTransaction Info :-");
+            logListener.info(JsonUtil.getPrettyJson(pendingTransactionResponse.body().toString()));
+        }
+
+        return true;
+    }
+
+    public Transaction populateBaseTransaction(ApplicationBaseTransactionBuilder appTransactionBuilder, Long appId, Account fromAccount, List<byte[]> appArgs, byte[] note, byte[] lease, List<Address> accounts, List<Long> foreignApps, List<Long> foreignAssets) throws Exception {
+        if(fromAccount == null) {
+            logListener.error("From Account cannot be null");
+            return null;
+        }
+
+        if(appId == null || appId == 0) {
+            logListener.error("Invalid application id");
+            return null;
+        }
+
+        logListener.info("Application : " + appId);
+        logListener.info("From Account : " + fromAccount.getAddress().toString());
+        // define sender
+        Address sender = fromAccount.getAddress();
+
+        logListener.info("Getting node suggested transaction parameters ...");
+        // get node suggested parameters
+        Response<TransactionParametersResponse> transactionParametersResponse = client.TransactionParams().execute();
+        if(!transactionParametersResponse.isSuccessful()) {
+            printErrorMessage("Unable to get Transaction Params from the node", transactionParametersResponse);
+            return null;
+        }
+
+        TransactionParametersResponse params = transactionParametersResponse.body();
+        logListener.info("Got node suggested transaction parameters.");
+
+        logListener.info("Signing transaction ...");
+        // create unsigned transaction
+//        ApplicationOptInTransactionBuilder txnBuilder = Transaction.ApplicationOptInTransactionBuilder()
+        appTransactionBuilder
+                .applicationId(appId)
+                .sender(sender)
+                .suggestedParams(params);
+
+        if(appArgs != null && appArgs.size() > 0) {
+            appTransactionBuilder.args(appArgs);
+        }
+
+        if(note != null) {
+            appTransactionBuilder.note(note);
+        }
+
+        if(lease != null) {
+            appTransactionBuilder.lease(lease);
+        }
+
+        if(accounts != null && accounts.size() > 0)
+            appTransactionBuilder.accounts(accounts);
+
+        if(foreignApps != null && foreignApps.size() > 0)
+            appTransactionBuilder.foreignApps(foreignApps);
+
+        if(foreignAssets != null && foreignAssets.size() > 0)
+            appTransactionBuilder.foreignAssets(foreignAssets);
+
+        return appTransactionBuilder.build();
     }
 
     private Long _createApp(Account creator, TEALProgram approvalProgramSource,
@@ -123,6 +332,12 @@ public class StatefulContractService extends AlgoBaseService {
             printErrorMessage("Unable to get pending transaction info", pendingTransactionResponse);
             return null;
         }
+
+        if(pendingTransactionResponse.body() != null) {
+            logListener.info("\nTransaction Info :-");
+            logListener.info(JsonUtil.getPrettyJson(pendingTransactionResponse.body().toString()));
+        }
+
         PendingTransactionResponse pTrx = pendingTransactionResponse.body();
         Long appId = pTrx.applicationIndex;
         logListener.info("Created new app-id: " + appId);
@@ -175,5 +390,4 @@ public class StatefulContractService extends AlgoBaseService {
             }
         }
     }
-
 }

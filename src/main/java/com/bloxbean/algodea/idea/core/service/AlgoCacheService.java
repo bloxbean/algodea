@@ -24,15 +24,16 @@ package com.bloxbean.algodea.idea.core.service;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.text.StringUtil;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @State(name="algorand-idea-cache", reloadable = true, storages = @com.intellij.openapi.components.Storage("algorand-idea-cache.xml"))
 public class AlgoCacheService implements PersistentStateComponent<AlgoCacheService.State> {
     private static int MAX_CACHE_ENTRY = 40;
+    private static int MAX_APP_IDS_TO_STORE = 5;
 
     public static AlgoCacheService getInstance(Project project) {
         if(project == null) return null;
@@ -42,11 +43,18 @@ public class AlgoCacheService implements PersistentStateComponent<AlgoCacheServi
     public static class State {
         public Map<String, Map<String, String>> vars = new HashMap<>(); //VAR_TMPL_* values
 
+        public Map<String, String> optInArgs = new HashMap<>();
+        public Map<String, String> createArgs = new HashMap<>();
+        public Map<String, String> callArgs = new HashMap<>();
+
         public String sfCreatorAccount;
         public int sfGlobalByteslices;
         public int sfGlobalInts;
         public int sfLocalByteslices;
         public int sfLocalInts;
+
+        public Map<String, List<String>> appIdMap = new HashMap<>();
+//        public List<String> appIds = new ArrayList<>();
     }
 
     public State state;
@@ -124,6 +132,53 @@ public class AlgoCacheService implements PersistentStateComponent<AlgoCacheServi
     public String getSfCreatorAccount() {
         initializeStateIfRequired();
         return state.sfCreatorAccount;
+    }
+
+//    public void addAppId(String deployTargetId, String appId) {
+//        initializeStateIfRequired();
+//        Queue<String> appIds = state.appIdMap.get(deployTargetId);
+//        if(appIds == null)
+//            appIds = new ArrayDeque<>(10);
+//
+//        if(appIds.size() >= 5) { //remove the first element
+//            appIds.remove(0);
+//        }
+//
+//        state.appIdMap.put(deployTargetId, appIds);
+//    }
+
+
+    public List<String> getAppIds(String deployServerId) {
+        initializeStateIfRequired();
+
+        List<String>  appIds = state.appIdMap.get(deployServerId);
+        if(appIds == null) {
+            return Collections.EMPTY_LIST;
+        }
+
+        List<String> appIdsList = appIds.parallelStream().collect(Collectors.toList());
+        Collections.reverse(appIdsList);
+        return appIdsList;
+    }
+
+    public void addAppId(String deployServerId, String appId) {
+
+        initializeStateIfRequired();
+        if(StringUtil.isEmpty(deployServerId)) {
+            return;
+        }
+
+        List<String> appIds = state.appIdMap.get(deployServerId);
+        if(appIds == null)
+            appIds = new ArrayList(5);
+
+        if(appIds.size() > 5)
+            appIds.remove(0);
+
+        if(!appIds.contains(appId))
+            appIds.add(appId);
+
+        state.appIdMap.put(deployServerId, appIds);
     }
 
     public void loadState(State state) {

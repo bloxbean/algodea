@@ -1,0 +1,48 @@
+package com.bloxbean.algodea.idea.contracts.ui;
+
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.openapi.ui.ValidationInfo;
+import org.jetbrains.annotations.Nullable;
+
+import javax.swing.*;
+import java.util.List;
+
+public class UpdateAppDialog extends DialogWrapper {
+    private UpdateAppMainPanel updateAppMainPanel;
+
+    public UpdateAppDialog(Project project, String approvalProgram, String clearStateProgram) {
+        super(project,  true);
+        updateAppMainPanel = new UpdateAppMainPanel(project, approvalProgram,
+                clearStateProgram);
+        init();
+        setTitle("UpdateApplication");
+    }
+
+
+    @Override
+    protected @Nullable List<ValidationInfo> doValidateAll() {
+        return updateAppMainPanel.doValidate();
+    }
+
+    @Override
+    protected @Nullable JComponent createCenterPanel() {
+        return updateAppMainPanel.getMainPanel();
+    }
+
+    public UpdateAppMainPanel getUpdateAppMainPanel() {
+        return updateAppMainPanel;
+    }
+
+    public UpdateAppEntryForm getUpdateAppEntryForm() {
+        return updateAppMainPanel.getUpdateAppEntryForm();
+    }
+
+    public AppTxnBaseParamEntryForm getAppTxnBaseEntryForm() {
+        return updateAppMainPanel.getAppTxnBaseEntryForm();
+    }
+
+    public TxnDetailsEntryForm getTxnDetailsEntryForm() {
+        return updateAppMainPanel.getTxnDetailsEntryForm();
+    }
+}
