@@ -177,6 +177,53 @@ public class StatefulContractService extends AlgoBaseService {
         return postApplicationTransaction(fromAccount, txn);
     }
 
+    public void readLocalState(Account account, Long appId) throws Exception {
+        logListener.info("Fetching local state ...");
+        Response<com.algorand.algosdk.v2.client.model.Account> acctResponse = client.AccountInformation(account.getAddress()).execute();
+        if(!acctResponse.isSuccessful()) {
+            printErrorMessage("Reading local state failed", acctResponse);
+            return;
+        }
+        List<ApplicationLocalState> applicationLocalState = acctResponse.body().appsLocalState;
+
+        for (int i = 0; i < applicationLocalState.size(); i++) {
+            if (applicationLocalState.get(i).id.equals(appId)) {
+                logListener.info("User's application local state: " + JsonUtil.getPrettyJson(applicationLocalState.get(i).keyValue.toString()));
+            }
+        }
+        logListener.info("--\n");
+    }
+
+    public void readGlobalState(Long appId) throws Exception {
+        logListener.info("Fetching global state ...");
+        Response<Application> acctResponse = client.GetApplicationByID(appId).execute();
+        if(!acctResponse.isSuccessful()) {
+            printErrorMessage("Reading global state failed", acctResponse);
+            return;
+        }
+
+        Application application = acctResponse.body();
+
+        logListener.info("Global State: \n");
+        logListener.info(JsonUtil.getPrettyJson(application.params.globalState.toString()));
+        logListener.info("---\n");
+    }
+
+    public void getApplication(Long appId) throws Exception {
+        logListener.info("Fetching application info ...");
+        Response<Application> acctResponse = client.GetApplicationByID(appId).execute();
+        if(!acctResponse.isSuccessful()) {
+            printErrorMessage("Reading application info failed", acctResponse);
+            return;
+        }
+
+        Application application = acctResponse.body();
+
+        logListener.info(JsonUtil.getPrettyJson(application));
+        logListener.info("\n");
+    }
+
+
     private boolean postApplicationTransaction(Account fromAccount, Transaction txn) throws Exception {
         // sign transaction
         SignedTransaction signedTxn = fromAccount.signTransaction(txn);
@@ -397,4 +444,5 @@ public class StatefulContractService extends AlgoBaseService {
             }
         }
     }
+
 }

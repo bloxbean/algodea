@@ -24,7 +24,7 @@ public class JsonUtil {
             Object json = mapper.readValue(jsonStr, Object.class);
             return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(json);
         } catch (Exception e) {
-            return null;
+            return jsonStr;
         }
     }
 }

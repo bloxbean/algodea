@@ -27,6 +27,8 @@ public class AppTxnBaseParamEntryForm {
     DefaultComboBoxModel<String> appIdComboBoxModel;
 
     Project project;
+    private boolean mandatoryAccount = true;
+    private boolean mandatoryAppId = true;
 
     public AppTxnBaseParamEntryForm() {
 
@@ -95,11 +97,11 @@ public class AppTxnBaseParamEntryForm {
 
     public @Nullable ValidationInfo doValidate() {
 
-        if(getAppId() == null) {
+        if(getAppId() == null && mandatoryAppId) {
             return new ValidationInfo("Please select or provide a valid App Id", appIdCB);
         }
 
-        if(StringUtil.isEmpty(fromAccountTf.getText())) {
+        if(StringUtil.isEmpty(fromAccountTf.getText()) && mandatoryAccount) {
             return new ValidationInfo("Please select a valid from account or enter valid mnemonic", fromAccountTf);
         }
 
@@ -127,6 +129,14 @@ public class AppTxnBaseParamEntryForm {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    public void setMandatoryAccountCheck(boolean flag) {
+        this.mandatoryAccount = flag;
+    }
+
+    public void setMandatoryAppIdCheck(boolean flag) {
+        this.mandatoryAppId = flag;
     }
 
     private void createUIComponents() {

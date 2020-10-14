@@ -173,6 +173,11 @@
                 text="ClearState">
             <add-to-group group-id="AlgoActionGroup.StatefulContract"/>
         </action>
+        <action id="com.bloxbean.algodea.idea.contracts.action.ReadStatefulAppAction"
+                class="com.bloxbean.algodea.idea.contracts.action.ReadStatefulAppAction"
+                text="ReadState">
+            <add-to-group group-id="AlgoActionGroup.StatefulContract"/>
+        </action>
         <!-- Stateful contract actions ends here-->
 
         <action id="com.bloxbean.algodea.idea.configuration.action.ConfigurationAction" class="com.bloxbean.algodea.idea.configuration.action.ConfigurationAction" text="Configuration"
