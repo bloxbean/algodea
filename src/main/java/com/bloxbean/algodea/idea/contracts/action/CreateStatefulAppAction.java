@@ -143,11 +143,11 @@ public class CreateStatefulAppAction extends AlgoBaseAction {
             cacheService.updateSfGlobalBytesInts(globalByteslices, globalInts, localByteslices, localInts);
             cacheService.setSfCreatorAccount(account.getAddress().toString());
 
-            VirtualFile sourceRoot = AlgoModuleUtils.getFirstSourceRoot(project);
+            VirtualFile sourceRoot = AlgoModuleUtils.getFirstTEALSourceRoot(project);
             LOG.info("Source root : " + sourceRoot);
 
-            VirtualFile appProgVF = VfsUtil.findRelativeFile(sourceRoot, approvalProgramName);
-            VirtualFile clearProgVF = VfsUtil.findRelativeFile(sourceRoot, clearStateProgramName);
+            VirtualFile appProgVF = VfsUtil.findRelativeFile(approvalProgramName, sourceRoot);//VfsUtil.findRelativeFile(sourceRoot, approvalProgramName);
+            VirtualFile clearProgVF = VfsUtil.findRelativeFile(clearStateProgramName, sourceRoot);
 
             if(appProgVF == null || !appProgVF.exists()) {
                 console.showErrorMessage(String.format("Approval Program doesn't exist: %s", appProgVF != null ? appProgVF.getCanonicalPath(): approvalProgramName));
@@ -159,13 +159,27 @@ public class CreateStatefulAppAction extends AlgoBaseAction {
                 return;
             }
 
+            //Find relative path for source which is required to create merged source
+            String relAppProgPath = null;
+            String relClearStatePath = null;
+            if(sourceRoot != null) {
+                relAppProgPath = VfsUtil.findRelativePath(sourceRoot, appProgVF, File.separatorChar);
+                relClearStatePath = VfsUtil.findRelativePath(sourceRoot, clearProgVF, File.separatorChar);
+            }
+
+            if(StringUtil.isEmpty(relAppProgPath))
+                relAppProgPath = appProgVF.getName();
+            if(StringUtil.isEmpty(relClearStatePath))
+                relClearStatePath = clearProgVF.getName();
+            //ends
+
             VirtualFile moduleOutFolder = AlgoContractModuleHelper.getModuleOutputFolder(console, module);
 
             //Merge Approval Program if there is any variable template available
-            File mergedAppProgSource  = AlgoContractModuleHelper.generateMergeSourceWithVariables(project, console, moduleOutFolder, appProgVF);
+            File mergedAppProgSource  = AlgoContractModuleHelper.generateMergeSourceWithVariables(project, console, moduleOutFolder, appProgVF, relAppProgPath);
 
             //Merge Clear Program if there is any variable template available
-            File mergeClearProgSource  = AlgoContractModuleHelper.generateMergeSourceWithVariables(project, console, moduleOutFolder, clearProgVF);
+            File mergeClearProgSource  = AlgoContractModuleHelper.generateMergeSourceWithVariables(project, console, moduleOutFolder, clearProgVF, relClearStatePath);
 
             String appProgSource = null;
             String clearProgSource = null;
@@ -184,8 +198,8 @@ public class CreateStatefulAppAction extends AlgoBaseAction {
                 clearProgSource = FileUtil.loadFile(mergeClearProgSource, "UTF-8");
             }
 
-            LOG.info(appProgSource);
-            LOG.info(clearProgSource);
+            console.showInfoMessage("Approval Program file    : " + approvalProgramName);
+            console.showInfoMessage("Clear State Program file : " + clearStateProgramName);
 
             //Needed for nested class
             final String appProgText = appProgSource;

@@ -33,7 +33,6 @@ import com.algorand.algosdk.v2.client.common.Response;
 import com.algorand.algosdk.v2.client.model.*;
 import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
 import com.bloxbean.algodea.idea.nodeint.model.TxnDetailsParameters;
-import com.bloxbean.algodea.idea.nodeint.purestake.CustomAlgodClient;
 import com.bloxbean.algodea.idea.util.JsonUtil;
 import com.intellij.openapi.project.Project;
 
@@ -54,7 +53,7 @@ public class StatefulContractService extends AlgoBaseService {
 
         // compile programs
         logListener.info("Compiling Approval Program ...");
-        String approvalProgramBytes = compileProgram(client, approvalProgram.getBytes("UTF-8"));
+        String approvalProgramBytes = compileProgram(approvalProgram.getBytes("UTF-8"));
         if(approvalProgramBytes == null) {
             logListener.error("Approval Program compilation failed");
             return null;
@@ -63,7 +62,7 @@ public class StatefulContractService extends AlgoBaseService {
         }
 
         logListener.info("Compiling Clear State Program ...");
-        String clearProgramBytes = compileProgram(client, clearStateProgram.getBytes("UTF-8"));
+        String clearProgramBytes = compileProgram(clearStateProgram.getBytes("UTF-8"));
 
         if(clearProgramBytes == null) {
             logListener.error("Clear State Program compilation failed");
@@ -85,7 +84,7 @@ public class StatefulContractService extends AlgoBaseService {
 
         // compile programs
         logListener.info("Compiling Approval Program ...");
-        String approvalProgramBytes = compileProgram(client, approvalProgram.getBytes("UTF-8"));
+        String approvalProgramBytes = compileProgram(approvalProgram.getBytes("UTF-8"));
         if(approvalProgramBytes == null) {
             logListener.error("Approval Program compilation failed");
             return false;
@@ -94,7 +93,7 @@ public class StatefulContractService extends AlgoBaseService {
         }
 
         logListener.info("Compiling Clear State Program ...");
-        String clearProgramBytes = compileProgram(client, clearStateProgram.getBytes("UTF-8"));
+        String clearProgramBytes = compileProgram(clearStateProgram.getBytes("UTF-8"));
 
         if(clearProgramBytes == null) {
             logListener.error("Clear State Program compilation failed");
@@ -224,112 +223,6 @@ public class StatefulContractService extends AlgoBaseService {
     }
 
 
-    private boolean postApplicationTransaction(Account fromAccount, Transaction txn) throws Exception {
-        // sign transaction
-        SignedTransaction signedTxn = fromAccount.signTransaction(txn);
-        logListener.info("Signed transaction with txid: " + signedTxn.transactionID);
-
-        // send to network
-        byte[] encodedTxBytes = Encoder.encodeToMsgPack(signedTxn);
-        logListener.info("Posting transaction to the network ...");
-        Response<PostTransactionsResponse> postTransactionsResponse = client.RawTransaction().rawtxn(encodedTxBytes).execute();
-        if(!postTransactionsResponse.isSuccessful()) {
-            printErrorMessage("Transaction could not be posted to the network", postTransactionsResponse);
-            return false;
-        }
-
-        String id = postTransactionsResponse.body().txId;
-        logListener.info("Successfully sent tx with ID: " + id);
-
-        // await confirmation
-        waitForConfirmation(id);
-
-        // display results
-        Response<PendingTransactionResponse> pendingTransactionResponse = client.PendingTransactionInformation(id).execute();
-        if(!pendingTransactionResponse.isSuccessful()) {
-            printErrorMessage("Unable to get pending transaction info", pendingTransactionResponse);
-            return false;
-        }
-
-        if(pendingTransactionResponse.body() != null) {
-            logListener.info("\nTransaction Info :-");
-            logListener.info(JsonUtil.getPrettyJson(pendingTransactionResponse.body().toString()));
-        }
-
-        return true;
-    }
-
-    public Transaction populateBaseTransaction(ApplicationBaseTransactionBuilder appTransactionBuilder, Long appId, Account fromAccount, TxnDetailsParameters txnDetailsParameters) throws Exception {
-        if(fromAccount == null) {
-            logListener.error("From Account cannot be null");
-            return null;
-        }
-
-//        if(appId == null || appId == 0) {
-//            logListener.error("Invalid application id");
-//            return null;
-//        }
-
-        if(appId != null) {
-            logListener.info("Application : " + appId);
-        }
-
-        logListener.info("From Account : " + fromAccount.getAddress().toString());
-        // define sender
-        Address sender = fromAccount.getAddress();
-
-        logListener.info("Getting node suggested transaction parameters ...");
-        // get node suggested parameters
-        Response<TransactionParametersResponse> transactionParametersResponse = client.TransactionParams().execute();
-        if(!transactionParametersResponse.isSuccessful()) {
-            printErrorMessage("Unable to get Transaction Params from the node", transactionParametersResponse);
-            return null;
-        }
-
-        TransactionParametersResponse params = transactionParametersResponse.body();
-        logListener.info("Got node suggested transaction parameters.");
-
-        logListener.info("Signing transaction ...");
-        // create unsigned transaction
-        appTransactionBuilder
-                .sender(sender)
-                .suggestedParams(params);
-
-        if(appId != null && appId != 0) {
-            appTransactionBuilder.applicationId(appId);
-        }
-
-        List<byte[]> appArgs = txnDetailsParameters.getAppArgs();
-        byte[] note = txnDetailsParameters.getNote();
-        byte[] lease = txnDetailsParameters.getLease();
-        List<Address> accounts = txnDetailsParameters.getAccounts();
-        List<Long> foreignApps = txnDetailsParameters.getForeignApps();
-        List<Long> foreignAssets = txnDetailsParameters.getForeignAssets();
-
-        if(appArgs != null && appArgs.size() > 0) {
-            appTransactionBuilder.args(appArgs);
-        }
-
-        if(note != null) {
-            appTransactionBuilder.note(note);
-        }
-
-        if(lease != null) {
-            appTransactionBuilder.lease(lease);
-        }
-
-        if(accounts != null && accounts.size() > 0)
-            appTransactionBuilder.accounts(accounts);
-
-        if(foreignApps != null && foreignApps.size() > 0)
-            appTransactionBuilder.foreignApps(foreignApps);
-
-        if(foreignAssets != null && foreignAssets.size() > 0)
-            appTransactionBuilder.foreignAssets(foreignAssets);
-
-        return appTransactionBuilder.build();
-    }
-
     private Long _createApp(Account creator, TEALProgram approvalProgramSource,
                           TEALProgram clearProgramSource, int globalInts, int globalBytes, int localInts, int localBytes, TxnDetailsParameters txnDetailsParameters)
             throws Exception {
@@ -397,52 +290,6 @@ public class StatefulContractService extends AlgoBaseService {
         logListener.info("Created new app-id: " + appId);
 
         return appId;
-    }
-
-    public String compileProgram(CustomAlgodClient client, byte[] programSource) {
-        Response<CompileResponse> compileResponse = null;
-        try {
-            compileResponse = client.TealCompile().source(programSource).execute();
-        } catch (Exception e) {
-            printErrorMessage("Compilation failed", compileResponse);
-            logListener.error("Compilation error", e);
-            return null;
-        }
-
-        if(!compileResponse.isSuccessful()) {
-            printErrorMessage("Compilation failed", compileResponse);
-            return null;
-        } else {
-            logListener.info("Compiled Data : " + compileResponse.body().result);
-            return compileResponse.body().result;
-        }
-    }
-
-    public void waitForConfirmation(String txID) throws Exception {
-//        if (client == null)
-//            this.client = connectToNetwork();
-        Response<NodeStatusResponse> response = client.GetStatus().execute();
-        if(!response.isSuccessful()) {
-            printErrorMessage("Failed to get transaction status for txId :" + txID, response);
-        }
-
-        Long lastRound = response.body().lastRound;
-        while (true) {
-            try {
-                // Check the pending transactions
-                Response<PendingTransactionResponse> pendingInfo = client.PendingTransactionInformation(txID).execute();
-                if (pendingInfo.body().confirmedRound != null && pendingInfo.body().confirmedRound > 0) {
-                    // Got the completed Transaction
-                    logListener.info(
-                            "Transaction " + txID + " confirmed in round " + pendingInfo.body().confirmedRound);
-                    break;
-                }
-                lastRound++;
-                client.WaitForBlock(lastRound).execute();
-            } catch (Exception e) {
-                throw (e);
-            }
-        }
     }
 
 }

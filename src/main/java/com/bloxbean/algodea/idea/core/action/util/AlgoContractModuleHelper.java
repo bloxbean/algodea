@@ -42,45 +42,43 @@ import java.util.Map;
 public class AlgoContractModuleHelper {
     private final static Logger LOG = Logger.getInstance(AlgoContractModuleHelper.class);
 
-    public static final String BUILD_FOLDER = "out";
+    public static final String BUILD_FOLDER = "build";
+    public static final String TEAL_BUILD_FOLDER = "toks";
     public static final String GENERATED_SRC = "generated-src";
 
-    public static VirtualFile getModuleOutputFolder(AlgoConsole console, Module module) {
-//        Object requestor = new Object();
-//
-//        VirtualFile outFolder = null;
+    public static VirtualFile getModuleBuildFolder(AlgoConsole console, Module module) {
         VirtualFile moduleOutFolder = null;
         VirtualFile moduleRoot = module.getModuleFile().getParent();
 
         try {
             File moduleOutFolderFile = new File(
                     VfsUtil.virtualToIoFile(moduleRoot).getAbsolutePath() + File.separator
-                            + BUILD_FOLDER + File.separator + module.getName());
+                            + BUILD_FOLDER);
 
             boolean created = FileUtil.createDirectory(moduleOutFolderFile);
 
             moduleOutFolder = VfsUtil.findFileByIoFile(moduleOutFolderFile, true);
-            //
-//            outFolder = moduleRoot.findChild(BUILD_FOLDER);
-//            if(outFolder == null || !outFolder.exists())
-//                outFolder = moduleRoot.createChildDirectory(requestor, BUILD_FOLDER);
-//
-//            if(outFolder != null && outFolder.exists()) {
-//                moduleOutFolder = outFolder.findChild(module.getName());
-//
-//                if(moduleOutFolder == null || !moduleOutFolder.exists()) {
-//                    moduleOutFolder = outFolder.createChildDirectory(requestor, module.getName());
-//
-//                }
-//
-//                if(moduleOutFolder == null || !moduleOutFolder.exists()) {
-//                    console.showErrorMessage("Error creating module out folder for the output in " + outFolder.getCanonicalPath());
-//                    return null;
-//                }
-//            } else {
-//                console.showErrorMessage("Unable to create out folder in " + moduleRoot.getCanonicalPath());
-//                return null;
-//            }
+        } catch (Exception io) {
+            LOG.error(io);
+            console.showErrorMessage("Unable to create build folder " + io.getMessage());
+        }
+
+        return moduleOutFolder;
+    }
+
+    public static VirtualFile getModuleOutputFolder(AlgoConsole console, Module module) {
+        VirtualFile moduleOutFolder = null;
+        VirtualFile moduleRoot = module.getModuleFile().getParent();
+
+        try {
+            File moduleOutFolderFile = new File(
+                    VfsUtil.virtualToIoFile(moduleRoot).getAbsolutePath() + File.separator
+                            + BUILD_FOLDER + File.separator + TEAL_BUILD_FOLDER);// + File.separator + module.getName());
+
+            boolean created = FileUtil.createDirectory(moduleOutFolderFile);
+
+            moduleOutFolder = VfsUtil.findFileByIoFile(moduleOutFolderFile, true);
+
         } catch (Exception io) {
             LOG.error(io);
             console.showErrorMessage("Unable to create out folder " + io.getMessage());
@@ -89,7 +87,7 @@ public class AlgoContractModuleHelper {
         return moduleOutFolder;
     }
 
-    public static File generateMergeSourceWithVariables(Project project, AlgoConsole console, VirtualFile moduleOutFolder, VirtualFile sourceFile) {
+    public static File generateMergeSourceWithVariables(Project project, AlgoConsole console, VirtualFile moduleOutFolder, VirtualFile sourceFile, String relativeDestinationFilePath) {
         File mergedSource = null;
         //Get list of VAR_TMPL_* if available in the source file
         List<VarParam> varParams = null;
@@ -125,7 +123,7 @@ public class AlgoContractModuleHelper {
 
             List<VarParam> varParamsValues = compileVarTmplInputDialog.getParamsWithValues();
 
-            VirtualFile genSrcFolder = createGeneratedSourceFolder(moduleOutFolder);
+            VirtualFile genSrcFolder = createGeneratedSourceFolder(moduleOutFolder.getParent());
             if(genSrcFolder == null) {
                 console.showErrorMessage("Compilation failed. 'generated-src' folder could not be created");
                 return null;
@@ -134,7 +132,7 @@ public class AlgoContractModuleHelper {
             //Create merged source file inside out/<module>/generated_src folder
             Object requestor = new Object();
             try {
-                mergedSource = VarTmplUtil.createMergeSourceFile(requestor, sourceFile, genSrcFolder, varParamsValues);
+                mergedSource = VarTmplUtil.createMergeSourceFile(requestor, sourceFile, genSrcFolder, relativeDestinationFilePath, varParamsValues);
             } catch (IOException ioException) {
                 LOG.error("Error merging VAR_TMPL_* values with the source", ioException);
                 console.showErrorMessage("Compilation failed. VAR_TMPL_ values could not be merged");
@@ -147,6 +145,10 @@ public class AlgoContractModuleHelper {
                 varValuesToStoreInCache.put(varParam.getName(), varParam.getValue());
             });
             algoCacheService.updateVarsToCache(sourceFile.getName(), varValuesToStoreInCache);
+        }
+
+        if(mergedSource != null) {
+            VfsUtil.findFileByIoFile(mergedSource, true);
         }
         return mergedSource;
     }

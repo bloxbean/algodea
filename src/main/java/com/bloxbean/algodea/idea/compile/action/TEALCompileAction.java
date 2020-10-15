@@ -21,35 +21,45 @@
  */
 package com.bloxbean.algodea.idea.compile.action;
 
+import com.bloxbean.algodea.idea.compile.service.CompilationResultListener;
+import com.bloxbean.algodea.idea.compile.service.CompileService;
+import com.bloxbean.algodea.idea.compile.service.GoalCompileService;
+import com.bloxbean.algodea.idea.compile.service.RemoteCompileService;
+import com.bloxbean.algodea.idea.configuration.action.ConfigurationAction;
 import com.bloxbean.algodea.idea.configuration.model.AlgoLocalSDK;
+import com.bloxbean.algodea.idea.configuration.model.NodeInfo;
 import com.bloxbean.algodea.idea.core.action.util.AlgoContractModuleHelper;
+import com.bloxbean.algodea.idea.core.exception.LocalSDKNotConfigured;
 import com.bloxbean.algodea.idea.language.psi.TEALFile;
 import com.bloxbean.algodea.idea.nodeint.AlgoServerConfigurationHelper;
 import com.bloxbean.algodea.idea.toolwindow.AlgoConsole;
-import com.intellij.execution.ExecutionException;
-import com.intellij.execution.configurations.GeneralCommandLine;
+import com.bloxbean.algodea.idea.util.AlgoModuleUtils;
+import com.bloxbean.algodea.idea.util.IdeaUtil;
 import com.intellij.execution.process.OSProcessHandler;
-import com.intellij.execution.process.ProcessEvent;
-import com.intellij.execution.process.ProcessListener;
+import com.intellij.notification.NotificationType;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.actionSystem.LangDataKeys;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.module.Module;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.ProgressManager;
+import com.intellij.openapi.progress.Task;
+import com.intellij.openapi.progress.impl.BackgroundableProcessIndicator;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
-import com.intellij.openapi.util.Key;
+import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
+import com.twelvemonkeys.lang.StringUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class TEALCompileAction extends AnAction {
     private final static Logger LOG = Logger.getInstance(TEALCompileAction.class);
@@ -78,7 +88,7 @@ public class TEALCompileAction extends AnAction {
             return;
 
         final Module module = LangDataKeys.MODULE.getData(e.getDataContext());
-        if(module == null)
+        if (module == null)
             return;
 
         FileDocumentManager.getInstance().saveAllDocuments();
@@ -87,10 +97,19 @@ public class TEALCompileAction extends AnAction {
         console.clearAndshow();
 
         AlgoLocalSDK localSDK = AlgoServerConfigurationHelper.getCompilerLocalSDK(project);
-        if(localSDK == null) {
-            Messages.showErrorDialog("Algorand Local SDK is not set for this module.", "TEAL Compilation");
+        NodeInfo remoteSDK = null;
+        if (localSDK == null) {
+//            Messages.showErrorDialog("Algorand Local SDK is not set for this module.", "TEAL Compilation");
+//            return;
+            remoteSDK = AlgoServerConfigurationHelper.getCompilerNodeInfo(project);
+        }
+
+        if (localSDK == null && remoteSDK == null) {
+            IdeaUtil.showNotification(project, "Compilation configuration",
+                    "Algorand Local SDK or Node configuration is not done for this module.", NotificationType.ERROR, ConfigurationAction.ACTION_ID);
             return;
         }
+        final NodeInfo remoteCompilerSDK = remoteSDK;
 
         PsiFile psiFile = e.getData(CommonDataKeys.PSI_FILE);
         if (!(psiFile instanceof TEALFile)) {
@@ -98,103 +117,149 @@ public class TEALCompileAction extends AnAction {
             return;
         }
 
-        ApplicationManager.getApplication().runWriteAction(new Runnable() {
-            @Override
-            public void run() {
-                String cwd = project.getBasePath();
 
-                final String outputFileName = psiFile.getVirtualFile().getName() + ".tok";
+        String cwd = project.getBasePath();
 
-                VirtualFile sourceFile = psiFile.getVirtualFile();
+        //final String outputFileName = psiFile.getVirtualFile().getName() + ".tok";
 
-               //module output folder
-                VirtualFile moduleOutFolder = AlgoContractModuleHelper.getModuleOutputFolder(console, module);
+        VirtualFile sourceFile = psiFile.getVirtualFile();
 
-                //Delete previous compiled file
-                if(moduleOutFolder != null && moduleOutFolder.exists()) {
-                    VirtualFile outputFile = moduleOutFolder.findChild(outputFileName);
-                    if (outputFile != null && outputFile.exists()) {
-                        try {
-                            outputFile.delete(this);
-                        } catch (IOException ioException) {
+        VirtualFile sourceRoot = AlgoModuleUtils.getFirstTEALSourceRoot(project);
+        LOG.info("Source root : " + sourceRoot);
 
-                        }
-                    }
-                }
+        String relativeSourcePath = null;
+        if(sourceRoot != null) {
+            relativeSourcePath = VfsUtil.findRelativePath(sourceRoot, sourceFile, File.separatorChar);
+        }
 
-                File mergedSource  = AlgoContractModuleHelper.generateMergeSourceWithVariables(project, console, moduleOutFolder, sourceFile);
 
-                //Compilation configuration setup
-                String outputFilePath = null;
-                if(moduleOutFolder != null) {
-                    outputFilePath = moduleOutFolder.getCanonicalPath() + File.separator + outputFileName;
-                }
+        //module output folder
+        VirtualFile moduleOutFolder = AlgoContractModuleHelper.getModuleOutputFolder(console, module);
 
-                List<String> cmd = new ArrayList<>();
-                cmd.add(localSDK.getHome() + File.separator + "bin" + File.separator + "goal");
-                cmd.add("clerk");
-                cmd.add("compile");
+        //Delete previous compiled file
+//        if (moduleOutFolder != null && moduleOutFolder.exists()) {
+//            VirtualFile outputFile = moduleOutFolder.findChild(outputFileName);
+//            if (outputFile != null && outputFile.exists()) {
+//                WriteCommandAction.runWriteCommandAction(project, () -> {
+//                    try {
+//                        outputFile.delete(this);
+//
+//                    } catch (IOException ioException) {
+//                        ioException.printStackTrace();
+//                    }
+//                });
+//            }
+//        }
 
-                if(mergedSource != null)
-                    cmd.add(mergedSource.getAbsolutePath());
-                else
-                    cmd.add(sourceFile.getCanonicalPath());
+        if(StringUtil.isEmpty(relativeSourcePath))
+            relativeSourcePath = psiFile.getVirtualFile().getName();
 
-                if(outputFilePath != null) {
-                    cmd.add("-o");
-                    cmd.add(outputFilePath);
-                }
 
-                OSProcessHandler handler;
+        File mergedSource = AlgoContractModuleHelper.generateMergeSourceWithVariables(project, console, moduleOutFolder, sourceFile, relativeSourcePath);
+
+
+        //Compilation configuration setup
+        String outputFilePath = null;
+        if (moduleOutFolder != null) {
+            if(!StringUtil.isEmpty(relativeSourcePath))
+                outputFilePath = moduleOutFolder.getCanonicalPath() + File.separator + relativeSourcePath + ".tok";
+            else
+                outputFilePath = moduleOutFolder.getCanonicalPath() + File.separator + sourceFile.getName() + ".tok";
+        }
+
+        //Delete if previous compiled file exists
+        VirtualFile outputVfsFile = VfsUtil.findFileByIoFile(new File(outputFilePath), true);
+        if(outputVfsFile != null && outputVfsFile.exists()) {
+            WriteCommandAction.runWriteCommandAction(project, () -> {
                 try {
-                    handler = new OSProcessHandler(
-                            new GeneralCommandLine(cmd).withWorkDirectory(cwd)
-                    );
-                } catch (ExecutionException ex) {
-                    ex.printStackTrace();
-                    return;
+                    outputVfsFile.delete(this);
+                } catch (IOException ioException) {
+                    ioException.printStackTrace();
                 }
+            });
+        }
 
-                console.getView().attachToProcess(handler);
-                handler.startNotify();
+        String sourcePath = sourceFile.getCanonicalPath();
+        if (mergedSource != null)
+            sourcePath = mergedSource.getAbsolutePath();
 
-                final VirtualFile folderToRefresh = moduleOutFolder;
-                final VirtualFile moduleOutputFolderToRefresh = moduleOutFolder;
-                handler.addProcessListener(new ProcessListener() {
-                    @Override
-                    public void startNotified(@NotNull ProcessEvent event) {
-                        console.showInfoMessage("TEAL Compilation started...");
-                    }
 
-                    @Override
-                    public void processTerminated(@NotNull ProcessEvent event) {
-                        if(event.getExitCode() == 0) {
-                            console.showInfoMessage("Compilation successful.");
-                        } else {
-                            console.showErrorMessage("Compilation failed.");
-                        }
+        final VirtualFile folderToRefresh = moduleOutFolder;
+        final VirtualFile moduleOutputFolderToRefresh = moduleOutFolder;
 
-                        if(folderToRefresh != null) {
-                            folderToRefresh.refresh(false, false);
-                        }
+        final String finalSourcePath = sourcePath;
+        final String finalOutputFilePath = outputFilePath;
 
-                        if(moduleOutputFolderToRefresh != null) {
-                            moduleOutputFolderToRefresh.refresh(false, true);
-                            VirtualFile outputVFile = moduleOutputFolderToRefresh.findChild(outputFileName);
-                            if(outputVFile != null)
-                                outputVFile.refresh(true, true);
-                        }
-                    }
-
-                    @Override
-                    public void onTextAvailable(@NotNull ProcessEvent event, @NotNull Key outputType) {
-
-                    }
+        CompilationResultListener compilationResultListener = new CompilationResultListener() {
+            @Override
+            public void attachProcess(OSProcessHandler handler) {
+                ApplicationManager.getApplication().invokeLater(() -> {
+                    console.getView().attachToProcess(handler);
+                    handler.startNotify();
                 });
             }
 
-        });
+            @Override
+            public void error(String message) {
+                console.showErrorMessage(message);
+            }
 
+            @Override
+            public void info(String message) {
+                console.showInfoMessage(message);
+            }
+
+            @Override
+            public void warn(String msg) {
+                console.showWarningMessage(msg);
+            }
+
+            @Override
+            public void compilationSuccessful(String sourceFile, String outputFile) {
+                console.showSuccessMessage("TEAL file compiled successfully");
+
+                if (folderToRefresh != null) {
+                    folderToRefresh.refresh(false, false);
+                }
+
+                if (moduleOutputFolderToRefresh != null) {
+                    moduleOutputFolderToRefresh.refresh(false, true);
+                }
+
+                VirtualFile outputVf = VfsUtil.findFileByIoFile(new File(outputFile), true);
+                if(outputVf != null && outputVf.exists())
+                    outputVf.refresh(true, true);
+
+            }
+
+            @Override
+            public void compilationFailed(String sourceFile) {
+                console.showErrorMessage(String.format("Compilation failed for %s", sourceFile));
+            }
+        };
+
+        Task.Backgroundable task = new Task.Backgroundable(project, "TEAL Compile") {
+
+            @Override
+            public void run(@NotNull ProgressIndicator indicator) {
+                CompileService compileService = null;
+                if (localSDK != null) {
+                    try {
+                        compileService = new GoalCompileService(project);
+                    } catch (LocalSDKNotConfigured localSDKNotConfigured) {
+                        Messages.showErrorDialog("Algorand Local SDK is not set for this module.", "TEAL Compilation");
+                        return;
+                    }
+                } else if (remoteCompilerSDK != null) {
+                    compileService = new RemoteCompileService(project, remoteCompilerSDK);
+                }
+
+                console.showInfoMessage("Start compilation ..");
+                compileService.compile(finalSourcePath, finalOutputFilePath, compilationResultListener);
+            }
+        };
+
+        ProgressManager.getInstance().runProcessWithProgressAsynchronously(task, new BackgroundableProcessIndicator(task));
 
     }
 }

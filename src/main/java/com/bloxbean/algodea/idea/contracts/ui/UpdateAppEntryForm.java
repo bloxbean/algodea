@@ -21,11 +21,20 @@
  */
 package com.bloxbean.algodea.idea.contracts.ui;
 
+import com.bloxbean.algodea.idea.configuration.service.AlgoProjectState;
+import com.bloxbean.algodea.idea.language.TEALFileType;
+import com.bloxbean.algodea.idea.util.AlgoModuleUtils;
+import com.intellij.openapi.fileChooser.FileChooser;
+import com.intellij.openapi.fileChooser.FileChooserDescriptor;
+import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.openapi.ui.ValidationInfo;
+import com.intellij.openapi.util.Condition;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.text.StringUtil;
+import com.intellij.openapi.vfs.VfsUtil;
+import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -43,10 +52,6 @@ public class UpdateAppEntryForm {
     public UpdateAppEntryForm() {
 
     }
-//    public UpdateAppEntryForm(Project project, String approvalProgram, String clearStateProgram) {
-//        super();
-//        initialize(project, approvalProgram, clearStateProgram);
-//    }
 
     public void initializeData(Project project, String approvalProgram, String clearStateProgram) {
         if (!StringUtil.isEmpty(approvalProgram)) {
@@ -57,6 +62,10 @@ public class UpdateAppEntryForm {
             clrProgTf.setText(clearStateProgram);
         }
 
+        sourceRootPath = AlgoModuleUtils.getFirstTEALSourceRootPath(project);
+        if(sourceRootPath == null) {
+            sourceRootPath = AlgoModuleUtils.getModuleDirPath(project);
+        }
     }
 
     public String getApprovalProgram() {
@@ -67,13 +76,10 @@ public class UpdateAppEntryForm {
         return clearStateProgramTf.getText();
     }
 
-
-    //    @Override
     protected @Nullable JComponent getMainPanel() {
         return mainPanel;
     }
 
-    //    @Override
     protected @Nullable ValidationInfo doValidate() {
 
         if (StringUtil.isEmpty(appProgTf.getText())) {
@@ -110,6 +116,7 @@ public class UpdateAppEntryForm {
                     return "TEAL file";
                 }
             });
+
 
             fc.showDialog(mainPanel, "Select");
             File file = fc.getSelectedFile();

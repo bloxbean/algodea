@@ -1,6 +1,7 @@
 package com.bloxbean.algodea.idea.compile.util;
 
 import com.bloxbean.algodea.idea.compile.model.VarParam;
+import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
 
@@ -60,7 +61,7 @@ public class VarTmplUtil {
         return tokens;
     }
 
-    public static File createMergeSourceFile(Object requestor, VirtualFile sourceFile, VirtualFile outFolder, List<VarParam> varParamsValues) throws IOException {
+    public static File createMergeSourceFile(Object requestor, VirtualFile sourceFile, VirtualFile outFolder, String destinationFile, List<VarParam> varParamsValues) throws IOException {
         Map<String, String> map = new HashMap<>();
         varParamsValues.stream()
                 .forEach(v -> map.put(v.getName(), v.getValue()));
@@ -78,7 +79,9 @@ public class VarTmplUtil {
 //        try (PrintWriter printWriter
 //                     = new PrintWriter(new OutputStreamWriter(mergedVirtualFile.getOutputStream(requestor)))) {
 
-        File mergedFile = new File(outFolder.getCanonicalPath() + File.separator + sourceFile.getName());
+        File mergedFile = new File(outFolder.getCanonicalPath() + File.separator + destinationFile);
+
+        FileUtil.createParentDirs(mergedFile);
 
         if(mergedFile.exists())
             mergedFile.delete();

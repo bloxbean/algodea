@@ -79,6 +79,7 @@
             </constraints>
             <properties>
               <text value="Deploy flags (default)"/>
+              <visible value="false"/>
             </properties>
           </component>
           <component id="a61ad" class="javax.swing.JTextField" binding="statefulDeployFlagsTf">
@@ -88,7 +89,9 @@
               </grid>
               <forms defaultalign-horz="false"/>
             </constraints>
-            <properties/>
+            <properties>
+              <visible value="false"/>
+            </properties>
           </component>
           <component id="8d7d6" class="com.intellij.openapi.ui.TextFieldWithBrowseButton" binding="approvalProgramTf" custom-create="true">
             <constraints>
