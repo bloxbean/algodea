@@ -39,7 +39,7 @@
         <moduleType id="Algorand_Module" implementationClass="com.bloxbean.algodea.idea.module.AlgorandModuleType"/>
 <!--        <facetType implementation="com.bloxbean.algorand.idea.module.facet.AlgoFacetType"/>-->
         <framework.type implementation="com.bloxbean.algodea.idea.module.framework.AlgoStatefulFrameworkType"/>
-<!--        <projectStructureDetector implementation="AlgoProjectStructureDetector"/>-->
+        <projectStructureDetector implementation="com.bloxbean.algodea.idea.module.detector.AlgoProjectStructureDetector"/>
 
         <toolWindow id="Algorand"
                         anchor="bottom"
@@ -50,6 +50,8 @@
                     factoryClass="com.bloxbean.algodea.idea.toolwindow.AlgoExplorerToolWindowFactory"/>
 
         <projectService serviceImplementation="com.bloxbean.algodea.idea.toolwindow.AlgoConsole"/>
+
+        <projectService serviceImplementation="com.bloxbean.algodea.idea.pkg.AlgoPkgJsonService"/>
 
         <!-- file templates -->
         <internalFileTemplate name="Algo.Empty"/>

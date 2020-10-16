@@ -25,6 +25,7 @@ package com.bloxbean.algodea.idea.core.action;
 import com.bloxbean.algodea.idea.core.action.util.AlgoFileTemplateUtil;
 import com.bloxbean.algodea.idea.module.AlgorandModuleType;
 import com.bloxbean.algodea.idea.common.AlgoIcons;
+import com.bloxbean.algodea.idea.pkg.AlgoPkgJsonService;
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.actions.CreateFileFromTemplateDialog;
 import com.intellij.ide.actions.CreateFromTemplateAction;
@@ -55,9 +56,17 @@ public class NewTEALFileAction extends CreateFromTemplateAction<PsiFile> {
 
     @Override
     protected boolean isAvailable(DataContext dataContext) {
+
         final Module module = LangDataKeys.MODULE.getData(dataContext);
         final ModuleType moduleType = module == null ? null : ModuleType.get(module);
-        final boolean isAlgorandModule = moduleType instanceof AlgorandModuleType;
+        boolean isAlgorandModule = moduleType instanceof AlgorandModuleType;
+
+        if(!isAlgorandModule) { //For non algorand modules. Check if algo-package.json available.
+            AlgoPkgJsonService pkgJsonService = AlgoPkgJsonService.getInstance(module.getProject());
+            if (pkgJsonService != null)
+                isAlgorandModule = pkgJsonService.isAlgoProject();
+        }
+
         return super.isAvailable(dataContext) && isAlgorandModule;
     }
 

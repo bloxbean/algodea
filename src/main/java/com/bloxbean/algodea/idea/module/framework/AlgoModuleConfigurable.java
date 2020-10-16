@@ -2,10 +2,16 @@ package com.bloxbean.algodea.idea.module.framework;
 
 import com.bloxbean.algodea.idea.configuration.service.AlgoProjectState;
 import com.bloxbean.algodea.idea.module.framework.ui.StatefulContractPanel;
+import com.bloxbean.algodea.idea.pkg.model.AlgoPackageJson;
+import com.bloxbean.algodea.idea.pkg.exception.PackageJsonException;
+import com.bloxbean.algodea.idea.pkg.AlgoPkgJsonService;
+import com.bloxbean.algodea.idea.util.IdeaUtil;
 import com.intellij.framework.addSupport.FrameworkSupportInModuleConfigurable;
 import com.intellij.ide.fileTemplates.FileTemplate;
 import com.intellij.ide.fileTemplates.FileTemplateManager;
+import com.intellij.notification.NotificationType;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ModifiableModelsProvider;
@@ -71,6 +77,25 @@ public class AlgoModuleConfigurable extends FrameworkSupportInModuleConfigurable
                 }
             }
         }
+
+        //Update package json
+        WriteCommandAction.runWriteCommandAction(project, ()-> {
+            try {
+                AlgoPackageJson packageJson = AlgoPkgJsonService.getInstance(project).loadPackageJson();
+
+                AlgoPackageJson.StatefulContract statefulContract = new AlgoPackageJson.StatefulContract();
+                statefulContract.setName("StatefulContract");
+                statefulContract.setApprovalProgram(approvalProgramName);
+                statefulContract.setClearStateProgram(clearStateProgramName);
+
+                packageJson.addStatefulContractList(statefulContract);
+
+                AlgoPkgJsonService.getInstance(project).writeToPackageJson(packageJson);
+            } catch (PackageJsonException e) {
+                IdeaUtil.showNotification(project, "Project create",
+                        "algo-package.json could not be created or found", NotificationType.ERROR, null);
+            }
+        });
     }
 
     private boolean createFile(String file, VirtualFile folder, final String templateName)

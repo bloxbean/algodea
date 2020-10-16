@@ -137,11 +137,14 @@ public class UpdateStatefulAppAction extends AlgoBaseAction {
                     projectState.getState().setClearStateProgramName(clearStateProgramName);
             }
 
-            VirtualFile sourceRoot = AlgoModuleUtils.getFirstTEALSourceRoot(project);
-            LOG.info("Source root : " + sourceRoot);
+        //    VirtualFile sourceRoot = AlgoModuleUtils.getFirstTEALSourceRoot(project);
+          //  LOG.info("Source root : " + sourceRoot);
 
-            VirtualFile appProgVF = VfsUtil.findRelativeFile(approvalProgramName, sourceRoot);
-            VirtualFile clearProgVF = VfsUtil.findRelativeFile(clearStateProgramName, sourceRoot);
+           // VirtualFile appProgVF = VfsUtil.findRelativeFile(approvalProgramName, sourceRoot);
+          //  VirtualFile clearProgVF = VfsUtil.findRelativeFile(clearStateProgramName, sourceRoot);
+
+            VirtualFile appProgVF = AlgoModuleUtils.getSourceVirtualFileByRelativePath(project, approvalProgramName);//VfsUtil.findRelativeFile(approvalProgramName, sourceRoot);//VfsUtil.findRelativeFile(sourceRoot, approvalProgramName);
+            VirtualFile clearProgVF = AlgoModuleUtils.getSourceVirtualFileByRelativePath(project, clearStateProgramName);//VfsUtil.findRelativeFile(clearStateProgramName, sourceRoot);
 
             if(appProgVF == null || !appProgVF.exists()) {
                 console.showErrorMessage(String.format("Approval Program doesn't exist: %s", appProgVF != null ? appProgVF.getCanonicalPath(): approvalProgramName));
@@ -154,12 +157,8 @@ public class UpdateStatefulAppAction extends AlgoBaseAction {
             }
 
             //Find relative path for source which is required to create merged source
-            String relAppProgPath = null;
-            String relClearStatePath = null;
-            if(sourceRoot != null) {
-                relAppProgPath = VfsUtil.findRelativePath(sourceRoot, appProgVF, File.separatorChar);
-                relClearStatePath = VfsUtil.findRelativePath(sourceRoot, clearProgVF, File.separatorChar);
-            }
+            String relAppProgPath = AlgoModuleUtils.getRelativePathFromSourceRoot(project, appProgVF);
+            String relClearStatePath = AlgoModuleUtils.getRelativePathFromSourceRoot(project, clearProgVF);
 
             if(StringUtil.isEmpty(relAppProgPath))
                 relAppProgPath = appProgVF.getName();

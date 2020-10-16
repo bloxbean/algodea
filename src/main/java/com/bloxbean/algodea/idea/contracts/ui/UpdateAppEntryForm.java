@@ -62,7 +62,7 @@ public class UpdateAppEntryForm {
             clrProgTf.setText(clearStateProgram);
         }
 
-        sourceRootPath = AlgoModuleUtils.getFirstTEALSourceRootPath(project);
+        sourceRootPath = AlgoModuleUtils.getFirstSourceRootPath(project);// AlgoModuleUtils.getFirstTEALSourceRootPath(project);
         if(sourceRootPath == null) {
             sourceRootPath = AlgoModuleUtils.getModuleDirPath(project);
         }

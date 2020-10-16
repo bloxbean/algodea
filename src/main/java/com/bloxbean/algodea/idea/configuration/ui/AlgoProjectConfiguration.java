@@ -136,7 +136,8 @@ public class AlgoProjectConfiguration {
         AlgoProjectState.State state = AlgoProjectState.getInstance(project).getState();
         contractSettingsPanel.poulateData(state);
 
-        String sourcePath = AlgoModuleUtils.getFirstTEALSourceRootPath(project);
+        String sourcePath = AlgoModuleUtils.getFirstSourceRootPath(project);//getFirstTEALSourceRootPath(project);
+
         if(sourcePath == null) {
             sourcePath = AlgoModuleUtils.getModuleDirPath(project);
         }

@@ -55,6 +55,7 @@ import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
+import com.intellij.util.IncorrectOperationException;
 import com.twelvemonkeys.lang.StringUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -99,8 +100,6 @@ public class TEALCompileAction extends AnAction {
         AlgoLocalSDK localSDK = AlgoServerConfigurationHelper.getCompilerLocalSDK(project);
         NodeInfo remoteSDK = null;
         if (localSDK == null) {
-//            Messages.showErrorDialog("Algorand Local SDK is not set for this module.", "TEAL Compilation");
-//            return;
             remoteSDK = AlgoServerConfigurationHelper.getCompilerNodeInfo(project);
         }
 
@@ -124,32 +123,11 @@ public class TEALCompileAction extends AnAction {
 
         VirtualFile sourceFile = psiFile.getVirtualFile();
 
-        VirtualFile sourceRoot = AlgoModuleUtils.getFirstTEALSourceRoot(project);
-        LOG.info("Source root : " + sourceRoot);
-
-        String relativeSourcePath = null;
-        if(sourceRoot != null) {
-            relativeSourcePath = VfsUtil.findRelativePath(sourceRoot, sourceFile, File.separatorChar);
-        }
+        String relativeSourcePath = AlgoModuleUtils.getRelativePathFromSourceRoot(project, sourceFile);
 
 
         //module output folder
         VirtualFile moduleOutFolder = AlgoContractModuleHelper.getModuleOutputFolder(console, module);
-
-        //Delete previous compiled file
-//        if (moduleOutFolder != null && moduleOutFolder.exists()) {
-//            VirtualFile outputFile = moduleOutFolder.findChild(outputFileName);
-//            if (outputFile != null && outputFile.exists()) {
-//                WriteCommandAction.runWriteCommandAction(project, () -> {
-//                    try {
-//                        outputFile.delete(this);
-//
-//                    } catch (IOException ioException) {
-//                        ioException.printStackTrace();
-//                    }
-//                });
-//            }
-//        }
 
         if(StringUtil.isEmpty(relativeSourcePath))
             relativeSourcePath = psiFile.getVirtualFile().getName();
@@ -194,7 +172,15 @@ public class TEALCompileAction extends AnAction {
             @Override
             public void attachProcess(OSProcessHandler handler) {
                 ApplicationManager.getApplication().invokeLater(() -> {
-                    console.getView().attachToProcess(handler);
+                    try {
+                        console.getView().attachToProcess(handler);
+                    } catch (IncorrectOperationException ex) {
+                        //This should not happen
+                        ex.printStackTrace();
+                        console.showInfoMessage(ex.getMessage());
+                        console.dispose();
+                        console.getView().attachToProcess(handler);
+                    }
                     handler.startNotify();
                 });
             }

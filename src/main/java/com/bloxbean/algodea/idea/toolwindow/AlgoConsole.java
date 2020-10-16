@@ -36,7 +36,7 @@ public class AlgoConsole {
     private final static Logger LOG = Logger.getInstance(AlgoConsole.class);
     public final static String CONSOLE_VIEW = "Console";
 
-    private static ConsoleView view;
+    private ConsoleView view;
 
     private Project project;
 
@@ -80,6 +80,15 @@ public class AlgoConsole {
         });
     }
 
+    public void dispose() {
+        if(view != null) {
+            try {
+                view.dispose();
+                view = null;
+            } catch (Exception e) {}
+        }
+    }
+
     public  ConsoleView getView() {
         if(view == null) {
             view = createAlgorandConsoleView(CONSOLE_VIEW);
@@ -91,8 +100,9 @@ public class AlgoConsole {
         ApplicationManager.getApplication().invokeLater(new Runnable() {
             @Override
             public void run() {
-                if(view != null)
+                if(view != null) {
                     view.clear();
+                }
 
                 Project project = ProjectManager.getInstance().getDefaultProject();
                 if(project == null) return;

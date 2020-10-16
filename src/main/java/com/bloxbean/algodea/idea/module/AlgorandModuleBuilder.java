@@ -23,12 +23,17 @@
 package com.bloxbean.algodea.idea.module;
 
 import com.bloxbean.algodea.idea.common.AlgoIcons;
+import com.bloxbean.algodea.idea.pkg.AlgoPkgJsonService;
+import com.bloxbean.algodea.idea.util.IdeaUtil;
 import com.intellij.ide.util.projectWizard.*;
+import com.intellij.notification.NotificationType;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleType;
 import com.intellij.openapi.options.ConfigurationException;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ContentEntry;
 import com.intellij.openapi.roots.ModifiableRootModel;
 import com.intellij.openapi.roots.ModuleRootManager;
@@ -43,9 +48,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static com.intellij.ide.projectView.actions.MarkRootActionBase.findContentEntry;
 
@@ -141,6 +144,22 @@ public class AlgorandModuleBuilder extends ModuleBuilder implements ModuleBuilde
                     }
                 }
             }
+        }
+
+        Project project = rootModel.getProject();
+        if(project != null) {
+            //Create algo-package.json
+            WriteCommandAction.runWriteCommandAction(project, () -> {
+                try {
+                    AlgoPkgJsonService.getInstance(project).createPackageJson();
+                } catch (Exception e) {
+                    IdeaUtil.showNotification(project,
+                            "Project creation",
+                            "algo-package.json could not be crated. Please create it " +
+                                    "manually and restart the IDE.", NotificationType.WARNING, null);
+                    LOG.error("Unable to create algo-package.json", e);
+                }
+            });
         }
     }
 

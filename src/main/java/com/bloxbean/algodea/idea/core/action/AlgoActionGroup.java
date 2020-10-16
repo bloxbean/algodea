@@ -2,6 +2,7 @@ package com.bloxbean.algodea.idea.core.action;
 
 import com.bloxbean.algodea.idea.common.AlgoIcons;
 import com.bloxbean.algodea.idea.module.AlgorandModuleType;
+import com.bloxbean.algodea.idea.pkg.AlgoPkgJsonService;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleType;
@@ -17,9 +18,15 @@ public class AlgoActionGroup extends DefaultActionGroup {
         final Module module = LangDataKeys.MODULE.getData(dataContext);
 
         final ModuleType moduleType = module == null ? null : ModuleType.get(module);
-        final boolean isAlgorandModule = moduleType instanceof AlgorandModuleType;
+        boolean isAlgorandModule = moduleType instanceof AlgorandModuleType;
 
-        PsiFile psiFile = event.getData(CommonDataKeys.PSI_FILE);
+        //Try to check if algo-package.json file available.
+        //For non-Algorand modules
+        if(!isAlgorandModule) {
+            AlgoPkgJsonService pkgJsonService = AlgoPkgJsonService.getInstance(project);
+            if (pkgJsonService != null)
+                isAlgorandModule = pkgJsonService.isAlgoProject();
+        }
 
         if(isAlgorandModule) {
             event.getPresentation().setVisible(true);
