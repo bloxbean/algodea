@@ -16,10 +16,13 @@ import java.io.IOException;
 import static com.bloxbean.algodea.idea.module.AlgoModuleConstant.ALGO_PACKAGE_JSON;
 
 public class AlgoPkgJsonService {
+   // private final static Logger LOG = Logger.getInstance(AlgoPackageJson.class);
+
     private static ObjectMapper mapper;
     private Project project;
     private AlgoPackageJson packageJson;
     private boolean algoProject;
+    private boolean isDirty;
 
     public static AlgoPkgJsonService getInstance(@NotNull Project project) {
         if(project == null)
@@ -37,8 +40,27 @@ public class AlgoPkgJsonService {
             VirtualFile pkgJson = VfsUtil.findFileByIoFile(new File(basePath, ALGO_PACKAGE_JSON), true);
             if(pkgJson != null && pkgJson.exists()) {
                 algoProject = true;
+                attachListener();
             }
         });
+    }
+
+    private void attachListener() {
+//        project.getMessageBus().connect().subscribe(VirtualFileManager.VFS_CHANGES, new BulkFileListener() {
+//            @Override
+//            public void after(@NotNull List<? extends VFileEvent> events) {
+//                // handle the events
+//                for(VFileEvent evt: events) {
+//                    VirtualFile file = evt.getFile();
+//                    if(ALGO_PACKAGE_JSON.equals(file.getName())) {
+//                        if(ProjectFileIndex.getInstance(project).isInContent(evt.getFile())) {
+//                            markDirty();
+//                            System.out.println("Found change.....>>>> ");
+//                        }
+//                    }
+//                }
+//            }
+//        });
     }
 
     public boolean isAlgoProject() {
@@ -47,7 +69,7 @@ public class AlgoPkgJsonService {
 
     public AlgoPackageJson getPackageJson() throws PackageJsonException {
         if(project == null) return null;
-        if(packageJson == null)
+        if(packageJson == null || isDirty)
             load();
 
         return packageJson;
@@ -87,15 +109,20 @@ public class AlgoPkgJsonService {
     }
 
     public void load() throws PackageJsonException {
+        isDirty = false;
         if(project == null) return;
 
         String projectBasePath = project.getBasePath();
         String pkgJsonPath = projectBasePath + File.separator + ALGO_PACKAGE_JSON;
 
+        if(!new File(pkgJsonPath).exists()) {
+            throw new PackageJsonException(ALGO_PACKAGE_JSON + " file doesn't exist.");
+        }
+
         try {
             packageJson = readPackageJson(pkgJsonPath);
         } catch (IOException e) {
-            throw new PackageJsonException(String.format("Unable to read %s file at locatioin %s", ALGO_PACKAGE_JSON, pkgJsonPath));
+            throw new PackageJsonException(String.format("Unable to read %s file at locatioin %s , Reason : %s", ALGO_PACKAGE_JSON, pkgJsonPath, e.getMessage()), e);
         }
     }
 
@@ -110,6 +137,21 @@ public class AlgoPkgJsonService {
         } catch (IOException e) {
             throw new PackageJsonException(String.format("Unable to write %s file at locatioin %s", ALGO_PACKAGE_JSON, path));
         }
+
+        try {
+            //Refresh
+            VfsUtil.findFileByIoFile(file, false).refresh(true, false);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void markDirty() {
+        this.isDirty = true;
+    }
+
+    public boolean isDirty() {
+        return this.isDirty;
     }
 
     private AlgoPackageJson readPackageJson(String path) throws IOException {
