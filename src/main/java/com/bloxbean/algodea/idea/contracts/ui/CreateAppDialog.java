@@ -14,11 +14,11 @@ public class CreateAppDialog extends DialogWrapper {
     private CreateMainPanel createMainPanel;
 
     public CreateAppDialog(Project project,
-                              AlgoAccount creatorAccount, String approvalProgram, String clearStateProgram,
+                              AlgoAccount creatorAccount, String contractName,
                               int globalByteslices, int globalInts, int localByteslices, int localInts) {
         super(project);
-        createMainPanel = new CreateMainPanel(project, creatorAccount, approvalProgram,
-                clearStateProgram, globalByteslices, globalInts, localByteslices, localInts);
+        createMainPanel = new CreateMainPanel(project, creatorAccount, contractName,
+                globalByteslices, globalInts, localByteslices, localInts);
         init();
         setTitle("Create Stateful Smart Contract App");
     }

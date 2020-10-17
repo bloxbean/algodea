@@ -15,13 +15,13 @@ public class UpdateAppMainPanel {
     private UpdateAppEntryForm updateAppEntryForm;
     private TxnDetailsEntryForm txnDetailsEntryForm;
 
-    public UpdateAppMainPanel(Project project, String approvalProgram, String clearStateProgram) {
-        initialize(project, approvalProgram, clearStateProgram);
+    public UpdateAppMainPanel(Project project, String contract) {
+        initialize(project, contract);
     }
 
-    private void initialize(Project project, String approvalProgram, String clearStateProgam) {
+    private void initialize(Project project, String contract) {
         appTxnBaseForm.initializeData(project);
-        updateAppEntryForm.initializeData(project, approvalProgram, clearStateProgam);
+        updateAppEntryForm.initializeData(project, contract );
         txnDetailsEntryForm.initializeData(project);
     }
 

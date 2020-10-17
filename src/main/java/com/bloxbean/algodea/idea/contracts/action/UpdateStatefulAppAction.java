@@ -14,6 +14,8 @@ import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured
 import com.bloxbean.algodea.idea.nodeint.model.TxnDetailsParameters;
 import com.bloxbean.algodea.idea.nodeint.service.LogListenerAdapter;
 import com.bloxbean.algodea.idea.nodeint.service.StatefulContractService;
+import com.bloxbean.algodea.idea.pkg.AlgoPkgJsonService;
+import com.bloxbean.algodea.idea.pkg.model.AlgoPackageJson;
 import com.bloxbean.algodea.idea.toolwindow.AlgoConsole;
 import com.bloxbean.algodea.idea.util.AlgoModuleUtils;
 import com.bloxbean.algodea.idea.util.IdeaUtil;
@@ -66,16 +68,22 @@ public class UpdateStatefulAppAction extends AlgoBaseAction {
                 return;
             }
 
-            String approvalProgramName = projectState.getState().getApprovalProgramName();
-            String clearStateProgramName = projectState.getState().getClearStateProgramName();
+            AlgoPkgJsonService pkgJsonService = AlgoPkgJsonService.getInstance(project);
+            AlgoPackageJson packageJson = pkgJsonService.getPackageJson();
+            if (packageJson == null || packageJson.getStatefulContractList().size() == 0) {
+                IdeaUtil.showNotification(project, "Create App",
+                        "No stateful contract defined in algo-package.json", NotificationType.WARNING, null);
+                return;
+            }
+
             String deploymentServerId = projectState.getState().getDeploymentServerId();
 
             AlgoCacheService cacheService = AlgoCacheService.getInstance(project);
 
-            UpdateAppDialog dialog = new UpdateAppDialog(project, approvalProgramName, clearStateProgramName);
+            UpdateAppDialog dialog = new UpdateAppDialog(project, cacheService.getContract());
             boolean ok = dialog.showAndGet();
             if(!ok) {
-                IdeaUtil.showNotification(project, "UpdateApplication", "UpdateApplication operation was cancelled", NotificationType.INFORMATION, null);
+                IdeaUtil.showNotification(project, "UpdateApplication", "UpdateApplication operation was cancelled", NotificationType.WARNING, null);
                 return;
             }
 
@@ -97,8 +105,9 @@ public class UpdateStatefulAppAction extends AlgoBaseAction {
                 return;
             }
 
-            approvalProgramName = updateForm.getApprovalProgram();
-            clearStateProgramName = updateForm.getClearStateProgram();
+            String contractName = updateForm.getContractName();
+            String approvalProgramName = updateForm.getApprovalProgram();
+            String clearStateProgramName = updateForm.getClearStateProgram();
             if(StringUtil.isEmpty(approvalProgramName)) {
                 console.showErrorMessage("Approval program name cannot be empty");
                 console.showErrorMessage("UpdateApplication Failed");
@@ -128,20 +137,10 @@ public class UpdateStatefulAppAction extends AlgoBaseAction {
 
             //update cache.. For update from account, save it inside creator account for now.
             cacheService.setSfCreatorAccount(account.getAddress().toString());
+            if(!StringUtil.isEmpty(contractName))
+                cacheService.setLastContract(contractName);
 
-            //Update latest approval program name & clear state program name
-            if(projectState != null) {
-                if(!approvalProgramName.equals(projectState.getState().getApprovalProgramName()))
-                    projectState.getState().setApprovalProgramName(approvalProgramName);
-                if(!clearStateProgramName.equals(projectState.getState().getClearStateProgramName()))
-                    projectState.getState().setClearStateProgramName(clearStateProgramName);
-            }
-
-        //    VirtualFile sourceRoot = AlgoModuleUtils.getFirstTEALSourceRoot(project);
-          //  LOG.info("Source root : " + sourceRoot);
-
-           // VirtualFile appProgVF = VfsUtil.findRelativeFile(approvalProgramName, sourceRoot);
-          //  VirtualFile clearProgVF = VfsUtil.findRelativeFile(clearStateProgramName, sourceRoot);
+            //Update latest approval program name & clear state program name //TODO
 
             VirtualFile appProgVF = AlgoModuleUtils.getSourceVirtualFileByRelativePath(project, approvalProgramName);//VfsUtil.findRelativeFile(approvalProgramName, sourceRoot);//VfsUtil.findRelativeFile(sourceRoot, approvalProgramName);
             VirtualFile clearProgVF = AlgoModuleUtils.getSourceVirtualFileByRelativePath(project, clearStateProgramName);//VfsUtil.findRelativeFile(clearStateProgramName, sourceRoot);

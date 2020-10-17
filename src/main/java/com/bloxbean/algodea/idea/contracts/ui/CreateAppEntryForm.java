@@ -24,6 +24,11 @@ package com.bloxbean.algodea.idea.contracts.ui;
 import com.algorand.algosdk.account.Account;
 import com.bloxbean.algodea.idea.account.model.AlgoAccount;
 import com.bloxbean.algodea.idea.account.service.AccountChooser;
+import com.bloxbean.algodea.idea.pkg.AlgoPkgJsonService;
+import com.bloxbean.algodea.idea.pkg.exception.PackageJsonException;
+import com.bloxbean.algodea.idea.pkg.model.AlgoPackageJson;
+import com.bloxbean.algodea.idea.util.IdeaUtil;
+import com.intellij.notification.NotificationType;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.project.Project;
@@ -37,6 +42,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.util.Collections;
+import java.util.List;
 
 public class CreateAppEntryForm {
     private JPanel mainPanel;
@@ -49,11 +56,13 @@ public class CreateAppEntryForm {
     private JTextField localIntsTf;
     private JButton accountChooser;
     private JTextField mnemonicTf;
+    private JComboBox contractCB;
+    private List<AlgoPackageJson.StatefulContract> contracts;
 
     public CreateAppEntryForm() {
     }
 
-    public void initializeData(Project project, AlgoAccount creatorAccount, String approvalProgram, String clearStateProgram,
+    public void initializeData(Project project, AlgoAccount creatorAccount, String contractName,
                                int globalByteslices, int globalInts, int localByteslices, int localInts) {
         if(creatorAccount != null) {
             accountTf.setText(creatorAccount.getAddress().toString());
@@ -64,16 +73,6 @@ public class CreateAppEntryForm {
                     mnemonicTf.setText(creatorAccount.getMnemonic());
                 }
             }, ModalityState.any());
-        }
-
-        if(!StringUtil.isEmpty(approvalProgram)) {
-            approvalProgramTf.setText(approvalProgram);
-            approvalProgramTf.setEditable(false);
-        }
-
-        if(!StringUtil.isEmpty(clearStateProgram)) {
-            clearStateProgramTf.setText(clearStateProgram);
-            clearStateProgramTf.setEditable(false);
         }
 
         globalByteslicesTf.setText(String.valueOf(globalByteslices));
@@ -110,10 +109,48 @@ public class CreateAppEntryForm {
             }
         });
 
+        approvalProgramTf.setEditable(false);
+        clearStateProgramTf.setEditable(false);
+
+        AlgoPkgJsonService pkgJsonService = AlgoPkgJsonService.getInstance(project);
+        try {
+            AlgoPackageJson packageJson = pkgJsonService.getPackageJson();
+            if(packageJson != null) {
+                contracts = packageJson.getStatefulContractList();
+                if(contracts == null) contracts = Collections.EMPTY_LIST;
+
+                contracts.forEach(c -> contractCB.addItem(c.getName()));
+            }
+
+            contractCB.addActionListener(evt -> {
+                String selectedContract = (String)contractCB.getSelectedItem();
+                if(!StringUtil.isEmpty(selectedContract)) {
+                    AlgoPackageJson.StatefulContract contract = packageJson.getStatefulContractByName(selectedContract);
+                    if(contract != null) {
+                        approvalProgramTf.setText(contract.getApprovalProgram());
+                        clearStateProgramTf.setText(contract.getClearStateProgram());
+                    }
+                }
+            });
+
+            if(!StringUtil.isEmpty(contractName))
+                contractCB.setSelectedItem(contractName);
+            else {
+                if(contractCB.getModel().getSize() > 0)
+                    contractCB.setSelectedIndex(0);
+            }
+
+        } catch (PackageJsonException e) {
+            IdeaUtil.showNotification(project, "Create App", "algo-package.json could not be read", NotificationType.ERROR, null);
+        }
     }
 
     public String getAccountAddresss() {
         return accountTf.getText();
+    }
+
+    public String getContractName() {
+        return (String)contractCB.getSelectedItem();
     }
 
     public String getApprovalProgram() {
@@ -175,13 +212,6 @@ public class CreateAppEntryForm {
         if(StringUtil.isEmpty(accountTf.getText())) {
             return new ValidationInfo("Please select a valid creator account or enter valid mnemonic", accountTf);
         }
-
-//        String mnemonic = mnemonicTf.getText();
-//        try {
-//            Account account = new Account(mnemonic);
-//        } catch (GeneralSecurityException e) {
-//            return new ValidationInfo("Please enter valid mnemonic or select a valid account. " + StringUtil.trimLog(e.getMessage(), 50), mnemonicTf);
-//        }
 
         return null;
     }

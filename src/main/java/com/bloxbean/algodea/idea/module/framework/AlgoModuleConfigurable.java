@@ -1,6 +1,5 @@
 package com.bloxbean.algodea.idea.module.framework;
 
-import com.bloxbean.algodea.idea.configuration.service.AlgoProjectState;
 import com.bloxbean.algodea.idea.module.framework.ui.StatefulContractPanel;
 import com.bloxbean.algodea.idea.pkg.model.AlgoPackageJson;
 import com.bloxbean.algodea.idea.pkg.exception.PackageJsonException;
@@ -34,27 +33,36 @@ public class AlgoModuleConfigurable extends FrameworkSupportInModuleConfigurable
 
     @Override
     public void addSupport(@NotNull Module module, @NotNull ModifiableRootModel model, @NotNull ModifiableModelsProvider provider) {
+        String statefulContractName = statefulContractPanel.getStatefulContractName();
         String approvalProgramName = statefulContractPanel.getApprovalProgram();
         String clearStateProgramName = statefulContractPanel.getClearStateProgram();
 
         Project project = module.getProject();
-        AlgoProjectState projectState = AlgoProjectState.getInstance(project);
+
+        VirtualFile[] srcRoots = model.getSourceRoots();
+        if (srcRoots != null && srcRoots.length > 0) {
+            if (srcRoots[0].exists()) {
+                createStatefulContractFiles(project, srcRoots[0], statefulContractName, approvalProgramName, clearStateProgramName);
+            }
+        }
+
+     /*   AlgoProjectState projectState = AlgoProjectState.getInstance(project);
         if (projectState != null) {
             AlgoProjectState.State state = projectState.getState();
-            state.setSupportStatefulContract(true);
-            state.setApprovalProgramName(approvalProgramName);
-            state.setClearStateProgramName(clearStateProgramName);
+//            state.setSupportStatefulContract(true);
+//            state.setApprovalProgramName(approvalProgramName);
+//            state.setClearStateProgramName(clearStateProgramName);
 
             VirtualFile[] srcRoots = model.getSourceRoots();
             if (srcRoots != null && srcRoots.length > 0) {
                 if (srcRoots[0].exists()) {
-                    createStatefulContractFiles(project, srcRoots[0], approvalProgramName, clearStateProgramName);
+                    createStatefulContractFiles(project, srcRoots[0], contractName, approvalProgramName, clearStateProgramName);
                 }
             }
-        }
+        }*/
     }
 
-    private void createStatefulContractFiles(Project project, VirtualFile srcRoot, String approvalProgramName, String clearStateProgramName) {
+    private void createStatefulContractFiles(Project project, VirtualFile srcRoot, String contractName, String approvalProgramName, String clearStateProgramName) {
         if (srcRoot == null)
             return;
 
@@ -81,16 +89,22 @@ public class AlgoModuleConfigurable extends FrameworkSupportInModuleConfigurable
         //Update package json
         WriteCommandAction.runWriteCommandAction(project, ()-> {
             try {
-                AlgoPackageJson packageJson = AlgoPkgJsonService.getInstance(project).loadPackageJson();
+                AlgoPkgJsonService pkgJsonService = AlgoPkgJsonService.getInstance(project);
+                if(pkgJsonService == null) return;
+
+                AlgoPackageJson packageJson = pkgJsonService.getPackageJson();
+
+                if(packageJson == null)
+                    packageJson = pkgJsonService.createPackageJson();
 
                 AlgoPackageJson.StatefulContract statefulContract = new AlgoPackageJson.StatefulContract();
-                statefulContract.setName("StatefulContract");
                 statefulContract.setApprovalProgram(approvalProgramName);
                 statefulContract.setClearStateProgram(clearStateProgramName);
+                statefulContract.setName(contractName);
 
-                packageJson.addStatefulContractList(statefulContract);
+                packageJson.addStatefulContract(statefulContract);
 
-                AlgoPkgJsonService.getInstance(project).writeToPackageJson(packageJson);
+                pkgJsonService.save();
             } catch (PackageJsonException e) {
                 IdeaUtil.showNotification(project, "Project create",
                         "algo-package.json could not be created or found", NotificationType.ERROR, null);

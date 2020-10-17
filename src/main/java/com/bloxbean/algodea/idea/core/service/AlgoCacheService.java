@@ -48,6 +48,7 @@ public class AlgoCacheService implements PersistentStateComponent<AlgoCacheServi
         public Map<String, String> callArgs = new HashMap<>();
 
         public String sfCreatorAccount;
+        public String contract;
         public int sfGlobalByteslices;
         public int sfGlobalInts;
         public int sfLocalByteslices;
@@ -98,6 +99,16 @@ public class AlgoCacheService implements PersistentStateComponent<AlgoCacheServi
         state.sfGlobalInts = globalInts;
         state.sfLocalByteslices = localByteslices;
         state.sfLocalInts = localInts;
+    }
+
+    public String getContract() {
+        initializeStateIfRequired();
+        return state.contract;
+    }
+
+    public void setLastContract(String contractName) {
+        initializeStateIfRequired();
+        state.contract = contractName;
     }
 
     public int getSfGlobalByteslices() {

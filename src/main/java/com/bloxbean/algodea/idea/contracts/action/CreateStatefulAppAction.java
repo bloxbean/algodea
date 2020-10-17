@@ -30,6 +30,9 @@ import com.bloxbean.algodea.idea.contracts.ui.CreateAppDialog;
 import com.bloxbean.algodea.idea.contracts.ui.TxnDetailsEntryForm;
 import com.bloxbean.algodea.idea.core.action.AlgoBaseAction;
 import com.bloxbean.algodea.idea.nodeint.model.TxnDetailsParameters;
+import com.bloxbean.algodea.idea.pkg.AlgoPkgJsonService;
+import com.bloxbean.algodea.idea.pkg.exception.PackageJsonException;
+import com.bloxbean.algodea.idea.pkg.model.AlgoPackageJson;
 import com.bloxbean.algodea.idea.toolwindow.AlgoConsole;
 import com.bloxbean.algodea.idea.contracts.ui.CreateAppEntryForm;
 import com.bloxbean.algodea.idea.core.action.util.AlgoContractModuleHelper;
@@ -65,11 +68,11 @@ public class CreateStatefulAppAction extends AlgoBaseAction {
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
         Project project = e.getProject();
-        if(project == null)
+        if (project == null)
             return;
 
         final Module module = LangDataKeys.MODULE.getData(e.getDataContext());
-        if(module == null)
+        if (module == null)
             return;
 
         FileDocumentManager.getInstance().saveAllDocuments();
@@ -81,15 +84,21 @@ public class CreateStatefulAppAction extends AlgoBaseAction {
                     = new StatefulContractService(project, new LogListenerAdapter(console));
 
             AlgoProjectState projectState = AlgoProjectState.getInstance(project);
-            if(projectState == null) {
+            if (projectState == null) {
                 LOG.error("Project state is null");
                 IdeaUtil.showNotificationWithAction(project, "Create App",
                         "Project data could not be found. Something is wrong", NotificationType.ERROR, null);
                 return;
             }
 
-            String approvalProgramName = projectState.getState().getApprovalProgramName();
-            String clearStateProgramName = projectState.getState().getClearStateProgramName();
+            AlgoPkgJsonService pkgJsonService = AlgoPkgJsonService.getInstance(project);
+            AlgoPackageJson packageJson = pkgJsonService.getPackageJson();
+            if (packageJson == null || packageJson.getStatefulContractList().size() == 0) {
+                IdeaUtil.showNotification(project, "Create App",
+                        "No stateful contract defined in algo-package.json", NotificationType.WARNING, null);
+                return;
+            }
+
             String deploymentServerId = projectState.getState().getDeploymentServerId();
 
             AlgoCacheService cacheService = AlgoCacheService.getInstance(project);
@@ -97,14 +106,14 @@ public class CreateStatefulAppAction extends AlgoBaseAction {
 
             String cacheCreatorAccount = cacheService.getSfCreatorAccount();
             AlgoAccount cacheAlgoAccount = null;
-            if(!StringUtil.isEmpty(cacheCreatorAccount)) {
+            if (!StringUtil.isEmpty(cacheCreatorAccount)) {
                 cacheAlgoAccount = accountService.getAccountByAddress(cacheCreatorAccount);
             }
 
-            CreateAppDialog createDialog = new CreateAppDialog(project, cacheAlgoAccount, approvalProgramName, clearStateProgramName, cacheService.getSfGlobalByteslices(),
+            CreateAppDialog createDialog = new CreateAppDialog(project, cacheAlgoAccount, cacheService.getContract(), cacheService.getSfGlobalByteslices(),
                     cacheService.getSfGlobalInts(), cacheService.getSfLocalByteslices(), cacheService.getSfLocalInts());
             boolean ok = createDialog.showAndGet();
-            if(!ok) {
+            if (!ok) {
                 IdeaUtil.showNotification(project, "Create App", "Create App operation was cancelled", NotificationType.INFORMATION, null);
                 return;
             }
@@ -113,11 +122,15 @@ public class CreateStatefulAppAction extends AlgoBaseAction {
             TxnDetailsEntryForm txnDetailsEntryForm = createDialog.getTxnDetailsEntryForm();
 
             Account account = createForm.getAccount();
-            if(account == null) {
+            if (account == null) {
                 console.showErrorMessage("Invalid or null creator account");
                 console.showErrorMessage("Create App Failed");
                 return;
             }
+
+            String contractName = createForm.getContractName();
+            String approvalProgramName = createForm.getApprovalProgram();
+            String clearStateProgramName = createForm.getClearStateProgram();
 
             int globalByteslices = createForm.getGlobalByteslices();
             int globalInts = createForm.getGlobalInts();
@@ -140,22 +153,21 @@ public class CreateStatefulAppAction extends AlgoBaseAction {
             txnDetailsParameters.setForeignAssets(foreignAssets);
 
             //update cache
+            if(!StringUtil.isEmpty(contractName))
+                cacheService.setLastContract(contractName);
             cacheService.updateSfGlobalBytesInts(globalByteslices, globalInts, localByteslices, localInts);
             cacheService.setSfCreatorAccount(account.getAddress().toString());
-
-//            VirtualFile sourceRoot = AlgoModuleUtils.getFirstTEALSourceRoot(project);
-//            LOG.info("Source root : " + sourceRoot);
 
             VirtualFile appProgVF = AlgoModuleUtils.getSourceVirtualFileByRelativePath(project, approvalProgramName);//VfsUtil.findRelativeFile(approvalProgramName, sourceRoot);//VfsUtil.findRelativeFile(sourceRoot, approvalProgramName);
             VirtualFile clearProgVF = AlgoModuleUtils.getSourceVirtualFileByRelativePath(project, clearStateProgramName);//VfsUtil.findRelativeFile(clearStateProgramName, sourceRoot);
 
-            if(appProgVF == null || !appProgVF.exists()) {
-                console.showErrorMessage(String.format("Approval Program doesn't exist: %s", appProgVF != null ? appProgVF.getCanonicalPath(): approvalProgramName));
+            if (appProgVF == null || !appProgVF.exists()) {
+                console.showErrorMessage(String.format("Approval Program doesn't exist: %s", appProgVF != null ? appProgVF.getCanonicalPath() : approvalProgramName));
                 return;
             }
 
-            if(clearProgVF == null || !clearProgVF.exists()) {
-                console.showErrorMessage(String.format("Clear State Program doesn't exist: %s", clearProgVF != null? clearProgVF.getCanonicalPath(): clearStateProgramName));
+            if (clearProgVF == null || !clearProgVF.exists()) {
+                console.showErrorMessage(String.format("Clear State Program doesn't exist: %s", clearProgVF != null ? clearProgVF.getCanonicalPath() : clearStateProgramName));
                 return;
             }
 
@@ -163,32 +175,33 @@ public class CreateStatefulAppAction extends AlgoBaseAction {
             String relAppProgPath = AlgoModuleUtils.getRelativePathFromSourceRoot(project, appProgVF);
             String relClearStatePath = AlgoModuleUtils.getRelativePathFromSourceRoot(project, clearProgVF);
 
-            if(StringUtil.isEmpty(relAppProgPath))
+            if (StringUtil.isEmpty(relAppProgPath))
                 relAppProgPath = appProgVF.getName();
-            if(StringUtil.isEmpty(relClearStatePath))
+            if (StringUtil.isEmpty(relClearStatePath))
                 relClearStatePath = clearProgVF.getName();
             //ends
 
             VirtualFile moduleOutFolder = AlgoContractModuleHelper.getModuleOutputFolder(console, module);
 
             //Merge Approval Program if there is any variable template available
-            File mergedAppProgSource  = AlgoContractModuleHelper.generateMergeSourceWithVariables(project, console, moduleOutFolder, appProgVF, relAppProgPath);
+            File mergedAppProgSource = AlgoContractModuleHelper.generateMergeSourceWithVariables(project, console, moduleOutFolder, appProgVF, relAppProgPath);
 
             //Merge Clear Program if there is any variable template available
-            File mergeClearProgSource  = AlgoContractModuleHelper.generateMergeSourceWithVariables(project, console, moduleOutFolder, clearProgVF, relClearStatePath);
+            File mergeClearProgSource = AlgoContractModuleHelper.generateMergeSourceWithVariables(project, console, moduleOutFolder, clearProgVF, relClearStatePath);
 
             String appProgSource = null;
             String clearProgSource = null;
 
-            if(mergedAppProgSource == null) { //No VAR_TMPL_
+            if (mergedAppProgSource == null) { //No VAR_TMPL_
                 appProgSource = VfsUtil.loadText(appProgVF);
             } else {
                 console.showInfoMessage("Variables found. Generated merged file for Approval Program can be found at : " + mergedAppProgSource.getAbsolutePath());
                 appProgSource = FileUtil.loadFile(mergedAppProgSource, "UTF-8");
             }
 
-            if(mergeClearProgSource == null) { //No VAR_TMPL
-                clearProgSource = VfsUtil.loadText(clearProgVF);;
+            if (mergeClearProgSource == null) { //No VAR_TMPL
+                clearProgSource = VfsUtil.loadText(clearProgVF);
+                ;
             } else {
                 console.showInfoMessage("Variables found. Generated merged file for Clear State Program can be found at : " + mergeClearProgSource.getAbsolutePath());
                 clearProgSource = FileUtil.loadFile(mergeClearProgSource, "UTF-8");
@@ -214,10 +227,9 @@ public class CreateStatefulAppAction extends AlgoBaseAction {
                     } catch (Exception exception) {
                         exception.printStackTrace();
                     }
-                    if(appId != null) {
+                    if (appId != null) {
                         LOG.info(appId + "");
-
-                        cacheService.addAppId(deploymentServerId, String.valueOf(appId));
+                        cacheService.addAppId(deploymentServerId, String.valueOf(appId)) ;
 
                         console.showInfoMessage("Stateful smart contract app created with app Id : " + appId);
                         IdeaUtil.showNotification(project, "Create App", "App Created Successfully with appId: " + appId, NotificationType.INFORMATION, null);
@@ -228,13 +240,15 @@ public class CreateStatefulAppAction extends AlgoBaseAction {
                 }
             };
 
-
             ProgressManager.getInstance().runProcessWithProgressAsynchronously(task, new BackgroundableProcessIndicator(task));
 
-
         } catch (DeploymentTargetNotConfigured deploymentTargetNotConfigured) {
-            deploymentTargetNotConfigured.printStackTrace();
+            LOG.error(deploymentTargetNotConfigured);
             warnDeploymentTargetNotConfigured(project, "Create App");
+        } catch (PackageJsonException pkex) {
+            LOG.error(pkex);
+            IdeaUtil.showNotification(project, "Create App",
+                    "algo-package.json could not be loaded", NotificationType.ERROR, null);
         } catch (Exception ex) {
             LOG.error(ex);
             IdeaUtil.showNotification(project, "Create App", "Create App failed : " + ex.getMessage(), NotificationType.ERROR, null);

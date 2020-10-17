@@ -1,6 +1,7 @@
 package com.bloxbean.algodea.idea.module.framework.ui;
 
 import com.intellij.ui.components.JBTextField;
+import com.twelvemonkeys.lang.StringUtil;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,9 +13,14 @@ public class StatefulContractPanel {
     private JTextField approvalProgramTf;
     private JTextField clearStateProgramTf;
     private JLabel errorMessageLabel;
+    private JTextField statefulContractTf;
 
     public JPanel getMainPanel() {
         return mainPanel;
+    }
+
+    public String getStatefulContractName() {
+        return statefulContractTf.getText();
     }
 
     public String getApprovalProgram() {
@@ -27,9 +33,11 @@ public class StatefulContractPanel {
 
     private void createUIComponents() {
         // TODO: place custom component creation code here
+        statefulContractTf = new JBTextField("SfContract-1");
         approvalProgramTf = new JBTextField("approval_progam.teal");
         clearStateProgramTf = new JBTextField("clear_state_program.teal");
 
+        statefulContractTf.setInputVerifier(new NotEmptyTextVerifier());
         approvalProgramTf.setInputVerifier(new FileNameInputVerifier());
         clearStateProgramTf.setInputVerifier(new FileNameInputVerifier());
 
@@ -59,6 +67,22 @@ public class StatefulContractPanel {
             try {
                 return f.getCanonicalFile().getName().equals(file);
             } catch (IOException e) {
+                return false;
+            }
+        }
+    }
+
+    public class NotEmptyTextVerifier extends InputVerifier {
+
+        @Override
+        public boolean verify(JComponent input) {
+            String text = ((JTextField) input).getText();
+            if(!StringUtil.isEmpty(text)) {
+                errorMessageLabel.setText("");
+                return true;
+            } else {
+                errorMessageLabel.setText("Provide a name for the stateful contract");
+                errorMessageLabel.setForeground(Color.RED);
                 return false;
             }
         }

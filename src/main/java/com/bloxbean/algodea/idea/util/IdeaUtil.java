@@ -33,6 +33,24 @@ public class IdeaUtil {
         });
     }
 
+    public static void showNotification(String title, String content, NotificationType notificationType, String actionId) {
+        ApplicationManager.getApplication().invokeLater(new Runnable() {
+            public void run() {
+                Notification notification = new Notification(IdeaUtil.PLUGIN_ID,
+                        title, content,
+                        notificationType);
+
+                if(actionId != null) {
+                    ActionManager am = ActionManager.getInstance();
+                    AnAction action = am.getAction(actionId);
+                    notification.addAction(action);
+                }
+
+                Notifications.Bus.notify(notification);
+            }
+        });
+    }
+
     public static void showNotificationWithAction(Project project, String title, String content, NotificationType notificationType, NotificationAction action) {
         ApplicationManager.getApplication().invokeLater(new Runnable() {
             public void run() {

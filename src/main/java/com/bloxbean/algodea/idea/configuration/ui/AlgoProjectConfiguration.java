@@ -7,6 +7,8 @@ import com.bloxbean.algodea.idea.configuration.service.NodeConfigState;
 import com.bloxbean.algodea.idea.common.Tuple;
 import com.bloxbean.algodea.idea.configuration.model.NodeInfo;
 import com.bloxbean.algodea.idea.configuration.service.ConfiguraionHelperService;
+import com.bloxbean.algodea.idea.pkg.AlgoPkgJsonService;
+import com.bloxbean.algodea.idea.pkg.model.AlgoPackageJson;
 import com.bloxbean.algodea.idea.util.AlgoModuleUtils;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
@@ -134,7 +136,8 @@ public class AlgoProjectConfiguration {
 
     private void populateContractSettingsPanel(Project project) {
         AlgoProjectState.State state = AlgoProjectState.getInstance(project).getState();
-        contractSettingsPanel.poulateData(state);
+        AlgoPkgJsonService pkgJsonService = AlgoPkgJsonService.getInstance(project);
+        contractSettingsPanel.poulateData(state, pkgJsonService);
 
         String sourcePath = AlgoModuleUtils.getFirstSourceRootPath(project);//getFirstTEALSourceRootPath(project);
 
@@ -309,7 +312,7 @@ public class AlgoProjectConfiguration {
             return null;
     }
 
-    public void updateDataToState(AlgoProjectState.State state) {
+    public void updateDataToState(AlgoProjectState.State state, AlgoPkgJsonService algoPkgJsonService) {
 
         //Save Compile / Build settings
 
@@ -322,7 +325,7 @@ public class AlgoProjectConfiguration {
         state.setDeploymentServerId(getDeployementNodeId());
 
         //Save Contract Settings panel
-        contractSettingsPanel.updateDataToState(state);
+        contractSettingsPanel.updateDataToState(state, algoPkgJsonService);
 
     }
 

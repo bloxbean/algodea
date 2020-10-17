@@ -18,6 +18,7 @@ import static com.bloxbean.algodea.idea.module.AlgoModuleConstant.ALGO_PACKAGE_J
 public class AlgoPkgJsonService {
     private static ObjectMapper mapper;
     private Project project;
+    private AlgoPackageJson packageJson;
     private boolean algoProject;
 
     public static AlgoPkgJsonService getInstance(@NotNull Project project) {
@@ -44,32 +45,61 @@ public class AlgoPkgJsonService {
         return algoProject;
     }
 
-    public AlgoPackageJson createPackageJson() throws PackageJsonException {
+    public AlgoPackageJson getPackageJson() throws PackageJsonException {
         if(project == null) return null;
-
-        AlgoPackageJson packageJson = new AlgoPackageJson();
-        packageJson.setName(project.getName());
-        packageJson.setVersion("1.0");
-
-        writeToPackageJson(packageJson);
+        if(packageJson == null)
+            load();
 
         return packageJson;
     }
 
-    public AlgoPackageJson loadPackageJson() throws PackageJsonException {
+    public AlgoPackageJson.StatefulContract getStatefulContract(String name) throws PackageJsonException {
+        AlgoPackageJson packageJson = getPackageJson();
+        if(packageJson == null) return null;
+
+        return packageJson.getStatefulContractByName(name);
+    }
+
+    public void setStatefulContract(AlgoPackageJson.StatefulContract contract) {
+        if(packageJson == null)
+            return;
+
+        packageJson.addStatefulContract(contract);
+    }
+
+    public AlgoPackageJson.StatefulContract getFirstStatefulContract() {
+        if(packageJson == null)
+            return null;
+
+        return packageJson.getFirstStatefulContract();
+    }
+
+    public AlgoPackageJson createPackageJson() throws PackageJsonException {
         if(project == null) return null;
+
+        this.packageJson = new AlgoPackageJson();
+        packageJson.setName(project.getName());
+        packageJson.setVersion("1.0");
+
+        save();
+
+        return packageJson;
+    }
+
+    public void load() throws PackageJsonException {
+        if(project == null) return;
 
         String projectBasePath = project.getBasePath();
         String pkgJsonPath = projectBasePath + File.separator + ALGO_PACKAGE_JSON;
 
         try {
-            return readPackageJson(pkgJsonPath);
+            packageJson = readPackageJson(pkgJsonPath);
         } catch (IOException e) {
             throw new PackageJsonException(String.format("Unable to read %s file at locatioin %s", ALGO_PACKAGE_JSON, pkgJsonPath));
         }
     }
 
-    public void writeToPackageJson(AlgoPackageJson packageJson) throws PackageJsonException {
+    public void save() throws PackageJsonException {
         String path = getPackageJsonPath();
         if(path == null)
             throw new PackageJsonException("Package json path cannot be null");

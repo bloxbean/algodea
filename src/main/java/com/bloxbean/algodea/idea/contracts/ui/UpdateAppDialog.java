@@ -11,10 +11,9 @@ import java.util.List;
 public class UpdateAppDialog extends DialogWrapper {
     private UpdateAppMainPanel updateAppMainPanel;
 
-    public UpdateAppDialog(Project project, String approvalProgram, String clearStateProgram) {
+    public UpdateAppDialog(Project project, String contract) {
         super(project,  true);
-        updateAppMainPanel = new UpdateAppMainPanel(project, approvalProgram,
-                clearStateProgram);
+        updateAppMainPanel = new UpdateAppMainPanel(project, contract);
         init();
         setTitle("UpdateApplication");
     }

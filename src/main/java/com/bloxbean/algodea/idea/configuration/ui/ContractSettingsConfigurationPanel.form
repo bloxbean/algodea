@@ -36,15 +36,6 @@
               <text value=" "/>
             </properties>
           </component>
-          <component id="21ca5" class="javax.swing.JLabel">
-            <constraints>
-              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-              <forms/>
-            </constraints>
-            <properties>
-              <text value="Enable Stateful Contract"/>
-            </properties>
-          </component>
           <component id="fd70a" class="javax.swing.JLabel">
             <constraints>
               <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
@@ -61,15 +52,6 @@
             </constraints>
             <properties>
               <text value="Clear State Program"/>
-            </properties>
-          </component>
-          <component id="820b9" class="javax.swing.JCheckBox" binding="statefulCB">
-            <constraints>
-              <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-              <forms/>
-            </constraints>
-            <properties>
-              <text value=""/>
             </properties>
           </component>
           <component id="c4289" class="javax.swing.JLabel">
@@ -104,6 +86,22 @@
             <constraints>
               <grid row="6" column="2" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
               <forms/>
+            </constraints>
+            <properties/>
+          </component>
+          <component id="b4124" class="javax.swing.JLabel">
+            <constraints>
+              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <forms/>
+            </constraints>
+            <properties>
+              <text value="Contract Name"/>
+            </properties>
+          </component>
+          <component id="3548d" class="javax.swing.JComboBox" binding="contractNameCB">
+            <constraints>
+              <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <forms defaultalign-horz="false"/>
             </constraints>
             <properties/>
           </component>

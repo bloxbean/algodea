@@ -21,51 +21,80 @@
  */
 package com.bloxbean.algodea.idea.contracts.ui;
 
-import com.bloxbean.algodea.idea.configuration.service.AlgoProjectState;
-import com.bloxbean.algodea.idea.language.TEALFileType;
+import com.bloxbean.algodea.idea.pkg.AlgoPkgJsonService;
+import com.bloxbean.algodea.idea.pkg.exception.PackageJsonException;
+import com.bloxbean.algodea.idea.pkg.model.AlgoPackageJson;
 import com.bloxbean.algodea.idea.util.AlgoModuleUtils;
-import com.intellij.openapi.fileChooser.FileChooser;
-import com.intellij.openapi.fileChooser.FileChooserDescriptor;
-import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
+import com.bloxbean.algodea.idea.util.IdeaUtil;
+import com.intellij.notification.NotificationType;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.openapi.ui.ValidationInfo;
-import com.intellij.openapi.util.Condition;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.openapi.vfs.VfsUtil;
-import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import java.io.File;
+import java.util.Collections;
+import java.util.List;
 
 public class UpdateAppEntryForm {
     private JPanel mainPanel;
     private TextFieldWithBrowseButton approvalProgramTf;
     private TextFieldWithBrowseButton clearStateProgramTf;
+    private JComboBox contractNameCB;
     private JTextField appProgTf;
     private JTextField clrProgTf;
     private String sourceRootPath;
+    private List<AlgoPackageJson.StatefulContract> contracts;
 
     public UpdateAppEntryForm() {
 
     }
 
-    public void initializeData(Project project, String approvalProgram, String clearStateProgram) {
-        if (!StringUtil.isEmpty(approvalProgram)) {
-            appProgTf.setText(approvalProgram);
-        }
-
-        if (!StringUtil.isEmpty(clearStateProgram)) {
-            clrProgTf.setText(clearStateProgram);
-        }
-
+    public void initializeData(Project project, String contractName) {
         sourceRootPath = AlgoModuleUtils.getFirstSourceRootPath(project);// AlgoModuleUtils.getFirstTEALSourceRootPath(project);
         if(sourceRootPath == null) {
             sourceRootPath = AlgoModuleUtils.getModuleDirPath(project);
         }
+
+        AlgoPkgJsonService pkgJsonService = AlgoPkgJsonService.getInstance(project);
+        try {
+            AlgoPackageJson packageJson = pkgJsonService.getPackageJson();
+            if(packageJson != null) {
+                contracts = packageJson.getStatefulContractList();
+                if(contracts == null) contracts = Collections.EMPTY_LIST;
+
+                contracts.forEach(c -> contractNameCB.addItem(c.getName()));
+            }
+
+            contractNameCB.addActionListener(evt -> {
+                String selectedContract = (String)contractNameCB.getSelectedItem();
+                if(!StringUtil.isEmpty(selectedContract)) {
+                    AlgoPackageJson.StatefulContract contract = packageJson.getStatefulContractByName(selectedContract);
+                    if(contract != null) {
+                        approvalProgramTf.setText(contract.getApprovalProgram());
+                        clearStateProgramTf.setText(contract.getClearStateProgram());
+                    }
+                }
+            });
+
+            if(!StringUtil.isEmpty(contractName))
+                contractNameCB.setSelectedItem(contractName);
+            else {
+                if(contractNameCB.getModel().getSize() > 0)
+                    contractNameCB.setSelectedIndex(0);
+            }
+
+        } catch (PackageJsonException e) {
+            IdeaUtil.showNotification(project, "Create App", "algo-package.json could not be read", NotificationType.ERROR, null);
+        }
+    }
+
+    public String getContractName() {
+        return (String)contractNameCB.getSelectedItem();
     }
 
     public String getApprovalProgram() {

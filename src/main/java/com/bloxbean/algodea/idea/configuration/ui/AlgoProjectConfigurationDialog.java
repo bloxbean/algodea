@@ -2,6 +2,8 @@ package com.bloxbean.algodea.idea.configuration.ui;
 
 import com.bloxbean.algodea.idea.configuration.service.AlgoProjectState;
 import com.bloxbean.algodea.idea.common.Tuple;
+import com.bloxbean.algodea.idea.pkg.AlgoPkgJsonService;
+import com.bloxbean.algodea.idea.pkg.model.AlgoPackageJson;
 import com.bloxbean.algodea.idea.util.IdeaUtil;
 import com.intellij.notification.NotificationType;
 import com.intellij.openapi.project.Project;
@@ -38,8 +40,9 @@ public class AlgoProjectConfigurationDialog extends DialogWrapper {
         }
 
         AlgoProjectState.State state = algoProjectState.getState();
+        AlgoPkgJsonService algoPkgJsonService = AlgoPkgJsonService.getInstance(project);
         if (state != null) {
-            algoProjectConfiguration.updateDataToState(state);
+            algoProjectConfiguration.updateDataToState(state, algoPkgJsonService);
             algoProjectState.setState(state);
         } else {
             IdeaUtil.showNotification(project, "Algorand node configuration",
