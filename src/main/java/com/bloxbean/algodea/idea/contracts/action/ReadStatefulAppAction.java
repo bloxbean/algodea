@@ -12,6 +12,7 @@ import com.bloxbean.algodea.idea.nodeint.service.LogListenerAdapter;
 import com.bloxbean.algodea.idea.nodeint.service.StatefulContractService;
 import com.bloxbean.algodea.idea.toolwindow.AlgoConsole;
 import com.bloxbean.algodea.idea.util.IdeaUtil;
+import com.intellij.icons.AllIcons;
 import com.intellij.notification.NotificationType;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.diagnostic.Logger;
@@ -25,6 +26,10 @@ import org.jetbrains.annotations.NotNull;
 public class ReadStatefulAppAction extends AlgoBaseAction {
 
     private static final Logger LOG = Logger.getInstance(ReadStatefulAppAction.class);
+
+    public ReadStatefulAppAction() {
+        super(AllIcons.Actions.Show);
+    }
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {

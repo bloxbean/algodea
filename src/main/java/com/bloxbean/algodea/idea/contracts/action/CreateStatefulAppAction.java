@@ -42,6 +42,7 @@ import com.bloxbean.algodea.idea.nodeint.service.LogListenerAdapter;
 import com.bloxbean.algodea.idea.nodeint.service.StatefulContractService;
 import com.bloxbean.algodea.idea.util.AlgoModuleUtils;
 import com.bloxbean.algodea.idea.util.IdeaUtil;
+import com.intellij.icons.AllIcons;
 import com.intellij.notification.NotificationType;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.LangDataKeys;
@@ -64,6 +65,10 @@ import java.util.List;
 
 public class CreateStatefulAppAction extends AlgoBaseAction {
     private final static Logger LOG = Logger.getInstance(CreateStatefulAppAction.class);
+
+    public CreateStatefulAppAction() {
+        super(AllIcons.Actions.Install);
+    }
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {

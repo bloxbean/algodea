@@ -4,14 +4,18 @@ import com.bloxbean.algodea.idea.module.AlgoModuleConstant;
 import com.bloxbean.algodea.idea.pkg.AlgoPkgJsonService;
 import com.bloxbean.algodea.idea.pkg.exception.PackageJsonException;
 import com.bloxbean.algodea.idea.util.IdeaUtil;
+import com.intellij.icons.AllIcons;
 import com.intellij.notification.NotificationType;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.VfsUtil;
 import org.jetbrains.annotations.NotNull;
 
 public class PkgJsonReloadAction extends AnAction {
+
+    public PkgJsonReloadAction() {
+        super(AllIcons.Actions.Refresh);
+    }
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
@@ -33,4 +37,5 @@ public class PkgJsonReloadAction extends AnAction {
             }
         }
     }
+
 }

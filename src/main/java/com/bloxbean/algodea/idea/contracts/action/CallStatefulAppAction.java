@@ -3,8 +3,14 @@ package com.bloxbean.algodea.idea.contracts.action;
 import com.algorand.algosdk.account.Account;
 import com.bloxbean.algodea.idea.nodeint.model.TxnDetailsParameters;
 import com.bloxbean.algodea.idea.nodeint.service.StatefulContractService;
+import com.intellij.icons.AllIcons;
 
 public class CallStatefulAppAction extends BaseStatefulAppAction {
+
+    public CallStatefulAppAction() {
+        super(AllIcons.Actions.Execute);
+    }
+
     @Override
     public String getInputDialogTitle() {
         return "Application - Call (NoOp)";

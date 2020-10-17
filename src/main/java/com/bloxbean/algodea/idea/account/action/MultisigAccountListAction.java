@@ -23,12 +23,17 @@
 package com.bloxbean.algodea.idea.account.action;
 
 import com.bloxbean.algodea.idea.account.service.AccountChooser;
+import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 
 public class MultisigAccountListAction extends AnAction {
+
+    public MultisigAccountListAction() {
+        super(AllIcons.Actions.GroupByPrefix);
+    }
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {

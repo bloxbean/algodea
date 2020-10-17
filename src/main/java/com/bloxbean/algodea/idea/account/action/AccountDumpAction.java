@@ -7,6 +7,7 @@ import com.bloxbean.algodea.idea.nodeint.exception.ApiCallException;
 import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
 import com.bloxbean.algodea.idea.nodeint.service.AlgoAccountService;
 import com.bloxbean.algodea.idea.nodeint.service.LogListenerAdapter;
+import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
@@ -17,6 +18,10 @@ import org.jetbrains.annotations.NotNull;
 
 public class AccountDumpAction extends AlgoBaseAction {
     public final static String ACTION_ID = AccountDumpAction.class.getName();
+
+    public AccountDumpAction() {
+        super(AllIcons.Actions.Download);
+    }
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {

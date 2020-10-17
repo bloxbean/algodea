@@ -4,10 +4,16 @@ import com.algorand.algosdk.account.Account;
 import com.algorand.algosdk.crypto.Address;
 import com.bloxbean.algodea.idea.nodeint.model.TxnDetailsParameters;
 import com.bloxbean.algodea.idea.nodeint.service.StatefulContractService;
+import com.intellij.icons.AllIcons;
 
 import java.util.List;
 
 public class ClearStateStatefulAppAction extends BaseStatefulAppAction {
+
+    public ClearStateStatefulAppAction() {
+        super(AllIcons.Actions.Redo);
+    }
+
     @Override
     public String getInputDialogTitle() {
         return "Application - ClearState";

@@ -4,10 +4,16 @@ import com.algorand.algosdk.account.Account;
 import com.algorand.algosdk.crypto.Address;
 import com.bloxbean.algodea.idea.nodeint.model.TxnDetailsParameters;
 import com.bloxbean.algodea.idea.nodeint.service.StatefulContractService;
+import com.intellij.icons.AllIcons;
 
 import java.util.List;
 
 public class OptInStatefulAppAction extends BaseStatefulAppAction {
+
+    public OptInStatefulAppAction() {
+        super(AllIcons.Actions.ShowReadAccess);
+    }
+
     @Override
     public String getInputDialogTitle() {
         return "Application - OptIn";

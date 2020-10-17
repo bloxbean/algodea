@@ -26,6 +26,7 @@ import com.bloxbean.algodea.idea.account.model.AlgoAccount;
 import com.bloxbean.algodea.idea.toolwindow.AlgoConsole;
 import com.bloxbean.algodea.idea.account.service.AccountService;
 import com.bloxbean.algodea.idea.util.IdeaUtil;
+import com.intellij.icons.AllIcons;
 import com.intellij.notification.NotificationType;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -42,6 +43,10 @@ import java.security.NoSuchAlgorithmException;
 
 public class CreateAccountAction extends AnAction {
     private final static Logger LOG = Logger.getInstance(CreateAccountAction.class);
+
+    public CreateAccountAction() {
+        super(AllIcons.General.Add);
+    }
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {

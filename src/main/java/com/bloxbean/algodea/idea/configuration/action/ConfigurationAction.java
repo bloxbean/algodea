@@ -3,6 +3,7 @@ package com.bloxbean.algodea.idea.configuration.action;
 import com.bloxbean.algodea.idea.configuration.service.AlgoProjectState;
 import com.bloxbean.algodea.idea.configuration.ui.AlgoProjectConfigurationDialog;
 import com.bloxbean.algodea.idea.util.IdeaUtil;
+import com.intellij.icons.AllIcons;
 import com.intellij.notification.NotificationType;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -11,6 +12,10 @@ import org.jetbrains.annotations.NotNull;
 
 public class ConfigurationAction extends AnAction {
     public static final String ACTION_ID = ConfigurationAction.class.getName();
+
+    public ConfigurationAction() {
+        super(AllIcons.Ide.Notification.Gear);
+    }
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {

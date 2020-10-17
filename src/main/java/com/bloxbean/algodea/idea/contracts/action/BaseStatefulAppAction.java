@@ -25,10 +25,19 @@ import com.intellij.openapi.progress.impl.BackgroundableProcessIndicator;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 
+import javax.swing.*;
 import java.util.List;
 
 public abstract class  BaseStatefulAppAction extends AlgoBaseAction {
     private final static Logger LOG = Logger.getInstance(BaseStatefulAppAction.class);
+
+    public BaseStatefulAppAction() {
+        super();
+    }
+
+    public BaseStatefulAppAction(Icon icon) {
+        super(icon);
+    }
 
     public abstract String getInputDialogTitle();
 

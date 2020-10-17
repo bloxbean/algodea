@@ -6,10 +6,21 @@ import com.intellij.notification.NotificationType;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.project.Project;
 
+import javax.swing.*;
+
 public abstract class AlgoBaseAction extends AnAction {
+
+    public AlgoBaseAction() {
+        super();
+    }
+
+    public AlgoBaseAction(Icon icon) {
+        super(icon);
+    }
 
     public void warnDeploymentTargetNotConfigured(Project project, String actionTitle) {
         IdeaUtil.showNotification(project, actionTitle, "Algorand Node for deployment node is not configured. Click here to configure.",
                 NotificationType.ERROR, ConfigurationAction.ACTION_ID);
     }
+
 }

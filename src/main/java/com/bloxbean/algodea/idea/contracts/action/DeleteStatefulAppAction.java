@@ -4,10 +4,15 @@ import com.algorand.algosdk.account.Account;
 import com.algorand.algosdk.crypto.Address;
 import com.bloxbean.algodea.idea.nodeint.model.TxnDetailsParameters;
 import com.bloxbean.algodea.idea.nodeint.service.StatefulContractService;
+import com.intellij.icons.AllIcons;
 
 import java.util.List;
 
 public class DeleteStatefulAppAction extends BaseStatefulAppAction {
+
+    public DeleteStatefulAppAction() {
+        super(AllIcons.Actions.Uninstall);
+    }
     @Override
     public String getInputDialogTitle() {
         return "Application - DeleteApplication";

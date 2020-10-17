@@ -19,6 +19,7 @@ import com.bloxbean.algodea.idea.pkg.model.AlgoPackageJson;
 import com.bloxbean.algodea.idea.toolwindow.AlgoConsole;
 import com.bloxbean.algodea.idea.util.AlgoModuleUtils;
 import com.bloxbean.algodea.idea.util.IdeaUtil;
+import com.intellij.icons.AllIcons;
 import com.intellij.notification.NotificationType;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.LangDataKeys;
@@ -41,6 +42,10 @@ import java.util.List;
 
 public class UpdateStatefulAppAction extends AlgoBaseAction {
     private final static Logger LOG = Logger.getInstance(UpdateStatefulAppAction.class);
+
+    public UpdateStatefulAppAction() {
+        super(AllIcons.Actions.EditSource);
+    }
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {

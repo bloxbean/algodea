@@ -29,6 +29,7 @@ import com.bloxbean.algodea.idea.account.ui.MultiSignAccountCreateDialog;
 import com.bloxbean.algodea.idea.toolwindow.AlgoConsole;
 import com.bloxbean.algodea.idea.account.exception.AccountException;
 import com.bloxbean.algodea.idea.util.IdeaUtil;
+import com.intellij.icons.AllIcons;
 import com.intellij.notification.NotificationType;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -40,6 +41,10 @@ import java.util.List;
 
 public class CreateMultisigAccountAction extends AnAction {
     private final static Logger LOG = Logger.getInstance(CreateMultisigAccountAction.class);
+
+    public CreateMultisigAccountAction() {
+        super(AllIcons.Actions.AddMulticaret);
+    }
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
