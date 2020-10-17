@@ -1,31 +1,36 @@
 package com.bloxbean.algodea.idea.configuration.ui;
 
 import com.bloxbean.algodea.idea.configuration.service.AlgoProjectState;
+import com.bloxbean.algodea.idea.module.AlgoModuleConstant;
 import com.bloxbean.algodea.idea.pkg.AlgoPkgJsonService;
 import com.bloxbean.algodea.idea.pkg.exception.PackageJsonException;
 import com.bloxbean.algodea.idea.pkg.model.AlgoPackageJson;
 import com.bloxbean.algodea.idea.util.IdeaUtil;
 import com.intellij.notification.NotificationType;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
+import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.openapi.util.io.FileUtil;
-import com.twelvemonkeys.lang.StringUtil;
+import com.intellij.openapi.util.text.StringUtil;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import java.io.File;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public class ContractSettingsConfigurationPanel {
-    private JTextField statefulDeployFlagsTf;
     private JTextField appProgTf;
     private JTextField clrProgTf;
     private TextFieldWithBrowseButton clearProgramTf;
     private TextFieldWithBrowseButton approvalProgramTf;
     private JPanel mainPanel;
     private JComboBox contractNameCB;
+    private JButton newContractBtn;
+    private JButton newContractResetBtn;
     private String sourceRootPath;
+    private boolean newContractAdd = false;
+
+    private AlgoPkgJsonService algoPkgJsonService;
 
     public void poulateData(AlgoProjectState.State state, AlgoPkgJsonService pkgJsonService) {
 
@@ -50,6 +55,7 @@ public class ContractSettingsConfigurationPanel {
 
         contractNameCB.addActionListener((e) -> {
             String name = (String)contractNameCB.getSelectedItem();
+            name = StringUtil.trim(name);
             if(StringUtil.isEmpty(name))
                 return;
 
@@ -72,6 +78,34 @@ public class ContractSettingsConfigurationPanel {
         if(contractNames.size() > 0) {
             contractNameCB.setSelectedIndex(0);
         }
+
+        newContractResetBtn.setEnabled(false);
+
+        newContractBtn.addActionListener(evt -> {
+            newContractAdd = true;
+            newContractBtn.setEnabled(false);
+            newContractResetBtn.setEnabled(true);
+            contractNameCB.setEditable(true);
+
+            contractNameCB.insertItemAt("", 0);
+            contractNameCB.setSelectedIndex(0);
+
+            appProgTf.setText("");
+            clrProgTf.setText("");
+        });
+
+        newContractResetBtn.addActionListener(e -> {
+            newContractAdd = false;
+            newContractResetBtn.setEnabled(false);
+            newContractBtn.setEnabled(true);
+            contractNameCB.setEditable(false);
+
+            if(contractNameCB.getModel().getSize() > 0)
+                contractNameCB.removeItemAt(0);
+
+            if(contractNameCB.getModel().getSize() > 0)
+                contractNameCB.setSelectedIndex(0);
+        });
     }
 
     public void setSourceRootPath(String sourceRootPath) {
@@ -79,23 +113,38 @@ public class ContractSettingsConfigurationPanel {
     }
 
     public String getContractName() {
-        return (String)contractNameCB.getSelectedItem();
+        return StringUtil.trim((String)contractNameCB.getSelectedItem());
     }
 
     public String getApprovalProgram() {
-        return appProgTf.getText();
+        return StringUtil.trim(appProgTf.getText());
     }
 
     public String getClearStateProgram() {
-        return clrProgTf.getText();
-    }
-
-    public String getStatefulDeployFlags() {
-        return statefulDeployFlagsTf.getText();
+        return StringUtil.trim(clrProgTf.getText());
     }
 
     public JPanel getMainPanel() {
         return mainPanel;
+    }
+
+    public ValidationInfo doValidate() {
+        if(!newContractAdd) return null; //validation disabled for existing contracts.
+
+        if(algoPkgJsonService == null) return null;
+
+        String contractName = getContractName();
+        try {
+            AlgoPackageJson.StatefulContract sfContract
+                    = algoPkgJsonService.getStatefulContract(StringUtil.trim(contractName));
+            if(sfContract != null) {
+                return new ValidationInfo("A stateful contract with same name already exists", contractNameCB);
+            }
+        } catch (PackageJsonException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return null;
     }
 
     private void createUIComponents() {
@@ -179,13 +228,23 @@ public class ContractSettingsConfigurationPanel {
 
         try {
             AlgoPackageJson.StatefulContract sfContract = algoPkgJsonService.getStatefulContract(name);
-            if (sfContract != null) {
+            if (sfContract != null) { //Update an existing contract
                 sfContract.setName(name);
                 sfContract.setApprovalProgram(getApprovalProgram());
                 sfContract.setClearStateProgram(getClearStateProgram());
 
                 algoPkgJsonService.setStatefulContract(sfContract);
                 algoPkgJsonService.save();
+            } else { //New contract
+                AlgoPackageJson.StatefulContract statefulContract = new AlgoPackageJson.StatefulContract();
+                statefulContract.setName(name);
+                statefulContract.setApprovalProgram(getApprovalProgram());
+                statefulContract.setClearStateProgram(getClearStateProgram());
+
+                algoPkgJsonService.setStatefulContract(statefulContract);
+                algoPkgJsonService.save();
+
+                IdeaUtil.showNotification("Configuration", "New stateful contract added to " + AlgoModuleConstant.ALGO_PACKAGE_JSON, NotificationType.INFORMATION, null);
             }
         } catch (Exception e) {
             IdeaUtil.showNotification("Configuration", "algo-package.json could not be saved", NotificationType.ERROR, null);

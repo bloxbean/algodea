@@ -23,6 +23,7 @@ public class AppTxnBaseParamEntryForm {
     private JComboBox appIdCB;
     private JTextField fromAccMnemonicTf;
     private JCheckBox useLastDeployedAppCB;
+    private JLabel contractNameLabel;
 
     DefaultComboBoxModel<String> appIdComboBoxModel;
 
@@ -92,6 +93,21 @@ public class AppTxnBaseParamEntryForm {
                 } else {
                     appIdCB.setEnabled(true);
                 }
+        });
+
+        appIdCB.addActionListener(e -> {
+            String appId = (String) appIdCB.getSelectedItem();
+            if(StringUtil.isEmpty(appId)) {
+                contractNameLabel.setText(" ");
+                return;
+            }
+
+            String contractName = cacheService.getContractNameForAppId(appId);
+            if(!StringUtil.isEmpty(contractName)) {
+                contractNameLabel.setText(String.format("(%s)",contractName));
+            } else {
+                contractNameLabel.setText(" ");
+            }
         });
     }
 

@@ -60,7 +60,7 @@ public abstract class  BaseStatefulAppAction extends AlgoBaseAction {
         boolean ok = dialog.showAndGet();
 
         if(!ok) {
-            IdeaUtil.showNotification(project, getTitle(), getApplicationTxnCommand() + " call was cancelled", NotificationType.INFORMATION, null);
+            IdeaUtil.showNotification(project, getTitle(), getApplicationTxnCommand() + " call was cancelled", NotificationType.WARNING, null);
             return;
         }
 

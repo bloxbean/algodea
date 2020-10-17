@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 @State(name="algorand-idea-cache", reloadable = true, storages = @com.intellij.openapi.components.Storage("algorand-idea-cache.xml"))
 public class AlgoCacheService implements PersistentStateComponent<AlgoCacheService.State> {
     private static int MAX_CACHE_ENTRY = 40;
-    private static int MAX_APP_IDS_TO_STORE = 5;
+    private static int MAX_APP_IDS_TO_STORE = 10;
 
     public static AlgoCacheService getInstance(Project project) {
         if(project == null) return null;
@@ -55,6 +55,7 @@ public class AlgoCacheService implements PersistentStateComponent<AlgoCacheServi
         public int sfLocalInts;
 
         public Map<String, List<String>> appIdMap = new HashMap<>();
+        public Map<String, String> appIdContractMap = new HashMap<>();
 //        public List<String> appIds = new ArrayList<>();
     }
 
@@ -172,7 +173,15 @@ public class AlgoCacheService implements PersistentStateComponent<AlgoCacheServi
         return appIdsList;
     }
 
-    public void addAppId(String deployServerId, String appId) {
+    public String getContractNameForAppId(String appId) {
+        initializeStateIfRequired();
+
+        if(appId == null) return null;
+
+        return state.appIdContractMap.get(appId);
+    }
+
+    public void addAppId(String deployServerId, String contractName, String appId) {
 
         initializeStateIfRequired();
         if(StringUtil.isEmpty(deployServerId)) {
@@ -181,15 +190,24 @@ public class AlgoCacheService implements PersistentStateComponent<AlgoCacheServi
 
         List<String> appIds = state.appIdMap.get(deployServerId);
         if(appIds == null)
-            appIds = new ArrayList(5);
+            appIds = new ArrayList(MAX_APP_IDS_TO_STORE);
 
-        if(appIds.size() > 5)
+        if(appIds.size() > MAX_APP_IDS_TO_STORE) {
+            String oldestAppId = appIds.get(0);
             appIds.remove(0);
+
+            if(!StringUtil.isEmpty(oldestAppId)) //cleanup contractMap also
+                state.appIdContractMap.get(oldestAppId);
+        }
 
         if(!appIds.contains(appId))
             appIds.add(appId);
 
         state.appIdMap.put(deployServerId, appIds);
+
+        if(!StringUtil.isEmpty(contractName)) {
+            state.appIdContractMap.put(appId, contractName);
+        }
     }
 
     public void loadState(State state) {

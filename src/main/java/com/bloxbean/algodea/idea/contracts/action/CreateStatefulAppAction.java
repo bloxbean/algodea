@@ -114,7 +114,7 @@ public class CreateStatefulAppAction extends AlgoBaseAction {
                     cacheService.getSfGlobalInts(), cacheService.getSfLocalByteslices(), cacheService.getSfLocalInts());
             boolean ok = createDialog.showAndGet();
             if (!ok) {
-                IdeaUtil.showNotification(project, "Create App", "Create App operation was cancelled", NotificationType.INFORMATION, null);
+                IdeaUtil.showNotification(project, "Create App", "Create App operation was cancelled", NotificationType.WARNING, null);
                 return;
             }
 
@@ -229,10 +229,10 @@ public class CreateStatefulAppAction extends AlgoBaseAction {
                     }
                     if (appId != null) {
                         LOG.info(appId + "");
-                        cacheService.addAppId(deploymentServerId, String.valueOf(appId)) ;
+                        cacheService.addAppId(deploymentServerId, contractName, String.valueOf(appId)) ;
 
                         console.showInfoMessage("Stateful smart contract app created with app Id : " + appId);
-                        IdeaUtil.showNotification(project, "Create App", "App Created Successfully with appId: " + appId, NotificationType.INFORMATION, null);
+                        IdeaUtil.showNotification(project, "Create App", String.format("%s App Created Successfully with appId: %s", contractName, appId), NotificationType.INFORMATION, null);
                     } else {
                         console.showErrorMessage("Create App failed");
                         IdeaUtil.showNotification(project, "Create App", "Create App failed", NotificationType.ERROR, null);

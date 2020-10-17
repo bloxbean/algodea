@@ -13,6 +13,7 @@ import com.bloxbean.algodea.idea.util.AlgoModuleUtils;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.ui.components.JBRadioButton;
 import com.twelvemonkeys.lang.StringUtil;
 
