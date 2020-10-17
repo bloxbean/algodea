@@ -1,6 +1,7 @@
 package com.bloxbean.algodea.idea.account.ui;
 
 import com.bloxbean.algodea.idea.account.model.AlgoAccount;
+import com.bloxbean.algodea.idea.account.model.AlgoMultisigAccount;
 import com.bloxbean.algodea.idea.account.service.AccountChooser;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
@@ -16,6 +17,7 @@ public class AccountEntryDialog extends DialogWrapper {
     private JPanel mainPanel;
     private JTextField accountTf;
     private JButton accountChooserBtn;
+    private JButton multiSigBtn;
 
     public AccountEntryDialog(Project project, String title) {
         super(project);
@@ -29,6 +31,13 @@ public class AccountEntryDialog extends DialogWrapper {
                 if(algoAccount != null) {
                     accountTf.setText(algoAccount.getAddress());
                 }
+            }
+        });
+
+        multiSigBtn.addActionListener(e -> {
+            AlgoMultisigAccount algoMultisigAccount = AccountChooser.getSelectedMultisigAccount(project, true);
+            if(algoMultisigAccount != null) {
+                accountTf.setText(algoMultisigAccount.getAddress());
             }
         });
     }

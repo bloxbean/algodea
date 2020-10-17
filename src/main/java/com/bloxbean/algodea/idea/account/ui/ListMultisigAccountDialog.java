@@ -41,6 +41,7 @@ import com.intellij.ui.components.JBList;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -77,10 +78,12 @@ public class ListMultisigAccountDialog extends DialogWrapper {
         initialize();
 
         if(showBalance) {
-////            Right align balance column
-//            DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
-//            rightRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
-//            accListTable.getColumnModel().getColumn(1).setCellRenderer(rightRenderer);
+            try {
+//            Right align balance column
+                DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
+                rightRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
+                accListTable.getColumnModel().getColumn(1).setCellRenderer(rightRenderer);
+            } catch (Exception e) {}
         } else {
             fetchBalanceButton.setVisible(false);
         }

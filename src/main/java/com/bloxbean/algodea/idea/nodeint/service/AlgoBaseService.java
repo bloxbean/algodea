@@ -125,6 +125,7 @@ public class AlgoBaseService {
             return null;
         } else {
             logListener.info("Compiled Data : " + compileResponse.body().result);
+            logListener.info("Hash          : " + compileResponse.body().hash);
             return compileResponse.body().result;
         }
     }

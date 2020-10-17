@@ -67,7 +67,7 @@ public class RemoteCompileService implements CompileService {
         if(result == null) {
             compilationFailed(compilationResultListener, source, "Compilation Failed");
         } else {
-            compilationResultListener.info(result);
+            //compilationResultListener.info(result);
             byte[] outputBytes = Encoder.decodeFromBase64(result);
 
             try {

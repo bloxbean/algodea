@@ -182,6 +182,12 @@
         </action>
         <!-- Stateful contract actions ends here-->
 
+        <action id="com.bloxbean.algodea.idea.transaction.action.TransferAction" class="com.bloxbean.algodea.idea.transaction.action.TransferAction" text="Transfer"
+                description="Transfer Algo">
+            <add-to-group group-id="com.bloxbean.algodea.idea.core.action.AlgoActionGroup"
+                          relative-to-action="com.bloxbean.algodea.idea.pkg.action.PkgJsonReloadAction" anchor="before"/>
+        </action>
+
         <action id="com.bloxbean.algodea.idea.pkg.action.PkgJsonReloadAction" class="com.bloxbean.algodea.idea.pkg.action.PkgJsonReloadAction" text="Reload algo-package.json"
                 description="Reload algo-package.json file">
             <add-to-group group-id="com.bloxbean.algodea.idea.core.action.AlgoActionGroup"

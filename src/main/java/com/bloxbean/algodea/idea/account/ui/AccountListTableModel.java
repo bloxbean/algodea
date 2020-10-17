@@ -23,8 +23,10 @@
 package com.bloxbean.algodea.idea.account.ui;
 
 import com.bloxbean.algodea.idea.account.model.AlgoAccount;
+import com.bloxbean.algodea.idea.util.AlgoConversionUtil;
 
 import javax.swing.table.AbstractTableModel;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -82,9 +84,8 @@ public class AccountListTableModel extends AbstractTableModel {
                 if(balance == 0)
                     return balance;
                 else {
-                   //TODO float aionValue = AionConversionUtil.nAmpToAion(balance);
-                   // return aionValue + " Aion (" + balance + " nAmp)";
-                    return balance;
+                   float algoValue = AlgoConversionUtil.mAlgoToAlgo(BigInteger.valueOf(balance));
+                   return algoValue + " Algo (" + balance + ")";
                 }
             }
         } else
