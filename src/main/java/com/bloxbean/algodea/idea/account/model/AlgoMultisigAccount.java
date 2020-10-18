@@ -1,9 +1,9 @@
 package com.bloxbean.algodea.idea.account.model;
 
-import java.math.BigInteger;
 import java.util.List;
 
 public class AlgoMultisigAccount {
+    private int version = 1;
     private String address;
     private List<String> accounts;
     private int threshold;
@@ -13,9 +13,18 @@ public class AlgoMultisigAccount {
 
     }
 
-    public AlgoMultisigAccount(String address, int threshold) {
+    public AlgoMultisigAccount(int version, String address, int threshold) {
+        this.version = version;
         this.address = address;
         this.threshold = threshold;
+    }
+
+    public int getVersion() {
+        return version;
+    }
+
+    public void setVersion(int version) {
+        this.version = version;
     }
 
     public String getAddress() {

@@ -5,6 +5,7 @@ import com.algorand.algosdk.util.Encoder;
 import com.bloxbean.algodea.idea.nodeint.exception.InvalidContractInputParamException;
 import com.bloxbean.algodea.idea.nodeint.model.ArgType;
 import com.bloxbean.algodea.idea.util.ByteUtil;
+import com.twelvemonkeys.lang.StringUtil;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
@@ -13,7 +14,7 @@ import java.security.NoSuchAlgorithmException;
 public class ArgTypeToByteConverter {
     public static byte[] convert(ArgType type, String value) throws UnsupportedEncodingException,
             NoSuchAlgorithmException, InvalidContractInputParamException {
-        if(value == null)
+        if(StringUtil.isEmpty(value))
             return null;
 
         try {

@@ -10,10 +10,12 @@ import javax.swing.*;
 public class TransferDialog extends DialogWrapper {
     private JPanel mainPanel;
     private TransferTxnParamEntryForm transferTxnForm;
+    private TransactionDtlsEntryForm transactionDtlsEntryForm;
 
     public TransferDialog(@Nullable Project project) {
         super(project, true);
         transferTxnForm.initializeData(project);
+        transactionDtlsEntryForm.initializeData(project);
         init();
         setTitle("Transfer Algo");
     }
@@ -22,9 +24,34 @@ public class TransferDialog extends DialogWrapper {
         return transferTxnForm;
     }
 
+    public TransactionDtlsEntryForm getTransactionDtlsEntryForm() {
+        return transactionDtlsEntryForm;
+    }
+
+//    @Override
+//    protected @NotNull List<ValidationInfo> doValidateAll() {
+//        ValidationInfo transferValidateInfo = transferTxnForm.doValidate();
+//        ValidationInfo txnDtlValidateInfo = transactionDtlsEntryForm.doValidate();
+//
+//        List<ValidationInfo> validationInfos = null;
+//
+//        if(transferValidateInfo != null) {
+//            validationInfos = new ArrayList<>();
+//            validationInfos.add(transferValidateInfo);
+//        }
+//
+//        if(txnDtlValidateInfo != null) {
+//
+//        }
+//    }
+
     @Override
     protected @Nullable ValidationInfo doValidate() {
-        return transferTxnForm.doValidate();
+        ValidationInfo validatedInfo = transferTxnForm.doValidate();
+        if( validatedInfo == null)
+            return transactionDtlsEntryForm.doValidate();
+        else
+            return validatedInfo ;
     }
 
     @Override
@@ -35,5 +62,6 @@ public class TransferDialog extends DialogWrapper {
     private void createUIComponents() {
         // TODO: place custom component creation code here
         transferTxnForm = new TransferTxnParamEntryForm();
+        transactionDtlsEntryForm = new TransactionDtlsEntryForm();
     }
 }

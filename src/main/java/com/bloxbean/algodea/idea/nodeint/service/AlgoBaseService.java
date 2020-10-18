@@ -24,6 +24,7 @@ package com.bloxbean.algodea.idea.nodeint.service;
 import com.algorand.algosdk.account.Account;
 import com.algorand.algosdk.builder.transaction.ApplicationBaseTransactionBuilder;
 import com.algorand.algosdk.crypto.Address;
+import com.algorand.algosdk.crypto.LogicsigSignature;
 import com.algorand.algosdk.transaction.SignedTransaction;
 import com.algorand.algosdk.transaction.Transaction;
 import com.algorand.algosdk.util.Encoder;

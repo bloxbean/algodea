@@ -7,6 +7,7 @@ import com.algorand.algosdk.transaction.Transaction;
 import com.algorand.algosdk.v2.client.common.Response;
 import com.algorand.algosdk.v2.client.model.TransactionParametersResponse;
 import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
+import com.bloxbean.algodea.idea.nodeint.model.TxnDetailsParameters;
 import com.bloxbean.algodea.idea.util.AlgoConversionUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
@@ -17,9 +18,9 @@ public class TransactionService extends AlgoBaseService {
         super(project, logListener);
     }
 
-    public boolean transfer(Account sender, String receiver, Long amount) throws Exception {
+    public boolean transfer(Account sender, String receiver, Long amount, TxnDetailsParameters txnDetailsParameters) throws Exception {
         PaymentTransactionBuilder paymentTransactionBuilder = Transaction.PaymentTransactionBuilder();
-        Transaction txn = populatePaymentTransaction(paymentTransactionBuilder, sender, receiver, amount);
+        Transaction txn = populatePaymentTransaction(paymentTransactionBuilder, sender, receiver, amount, txnDetailsParameters);
 
         if(txn == null) {
             logListener.error("Transaction could not be built");
@@ -29,7 +30,8 @@ public class TransactionService extends AlgoBaseService {
         return postApplicationTransaction(sender, txn);
     }
 
-    protected Transaction populatePaymentTransaction(PaymentTransactionBuilder paymentTransactionBuilder, Account fromAccount, String receiver, Long amount) throws Exception {
+    protected Transaction populatePaymentTransaction(PaymentTransactionBuilder paymentTransactionBuilder, Account fromAccount,
+                                                     String receiver, Long amount, TxnDetailsParameters txnDetailsParameters) throws Exception {
         if(fromAccount == null) {
             logListener.error("From account cannot be null");
             return null;
@@ -69,6 +71,14 @@ public class TransactionService extends AlgoBaseService {
 
         paymentTransactionBuilder.amount(amount)
                 .receiver(receiver);
+
+        if(txnDetailsParameters.getNote() != null) {
+            paymentTransactionBuilder.note(txnDetailsParameters.getNote());
+        }
+
+        if(txnDetailsParameters.getLease() != null) {
+            paymentTransactionBuilder.lease(txnDetailsParameters.getLease());
+        }
 
         return paymentTransactionBuilder.build();
     }

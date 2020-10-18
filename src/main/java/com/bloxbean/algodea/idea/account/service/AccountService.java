@@ -59,7 +59,7 @@ public class AccountService {
 
         try {
             AlgoMultisigAccount algoMultisigAccount
-                    = new AlgoMultisigAccount(multisigAddress.toAddress().toString(), threshold);
+                    = new AlgoMultisigAccount(multisigAddress.version, multisigAddress.toAddress().toString(), threshold);
             algoMultisigAccount.setAccounts(accounts.stream()
                     .map(acc -> acc.getAddress())
                     .collect(Collectors.toList()));
@@ -78,6 +78,16 @@ public class AccountService {
     public AlgoAccount getAccountByAddress(String address) {
         List<AlgoAccount> accounts = accountCacheService.getAccounts();
         for(AlgoAccount acc: accounts) {
+            if(acc.getAddress().equals(address))
+                return acc;
+        }
+
+        return null;
+    }
+
+    public AlgoMultisigAccount getMultisigAccountByAddress(String address) {
+        List<AlgoMultisigAccount> accounts = accountCacheService.getMultisigAccounts();
+        for(AlgoMultisigAccount acc: accounts) {
             if(acc.getAddress().equals(address))
                 return acc;
         }

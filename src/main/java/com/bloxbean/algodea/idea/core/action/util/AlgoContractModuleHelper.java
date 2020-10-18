@@ -45,6 +45,7 @@ public class AlgoContractModuleHelper {
     public static final String BUILD_FOLDER = "build";
     public static final String TEAL_BUILD_FOLDER = "toks";
     public static final String GENERATED_SRC = "generated-src";
+    private static final String LSIG_BUILD_FOLDER = "lsigs";
 
     public static VirtualFile getModuleBuildFolder(AlgoConsole console, Module module) {
         VirtualFile moduleOutFolder = null;
@@ -74,6 +75,27 @@ public class AlgoContractModuleHelper {
             File moduleOutFolderFile = new File(
                     VfsUtil.virtualToIoFile(moduleRoot).getAbsolutePath() + File.separator
                             + BUILD_FOLDER + File.separator + TEAL_BUILD_FOLDER);// + File.separator + module.getName());
+
+            boolean created = FileUtil.createDirectory(moduleOutFolderFile);
+
+            moduleOutFolder = VfsUtil.findFileByIoFile(moduleOutFolderFile, true);
+
+        } catch (Exception io) {
+            LOG.error(io);
+            console.showErrorMessage("Unable to create out folder " + io.getMessage());
+        }
+
+        return moduleOutFolder;
+    }
+
+    public static VirtualFile getModuleLSigOutputFolder(AlgoConsole console, Module module) {
+        VirtualFile moduleOutFolder = null;
+        VirtualFile moduleRoot = module.getModuleFile().getParent();
+
+        try {
+            File moduleOutFolderFile = new File(
+                    VfsUtil.virtualToIoFile(moduleRoot).getAbsolutePath() + File.separator
+                            + BUILD_FOLDER + File.separator + LSIG_BUILD_FOLDER);// + File.separator + module.getName());
 
             boolean created = FileUtil.createDirectory(moduleOutFolderFile);
 

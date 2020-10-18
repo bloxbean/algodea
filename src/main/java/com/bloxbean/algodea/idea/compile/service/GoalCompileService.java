@@ -3,18 +3,14 @@ package com.bloxbean.algodea.idea.compile.service;
 import com.bloxbean.algodea.idea.configuration.model.AlgoLocalSDK;
 import com.bloxbean.algodea.idea.core.exception.LocalSDKNotConfigured;
 import com.bloxbean.algodea.idea.nodeint.AlgoServerConfigurationHelper;
-import com.bloxbean.algodea.idea.nodeint.service.LogListener;
-import com.bloxbean.algodea.idea.toolwindow.AlgoConsole;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.process.OSProcessHandler;
 import com.intellij.execution.process.ProcessEvent;
 import com.intellij.execution.process.ProcessListener;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.util.io.FileUtil;
-import com.intellij.openapi.vfs.VirtualFile;
 import com.twelvemonkeys.lang.StringUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -22,7 +18,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GoalCompileService implements CompileService {
+public class GoalCompileService extends BaseCompileService {
     private AlgoLocalSDK localSDK;
     private String cwd;
 
@@ -61,7 +57,7 @@ public class GoalCompileService implements CompileService {
 
         } catch (ExecutionException ex) {
             ex.printStackTrace();
-            compilationFailed(listener, sourceFilePath, "Compilation failed : " + ex.getMessage());
+            failed(listener, sourceFilePath, "Compilation failed : " + ex.getMessage());
             return;
         }
 
@@ -78,9 +74,9 @@ public class GoalCompileService implements CompileService {
             public void processTerminated(@NotNull ProcessEvent event) {
                 if(event.getExitCode() == 0) {
                     listener.info("Compilation successful.");
-                    listener.compilationSuccessful(sourceFilePath, destination);
+                    listener.onSuccessful(sourceFilePath, destination);
                 } else {
-                    compilationFailed(listener, sourceFilePath, "Compilation failed.");
+                    failed(listener, sourceFilePath, "Compilation failed.");
                 }
             }
 
@@ -92,10 +88,5 @@ public class GoalCompileService implements CompileService {
 
 
         return;
-    }
-
-    private void compilationFailed(CompilationResultListener resultListener, String source, String message) {
-        resultListener.error(message);
-        resultListener.compilationFailed(source);
     }
 }

@@ -5,9 +5,11 @@ import com.algorand.algosdk.crypto.Address;
 import com.bloxbean.algodea.idea.common.Tuple;
 import com.bloxbean.algodea.idea.core.action.AlgoBaseAction;
 import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
+import com.bloxbean.algodea.idea.nodeint.model.TxnDetailsParameters;
 import com.bloxbean.algodea.idea.nodeint.service.LogListenerAdapter;
 import com.bloxbean.algodea.idea.nodeint.service.TransactionService;
 import com.bloxbean.algodea.idea.toolwindow.AlgoConsole;
+import com.bloxbean.algodea.idea.transaction.ui.TransactionDtlsEntryForm;
 import com.bloxbean.algodea.idea.transaction.ui.TransferDialog;
 import com.bloxbean.algodea.idea.transaction.ui.TransferTxnParamEntryForm;
 import com.bloxbean.algodea.idea.util.IdeaUtil;
@@ -53,6 +55,15 @@ public class TransferAction extends AlgoBaseAction {
         }
 
         try {
+            TransactionDtlsEntryForm transactionDtlsEntryForm = transferDialog.getTransactionDtlsEntryForm();
+
+            byte[] note = transactionDtlsEntryForm.getNoteBytes();
+            byte[] lease = transactionDtlsEntryForm.getLeaseBytes();
+
+            TxnDetailsParameters txnDetailsParameters = new TxnDetailsParameters();
+            txnDetailsParameters.setNote(note);
+            txnDetailsParameters.setLease(lease);
+
             TransactionService transactionService = new TransactionService(project, new LogListenerAdapter(console));
 
             Task.Backgroundable task = new Task.Backgroundable(project, getTxnCommand()) {
@@ -61,7 +72,7 @@ public class TransferAction extends AlgoBaseAction {
                 public void run(@NotNull ProgressIndicator indicator) {
                     console.showInfoMessage(String.format("Starting %s ...\n", getTxnCommand()));
                     try {
-                        boolean status = transactionService.transfer(fromAccount, toAddress.toString(), amountTuple._2().longValue());
+                        boolean status = transactionService.transfer(fromAccount, toAddress.toString(), amountTuple._2().longValue(), txnDetailsParameters);
 
                         if(status) {
                             console.showInfoMessage(String.format("Successfully transferred %f Algo from %s to %s  ", amountTuple._1(), fromAccount.getAddress().toString(), toAddress.toString()));
@@ -73,7 +84,7 @@ public class TransferAction extends AlgoBaseAction {
                     } catch (Exception exception) {
                         exception.printStackTrace();
                         console.showErrorMessage(String.format("%s failed", getTxnCommand()));
-                        IdeaUtil.showNotification(project, getTitle(), String.format("%s failed", getTxnCommand()), NotificationType.ERROR, null);
+                        IdeaUtil.showNotification(project, getTitle(), String.format("%s failed, Reason: %s", getTxnCommand(), exception.getMessage()), NotificationType.ERROR, null);
                     }
                 }
             };

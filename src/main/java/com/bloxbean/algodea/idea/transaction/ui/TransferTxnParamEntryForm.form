@@ -107,7 +107,7 @@
               <forms/>
             </constraints>
             <properties>
-              <text value="To Account"/>
+              <text value="To Account*"/>
             </properties>
           </component>
           <component id="a7f05" class="javax.swing.JTextField" binding="toAccountTf">
@@ -143,7 +143,7 @@
               <forms/>
             </constraints>
             <properties>
-              <text value="Amount (Algo)"/>
+              <text value="Amount* (Algo)"/>
             </properties>
           </component>
           <grid id="dcf3e" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">

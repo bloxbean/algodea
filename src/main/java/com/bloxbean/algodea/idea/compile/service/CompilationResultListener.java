@@ -11,6 +11,6 @@ public interface CompilationResultListener {
     public void info(String message);
     public void warn(String msg);
 
-    public void compilationSuccessful(String sourceFile, String outputFile);
-    public void compilationFailed(String sourceFile);
+    public void onSuccessful(String sourceFile, String outputFile);
+    public void onFailure(String sourceFile);
 }

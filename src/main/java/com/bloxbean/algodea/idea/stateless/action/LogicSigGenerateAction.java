@@ -1,30 +1,13 @@
-/*
- * Copyright (c) 2020 BloxBean Project
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
-package com.bloxbean.algodea.idea.compile.action;
+package com.bloxbean.algodea.idea.stateless.action;
 
+import com.algorand.algosdk.account.Account;
+import com.bloxbean.algodea.idea.stateless.model.LogicSigParams;
 import com.bloxbean.algodea.idea.compile.service.CompilationResultListener;
 import com.bloxbean.algodea.idea.compile.service.CompileService;
 import com.bloxbean.algodea.idea.compile.service.GoalCompileService;
 import com.bloxbean.algodea.idea.compile.service.RemoteCompileService;
+import com.bloxbean.algodea.idea.stateless.ui.LogicSigSignParamDialog;
+import com.bloxbean.algodea.idea.stateless.ui.LogicSigSigningAccountForm;
 import com.bloxbean.algodea.idea.configuration.action.ConfigurationAction;
 import com.bloxbean.algodea.idea.configuration.model.AlgoLocalSDK;
 import com.bloxbean.algodea.idea.configuration.model.NodeInfo;
@@ -61,9 +44,11 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
-public class TEALCompileAction extends AnAction {
-    private final static Logger LOG = Logger.getInstance(TEALCompileAction.class);
+public class LogicSigGenerateAction extends AnAction {
+
+    private final static Logger LOG = Logger.getInstance(LogicSigGenerateAction.class);
 
     @Override
     public void update(@NotNull AnActionEvent e) {
@@ -128,6 +113,7 @@ public class TEALCompileAction extends AnAction {
 
         //module output folder
         VirtualFile moduleOutFolder = AlgoContractModuleHelper.getModuleOutputFolder(console, module);
+        VirtualFile lsigOutFolder = AlgoContractModuleHelper.getModuleLSigOutputFolder(console, module);
 
         if(StringUtil.isEmpty(relativeSourcePath))
             relativeSourcePath = psiFile.getVirtualFile().getName();
@@ -143,6 +129,23 @@ public class TEALCompileAction extends AnAction {
                 outputFilePath = moduleOutFolder.getCanonicalPath() + File.separator + relativeSourcePath + ".tok";
             else
                 outputFilePath = moduleOutFolder.getCanonicalPath() + File.separator + sourceFile.getName() + ".tok";
+        }
+
+        String lsigOutputFilePath = null;
+        if(lsigOutFolder != null) {
+            if(!StringUtil.isEmpty(relativeSourcePath))
+                lsigOutputFilePath = lsigOutFolder.getCanonicalPath() + File.separator + relativeSourcePath;
+            else
+                lsigOutputFilePath = lsigOutFolder.getCanonicalPath() + File.separator + sourceFile.getName();
+        }
+
+        //Replace .teal with .lsig
+        if(!StringUtil.isEmpty(lsigOutputFilePath)) {
+            int index = lsigOutputFilePath.lastIndexOf(".");
+            if(index != -1) {
+                lsigOutputFilePath = lsigOutputFilePath.substring(0, index);
+                lsigOutputFilePath += ".lsig";
+            }
         }
 
         //Delete if previous compiled file exists
@@ -164,9 +167,11 @@ public class TEALCompileAction extends AnAction {
 
         final VirtualFile folderToRefresh = moduleOutFolder;
         final VirtualFile moduleOutputFolderToRefresh = moduleOutFolder;
+        final VirtualFile lsigOutputFolderToRefresh = lsigOutFolder;
 
         final String finalSourcePath = sourcePath;
         final String finalOutputFilePath = outputFilePath;
+        final String finalLogicSigFilePath = lsigOutputFilePath;
 
         CompilationResultListener compilationResultListener = new CompilationResultListener() {
             @Override
@@ -202,7 +207,7 @@ public class TEALCompileAction extends AnAction {
 
             @Override
             public void onSuccessful(String sourceFile, String outputFile) {
-                console.showSuccessMessage("TEAL file compiled successfully");
+                console.showSuccessMessage("Logic sig generation was successful");
 
                 if (folderToRefresh != null) {
                     folderToRefresh.refresh(false, false);
@@ -212,21 +217,52 @@ public class TEALCompileAction extends AnAction {
                     moduleOutputFolderToRefresh.refresh(false, true);
                 }
 
+                if(lsigOutputFolderToRefresh != null) {
+                    lsigOutputFolderToRefresh.refresh(false, true);
+                }
+
                 VirtualFile outputVf = VfsUtil.findFileByIoFile(new File(outputFile), true);
                 if(outputVf != null && outputVf.exists())
                     outputVf.refresh(true, true);
 
-                IdeaUtil.showNotification(project, "TEAL Compile", "Compilation was successful", NotificationType.INFORMATION, null);
+                IdeaUtil.showNotification(project, "Create Logic Sig", "Logic Sig created successfully", NotificationType.INFORMATION, null);
+
             }
 
             @Override
             public void onFailure(String sourceFile) {
-                console.showErrorMessage(String.format("Compilation failed for %s", sourceFile));
-                IdeaUtil.showNotification(project, "TEAL Compile", "Compilation failed", NotificationType.ERROR, null);
+                console.showErrorMessage(String.format("Logic sig generation failed for %s", sourceFile));
+                IdeaUtil.showNotification(project, "Create Logic Sig", "Logic Sig creation failed", NotificationType.ERROR, null);
             }
         };
 
-        Task.Backgroundable task = new Task.Backgroundable(project, "TEAL Compile") {
+        LogicSigSignParamDialog dialog = new LogicSigSignParamDialog(project);
+
+        boolean ok = dialog.showAndGet();
+        if(!ok) {
+            return;
+        }
+
+        LogicSigSigningAccountForm accountForm = dialog.getLogicSigSignAccountForm();
+        Account account = accountForm.getAccount();
+
+        List<byte[]> args = null;
+        try {
+            args = dialog.getArgsInputForm().getArgsAsBytes();
+        } catch (Exception exception) {
+
+            console.showErrorMessage(String.format("Compilation failed for %s", sourceFile));
+            IdeaUtil.showNotification(project, "Create Logic Sig", "Exception getting args value.", NotificationType.ERROR, null);
+            return;
+        }
+
+        LogicSigParams logicSigParams = new LogicSigParams();
+        logicSigParams.addSigningAccount(account); //Single account
+        if(args != null) {
+            logicSigParams.setArgs(args);
+        }
+
+        Task.Backgroundable task = new Task.Backgroundable(project, "TEAL Compile and Logic Sig") {
 
             @Override
             public void run(@NotNull ProgressIndicator indicator) {
@@ -235,19 +271,17 @@ public class TEALCompileAction extends AnAction {
                     try {
                         compileService = new GoalCompileService(project);
                     } catch (LocalSDKNotConfigured localSDKNotConfigured) {
-                        Messages.showErrorDialog("Algorand Local SDK is not set for this module.", "TEAL Compilation");
+                        Messages.showErrorDialog("Algorand Local SDK is not set for this module.", "TEAL Compilation and Logic Sig");
                         return;
                     }
                 } else if (remoteCompilerSDK != null) {
                     compileService = new RemoteCompileService(project, remoteCompilerSDK);
                 }
 
-                console.showInfoMessage("Start compilation ..");
-                compileService.compile(finalSourcePath, finalOutputFilePath, compilationResultListener);
+                compileService.lsig(finalSourcePath, finalOutputFilePath, finalLogicSigFilePath, logicSigParams, compilationResultListener);
             }
         };
 
         ProgressManager.getInstance().runProcessWithProgressAsynchronously(task, new BackgroundableProcessIndicator(task));
-
     }
 }

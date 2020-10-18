@@ -99,6 +99,8 @@
 
             <group id="AlgoActionGroup.Accounts" text="Accounts" description="Accounts" popup="true">
             </group>
+            <group id="AlgoActionGroup.StatelessContract" text="Stateless Contract" description="Stateless Contract" popup="true">
+            </group>
             <group id="AlgoActionGroup.StatefulContract" text="Stateful Contract" description="Stateful Contract" popup="true">
             </group>
         </group>
@@ -107,6 +109,22 @@
             <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl T" second-keystroke="C"/>
             <add-to-group group-id="com.bloxbean.algodea.idea.core.action.AlgoActionGroup"/>
         </action>
+
+        <!-- Stateless contract actions -->
+        <action id="com.bloxbean.algodea.idea.stateless.action.LogicSigGenerateAction" class="com.bloxbean.algodea.idea.stateless.action.LogicSigGenerateAction"
+                text="Generate Logic Sig"
+                description="Generate Logic Signature">
+            <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl T" second-keystroke="L"/>
+            <add-to-group group-id="AlgoActionGroup.StatelessContract"/>
+        </action>
+
+        <action id="com.bloxbean.algodea.idea.stateless.action.MultisigLogicSigGenerateAction" class="com.bloxbean.algodea.idea.stateless.action.MultisigLogicSigGenerateAction"
+                text="Generate Multi-sig Logic Sig"
+                description="Generate Multi-sig Logic Sig">
+            <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl T" second-keystroke="M"/>
+            <add-to-group group-id="AlgoActionGroup.StatelessContract"/>
+        </action>
+        <!-- Stateless contract actions end here -->
 
         <action id="Algo.account.create" class="com.bloxbean.algodea.idea.account.action.CreateAccountAction" text="Create a New Account"
                 description="Create New Account">
@@ -137,6 +155,7 @@
                 description="New Algorand Local SDK">
         </action>
 
+        <!-- Stateful contract actions -->
         <action id="com.bloxbean.algodea.idea.contracts.action.CreateStatefulAppAction"
                 class="com.bloxbean.algodea.idea.contracts.action.CreateStatefulAppAction" text="Create App"
                 description="Create Stateful App">
@@ -144,7 +163,6 @@
             <add-to-group group-id="AlgoActionGroup.StatefulContract"/>
         </action>
 
-        <!-- Stateful contract actions -->
         <action id="com.bloxbean.algodea.idea.contracts.action.CallStatefulAppAction"
                 class="com.bloxbean.algodea.idea.contracts.action.CallStatefulAppAction"
                 text="Call (NoOp)">

@@ -13,7 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-public class RemoteCompileService implements CompileService {
+public class RemoteCompileService extends BaseCompileService {
     private NodeInfo nodeInfo;
     private String cwd;
     private Project project;
@@ -52,12 +52,12 @@ public class RemoteCompileService implements CompileService {
         try {
             code = FileUtil.loadFile(new File(source));
         } catch (IOException e) {
-            compilationFailed(compilationResultListener, source, "File not found : " + source);
+            failed(compilationResultListener, source, "File not found : " + source);
             return;
         }
 
         if(StringUtil.isEmpty(code)) {
-            compilationFailed(compilationResultListener, source, "Can't compile. Empty code");
+            failed(compilationResultListener, source, "Can't compile. Empty code");
         }
 
         byte[] bytes = code.getBytes(StandardCharsets.UTF_8);
@@ -65,7 +65,7 @@ public class RemoteCompileService implements CompileService {
         String result = algoBaseService.compileProgram(bytes);
 
         if(result == null) {
-            compilationFailed(compilationResultListener, source, "Compilation Failed");
+            failed(compilationResultListener, source, "Compilation Failed");
         } else {
             //compilationResultListener.info(result);
             byte[] outputBytes = Encoder.decodeFromBase64(result);
@@ -73,14 +73,9 @@ public class RemoteCompileService implements CompileService {
             try {
                 FileUtil.writeToFile(new File(destination), outputBytes);
             } catch (IOException e) {
-                compilationFailed(compilationResultListener, source, "Error writing output to : " + destination);
+                failed(compilationResultListener, source, "Error writing output to : " + destination);
             }
-            compilationResultListener.compilationSuccessful(source, destination);
+            compilationResultListener.onSuccessful(source, destination);
         }
-    }
-
-    private void compilationFailed(CompilationResultListener resultListener, String source, String message) {
-        resultListener.error(message);
-        resultListener.compilationFailed(source);
     }
 }
