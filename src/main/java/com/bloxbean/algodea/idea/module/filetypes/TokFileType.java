@@ -20,18 +20,55 @@
  * SOFTWARE.
  */
 
-package com.bloxbean.algodea.idea.common;
+package com.bloxbean.algodea.idea.module.filetypes;
 
-import com.intellij.openapi.util.IconLoader;
+import com.bloxbean.algodea.idea.common.AlgoIcons;
+import com.intellij.openapi.fileTypes.FileType;
+import com.intellij.openapi.vfs.VirtualFile;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 
-public class AlgoIcons {
-    public final static Icon ALGO_ICON = IconLoader.getIcon("/icons/algo16x16.png");
-    public final static Icon TEAL_FILE_ICON = IconLoader.getIcon("/icons/teal_file.png");
-    public final static Icon MODULE_ICON = IconLoader.getIcon("/icons/module.png");
-    public final static Icon OPCODE_ICON = IconLoader.getIcon("/icons/opcode.png");
-    public static final Icon FIELD_ICON = IconLoader.getIcon("/icons/field.png");;
-    public static final Icon LSIG_FILE_ICON = IconLoader.getIcon("/icons/lsig_file.png");;
-    public static final Icon TOK_FILE_ICON = IconLoader.getIcon("/icons/tok_file.png");;
+public class TokFileType implements FileType {
+    public static final TokFileType INSTANCE = new TokFileType();
+
+    @NotNull
+    @Override
+    public String getName() {
+        return "Tok File Type";
+    }
+
+    @NotNull
+    @Override
+    public String getDescription() {
+        return "Tok File Type";
+    }
+
+    @NotNull
+    @Override
+    public String getDefaultExtension() {
+        return "tok";
+    }
+
+    @Nullable
+    @Override
+    public Icon getIcon() {
+        return AlgoIcons.TOK_FILE_ICON;
+    }
+
+    @Override
+    public boolean isBinary() {
+        return true;
+    }
+
+    @Override
+    public boolean isReadOnly() {
+        return false;
+    }
+
+    @Override
+    public @Nullable String getCharset(@NotNull VirtualFile file, @NotNull byte[] content) {
+        return null;
+    }
 }

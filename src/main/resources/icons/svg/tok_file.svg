@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="222px" height="222px" viewBox="0 0 222 222" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Group 3</title>
+    <g id="Welcome" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Desktop-HD" transform="translate(-1186.000000, -595.000000)">
+            <g id="Group-10" transform="translate(1186.000000, 595.000000)">
+                <rect id="frame" x="0" y="1.42108547e-14" width="222" height="221.442843"></rect>
+                <polygon id="Path" fill-opacity="0.8" fill="#C91212" points="98.1578475 13.964864 42.8071749 69.2543255 98.1578475 69.2543255"></polygon>
+                <polygon id="Path" fill-opacity="0.8" fill="#6A6A25" points="111.995516 13.964864 111.995516 83.0766909 42.8071749 83.0766909 42.8071749 207.477979 181.183857 207.477979 181.183857 13.964864"></polygon>
+                <rect id="Rectangle" stroke="#979797" fill-opacity="0.753277972" fill="#238BFE" x="26.8789238" y="135.658679" width="169.237668" height="72.8167908"></rect>
+                <text id="TOK" font-family="OktaNeue-Bold, Okta Neue" font-size="36" font-weight="bold" fill="#000000">
+                    <tspan x="65.7040359" y="181.64864"> TOK</tspan>
+                </text>
+            </g>
+        </g>
+    </g>
+</svg>

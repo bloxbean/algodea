@@ -23,6 +23,13 @@
 
         <fileType name="TEAL File" implementationClass="com.bloxbean.algodea.idea.language.TEALFileType"
                   fieldName="INSTANCE" language="TEAL" extensions="teal"/>
+
+        <fileType name="Logic Signature File" implementationClass="com.bloxbean.algodea.idea.module.filetypes.LSigFileType"
+                  fieldName="INSTANCE"  extensions="lsig"/>
+
+        <fileType name="Tok File" implementationClass="com.bloxbean.algodea.idea.module.filetypes.TokFileType"
+                  fieldName="INSTANCE"  extensions="tok"/>
+
         <lang.parserDefinition language="TEAL"
                                implementationClass="com.bloxbean.algodea.idea.language.TEALParserDefinition"/>
         <lang.syntaxHighlighterFactory language="TEAL"
