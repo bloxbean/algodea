@@ -1,5 +1,6 @@
 package com.bloxbean.algodea.idea.compile.service;
 
+import com.bloxbean.algodea.idea.compile.CompileException;
 import com.bloxbean.algodea.idea.configuration.model.AlgoLocalSDK;
 import com.bloxbean.algodea.idea.core.exception.LocalSDKNotConfigured;
 import com.bloxbean.algodea.idea.nodeint.AlgoServerConfigurationHelper;
@@ -57,7 +58,7 @@ public class GoalCompileService extends BaseCompileService {
 
         } catch (ExecutionException ex) {
             ex.printStackTrace();
-            failed(listener, sourceFilePath, "Compilation failed : " + ex.getMessage());
+            failed(listener, sourceFilePath, "Compilation failed : " + ex.getMessage(), ex);
             return;
         }
 
@@ -76,7 +77,7 @@ public class GoalCompileService extends BaseCompileService {
                     listener.info("Compilation successful.");
                     listener.onSuccessful(sourceFilePath, destination);
                 } else {
-                    failed(listener, sourceFilePath, "Compilation failed.");
+                    failed(listener, sourceFilePath, "Compilation failed.", new CompileException("Goal compilation process failed with error."));
                 }
             }
 

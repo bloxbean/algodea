@@ -2,11 +2,14 @@ package com.bloxbean.algodea.idea.stateless.model;
 
 import com.algorand.algosdk.account.Account;
 import com.algorand.algosdk.crypto.MultisigAddress;
+import com.bloxbean.algodea.idea.nodeint.model.LogicSigType;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class LogicSigParams {
+    private LogicSigType type;
+    private boolean isAccountDelegationType;
     private List<Account> signingAccounts;
     private MultisigAddress multisigAddress;
     private List<byte[]> args;
@@ -45,5 +48,21 @@ public class LogicSigParams {
     public void addArg(byte[] arg) {
         if(args == null) args = new ArrayList<>();
         args.add(arg);
+    }
+
+    public LogicSigType getType() {
+        return type;
+    }
+
+    public void setType(LogicSigType type) {
+        this.type = type;
+    }
+
+    public boolean isAccountDelegationType() {
+        return isAccountDelegationType;
+    }
+
+    public void setAccountDelegationType(boolean accountDelegationType) {
+        isAccountDelegationType = accountDelegationType;
     }
 }

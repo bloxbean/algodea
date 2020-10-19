@@ -23,9 +23,7 @@
 package com.bloxbean.algodea.idea.module.filetypes;
 
 import com.bloxbean.algodea.idea.common.AlgoIcons;
-import com.bloxbean.algodea.idea.language.TEALLanguage;
 import com.intellij.openapi.fileTypes.FileType;
-import com.intellij.openapi.fileTypes.LanguageFileType;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -34,23 +32,24 @@ import javax.swing.*;
 
 public class LSigFileType implements FileType {
     public static final LSigFileType INSTANCE = new LSigFileType();
+    public static final String EXTENSION = "lsig";
 
     @NotNull
     @Override
     public String getName() {
-        return "Logic Signature File";
+        return "Algorand Logic Signature File";
     }
 
     @NotNull
     @Override
     public String getDescription() {
-        return "Logic Signature File";
+        return "Algorand Logic Signature File";
     }
 
     @NotNull
     @Override
     public String getDefaultExtension() {
-        return "lsig";
+        return EXTENSION;
     }
 
     @Nullable
@@ -66,7 +65,7 @@ public class LSigFileType implements FileType {
 
     @Override
     public boolean isReadOnly() {
-        return false;
+        return true;
     }
 
     @Override

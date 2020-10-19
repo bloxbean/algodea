@@ -12,5 +12,5 @@ public interface CompilationResultListener {
     public void warn(String msg);
 
     public void onSuccessful(String sourceFile, String outputFile);
-    public void onFailure(String sourceFile);
+    public void onFailure(String sourceFile, Throwable t);
 }

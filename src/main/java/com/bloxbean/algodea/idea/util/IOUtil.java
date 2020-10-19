@@ -23,6 +23,7 @@
 package com.bloxbean.algodea.idea.util;
 
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.util.text.StringUtil;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -44,6 +45,18 @@ public class IOUtil {
         } catch (IOException ex) {
             logger.error("Error loading properties file : " + propFile, ex);
             return null;
+        }
+    }
+
+    public static String getNameWithoutExtension(String file) {
+        if(StringUtil.isEmpty(file))
+            return file;
+
+        int index = file.lastIndexOf(".");
+        if(index == -1)
+            return file;
+        else {
+            return file.substring(0, index);
         }
     }
 }

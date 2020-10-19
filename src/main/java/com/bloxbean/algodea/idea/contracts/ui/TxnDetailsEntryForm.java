@@ -3,7 +3,7 @@ package com.bloxbean.algodea.idea.contracts.ui;
 import com.algorand.algosdk.crypto.Address;
 import com.bloxbean.algodea.idea.account.model.AlgoAccount;
 import com.bloxbean.algodea.idea.account.service.AccountChooser;
-import com.bloxbean.algodea.idea.nodeint.exception.InvalidContractInputParamException;
+import com.bloxbean.algodea.idea.nodeint.exception.InvalidInputParamException;
 import com.bloxbean.algodea.idea.nodeint.model.ApplArg;
 import com.bloxbean.algodea.idea.nodeint.model.ArgType;
 import com.bloxbean.algodea.idea.nodeint.model.Lease;
@@ -174,7 +174,7 @@ public class TxnDetailsEntryForm {
         }
     }
 
-    public List<Address> getAccounts() throws InvalidContractInputParamException {
+    public List<Address> getAccounts() throws InvalidInputParamException {
         Enumeration<String> elems = ((DefaultListModel)accountsList.getModel()).elements();
         if(elems == null) return Collections.EMPTY_LIST;
 
@@ -185,7 +185,7 @@ public class TxnDetailsEntryForm {
                 Address address = new Address(addrStr);
                 accounts.add(address);
             } catch (NoSuchAlgorithmException e) {
-                throw new InvalidContractInputParamException("Invalid account : " + addrStr);
+                throw new InvalidInputParamException("Invalid account : " + addrStr);
             }
         }
 

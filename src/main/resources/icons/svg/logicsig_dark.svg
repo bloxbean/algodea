@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>prettyPrint</title>
+    <g id="Welcome" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Desktop-HD" transform="translate(-583.000000, -878.000000)">
+            <g id="Group-18" transform="translate(583.000000, 878.000000)">
+                <rect id="frame" x="0" y="0" width="16" height="16"></rect>
+                <path d="M4.5,4 C4.22385763,4 4,4.22385763 4,4.5 L4,11.5 C4,11.7761424 4.22385763,12 4.5,12 L5.5,12 L5.5,14 L4.5,14 C3.11928813,14 2,12.8807119 2,11.5 L2,9.28 L0.757,8.97 L0.757,7.03 L2,6.72 L2,4.5 C2,3.11928813 3.11928813,2 4.5,2 L5.5,2 L5.5,4 L4.5,4 Z" id="Path" fill="#6E6E6E"></path>
+                <path d="M11.5,12 C11.7761424,12 12,11.7761424 12,11.5 L12,4.5 C12,4.22385763 11.7761424,4 11.5,4 L10.5,4 L10.5,2 L11.5,2 C12.8807119,2 14,3.11928813 14,4.5 L14,6.72 L15.242,7.03 L15.242,8.97 L14,9.28 L14,11.5 C14,12.8807119 12.8807119,14 11.5,14 L10.5,14 L10.5,12 L11.5,12 L11.5,12 Z" id="Path" fill="#6E6E6E"></path>
+                <text id="ls" font-family="OktaNeue-Bold, Okta Neue" font-size="6" font-weight="bold" fill="#326809">
+                    <tspan x="6" y="10">ls</tspan>
+                </text>
+            </g>
+        </g>
+    </g>
+</svg>

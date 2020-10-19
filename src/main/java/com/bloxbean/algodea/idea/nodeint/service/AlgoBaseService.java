@@ -24,18 +24,17 @@ package com.bloxbean.algodea.idea.nodeint.service;
 import com.algorand.algosdk.account.Account;
 import com.algorand.algosdk.builder.transaction.ApplicationBaseTransactionBuilder;
 import com.algorand.algosdk.crypto.Address;
-import com.algorand.algosdk.crypto.LogicsigSignature;
 import com.algorand.algosdk.transaction.SignedTransaction;
 import com.algorand.algosdk.transaction.Transaction;
 import com.algorand.algosdk.util.Encoder;
 import com.algorand.algosdk.v2.client.common.Response;
 import com.algorand.algosdk.v2.client.model.*;
-import com.bloxbean.algodea.idea.nodeint.model.TxnDetailsParameters;
-import com.bloxbean.algodea.idea.nodeint.purestake.CustomAlgodClient;
 import com.bloxbean.algodea.idea.configuration.model.NodeInfo;
 import com.bloxbean.algodea.idea.nodeint.AlgoConnectionFactory;
 import com.bloxbean.algodea.idea.nodeint.AlgoServerConfigurationHelper;
 import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
+import com.bloxbean.algodea.idea.nodeint.model.TxnDetailsParameters;
+import com.bloxbean.algodea.idea.nodeint.purestake.CustomAlgodClient;
 import com.bloxbean.algodea.idea.util.JsonUtil;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
@@ -134,6 +133,41 @@ public class AlgoBaseService {
     protected boolean postApplicationTransaction(Account fromAccount, Transaction txn) throws Exception {
         // sign transaction
         SignedTransaction signedTxn = fromAccount.signTransaction(txn);
+        logListener.info("Signed transaction with txid: " + signedTxn.transactionID);
+
+        // send to network
+        byte[] encodedTxBytes = Encoder.encodeToMsgPack(signedTxn);
+        logListener.info("Posting transaction to the network ...");
+        Response<PostTransactionsResponse> postTransactionsResponse = client.RawTransaction().rawtxn(encodedTxBytes).execute();
+        if(!postTransactionsResponse.isSuccessful()) {
+            printErrorMessage("Transaction could not be posted to the network", postTransactionsResponse);
+            return false;
+        }
+
+        String id = postTransactionsResponse.body().txId;
+        logListener.info("Successfully sent tx with ID: " + id);
+
+        // await confirmation
+        waitForConfirmation(id);
+
+        // display results
+        Response<PendingTransactionResponse> pendingTransactionResponse = client.PendingTransactionInformation(id).execute();
+        if(!pendingTransactionResponse.isSuccessful()) {
+            printErrorMessage("Unable to get pending transaction info", pendingTransactionResponse);
+            return false;
+        }
+
+        if(pendingTransactionResponse.body() != null) {
+            logListener.info("\nTransaction Info :-");
+            logListener.info(JsonUtil.getPrettyJson(pendingTransactionResponse.body().toString()));
+        }
+
+        return true;
+    }
+
+    protected boolean postTransaction(TransactionSigner signer, Transaction txn) throws Exception {
+        // sign transaction
+        SignedTransaction signedTxn = signer.signTransaction(txn);
         logListener.info("Signed transaction with txid: " + signedTxn.transactionID);
 
         // send to network

@@ -32,6 +32,11 @@ public class AlgoIcons {
     public final static Icon MODULE_ICON = IconLoader.getIcon("/icons/module.png");
     public final static Icon OPCODE_ICON = IconLoader.getIcon("/icons/opcode.png");
     public static final Icon FIELD_ICON = IconLoader.getIcon("/icons/field.png");;
-    public static final Icon LSIG_FILE_ICON = IconLoader.getIcon("/icons/lsig_file.png");;
-    public static final Icon TOK_FILE_ICON = IconLoader.getIcon("/icons/tok_file.png");;
+    public static final Icon LSIG_FILE_ICON = IconLoader.getIcon("/icons/lsig_file.png");
+    public static final Icon TOK_FILE_ICON = IconLoader.getIcon("/icons/tok_file.png");
+    public static final Icon ALGO_TX_ICON = IconLoader.getIcon("/icons/algo_tx.png");
+
+    public static final Icon LOGIC_SIG_ICON = IconLoader.getIcon("/icons/logicsig.png");
+    public static final Icon MLOGIC_SIG_ICON = IconLoader.getIcon("/icons/mlogicsig.png");
+    public static final Icon LOGIC_SIG_RUN_ICON = IconLoader.getIcon("/icons/logicsig_run.png");
 }

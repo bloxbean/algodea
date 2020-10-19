@@ -2,6 +2,7 @@ package com.bloxbean.algodea.idea.stateless.action;
 
 import com.algorand.algosdk.account.Account;
 import com.algorand.algosdk.crypto.MultisigAddress;
+import com.bloxbean.algodea.idea.common.AlgoIcons;
 import com.bloxbean.algodea.idea.compile.service.CompilationResultListener;
 import com.bloxbean.algodea.idea.compile.service.CompileService;
 import com.bloxbean.algodea.idea.compile.service.GoalCompileService;
@@ -13,12 +14,14 @@ import com.bloxbean.algodea.idea.core.action.util.AlgoContractModuleHelper;
 import com.bloxbean.algodea.idea.core.exception.LocalSDKNotConfigured;
 import com.bloxbean.algodea.idea.language.psi.TEALFile;
 import com.bloxbean.algodea.idea.nodeint.AlgoServerConfigurationHelper;
+import com.bloxbean.algodea.idea.nodeint.model.LogicSigType;
 import com.bloxbean.algodea.idea.stateless.model.LogicSigParams;
 import com.bloxbean.algodea.idea.stateless.ui.ArgsInputForm;
 import com.bloxbean.algodea.idea.stateless.ui.MultiSigLogicSigCreateInputForm;
 import com.bloxbean.algodea.idea.stateless.ui.MultiSigLogicSigDialog;
 import com.bloxbean.algodea.idea.toolwindow.AlgoConsole;
 import com.bloxbean.algodea.idea.util.AlgoModuleUtils;
+import com.bloxbean.algodea.idea.util.IOUtil;
 import com.bloxbean.algodea.idea.util.IdeaUtil;
 import com.intellij.execution.process.OSProcessHandler;
 import com.intellij.notification.NotificationType;
@@ -53,6 +56,10 @@ import java.util.List;
 public class MultisigLogicSigGenerateAction extends AnAction {
 
     private final static Logger LOG = Logger.getInstance(MultisigLogicSigGenerateAction.class);
+
+    public MultisigLogicSigGenerateAction() {
+        super(AlgoIcons.MLOGIC_SIG_ICON);
+    }
 
     @Override
     public void update(@NotNull AnActionEvent e) {
@@ -145,11 +152,7 @@ public class MultisigLogicSigGenerateAction extends AnAction {
 
         //Replace .teal with .lsig
         if(!StringUtil.isEmpty(lsigOutputFilePath)) {
-            int index = lsigOutputFilePath.lastIndexOf(".");
-            if(index != -1) {
-                lsigOutputFilePath = lsigOutputFilePath.substring(0, index);
-                lsigOutputFilePath += ".lsig";
-            }
+            lsigOutputFilePath = IOUtil.getNameWithoutExtension(lsigOutputFilePath) + ".lsig";
         }
 
         //Delete if previous compiled file exists
@@ -234,8 +237,8 @@ public class MultisigLogicSigGenerateAction extends AnAction {
             }
 
             @Override
-            public void onFailure(String sourceFile) {
-                console.showErrorMessage(String.format("Compilation failed for %s", sourceFile));
+            public void onFailure(String sourceFile, Throwable t) {
+                console.showErrorMessage(String.format("Compilation failed for %s", sourceFile), t);
                 IdeaUtil.showNotification(project, "Create Logic Sig", "Logic Sig creation failed", NotificationType.ERROR, null);
             }
         };
@@ -284,6 +287,9 @@ public class MultisigLogicSigGenerateAction extends AnAction {
         if(args != null) {
             logicSigParams.setArgs(args);
         }
+
+        //Multi sig is always for Account delegation
+        logicSigParams.setType(LogicSigType.DELEGATION_ACCOUNT);
 
         Task.Backgroundable task = new Task.Backgroundable(project, "TEAL Compile and Logic Sig") {
 

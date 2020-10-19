@@ -4,7 +4,10 @@ import com.algorand.algosdk.account.Account;
 import com.algorand.algosdk.crypto.LogicsigSignature;
 import com.algorand.algosdk.crypto.MultisigAddress;
 import com.algorand.algosdk.util.Encoder;
+import com.bloxbean.algodea.idea.compile.model.LogicSigMetaData;
+import com.bloxbean.algodea.idea.nodeint.model.LogicSigType;
 import com.bloxbean.algodea.idea.stateless.model.LogicSigParams;
+import com.bloxbean.algodea.idea.util.IOUtil;
 import com.bloxbean.algodea.idea.util.JsonUtil;
 import com.intellij.execution.process.OSProcessHandler;
 import com.intellij.openapi.util.io.FileUtil;
@@ -42,39 +45,63 @@ public abstract class BaseCompileService implements CompileService{
                 //Compilation successful. Let's do Logic Sig
 
                 byte[] program = new byte[0];
+                LogicSigMetaData logicSigMetaData = new LogicSigMetaData();
                 try {
                     listener.info("Logic sig generation started ...");
                     program = FileUtil.loadFileBytes(new File(compileDestination));
                     LogicsigSignature logicsigSignature = new LogicsigSignature(program, logicSigParams.getArgs());
 
-                    boolean multiSigLogicSig = false;
-                    if(logicSigParams.getMultisigAddress() != null)
-                        multiSigLogicSig = true;
+                    if(LogicSigType.DELEGATION_ACCOUNT.equals(logicSigParams.getType())) {
+                        boolean multiSigLogicSig = false;
+                        if (logicSigParams.getMultisigAddress() != null)
+                            multiSigLogicSig = true;
 
-                    if(!multiSigLogicSig && logicSigParams.getSigningAccounts().size() > 0) {
-                        Account signingAccount = logicSigParams.getSigningAccounts().get(0);
-                        listener.info("Signing Logic sig with signing account : " + signingAccount.getAddress());
-                        logicsigSignature = signingAccount.signLogicsig(logicsigSignature);
-                    } else { //Multisig account
-                        MultisigAddress multisigAddress = logicSigParams.getMultisigAddress();
-                        if(logicSigParams.getSigningAccounts().size() > 0) {
-                            int i = 0;
-                            for(Account signerAccount: logicSigParams.getSigningAccounts()) {
-                                if(i == 0) {
-                                    logicsigSignature = signerAccount.signLogicsig(logicsigSignature, multisigAddress);
-                                } else { //append
-                                    logicsigSignature = signerAccount.appendToLogicsig(logicsigSignature);
+                        if (!multiSigLogicSig && logicSigParams.getSigningAccounts().size() > 0) {
+                            Account signingAccount = logicSigParams.getSigningAccounts().get(0);
+                            listener.info("Signing Logic sig with signing account : " + signingAccount.getAddress());
+                            logicsigSignature = signingAccount.signLogicsig(logicsigSignature);
+
+                            //update logic sig metadata
+                            logicSigMetaData.addSigningAddress(signingAccount.getAddress().toString());
+                            logicSigMetaData.isDelegatedAccount = true;
+                        } else { //Multisig account
+                            MultisigAddress multisigAddress = logicSigParams.getMultisigAddress();
+                            if (logicSigParams.getSigningAccounts().size() > 0) {
+                                int i = 0;
+                                for (Account signerAccount : logicSigParams.getSigningAccounts()) {
+                                    if (i == 0) {
+                                        logicsigSignature = signerAccount.signLogicsig(logicsigSignature, multisigAddress);
+                                    } else { //append
+                                        logicsigSignature = signerAccount.appendToLogicsig(logicsigSignature);
+                                    }
+                                    i++;
+
+                                    logicSigMetaData.addSigningAddress(signerAccount.getAddress().toString());
                                 }
-                                i++;
                             }
+
+                            logicSigMetaData.multisigAddress = multisigAddress.toAddress().toString();
+                            logicSigMetaData.isMultiDelegatedAccount = true;
                         }
+                    } else { //Signing required for delegation account.
+                        logicSigMetaData.contractAddress = logicsigSignature.toAddress().toString();
                     }
 
                     File lsignOutputFile = new File(lsigDestination);
                     if(lsignOutputFile.exists()) {
                         FileUtil.delete(lsignOutputFile);
                     }
-//                    JsonUtil.getPrettyJson(logicsigSignature)
+
+                    try {
+                        logicSigMetaData.logicsigSignature = logicsigSignature;
+                        String logicSigMetaDataStr = JsonUtil.getPrettyJson(logicSigMetaData);
+
+                        String lsigMetadataJson = IOUtil.getNameWithoutExtension(lsigDestination) + "-metadata.json";
+
+                        FileUtil.writeToFile(new File(lsigMetadataJson), logicSigMetaDataStr);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
 
                     byte[] encodedBytes = Encoder.encodeToMsgPack(logicsigSignature);
                     FileUtil.writeToFile(new File(lsigDestination), encodedBytes);
@@ -86,21 +113,21 @@ public abstract class BaseCompileService implements CompileService{
 
                 } catch (Exception e) {
                     listener.error(String.format("Logic Sig generation failed : %s", e.getMessage()));
-                    failed(listener, compileDestination, "Logic Sig generation failed");
+                    failed(listener, compileDestination, "Logic Sig generation failed.", e);
                 }
             }
 
             @Override
-            public void onFailure(String sourceFile) {
-                listener.onFailure(sourceFile);
+            public void onFailure(String sourceFile, Throwable t) {
+                listener.onFailure(sourceFile, t);
             }
         };
 
         compile(sourceFilePath, compileDestination, compilerResultListener);
     }
 
-    protected void failed(CompilationResultListener resultListener, String source, String message) {
+    protected void failed(CompilationResultListener resultListener, String source, String message, Throwable t) {
         resultListener.error(message);
-        resultListener.onFailure(source);
+        resultListener.onFailure(source, t);
     }
 }

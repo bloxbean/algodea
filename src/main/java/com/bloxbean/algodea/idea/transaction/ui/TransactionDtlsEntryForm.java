@@ -1,11 +1,9 @@
 package com.bloxbean.algodea.idea.transaction.ui;
 
-import com.bloxbean.algodea.idea.account.model.AlgoAccount;
-import com.bloxbean.algodea.idea.account.service.AccountChooser;
-import com.bloxbean.algodea.idea.nodeint.model.ApplArg;
 import com.bloxbean.algodea.idea.nodeint.model.ArgType;
 import com.bloxbean.algodea.idea.nodeint.model.Lease;
 import com.bloxbean.algodea.idea.nodeint.model.Note;
+import com.bloxbean.algodea.idea.nodeint.model.TxnDetailsParameters;
 import com.bloxbean.algodea.idea.nodeint.util.ArgTypeToByteConverter;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
@@ -70,6 +68,14 @@ public class TransactionDtlsEntryForm {
             byte[] bytes = ArgTypeToByteConverter.convert(type, StringUtil.trim(leaseTf.getText()));
             return bytes;
         }
+    }
+
+    public TxnDetailsParameters getTxnDetailsParameters() throws Exception {
+        TxnDetailsParameters txnDetailsParameters = new TxnDetailsParameters();
+        txnDetailsParameters.setNote(getNoteBytes());
+        txnDetailsParameters.setLease(getLeaseBytes());
+
+        return txnDetailsParameters;
     }
 
 

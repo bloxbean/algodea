@@ -1,6 +1,7 @@
 package com.bloxbean.algodea.idea.compile.service;
 
 import com.algorand.algosdk.util.Encoder;
+import com.bloxbean.algodea.idea.compile.CompileException;
 import com.bloxbean.algodea.idea.configuration.model.NodeInfo;
 import com.bloxbean.algodea.idea.nodeint.service.AlgoBaseService;
 import com.bloxbean.algodea.idea.nodeint.service.LogListener;
@@ -52,12 +53,12 @@ public class RemoteCompileService extends BaseCompileService {
         try {
             code = FileUtil.loadFile(new File(source));
         } catch (IOException e) {
-            failed(compilationResultListener, source, "File not found : " + source);
+            failed(compilationResultListener, source, "File not found : " + source, e);
             return;
         }
 
         if(StringUtil.isEmpty(code)) {
-            failed(compilationResultListener, source, "Can't compile. Empty code");
+            failed(compilationResultListener, source, "Can't compile. Empty code", new CompileException("Can't compile empty code"));
         }
 
         byte[] bytes = code.getBytes(StandardCharsets.UTF_8);
@@ -65,7 +66,7 @@ public class RemoteCompileService extends BaseCompileService {
         String result = algoBaseService.compileProgram(bytes);
 
         if(result == null) {
-            failed(compilationResultListener, source, "Compilation Failed");
+            failed(compilationResultListener, source, "Compilation Failed", new CompileException("Compilation result is null"));
         } else {
             //compilationResultListener.info(result);
             byte[] outputBytes = Encoder.decodeFromBase64(result);
@@ -73,7 +74,7 @@ public class RemoteCompileService extends BaseCompileService {
             try {
                 FileUtil.writeToFile(new File(destination), outputBytes);
             } catch (IOException e) {
-                failed(compilationResultListener, source, "Error writing output to : " + destination);
+                failed(compilationResultListener, source, "Error writing output to : " + destination, e);
             }
             compilationResultListener.onSuccessful(source, destination);
         }

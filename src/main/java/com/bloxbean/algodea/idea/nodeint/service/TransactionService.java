@@ -19,8 +19,13 @@ public class TransactionService extends AlgoBaseService {
     }
 
     public boolean transfer(Account sender, String receiver, Long amount, TxnDetailsParameters txnDetailsParameters) throws Exception {
+        if(sender == null) {
+            logListener.error("Sender cannot be null");
+            return false;
+        }
+
         PaymentTransactionBuilder paymentTransactionBuilder = Transaction.PaymentTransactionBuilder();
-        Transaction txn = populatePaymentTransaction(paymentTransactionBuilder, sender, receiver, amount, txnDetailsParameters);
+        Transaction txn = populatePaymentTransaction(paymentTransactionBuilder, sender.getAddress(), receiver, amount, txnDetailsParameters);
 
         if(txn == null) {
             logListener.error("Transaction could not be built");
@@ -30,7 +35,7 @@ public class TransactionService extends AlgoBaseService {
         return postApplicationTransaction(sender, txn);
     }
 
-    protected Transaction populatePaymentTransaction(PaymentTransactionBuilder paymentTransactionBuilder, Account fromAccount,
+    protected Transaction populatePaymentTransaction(PaymentTransactionBuilder paymentTransactionBuilder, Address fromAccount,
                                                      String receiver, Long amount, TxnDetailsParameters txnDetailsParameters) throws Exception {
         if(fromAccount == null) {
             logListener.error("From account cannot be null");
@@ -46,11 +51,11 @@ public class TransactionService extends AlgoBaseService {
             return null;
         }
 
-        logListener.info("From Address     : " + fromAccount.getAddress().toString());
+        logListener.info("From Address     : " + fromAccount.toString());
         logListener.info("Receiver Address : " + receiver);
         logListener.info(String.format("Amount           : %f Algo ( %d )\n", AlgoConversionUtil.mAlgoToAlgo(amount), amount));
         // define sender
-        Address sender = fromAccount.getAddress();
+        Address sender = fromAccount;
 
         logListener.info("Getting node suggested transaction parameters ...");
         // get node suggested parameters
@@ -63,7 +68,6 @@ public class TransactionService extends AlgoBaseService {
         TransactionParametersResponse params = transactionParametersResponse.body();
         logListener.info("Got node suggested transaction parameters.");
 
-        logListener.info("Signing transaction ...");
         // create unsigned transaction
         paymentTransactionBuilder
                 .sender(sender)

@@ -36,13 +36,13 @@ public class TokFileType implements FileType {
     @NotNull
     @Override
     public String getName() {
-        return "Tok File Type";
+        return "Algorand Tok File";
     }
 
     @NotNull
     @Override
     public String getDescription() {
-        return "Tok File Type";
+        return "Algorand Tok File";
     }
 
     @NotNull
@@ -64,7 +64,7 @@ public class TokFileType implements FileType {
 
     @Override
     public boolean isReadOnly() {
-        return false;
+        return true;
     }
 
     @Override

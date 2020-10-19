@@ -31,6 +31,7 @@ import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.ui.content.Content;
+import com.intellij.util.ExceptionUtil;
 
 public class AlgoConsole {
     private final static Logger LOG = Logger.getInstance(AlgoConsole.class);
@@ -136,6 +137,13 @@ public class AlgoConsole {
         showMessage(message, ConsoleViewContentType.LOG_WARNING_OUTPUT);
     }
 
+    public void showErrorMessage(String message, Throwable t) {
+        if(t != null) {
+            message += "\n Details: \n" + ExceptionUtil.getThrowableText(t);
+        }
+        showMessage(message, ConsoleViewContentType.ERROR_OUTPUT);
+    }
+
     private void showMessage(String message, ConsoleViewContentType type) {
         ApplicationManager.getApplication().invokeLater(new Runnable() {
             @Override
@@ -152,8 +160,6 @@ public class AlgoConsole {
                 view.print(message + "\n", type);
             }
         });
-
     }
-
 
 }

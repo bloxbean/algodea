@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>com.bloxbean.algodea</id>
-    <name>AlgoDea - Algorand Smart Contract Integration</name>
-    <vendor email="info@bloxbean.com" url="https://github.com/bloxbean/algodea/">Algorand Idea Project
+    <name>AlgoDEA Algorand Integration</name>
+    <vendor email="info@bloxbean.com" url="https://github.com/bloxbean/algodea/">BloxBean AlgoDEA Project
     </vendor>
 
     <description><![CDATA[
@@ -24,10 +24,10 @@
         <fileType name="TEAL File" implementationClass="com.bloxbean.algodea.idea.language.TEALFileType"
                   fieldName="INSTANCE" language="TEAL" extensions="teal"/>
 
-        <fileType name="Logic Signature File" implementationClass="com.bloxbean.algodea.idea.module.filetypes.LSigFileType"
+        <fileType name="Algorand Logic Signature File" implementationClass="com.bloxbean.algodea.idea.module.filetypes.LSigFileType"
                   fieldName="INSTANCE"  extensions="lsig"/>
 
-        <fileType name="Tok File" implementationClass="com.bloxbean.algodea.idea.module.filetypes.TokFileType"
+        <fileType name="Algorand Tok File" implementationClass="com.bloxbean.algodea.idea.module.filetypes.TokFileType"
                   fieldName="INSTANCE"  extensions="tok"/>
 
         <lang.parserDefinition language="TEAL"
@@ -75,13 +75,6 @@
         <internalFileTemplate name="_Algo.ApprovalProgram"/>
         <internalFileTemplate name="_Algo.ClearStateProgram"/>
 
-<!--        <applicationService-->
-<!--                            serviceImplementation="NodeConfigState" />-->
-
-<!--        <applicationConfigurable parentId="tools" instance="NodeSettingsConfigurable"-->
-<!--                                 id="NodeSettingsConfigurable"-->
-<!--                                 displayName="Algorand"/>-->
-
         <applicationService serviceImplementation="com.bloxbean.algodea.idea.configuration.service.NodeConfigState"/>
         <applicationService serviceImplementation="com.bloxbean.algodea.idea.configuration.service.AlgoLocalSDKState"/>
         <projectService serviceImplementation="com.bloxbean.algodea.idea.configuration.service.AlgoProjectState"/>
@@ -116,7 +109,14 @@
             <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl T" second-keystroke="C"/>
             <add-to-group group-id="com.bloxbean.algodea.idea.core.action.AlgoActionGroup"/>
         </action>
-
+        <action id="com.bloxbean.algodea.idea.stateless.action.LogicSigSendTransactionAction_ProjectView" class="com.bloxbean.algodea.idea.stateless.action.LogicSigSendTransactionAction"
+                text="Send Transaction (Logic Sig)"
+                popup="true"
+                description="Send Transaction (Logic Sig)">
+            <add-to-group group-id="ProjectViewPopupMenu" relative-to-action="com.bloxbean.algodea.idea.core.action.AlgoActionGroup"  anchor="before"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl T" second-keystroke="U"/>
+            <!--            <add-to-group group-id="com.bloxbean.algodea.idea.core.action.AlgoActionGroup"/>-->
+        </action>
         <!-- Stateless contract actions -->
         <action id="com.bloxbean.algodea.idea.stateless.action.LogicSigGenerateAction" class="com.bloxbean.algodea.idea.stateless.action.LogicSigGenerateAction"
                 text="Generate Logic Sig"
@@ -129,6 +129,13 @@
                 text="Generate Multi-sig Logic Sig"
                 description="Generate Multi-sig Logic Sig">
             <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl T" second-keystroke="M"/>
+            <add-to-group group-id="AlgoActionGroup.StatelessContract"/>
+        </action>
+
+        <action id="com.bloxbean.algodea.idea.stateless.action.LogicSigSendTransactionAction" class="com.bloxbean.algodea.idea.stateless.action.LogicSigSendTransactionAction"
+                text="Send Transaction (Logic Sig)"
+                description="Send Transaction(Logic Sig)">
+            <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl T" second-keystroke="T"/>
             <add-to-group group-id="AlgoActionGroup.StatelessContract"/>
         </action>
         <!-- Stateless contract actions end here -->

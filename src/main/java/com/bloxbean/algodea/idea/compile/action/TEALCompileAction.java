@@ -220,8 +220,8 @@ public class TEALCompileAction extends AnAction {
             }
 
             @Override
-            public void onFailure(String sourceFile) {
-                console.showErrorMessage(String.format("Compilation failed for %s", sourceFile));
+            public void onFailure(String sourceFile, Throwable t) {
+                console.showErrorMessage(String.format("Compilation failed for %s", sourceFile), t);
                 IdeaUtil.showNotification(project, "TEAL Compile", "Compilation failed", NotificationType.ERROR, null);
             }
         };

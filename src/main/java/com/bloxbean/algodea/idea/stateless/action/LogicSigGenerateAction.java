@@ -1,13 +1,11 @@
 package com.bloxbean.algodea.idea.stateless.action;
 
 import com.algorand.algosdk.account.Account;
-import com.bloxbean.algodea.idea.stateless.model.LogicSigParams;
+import com.bloxbean.algodea.idea.common.AlgoIcons;
 import com.bloxbean.algodea.idea.compile.service.CompilationResultListener;
 import com.bloxbean.algodea.idea.compile.service.CompileService;
 import com.bloxbean.algodea.idea.compile.service.GoalCompileService;
 import com.bloxbean.algodea.idea.compile.service.RemoteCompileService;
-import com.bloxbean.algodea.idea.stateless.ui.LogicSigSignParamDialog;
-import com.bloxbean.algodea.idea.stateless.ui.LogicSigSigningAccountForm;
 import com.bloxbean.algodea.idea.configuration.action.ConfigurationAction;
 import com.bloxbean.algodea.idea.configuration.model.AlgoLocalSDK;
 import com.bloxbean.algodea.idea.configuration.model.NodeInfo;
@@ -15,6 +13,10 @@ import com.bloxbean.algodea.idea.core.action.util.AlgoContractModuleHelper;
 import com.bloxbean.algodea.idea.core.exception.LocalSDKNotConfigured;
 import com.bloxbean.algodea.idea.language.psi.TEALFile;
 import com.bloxbean.algodea.idea.nodeint.AlgoServerConfigurationHelper;
+import com.bloxbean.algodea.idea.nodeint.model.LogicSigType;
+import com.bloxbean.algodea.idea.stateless.model.LogicSigParams;
+import com.bloxbean.algodea.idea.stateless.ui.LogicSigSignParamDialog;
+import com.bloxbean.algodea.idea.stateless.ui.LogicSigSigningAccountForm;
 import com.bloxbean.algodea.idea.toolwindow.AlgoConsole;
 import com.bloxbean.algodea.idea.util.AlgoModuleUtils;
 import com.bloxbean.algodea.idea.util.IdeaUtil;
@@ -49,6 +51,10 @@ import java.util.List;
 public class LogicSigGenerateAction extends AnAction {
 
     private final static Logger LOG = Logger.getInstance(LogicSigGenerateAction.class);
+
+    public LogicSigGenerateAction() {
+        super(AlgoIcons.LOGIC_SIG_ICON);
+    }
 
     @Override
     public void update(@NotNull AnActionEvent e) {
@@ -230,8 +236,8 @@ public class LogicSigGenerateAction extends AnAction {
             }
 
             @Override
-            public void onFailure(String sourceFile) {
-                console.showErrorMessage(String.format("Logic sig generation failed for %s", sourceFile));
+            public void onFailure(String sourceFile, Throwable t) {
+                console.showErrorMessage(String.format("Logic sig generation failed for %s", sourceFile), t);
                 IdeaUtil.showNotification(project, "Create Logic Sig", "Logic Sig creation failed", NotificationType.ERROR, null);
             }
         };
@@ -260,6 +266,12 @@ public class LogicSigGenerateAction extends AnAction {
         logicSigParams.addSigningAccount(account); //Single account
         if(args != null) {
             logicSigParams.setArgs(args);
+        }
+
+        if(accountForm.isContractAccountType()) {
+            logicSigParams.setType(LogicSigType.CONTRACT_ACCOUNT);
+        } else {
+            logicSigParams.setType(LogicSigType.DELEGATION_ACCOUNT);
         }
 
         Task.Backgroundable task = new Task.Backgroundable(project, "TEAL Compile and Logic Sig") {

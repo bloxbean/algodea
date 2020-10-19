@@ -6,6 +6,7 @@ import com.bloxbean.algodea.idea.account.service.AccountChooser;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.openapi.util.text.StringUtil;
+import com.intellij.ui.components.JBRadioButton;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -17,12 +18,31 @@ public class LogicSigSigningAccountForm {
     private JButton accountChooserBtn;
     private JPanel mainPanel;
     private JTextField mnemonicTf;
+    private JRadioButton contractAccountRadioButton;
+    private JRadioButton accountDelegationRadioButton;
+
+    private ButtonGroup statelessContractTypeBtnGrp;
 
     protected LogicSigSigningAccountForm() {
 
     }
 
     public void initialize(Project project) {
+        contractAccountRadioButton.addActionListener(e -> {
+            if(contractAccountRadioButton.isSelected()) {
+                enableDisableSignerAccountFields(false);
+            }
+        });
+
+        accountDelegationRadioButton.addActionListener(e -> {
+            if(accountDelegationRadioButton.isSelected()) {
+                enableDisableSignerAccountFields(true);
+            }
+        });
+
+        contractAccountRadioButton.setSelected(true);
+        enableDisableSignerAccountFields(false);
+
         accountChooserBtn.addActionListener(e -> {
             AlgoAccount algoAccount = AccountChooser.getSelectedAccount(project, true);
             if(algoAccount != null) {
@@ -51,12 +71,21 @@ public class LogicSigSigningAccountForm {
 
     }
 
+    private void enableDisableSignerAccountFields(boolean flag) {
+        accountTf.setText("");
+        accountTf.setEnabled(flag);
+        accountChooserBtn.setEnabled(flag);
+        mnemonicTf.setEnabled(flag);
+    }
+
     public @Nullable ValidationInfo doValidate() {
-        if(StringUtil.isEmpty(accountTf.getText())) {
-            accountTf.setToolTipText("Please select a valid account or enter valid mnemonic");
-            return new ValidationInfo("Please select a valid account or enter valid mnemonic", accountTf);
-        } else {
-            accountTf.setToolTipText("");
+        if(isAccountDelegationType()) {
+            if (StringUtil.isEmpty(accountTf.getText())) {
+                accountTf.setToolTipText("Please select a valid account or enter valid mnemonic");
+                return new ValidationInfo("Please select a valid account or enter valid mnemonic", accountTf);
+            } else {
+                accountTf.setToolTipText("");
+            }
         }
 
         return null;
@@ -72,7 +101,25 @@ public class LogicSigSigningAccountForm {
         }
     }
 
+    public boolean isContractAccountType() {
+        return contractAccountRadioButton.isSelected();
+    }
+
+    public boolean isAccountDelegationType() {
+        return accountDelegationRadioButton.isSelected();
+    }
+
     protected @Nullable JComponent createCenterPanel() {
         return mainPanel;
+    }
+
+    private void createUIComponents() {
+        // TODO: place custom component creation code here
+        statelessContractTypeBtnGrp = new ButtonGroup();
+        contractAccountRadioButton = new JBRadioButton();
+        accountDelegationRadioButton = new JBRadioButton();
+
+        statelessContractTypeBtnGrp.add(contractAccountRadioButton);
+        statelessContractTypeBtnGrp.add(accountDelegationRadioButton);
     }
 }

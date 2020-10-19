@@ -2,7 +2,7 @@ package com.bloxbean.algodea.idea.nodeint.util;
 
 import com.algorand.algosdk.crypto.Address;
 import com.algorand.algosdk.util.Encoder;
-import com.bloxbean.algodea.idea.nodeint.exception.InvalidContractInputParamException;
+import com.bloxbean.algodea.idea.nodeint.exception.InvalidInputParamException;
 import com.bloxbean.algodea.idea.nodeint.model.ArgType;
 import com.bloxbean.algodea.idea.util.ByteUtil;
 import com.twelvemonkeys.lang.StringUtil;
@@ -13,7 +13,7 @@ import java.security.NoSuchAlgorithmException;
 
 public class ArgTypeToByteConverter {
     public static byte[] convert(ArgType type, String value) throws UnsupportedEncodingException,
-            NoSuchAlgorithmException, InvalidContractInputParamException {
+            NoSuchAlgorithmException, InvalidInputParamException {
         if(StringUtil.isEmpty(value))
             return null;
 
@@ -25,7 +25,7 @@ public class ArgTypeToByteConverter {
                     int intVal = Integer.parseInt(value);
                     return ByteUtil.intToBytes(intVal);
                 } catch (NumberFormatException ex) {
-                    throw new InvalidContractInputParamException("Invalid Argument value for integer type : " + value);
+                    throw new InvalidInputParamException("Invalid Argument value for integer type : " + value);
                 }
             } else if (type == ArgType.Address) {
                 return new Address(value).getBytes();
@@ -36,7 +36,7 @@ public class ArgTypeToByteConverter {
             }
 
         } catch (Exception e) {
-            throw new InvalidContractInputParamException("Invalid argument value for type : " + type + ", value : " + value);
+            throw new InvalidInputParamException("Invalid argument value for type : " + type + ", value : " + value);
         }
     }
 }
