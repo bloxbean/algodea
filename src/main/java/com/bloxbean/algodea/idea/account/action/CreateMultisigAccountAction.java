@@ -49,7 +49,7 @@ public class CreateMultisigAccountAction extends AnAction {
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
         Project project = e.getProject();
-        AccountService accountService = AccountService.getAccountService(project);
+        AccountService accountService = AccountService.getAccountService();
         AlgoConsole console = AlgoConsole.getConsole(project);
 
         MultiSignAccountCreateDialog multiSignAccountCreateDialog = new MultiSignAccountCreateDialog(project);

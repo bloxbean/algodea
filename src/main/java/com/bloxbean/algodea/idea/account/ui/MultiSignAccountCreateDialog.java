@@ -39,7 +39,7 @@ public class MultiSignAccountCreateDialog extends DialogWrapper {
 
     public MultiSignAccountCreateDialog(@Nullable Project project) {
         super(project, true);
-        accountService = AccountService.getAccountService(project);
+        accountService = AccountService.getAccountService();
         init();
         attachActionHandlers();
         populateData();

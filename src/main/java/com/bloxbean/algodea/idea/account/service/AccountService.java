@@ -22,7 +22,7 @@ public class AccountService {
 
     private AccountCacheService accountCacheService;
 
-    public static AccountService getAccountService(Project project) {
+    public static AccountService getAccountService() {
         return new AccountService();
     }
 

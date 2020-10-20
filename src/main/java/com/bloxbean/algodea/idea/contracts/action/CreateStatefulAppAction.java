@@ -107,7 +107,7 @@ public class CreateStatefulAppAction extends AlgoBaseAction {
             String deploymentServerId = projectState.getState().getDeploymentServerId();
 
             AlgoCacheService cacheService = AlgoCacheService.getInstance(project);
-            AccountService accountService = AccountService.getAccountService(project);
+            AccountService accountService = AccountService.getAccountService();
 
             String cacheCreatorAccount = cacheService.getSfCreatorAccount();
             AlgoAccount cacheAlgoAccount = null;

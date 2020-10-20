@@ -46,7 +46,7 @@ public class MultiSigLogicSigCreateInputForm  {
     }
 
     public void initializeData(Project project) {
-        accountService = AccountService.getAccountService(project);
+        accountService = AccountService.getAccountService();
 
         accountComboBoxModel = new DefaultComboBoxModel();
         accountsCB.setModel(accountComboBoxModel);

@@ -67,7 +67,7 @@ public class ListAccountDialog extends DialogWrapper {
         init();
         setTitle("Accounts (" + (isRemote ? "Remote Mode": "Embedded Mode") + ")");
 
-        this.accountService = AccountService.getAccountService(project);
+        this.accountService = AccountService.getAccountService();
         this.project = project;
         this.isRemote = isRemote;
         this.showBalance = showBalance;

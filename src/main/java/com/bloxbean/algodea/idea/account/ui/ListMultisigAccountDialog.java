@@ -70,7 +70,7 @@ public class ListMultisigAccountDialog extends DialogWrapper {
     public ListMultisigAccountDialog(Project project, boolean showBalance) {
         super(project, true);
         init();
-        this.accountService = AccountService.getAccountService(project);
+        this.accountService = AccountService.getAccountService();
         this.project = project;
         this.showBalance = showBalance;
         setTitle("Multi-Signature Accounts");
