@@ -103,6 +103,8 @@
             </group>
             <group id="AlgoActionGroup.StatefulContract" text="Stateful Contract" description="Stateful Contract" popup="true">
             </group>
+            <group id="AlgoActionGroup.Assets" text="Assets" description="Assets" popup="true">
+            </group>
         </group>
         <action id="Algo.teal.compile" class="com.bloxbean.algodea.idea.compile.action.TEALCompileAction" text="Compile TEAL"
                 description="Compile TEAL file">
@@ -213,6 +215,14 @@
             <add-to-group group-id="AlgoActionGroup.StatefulContract"/>
         </action>
         <!-- Stateful contract actions ends here-->
+
+        <!-- Assets actions -->
+        <action id="com.bloxbean.algodea.idea.transaction.assets.action.AssetCreateAction"
+                class="com.bloxbean.algodea.idea.transaction.assets.action.AssetCreateAction" text="Create Asset"
+                description="Create Asset">
+            <add-to-group group-id="AlgoActionGroup.Assets"/>
+        </action>
+        <!-- Assets actions end here-->
 
         <action id="com.bloxbean.algodea.idea.transaction.action.TransferAction" class="com.bloxbean.algodea.idea.transaction.action.TransferAction" text="Transfer"
                 description="Transfer Algo">

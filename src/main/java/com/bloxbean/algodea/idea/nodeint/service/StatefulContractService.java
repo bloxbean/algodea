@@ -106,7 +106,7 @@ public class StatefulContractService extends AlgoBaseService {
         txnBuilder.approvalProgram(new TEALProgram(approvalProgramBytes));
         txnBuilder.clearStateProgram(new TEALProgram(clearProgramBytes));
 
-        Transaction txn = populateBaseTransaction( txnBuilder, appId, fromAccount, txnDetailsParameters);
+        Transaction txn = populateBaseAppTransaction( txnBuilder, appId, fromAccount, txnDetailsParameters);
         if(txn == null) {
             logListener.error("Transaction could not be built");
             return false;
@@ -119,7 +119,7 @@ public class StatefulContractService extends AlgoBaseService {
 
         ApplicationOptInTransactionBuilder txnBuilder = Transaction.ApplicationOptInTransactionBuilder();
 
-        Transaction txn = populateBaseTransaction( txnBuilder, appId, fromAccount, txnDetailsParameters);
+        Transaction txn = populateBaseAppTransaction( txnBuilder, appId, fromAccount, txnDetailsParameters);
         if(txn == null) {
             logListener.error("Transaction could not be built");
             return false;
@@ -131,7 +131,7 @@ public class StatefulContractService extends AlgoBaseService {
     public boolean call(Long appId, Account fromAccount, TxnDetailsParameters txnDetailsParameters) throws Exception {
         ApplicationCallTransactionBuilder txnBuilder = Transaction.ApplicationCallTransactionBuilder();
 
-        Transaction txn = populateBaseTransaction( txnBuilder, appId, fromAccount, txnDetailsParameters);
+        Transaction txn = populateBaseAppTransaction( txnBuilder, appId, fromAccount, txnDetailsParameters);
         if(txn == null) {
             logListener.error("Transaction could not be built");
             return false;
@@ -143,7 +143,7 @@ public class StatefulContractService extends AlgoBaseService {
     public boolean closeOut(Long appId, Account fromAccount, TxnDetailsParameters txnDetailsParameters) throws Exception {
         ApplicationCloseTransactionBuilder txnBuilder = Transaction.ApplicationCloseTransactionBuilder();
 
-        Transaction txn = populateBaseTransaction( txnBuilder, appId, fromAccount, txnDetailsParameters);
+        Transaction txn = populateBaseAppTransaction( txnBuilder, appId, fromAccount, txnDetailsParameters);
         if(txn == null) {
             logListener.error("Transaction could not be built");
             return false;
@@ -155,7 +155,7 @@ public class StatefulContractService extends AlgoBaseService {
     public boolean clear(Long appId, Account fromAccount, TxnDetailsParameters txnDetailsParameters) throws Exception {
         ApplicationClearTransactionBuilder txnBuilder = Transaction.ApplicationClearTransactionBuilder();
 
-        Transaction txn = populateBaseTransaction( txnBuilder, appId, fromAccount, txnDetailsParameters);
+        Transaction txn = populateBaseAppTransaction( txnBuilder, appId, fromAccount, txnDetailsParameters);
         if(txn == null) {
             logListener.error("Transaction could not be built");
             return false;
@@ -167,7 +167,7 @@ public class StatefulContractService extends AlgoBaseService {
     public boolean delete(Long appId, Account fromAccount, TxnDetailsParameters txnDetailsParameters) throws Exception {
         ApplicationDeleteTransactionBuilder txnBuilder = Transaction.ApplicationDeleteTransactionBuilder();
 
-        Transaction txn = populateBaseTransaction( txnBuilder, appId, fromAccount, txnDetailsParameters);
+        Transaction txn = populateBaseAppTransaction( txnBuilder, appId, fromAccount, txnDetailsParameters);
         if(txn == null) {
             logListener.error("Transaction could not be built");
             return false;
@@ -252,7 +252,7 @@ public class StatefulContractService extends AlgoBaseService {
                 .localStateSchema(new StateSchema(localInts, localBytes));
                 //.build();
 
-        Transaction txn = populateBaseTransaction(transactionBuilder, null, creator, txnDetailsParameters);
+        Transaction txn = populateBaseAppTransaction(transactionBuilder, null, creator, txnDetailsParameters);
 
         // sign transaction
         SignedTransaction signedTxn = creator.signTransaction(txn);

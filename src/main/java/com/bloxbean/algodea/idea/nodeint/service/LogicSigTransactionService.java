@@ -7,6 +7,7 @@ import com.algorand.algosdk.crypto.LogicsigSignature;
 import com.algorand.algosdk.transaction.SignedTransaction;
 import com.algorand.algosdk.transaction.Transaction;
 import com.algorand.algosdk.util.Encoder;
+import com.algorand.algosdk.v2.client.model.PendingTransactionResponse;
 import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
 import com.bloxbean.algodea.idea.nodeint.model.TxnDetailsParameters;
 import com.intellij.openapi.project.Project;
@@ -70,7 +71,8 @@ public class LogicSigTransactionService extends TransactionService{
             }
         };
 
-       return postTransaction(txnSigner, txn);
+       PendingTransactionResponse txnResponse = postTransaction(txnSigner, txn);
+       return txnResponse != null? true: false;
 
     }
 
@@ -114,6 +116,7 @@ public class LogicSigTransactionService extends TransactionService{
             }
         };
 
-        return postTransaction(txnSigner, txn);
+        PendingTransactionResponse txnResponse = postTransaction(txnSigner, txn);
+        return txnResponse != null? true: false;
     }
 }

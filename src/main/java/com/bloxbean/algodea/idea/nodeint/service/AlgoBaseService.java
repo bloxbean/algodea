@@ -23,6 +23,7 @@ package com.bloxbean.algodea.idea.nodeint.service;
 
 import com.algorand.algosdk.account.Account;
 import com.algorand.algosdk.builder.transaction.ApplicationBaseTransactionBuilder;
+import com.algorand.algosdk.builder.transaction.TransactionBuilder;
 import com.algorand.algosdk.crypto.Address;
 import com.algorand.algosdk.transaction.SignedTransaction;
 import com.algorand.algosdk.transaction.Transaction;
@@ -165,7 +166,7 @@ public class AlgoBaseService {
         return true;
     }
 
-    protected boolean postTransaction(TransactionSigner signer, Transaction txn) throws Exception {
+    protected PendingTransactionResponse postTransaction(TransactionSigner signer, Transaction txn) throws Exception {
         // sign transaction
         SignedTransaction signedTxn = signer.signTransaction(txn);
         logListener.info("Signed transaction with txid: " + signedTxn.transactionID);
@@ -176,7 +177,7 @@ public class AlgoBaseService {
         Response<PostTransactionsResponse> postTransactionsResponse = client.RawTransaction().rawtxn(encodedTxBytes).execute();
         if(!postTransactionsResponse.isSuccessful()) {
             printErrorMessage("Transaction could not be posted to the network", postTransactionsResponse);
-            return false;
+            return null;
         }
 
         String id = postTransactionsResponse.body().txId;
@@ -189,7 +190,7 @@ public class AlgoBaseService {
         Response<PendingTransactionResponse> pendingTransactionResponse = client.PendingTransactionInformation(id).execute();
         if(!pendingTransactionResponse.isSuccessful()) {
             printErrorMessage("Unable to get pending transaction info", pendingTransactionResponse);
-            return false;
+            return null;
         }
 
         if(pendingTransactionResponse.body() != null) {
@@ -197,10 +198,10 @@ public class AlgoBaseService {
             logListener.info(JsonUtil.getPrettyJson(pendingTransactionResponse.body().toString()));
         }
 
-        return true;
+        return pendingTransactionResponse.body();
     }
 
-    protected Transaction populateBaseTransaction(ApplicationBaseTransactionBuilder appTransactionBuilder, Long appId, Account fromAccount, TxnDetailsParameters txnDetailsParameters) throws Exception {
+    protected Transaction populateBaseAppTransaction(ApplicationBaseTransactionBuilder appTransactionBuilder, Long appId, Account fromAccount, TxnDetailsParameters txnDetailsParameters) throws Exception {
         if(fromAccount == null) {
             logListener.error("From Account cannot be null");
             return null;
@@ -269,6 +270,43 @@ public class AlgoBaseService {
             appTransactionBuilder.foreignAssets(foreignAssets);
 
         return appTransactionBuilder.build();
+    }
+
+    protected TransactionBuilder populateBaseTransactionDetails(TransactionBuilder transactionBuilder, Address sender, TxnDetailsParameters txnDetailsParameters) throws Exception {
+        if(sender == null) {
+            logListener.error("From Account cannot be null");
+            return null;
+        }
+
+        logListener.info("Getting node suggested transaction parameters ...");
+        // get node suggested parameters
+        Response<TransactionParametersResponse> transactionParametersResponse = client.TransactionParams().execute();
+        if(!transactionParametersResponse.isSuccessful()) {
+            printErrorMessage("Unable to get Transaction Params from the node", transactionParametersResponse);
+            return null;
+        }
+
+        TransactionParametersResponse params = transactionParametersResponse.body();
+        logListener.info("Got node suggested transaction parameters.");
+
+        logListener.info("Signing transaction ...");
+        // create unsigned transaction
+        transactionBuilder
+                .sender(sender)
+                .suggestedParams(params);
+
+        byte[] note = txnDetailsParameters.getNote();
+        byte[] lease = txnDetailsParameters.getLease();
+
+        if(note != null) {
+            transactionBuilder.note(note);
+        }
+
+        if(lease != null) {
+            transactionBuilder.lease(lease);
+        }
+
+        return transactionBuilder;
     }
 
     protected void waitForConfirmation(String txID) throws Exception {
