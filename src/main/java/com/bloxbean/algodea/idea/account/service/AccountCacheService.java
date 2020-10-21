@@ -157,7 +157,7 @@ class AccountCacheService {
             }
         }
 
-        File algoFolder = new File(cacheFolder, ".algo-idea");
+        File algoFolder = new File(cacheFolder, ".algodea");
         if(!algoFolder.exists()) {
             algoFolder.mkdirs();
         }

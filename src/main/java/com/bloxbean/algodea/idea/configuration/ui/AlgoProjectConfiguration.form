@@ -72,6 +72,7 @@
                               <name value="compileRadioGroup"/>
                               <selected value="false"/>
                               <text value="Local Algorand SDK"/>
+                              <toolTipText value="Algorand Node Folder"/>
                             </properties>
                           </component>
                           <component id="c5470" class="javax.swing.JRadioButton" binding="algorandNodeRB" custom-create="true">
@@ -239,4 +240,3 @@
     </children>
   </grid>
 </form>
-

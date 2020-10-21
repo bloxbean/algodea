@@ -10,6 +10,8 @@ public class NodeInfo {
 
     private String apiKey;
     private String encryptedApiKey;
+    private String genesisHash;
+    private String genesisId;
 
     public NodeInfo() {
         this.id = "";
@@ -64,6 +66,22 @@ public class NodeInfo {
         this.encryptedApiKey = encryptedApiKey;
     }
 
+    public void setGenesisHash(String genesisHash) {
+        this.genesisHash = genesisHash;
+    }
+
+    public void setGenesisId(String genesisId) {
+        this.genesisId = genesisId;
+    }
+
+    public String getGenesisHash() {
+        return genesisHash;
+    }
+
+    public String getGenesisId() {
+        return genesisId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -90,6 +108,8 @@ public class NodeInfo {
                 ", indexerAPIUrl='" + indexerAPIUrl + '\'' +
                 ", apiKey='" + apiKey + '\'' +
                 ", encryptedApiKey='" + encryptedApiKey + '\'' +
+                ", genesisHash='" + genesisHash + '\'' +
+                ", genesisId='" + genesisId + '\'' +
                 '}';
     }
 
@@ -100,6 +120,8 @@ public class NodeInfo {
         this.setNodeAPIUrl(updatedInfo.getNodeAPIUrl());
         this.setIndexerAPIUrl(updatedInfo.getIndexerAPIUrl());
         this.setApiKey(updatedInfo.getApiKey());
+        this.setGenesisHash(updatedInfo.genesisHash);
+        this.setGenesisId(updatedInfo.genesisId);
     }
 }
 

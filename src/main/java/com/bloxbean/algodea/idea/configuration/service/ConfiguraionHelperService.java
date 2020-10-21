@@ -33,6 +33,9 @@ public class ConfiguraionHelperService {
             nodeInfo.setApiKey(remoteNodeConfigDialog.getApiKey());
             nodeInfo.setIndexerAPIUrl(remoteNodeConfigDialog.getIndexerApiUrl());
 
+            nodeInfo.setGenesisHash(remoteNodeConfigDialog.getGenesisHash());
+            nodeInfo.setGenesisId(remoteNodeConfigDialog.getGenesisId());
+
             if (existingNodeInfo == null) {
                 stateService.addNode(nodeInfo);
                 AlgoNodeChangeNotifier algoNodeChangeNotifier = ApplicationManager.getApplication().getMessageBus().syncPublisher(AlgoNodeChangeNotifier.CHANGE_ALGO_REMOTE_NODES_TOPIC);

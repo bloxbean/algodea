@@ -47,7 +47,7 @@ public class RemoteCompileService extends BaseCompileService {
 
         compilationResultListener.info(String.format("Compiling TEAL file using remote Algorand Node [%s]", nodeInfo.getNodeAPIUrl()));
 
-        AlgoBaseService algoBaseService = new AlgoBaseService(project, nodeInfo, logListener);
+        AlgoBaseService algoBaseService = new AlgoBaseService(nodeInfo, logListener);
 
         String code = null;
         try {

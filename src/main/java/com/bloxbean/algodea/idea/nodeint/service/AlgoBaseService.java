@@ -82,7 +82,7 @@ public class AlgoBaseService {
     }
 
     //Pass your custom nodeInfo object. Required for compiler service
-    public AlgoBaseService(@NotNull Project project, @NotNull NodeInfo nodeInfo, LogListener logListener) {
+    public AlgoBaseService(@NotNull NodeInfo nodeInfo, LogListener logListener) {
         if(nodeInfo == null)
             throw new IllegalArgumentException("NodeInfo cannot be null");
         algoConnectionFactory
@@ -177,7 +177,7 @@ public class AlgoBaseService {
         Response<PostTransactionsResponse> postTransactionsResponse = client.RawTransaction().rawtxn(encodedTxBytes).execute();
         if(!postTransactionsResponse.isSuccessful()) {
             printErrorMessage("Transaction could not be posted to the network", postTransactionsResponse);
-            return null;
+            return null  ;
         }
 
         String id = postTransactionsResponse.body().txId;

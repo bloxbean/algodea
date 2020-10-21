@@ -44,6 +44,9 @@ final public class NodeConfigState implements PersistentStateComponent<Element> 
             entry.setAttribute("indexerApiUrl", StringUtil.notNullize(node.getIndexerAPIUrl()));
             entry.setAttribute("apiKey", StringUtil.notNullize(node.getApiKey()));
             entry.setAttribute("encryptedApiKey", StringUtil.notNullize(node.getEncryptedApiKey()));
+
+            entry.setAttribute("genesisHash", node.getGenesisHash());
+            entry.setAttribute("genesisId", node.getGenesisId());
             
             state.addContent(entry);
         }
@@ -63,6 +66,9 @@ final public class NodeConfigState implements PersistentStateComponent<Element> 
             String apiKey = child.getAttributeValue("apiKey");
             String encryptedApiKey = child.getAttributeValue("encryptedApiKey");
 
+            String genesisHash = child.getAttributeValue("genesisHash");
+            String genesisId = child.getAttributeValue("genesisId");
+
             NodeInfo nodeInfo = new NodeInfo();
             nodeInfo.setId(id);
             nodeInfo.setName(name);
@@ -70,6 +76,8 @@ final public class NodeConfigState implements PersistentStateComponent<Element> 
             nodeInfo.setIndexerAPIUrl(indexerApiUrl);
             nodeInfo.setApiKey(apiKey);
             nodeInfo.setEncryptedApiKey(encryptedApiKey);
+            nodeInfo.setGenesisHash(genesisHash);
+            nodeInfo.setGenesisId(genesisId);
 
             list.add(nodeInfo);
         }
