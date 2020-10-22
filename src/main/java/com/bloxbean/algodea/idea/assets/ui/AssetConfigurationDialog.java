@@ -5,6 +5,7 @@ import com.algorand.algosdk.crypto.Address;
 import com.algorand.algosdk.v2.client.model.Asset;
 import com.bloxbean.algodea.idea.account.model.AlgoAccount;
 import com.bloxbean.algodea.idea.account.service.AccountService;
+import com.bloxbean.algodea.idea.assets.action.AssetActionType;
 import com.bloxbean.algodea.idea.assets.model.AssetMeta;
 import com.bloxbean.algodea.idea.assets.service.AssetCacheService;
 import com.bloxbean.algodea.idea.core.service.AlgoCacheService;
@@ -63,24 +64,32 @@ public class AssetConfigurationDialog extends DialogWrapper {
     private JComboBox assetIdCB;
     private JPanel assetIdPanel;
 
-    private boolean modifyMode;
+//    private boolean modifyMode;
+    private AssetActionType actionType;
 
     private DefaultComboBoxModel<AssetMeta> assetIdComboBoxModel;
 
     public AssetConfigurationDialog(@Nullable Project project) {
-        this(project, false);
+        this(project, AssetActionType.CREATE);
     }
 
-    public AssetConfigurationDialog(@Nullable Project project, boolean modifyMode) {
+    public AssetConfigurationDialog(@Nullable Project project, AssetActionType actionType) {
         super(project, true);
         init();
         setTitle("Asset Configuration");
 
-        this.modifyMode = modifyMode;
-        if(!modifyMode) {
+//        if(AssetActionType.MODIFY.equals(actionType)) {
+//            this.modifyMode = true;
+//        }
+
+        this.actionType = actionType;
+
+        if(AssetActionType.CREATE.equals(actionType)) {
             initializeData(project);
-        } else {
+        } else if(AssetActionType.MODIFY.equals(actionType)) {
             initializeModify(project);
+        } else {
+            initializeViewMode(project);
         }
 
         managerAddressInputForm.setTooltipText("<html>The manager account is the only account that can authorize" +
@@ -113,6 +122,23 @@ public class AssetConfigurationDialog extends DialogWrapper {
 
         disableFieldsForModifyMode();
 
+        attachAssetIdSearchHandler(project);
+    }
+
+    private void initializeViewMode(Project project) {
+        if(AssetActionType.OPT_IN.equals(actionType)) {
+            creatorAddressInputForm.setAccountLabel("Txn Sender (OptIn account)"); //Sender here is manager
+            setOKButtonText("Opt In");
+        } else {
+            creatorAddressInputForm.setAccountLabel("Txn Sender "); //Sender here is manager
+        }
+
+        _initialize(project);
+        disableFieldsForReadonlyMode();
+        attachAssetIdSearchHandler(project);
+    }
+
+    private void attachAssetIdSearchHandler(Project project) {
         AlgoConsole algoConsole = AlgoConsole.getConsole(project);
         algoConsole.clearAndshow();
 
@@ -252,11 +278,13 @@ public class AssetConfigurationDialog extends DialogWrapper {
             clawbackAddressInputForm.setEnable(false);
 
         //Creator account
-        if(!StringUtil.isEmpty(asset.params.manager)) {
-            AccountService accountService = AccountService.getAccountService();
-            AlgoAccount managerAcc = accountService.getAccountByAddress(asset.params.manager);
-            if(managerAcc != null) {
-                creatorAddressInputForm.setMnemonic(managerAcc.getMnemonic());
+        if(AssetActionType.MODIFY.equals(actionType)) {
+            if (!StringUtil.isEmpty(asset.params.manager)) {
+                AccountService accountService = AccountService.getAccountService();
+                AlgoAccount managerAcc = accountService.getAccountByAddress(asset.params.manager);
+                if (managerAcc != null) {
+                    creatorAddressInputForm.setMnemonic(managerAcc.getMnemonic());
+                }
             }
         }
     }
@@ -279,6 +307,16 @@ public class AssetConfigurationDialog extends DialogWrapper {
         metadataHashTf.setEditable(false);
         metadataHashType.setEnabled(false);
         defaultFrozenCB.setEnabled(false);
+    }
+
+
+    private void disableFieldsForReadonlyMode() {
+        disableFieldsForModifyMode();
+
+        managerAddressInputForm.setEnable(false);
+        freezeAddressInputForm.setEnable(false);
+        reserveAddressInputForm.setEnable(false);
+        clawbackAddressInputForm.setEnable(false);
     }
 
     private void clearFieldsForModifyMode() {
@@ -310,7 +348,7 @@ public class AssetConfigurationDialog extends DialogWrapper {
     @Override
     protected @Nullable ValidationInfo doValidate() {
 
-        if(!modifyMode) {
+        if(AssetActionType.CREATE.equals(actionType)) {
             //Assets form validation
             try {
                 if (getTotalSupply() == null) {
@@ -352,25 +390,27 @@ public class AssetConfigurationDialog extends DialogWrapper {
         if (createAddressVal != null)
             return createAddressVal;
 
-        ValidationInfo managerAddressVal = managerAddressInputForm.doValidate();
-        if (managerAddressVal != null)
-            return managerAddressVal;
+        if(AssetActionType.CREATE.equals(actionType) || AssetActionType.MODIFY.equals(actionType)) {
+            ValidationInfo managerAddressVal = managerAddressInputForm.doValidate();
+            if (managerAddressVal != null)
+                return managerAddressVal;
 
-        ValidationInfo reserveAddressVal = reserveAddressInputForm.doValidate();
-        if (reserveAddressVal != null)
-            return reserveAddressVal;
+            ValidationInfo reserveAddressVal = reserveAddressInputForm.doValidate();
+            if (reserveAddressVal != null)
+                return reserveAddressVal;
 
-        ValidationInfo freezeAddressVal = freezeAddressInputForm.doValidate();
-        if (freezeAddressVal != null)
-            return freezeAddressVal;
+            ValidationInfo freezeAddressVal = freezeAddressInputForm.doValidate();
+            if (freezeAddressVal != null)
+                return freezeAddressVal;
 
-        ValidationInfo clawbackAddressVal = clawbackAddressInputForm.doValidate();
-        if (clawbackAddressVal != null)
-            return clawbackAddressVal;
+            ValidationInfo clawbackAddressVal = clawbackAddressInputForm.doValidate();
+            if (clawbackAddressVal != null)
+                return clawbackAddressVal;
 
-        ValidationInfo txnDtalVal = transactionDtlsEntryForm.doValidate();
-        if (txnDtalVal != null)
-            return txnDtalVal;
+            ValidationInfo txnDtalVal = transactionDtlsEntryForm.doValidate();
+            if (txnDtalVal != null)
+                return txnDtalVal;
+        }
 
         return null;
     }
@@ -450,7 +490,7 @@ public class AssetConfigurationDialog extends DialogWrapper {
 
     public AssetTxnParameters getAssetTxnParameters() throws Exception {
         AssetTxnParameters assetTxnParameters = new AssetTxnParameters();
-        if(!modifyMode) {
+        if(AssetActionType.CREATE.equals(actionType)) {
             assetTxnParameters.assetName = getAssetName();
             assetTxnParameters.unitName = getUnitName();
             assetTxnParameters.total = getTotalSupply();
@@ -462,10 +502,12 @@ public class AssetConfigurationDialog extends DialogWrapper {
             assetTxnParameters.assetId = getAssetId();
         }
 
-        assetTxnParameters.managerAddres = getManagerAddress();
-        assetTxnParameters.reserveAddress = getReserveAddress();
-        assetTxnParameters.freezeAddress = getFreezeAddress();
-        assetTxnParameters.clawbackAddress = getClawbackAddress();
+        if(AssetActionType.CREATE.equals(actionType) || AssetActionType.MODIFY.equals(actionType)) {
+            assetTxnParameters.managerAddres = getManagerAddress();
+            assetTxnParameters.reserveAddress = getReserveAddress();
+            assetTxnParameters.freezeAddress = getFreezeAddress();
+            assetTxnParameters.clawbackAddress = getClawbackAddress();
+        }
 
         return assetTxnParameters;
     }

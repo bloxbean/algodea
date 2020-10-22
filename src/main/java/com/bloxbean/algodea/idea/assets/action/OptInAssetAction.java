@@ -1,9 +1,7 @@
 package com.bloxbean.algodea.idea.assets.action;
 
 import com.algorand.algosdk.account.Account;
-import com.bloxbean.algodea.idea.assets.service.AssetCacheService;
 import com.bloxbean.algodea.idea.assets.ui.AssetConfigurationDialog;
-import com.bloxbean.algodea.idea.common.AlgoConstants;
 import com.bloxbean.algodea.idea.core.action.AlgoBaseAction;
 import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
 import com.bloxbean.algodea.idea.nodeint.model.AssetTxnParameters;
@@ -21,13 +19,12 @@ import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.progress.impl.BackgroundableProcessIndicator;
 import com.intellij.openapi.project.Project;
-import com.twelvemonkeys.lang.StringUtil;
 import org.jetbrains.annotations.NotNull;
 
-public class ModifyAssetAction extends AlgoBaseAction {
-    private final static Logger LOG = Logger.getInstance(ModifyAssetAction.class);
+public class OptInAssetAction extends AlgoBaseAction {
+    private final static Logger LOG = Logger.getInstance(OptInAssetAction.class);
 
-    public ModifyAssetAction() {
+    public OptInAssetAction() {
         super();
     }
 
@@ -40,7 +37,7 @@ public class ModifyAssetAction extends AlgoBaseAction {
         AlgoConsole console = AlgoConsole.getConsole(project);
         console.clearAndshow();
 
-        AssetConfigurationDialog dialog = new AssetConfigurationDialog(project, AssetActionType.MODIFY);
+        AssetConfigurationDialog dialog = new AssetConfigurationDialog(project, AssetActionType.OPT_IN);
         boolean ok = dialog.showAndGet();
 
         if(!ok) {
@@ -64,7 +61,7 @@ public class ModifyAssetAction extends AlgoBaseAction {
             return;
         }
 
-        AssetCacheService assetCacheService = AssetCacheService.getInstance();
+//        AssetCacheService assetCacheService = AssetCacheService.getInstance();
         try {
             TransactionDtlsEntryForm transactionDtlsEntryForm = dialog.getTransactionDtlsEntryForm();
             TxnDetailsParameters txnDetailsParameters = transactionDtlsEntryForm.getTxnDetailsParameters();
@@ -78,16 +75,10 @@ public class ModifyAssetAction extends AlgoBaseAction {
                 public void run(@NotNull ProgressIndicator indicator) {
                     console.showInfoMessage(String.format("Starting %s ...\n", getTxnCommand()));
                     try {
-                        boolean status = assetTransactionService.modifyAsset(managerAccount, finalAssetTxnPrameters, txnDetailsParameters);
+                        boolean status = assetTransactionService.optInAsset(managerAccount, finalAssetTxnPrameters, txnDetailsParameters);
 
                         if(status) {
-
-                            if(!StringUtil.isEmpty(assetTransactionService.getNetworkGenesisHash())) {
-                                assetCacheService.addAssetId(assetTransactionService.getNetworkGenesisHash(),
-                                        finalAssetTxnPrameters.assetName, String.valueOf(finalAssetTxnPrameters.assetId));
-                            }
-
-                            console.showInfoMessage(String.format("Asset updated successfully with asset id %s", finalAssetTxnPrameters.assetId));
+                            console.showInfoMessage(String.format("%s successfully with asset id %s", getTxnCommand(), finalAssetTxnPrameters.assetId));
                             IdeaUtil.showNotification(project, getTitle(), String.format("%s was successful", getTxnCommand()), NotificationType.INFORMATION, null);
                         } else {
                             console.showErrorMessage(String.format("%s failed", getTxnCommand()));
@@ -110,15 +101,15 @@ public class ModifyAssetAction extends AlgoBaseAction {
         } catch (Exception ex) {
             LOG.error(ex);
             console.showErrorMessage(ex.getMessage(), ex);
-            IdeaUtil.showNotification(project, getTitle(), String.format("AssetModify transaction failed, reason: %s", ex.getMessage()), NotificationType.ERROR, null);
+            IdeaUtil.showNotification(project, getTitle(), String.format("%s transaction failed, reason: %s", getTxnCommand(), ex.getMessage()), NotificationType.ERROR, null);
         }
     }
 
     private String getTxnCommand() {
-        return "AssetModify";
+        return "AssetOptIn";
     }
 
     private String getTitle() {
-        return "AssetModify";
+        return "AssetOptIn";
     }
 }

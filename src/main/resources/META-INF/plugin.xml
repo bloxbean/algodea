@@ -220,12 +220,17 @@
         <!-- Assets actions -->
         <action id="com.bloxbean.algodea.idea.assets.action.AssetCreateAction"
                 class="com.bloxbean.algodea.idea.assets.action.AssetCreateAction" text="Create Asset"
-                description="Create Asset">
+                description="Create  ">
             <add-to-group group-id="AlgoActionGroup.Assets"/>
         </action>
         <action id="com.bloxbean.algodea.idea.assets.action.ModifyAssetAction"
-                class="com.bloxbean.algodea.idea.assets.action.ModifyAssetAction" text="Modify Asset"
+                class="com.bloxbean.algodea.idea.assets.action.ModifyAssetAction" text="Modify  "
                 description="Modify Asset">
+            <add-to-group group-id="AlgoActionGroup.Assets"/>
+        </action>
+        <action id="com.bloxbean.algodea.idea.assets.action.OptInAssetAction"
+                class="com.bloxbean.algodea.idea.assets.action.OptInAssetAction" text="OptIn"
+                description="OptIn Asset">
             <add-to-group group-id="AlgoActionGroup.Assets"/>
         </action>
         <!-- Assets actions end here-->
