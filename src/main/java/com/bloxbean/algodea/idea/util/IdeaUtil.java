@@ -7,6 +7,7 @@ import com.intellij.notification.Notifications;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.project.Project;
 
 public class IdeaUtil {
@@ -63,5 +64,9 @@ public class IdeaUtil {
                 Notifications.Bus.notify(notification, project);
             }
         });
+    }
+
+    public static void invokeLater(Runnable runnable, ModalityState state) {
+        ApplicationManager.getApplication().invokeLater(runnable, state);
     }
 }

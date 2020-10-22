@@ -1,12 +1,16 @@
 package com.bloxbean.algodea.idea.nodeint.service;
 
 import com.algorand.algosdk.account.Account;
+import com.algorand.algosdk.builder.transaction.AssetConfigureTransactionBuilder;
 import com.algorand.algosdk.builder.transaction.AssetCreateTransactionBuilder;
 import com.algorand.algosdk.transaction.Transaction;
+import com.algorand.algosdk.v2.client.common.Response;
+import com.algorand.algosdk.v2.client.model.Asset;
 import com.algorand.algosdk.v2.client.model.PendingTransactionResponse;
 import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
 import com.bloxbean.algodea.idea.nodeint.model.AssetTxnParameters;
 import com.bloxbean.algodea.idea.nodeint.model.TxnDetailsParameters;
+import com.bloxbean.algodea.idea.util.JsonUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
 
@@ -36,6 +40,55 @@ public class AssetTransactionService extends AlgoBaseService {
         if(transactionResponse == null) return null;
         else
             return transactionResponse.assetIndex;
+    }
+
+    public boolean modifyAsset(Account sender, AssetTxnParameters finalAssetTxnPrameters, TxnDetailsParameters txnDetailsParameters) throws Exception {
+        AssetConfigureTransactionBuilder builder = Transaction.AssetConfigureTransactionBuilder();
+
+        builder.strictEmptyAddressChecking(false);
+        builder.assetIndex(finalAssetTxnPrameters.assetId)
+                .manager(finalAssetTxnPrameters.managerAddres)
+                .reserve(finalAssetTxnPrameters.reserveAddress)
+                .freeze(finalAssetTxnPrameters.freezeAddress)
+                .clawback(finalAssetTxnPrameters.clawbackAddress);
+
+        builder = (AssetConfigureTransactionBuilder) populateBaseTransactionDetails(builder, sender.getAddress(), txnDetailsParameters);
+
+        if (builder == null) {
+            logListener.error("Transaction could not be built");
+            return false;
+        }
+
+        Transaction txn = builder.build();
+
+        PendingTransactionResponse transactionResponse = postTransaction((transaction -> {
+            return sender.signTransaction(transaction);
+        }), txn);
+
+        if(transactionResponse == null) return false;
+        else
+            return true;
+    }
+
+    public Asset getAsset(Long assetId) throws Exception {
+        if(assetId == null) {
+            logListener.error("Asset id cannot be null");
+            return null;
+        }
+
+        logListener.info("Fetching asset info ...");
+        Response<Asset> assetResponse = client.GetAssetByID(assetId).execute();
+        if(!assetResponse.isSuccessful()) {
+            printErrorMessage("Reading asset info failed", assetResponse);
+            return null;
+        }
+
+        Asset asset = assetResponse.body();
+
+        logListener.info(JsonUtil.getPrettyJson(asset));
+        logListener.info("\n");
+
+        return asset;
     }
 
     private void populateAssetCreateTransaction(AssetCreateTransactionBuilder builder, AssetTxnParameters assetTxnParameters) {
@@ -75,6 +128,7 @@ public class AssetTransactionService extends AlgoBaseService {
         }
 
     }
+
 }
 
 

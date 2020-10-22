@@ -50,6 +50,7 @@ public class AlgoBaseService {
     protected AlgoConnectionFactory algoConnectionFactory;
     protected LogListener logListener;
     protected CustomAlgodClient client;
+    protected String networkGenesisHash;
 
     public AlgoBaseService(Project project) throws DeploymentTargetNotConfigured {
         this(project, new LogListener() {
@@ -79,6 +80,7 @@ public class AlgoBaseService {
         this.logListener = logListener;
 
         this.client = algoConnectionFactory.connect();
+        this.networkGenesisHash = nodeInfo.getGenesisHash();
     }
 
     //Pass your custom nodeInfo object. Required for compiler service
@@ -89,6 +91,7 @@ public class AlgoBaseService {
                 = new AlgoConnectionFactory(nodeInfo.getNodeAPIUrl(), nodeInfo.getApiKey());
         this.logListener = logListener;
         this.client = algoConnectionFactory.connect();
+        this.networkGenesisHash = nodeInfo.getGenesisHash();
     }
 
     public CustomAlgodClient getAlgodClient() {
@@ -334,5 +337,9 @@ public class AlgoBaseService {
                 throw (e);
             }
         }
+    }
+
+    public String getNetworkGenesisHash() {
+        return networkGenesisHash;
     }
 }

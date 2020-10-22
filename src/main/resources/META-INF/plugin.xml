@@ -77,6 +77,7 @@
 
         <applicationService serviceImplementation="com.bloxbean.algodea.idea.configuration.service.NodeConfigState"/>
         <applicationService serviceImplementation="com.bloxbean.algodea.idea.configuration.service.AlgoLocalSDKState"/>
+        <applicationService serviceImplementation="com.bloxbean.algodea.idea.assets.service.AssetCacheService"/>
         <projectService serviceImplementation="com.bloxbean.algodea.idea.configuration.service.AlgoProjectState"/>
     </extensions>
     <actions>
@@ -217,9 +218,14 @@
         <!-- Stateful contract actions ends here-->
 
         <!-- Assets actions -->
-        <action id="com.bloxbean.algodea.idea.transaction.assets.action.AssetCreateAction"
-                class="com.bloxbean.algodea.idea.transaction.assets.action.AssetCreateAction" text="Create Asset"
+        <action id="com.bloxbean.algodea.idea.assets.action.AssetCreateAction"
+                class="com.bloxbean.algodea.idea.assets.action.AssetCreateAction" text="Create Asset"
                 description="Create Asset">
+            <add-to-group group-id="AlgoActionGroup.Assets"/>
+        </action>
+        <action id="com.bloxbean.algodea.idea.assets.action.ModifyAssetAction"
+                class="com.bloxbean.algodea.idea.assets.action.ModifyAssetAction" text="Modify Asset"
+                description="Modify Asset">
             <add-to-group group-id="AlgoActionGroup.Assets"/>
         </action>
         <!-- Assets actions end here-->

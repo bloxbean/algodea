@@ -1,15 +1,15 @@
-package com.bloxbean.algodea.idea.transaction.assets.action;
+package com.bloxbean.algodea.idea.assets.action;
 
 import com.algorand.algosdk.account.Account;
+import com.bloxbean.algodea.idea.assets.service.AssetCacheService;
 import com.bloxbean.algodea.idea.core.action.AlgoBaseAction;
 import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
 import com.bloxbean.algodea.idea.nodeint.model.AssetTxnParameters;
 import com.bloxbean.algodea.idea.nodeint.model.TxnDetailsParameters;
 import com.bloxbean.algodea.idea.nodeint.service.AssetTransactionService;
 import com.bloxbean.algodea.idea.nodeint.service.LogListenerAdapter;
-import com.bloxbean.algodea.idea.nodeint.service.TransactionService;
 import com.bloxbean.algodea.idea.toolwindow.AlgoConsole;
-import com.bloxbean.algodea.idea.transaction.assets.ui.AssetConfigurationDialog;
+import com.bloxbean.algodea.idea.assets.ui.AssetConfigurationDialog;
 import com.bloxbean.algodea.idea.transaction.ui.TransactionDtlsEntryForm;
 import com.bloxbean.algodea.idea.util.IdeaUtil;
 import com.intellij.notification.NotificationType;
@@ -20,6 +20,7 @@ import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.progress.impl.BackgroundableProcessIndicator;
 import com.intellij.openapi.project.Project;
+import com.twelvemonkeys.lang.StringUtil;
 import org.jetbrains.annotations.NotNull;
 
 public class AssetCreateAction extends AlgoBaseAction {
@@ -62,6 +63,7 @@ public class AssetCreateAction extends AlgoBaseAction {
             return;
         }
 
+        AssetCacheService assetCacheService = AssetCacheService.getInstance();
         try {
             TransactionDtlsEntryForm transactionDtlsEntryForm = dialog.getTransactionDtlsEntryForm();
             TxnDetailsParameters txnDetailsParameters = transactionDtlsEntryForm.getTxnDetailsParameters();
@@ -78,6 +80,12 @@ public class AssetCreateAction extends AlgoBaseAction {
                         Long assetId = assetTransactionService.createAsset(creatorAccount, finalAssetTxnPrameters, txnDetailsParameters);
 
                         if(assetId != null) {
+
+                            if(!StringUtil.isEmpty(assetTransactionService.getNetworkGenesisHash())) {
+                                assetCacheService.addAssetId(assetTransactionService.getNetworkGenesisHash(),
+                                        finalAssetTxnPrameters.assetName, String.valueOf(assetId));
+                            }
+
                             console.showInfoMessage(String.format("Asset created successfully with asset id %s", assetId));
                             IdeaUtil.showNotification(project, getTitle(), String.format("%s was successful", getTxnCommand()), NotificationType.INFORMATION, null);
                         } else {
@@ -101,7 +109,7 @@ public class AssetCreateAction extends AlgoBaseAction {
         } catch (Exception ex) {
             LOG.error(ex);
             console.showErrorMessage(ex.getMessage(), ex);
-            IdeaUtil.showNotification(project, getTitle(), String.format("Transfer transaction failed, reason: %s", ex.getMessage()), NotificationType.ERROR, null);
+            IdeaUtil.showNotification(project, getTitle(), String.format("AssetModify transaction failed, reason: %s", ex.getMessage()), NotificationType.ERROR, null);
         }
     }
 

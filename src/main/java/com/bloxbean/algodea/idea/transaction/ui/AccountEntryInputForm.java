@@ -133,5 +133,18 @@ public class AccountEntryInputForm {
         }
     }
 
+    public void setMnemonic(String mnemonic) {
+        if(StringUtil.isEmpty(mnemonic))
+            return;
+
+        mnemonicTf.setText(mnemonic);
+        try {
+            Account account = new Account(mnemonic);
+            if(account != null)
+                accountTf.setText(account.getAddress().toString());
+        } catch (Exception e) {
+
+        }
+    }
 
 }

@@ -5,6 +5,7 @@ import com.algorand.algosdk.crypto.Address;
 import java.math.BigInteger;
 
 public class AssetTxnParameters {
+    public Long assetId;
     public BigInteger total;
     public int decimal;
     public boolean defaultFrozen;

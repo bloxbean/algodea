@@ -76,6 +76,10 @@ public class ManagedAccountEntryInputForm {
         return null;
     }
 
+    public void setAccount(String account) {
+        accountTf.setText(account);
+    }
+
     public void setAccountLabel(String label) {
         label = StringUtility.padLeft(label, 20);
         accountLabel.setText(label);
@@ -107,6 +111,18 @@ public class ManagedAccountEntryInputForm {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public void setEnable(boolean flag) {
+        accountTf.setEnabled(flag);
+        accountChooserBtn.setEnabled(flag);
+        if(enableMultiSig) {
+            multisigAccChooserBtn.setEnabled(flag);
+        }
+    }
+
+    public void setTooltipText(String text) {
+        accountTf.setToolTipText(text);
     }
 
     private void createUIComponents() {
