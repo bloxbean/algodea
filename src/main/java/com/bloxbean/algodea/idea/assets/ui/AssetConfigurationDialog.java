@@ -18,6 +18,7 @@ import com.bloxbean.algodea.idea.toolwindow.AlgoConsole;
 import com.bloxbean.algodea.idea.transaction.ui.AccountEntryInputForm;
 import com.bloxbean.algodea.idea.transaction.ui.ManagedAccountEntryInputForm;
 import com.bloxbean.algodea.idea.transaction.ui.TransactionDtlsEntryForm;
+import com.bloxbean.algodea.idea.util.AlgoConversionUtil;
 import com.bloxbean.algodea.idea.util.StringUtility;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
@@ -37,6 +38,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
 
@@ -71,6 +73,7 @@ public class AssetConfigurationDialog extends DialogWrapper {
     private JTextField revokeAmountTf;
     private JLabel revokeAmountLabel;
     private JPanel revokeAmountPanel;
+    private JLabel unitLabel;
 
     //    private boolean modifyMode;
     private AssetActionType actionType;
@@ -166,7 +169,7 @@ public class AssetConfigurationDialog extends DialogWrapper {
 
             revokeAddressInputForm.setAccountLabel("Revoke Address *");
             receiverAddressInputForm.setAccountLabel("Receiver Address *");
-            revokeAmountLabel.setText(StringUtility.padLeft("Asset Amount", 23));
+            revokeAmountLabel.setText(StringUtility.padLeft("Asset Amount *", 22));
 
             senderAddressInputForm.setAccountLabel("Txn Sender (Clawback Address) ");
             setOKButtonText("Revoke");
@@ -362,6 +365,9 @@ public class AssetConfigurationDialog extends DialogWrapper {
                     senderAddressInputForm.setMnemonic(clawbackAdd.getMnemonic());
                 }
             }
+
+            //Only for revoke
+            unitLabel.setText(getUnitName());
         }
 
         //If revoke
@@ -625,7 +631,12 @@ public class AssetConfigurationDialog extends DialogWrapper {
 
     public BigInteger getRevokeAssetAmount() {
         try {
-            return new BigInteger(revokeAmountTf.getText());
+            BigDecimal revokeAmt = new BigDecimal(StringUtil.trim(revokeAmountTf.getText()));
+            BigInteger mRevokeAmt = null;
+            if(revokeAmt != null) {
+                mRevokeAmt = AlgoConversionUtil.assetFromDecimal(revokeAmt, getDecimal());
+            }
+            return mRevokeAmt;
         } catch (Exception e) {
             return null;
         }

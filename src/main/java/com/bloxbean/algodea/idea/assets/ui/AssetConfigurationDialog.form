@@ -321,6 +321,8 @@
                     <colspec value="fill:d:grow"/>
                     <colspec value="left:4dlu:noGrow"/>
                     <colspec value="fill:d:grow"/>
+                    <colspec value="left:4dlu:noGrow"/>
+                    <colspec value="fill:max(d;4px):noGrow"/>
                     <constraints>
                       <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="8" fill="2" indent="0" use-parent-layout="false"/>
                     </constraints>
@@ -345,6 +347,15 @@
                         </constraints>
                         <properties>
                           <columns value="25"/>
+                        </properties>
+                      </component>
+                      <component id="a8b42" class="javax.swing.JLabel" binding="unitLabel">
+                        <constraints>
+                          <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                          <forms defaultalign-horz="false"/>
+                        </constraints>
+                        <properties>
+                          <text value=""/>
                         </properties>
                       </component>
                     </children>
