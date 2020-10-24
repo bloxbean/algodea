@@ -40,7 +40,7 @@ public class ModifyAssetAction extends AlgoBaseAction {
         AlgoConsole console = AlgoConsole.getConsole(project);
         console.clearAndshow();
 
-        AssetConfigurationDialog dialog = new AssetConfigurationDialog(project, AssetActionType.MODIFY);
+        AssetConfigurationDialog dialog = new AssetConfigurationDialog(project, AssetActionType.MODIFY, getTitle());
         boolean ok = dialog.showAndGet();
 
         if(!ok) {
@@ -81,12 +81,6 @@ public class ModifyAssetAction extends AlgoBaseAction {
                         boolean status = assetTransactionService.modifyAsset(managerAccount, finalAssetTxnPrameters, txnDetailsParameters);
 
                         if(status) {
-
-                            if(!StringUtil.isEmpty(assetTransactionService.getNetworkGenesisHash())) {
-                                assetCacheService.addAssetId(assetTransactionService.getNetworkGenesisHash(),
-                                        finalAssetTxnPrameters.assetName, String.valueOf(finalAssetTxnPrameters.assetId));
-                            }
-
                             console.showInfoMessage(String.format("Asset updated successfully with asset id %s", finalAssetTxnPrameters.assetId));
                             IdeaUtil.showNotification(project, getTitle(), String.format("%s was successful", getTxnCommand()), NotificationType.INFORMATION, null);
                         } else {
@@ -119,6 +113,6 @@ public class ModifyAssetAction extends AlgoBaseAction {
     }
 
     private String getTitle() {
-        return "AssetModify";
+        return "Asset Modify";
     }
 }

@@ -25,14 +25,20 @@ import com.algorand.algosdk.crypto.Address;
 import com.algorand.algosdk.v2.client.algod.AccountInformation;
 import com.algorand.algosdk.v2.client.common.Response;
 import com.algorand.algosdk.v2.client.model.Account;
+import com.algorand.algosdk.v2.client.model.Asset;
+import com.algorand.algosdk.v2.client.model.AssetHolding;
 import com.bloxbean.algodea.idea.nodeint.exception.ApiCallException;
 import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
+import com.bloxbean.algodea.idea.nodeint.model.AccountAsset;
 import com.bloxbean.algodea.idea.nodeint.purestake.CustomAlgodClient;
 import com.bloxbean.algodea.idea.util.JsonUtil;
 import com.intellij.openapi.project.Project;
 import com.twelvemonkeys.lang.StringUtil;
 
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class AlgoAccountService extends AlgoBaseService {
     public AlgoAccountService(Project project, LogListener logListener) throws DeploymentTargetNotConfigured {
@@ -94,4 +100,61 @@ public class AlgoAccountService extends AlgoBaseService {
         return JsonUtil.getPrettyJson(account);
     }
 
+    public List<AccountAsset> getAccountAssets(String address) throws ApiCallException {
+        if(StringUtil.isEmpty(address)) {
+            logListener.error("Account can not be fetched for empty address");
+            return null;
+        }
+
+        Account account = getAccount(address);
+        if(account == null) {
+            logListener.error("Unable to get account information for address : " + address);
+            return Collections.EMPTY_LIST;
+        }
+
+        List<AssetHolding> assetHoldings = account.assets;
+        if(assetHoldings == null || assetHoldings.size() == 0)
+            return Collections.EMPTY_LIST;
+
+        List<AccountAsset> accountAssets = new ArrayList<>();
+        for(AssetHolding assetHolding: assetHoldings) {
+            AccountAsset accountAsset = new AccountAsset();
+            accountAsset.setAssetId(assetHolding.assetId);
+            accountAsset.setAmount(assetHolding.amount);
+
+            try {
+                Asset asset = getAsset(assetHolding.assetId);
+                accountAsset.setAssetName(asset.params.name);
+                accountAsset.setAssetUnit(asset.params.unitName);
+                accountAsset.setDecimals(asset.params.decimals);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            accountAssets.add(accountAsset);
+        }
+
+        return accountAssets;
+    }
+
+    public Asset getAsset(Long assetId) throws Exception {
+        if(assetId == null) {
+            logListener.error("Asset id cannot be null");
+            return null;
+        }
+
+        logListener.info("Fetching asset info ...");
+        Response<Asset> assetResponse = client.GetAssetByID(assetId).execute();
+        if(!assetResponse.isSuccessful()) {
+            printErrorMessage("Reading asset info failed", assetResponse);
+            return null;
+        }
+
+        Asset asset = assetResponse.body();
+
+        logListener.info(JsonUtil.getPrettyJson(asset));
+        logListener.info("\n");
+
+        return asset;
+    }
 }

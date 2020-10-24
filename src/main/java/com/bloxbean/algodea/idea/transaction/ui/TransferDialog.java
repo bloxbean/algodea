@@ -1,5 +1,6 @@
 package com.bloxbean.algodea.idea.transaction.ui;
 
+import com.bloxbean.algodea.idea.nodeint.service.LogListener;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.ValidationInfo;
@@ -11,6 +12,7 @@ public class TransferDialog extends DialogWrapper {
     private JPanel mainPanel;
     private TransferTxnParamEntryForm transferTxnForm;
     private TransactionDtlsEntryForm transactionDtlsEntryForm;
+    private JTabbedPane tabbedPane1;
 
     public TransferDialog(@Nullable Project project) {
         super(project, true);
@@ -44,6 +46,10 @@ public class TransferDialog extends DialogWrapper {
 //
 //        }
 //    }
+
+    public boolean isAlgoTransfer() {
+        return transferTxnForm.isAlgoTransfer();
+    }
 
     @Override
     protected @Nullable ValidationInfo doValidate() {

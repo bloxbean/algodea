@@ -108,6 +108,7 @@ public class AccountEntryInputForm {
     }
 
     public void setAccountLabel(String label) {
+        accountLabel.setToolTipText(label);
         accountLabel.setText(StringUtility.padLeft(label, 20));
     }
 

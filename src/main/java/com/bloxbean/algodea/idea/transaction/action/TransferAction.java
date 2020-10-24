@@ -5,13 +5,16 @@ import com.algorand.algosdk.crypto.Address;
 import com.bloxbean.algodea.idea.common.Tuple;
 import com.bloxbean.algodea.idea.core.action.AlgoBaseAction;
 import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
+import com.bloxbean.algodea.idea.nodeint.model.AccountAsset;
 import com.bloxbean.algodea.idea.nodeint.model.TxnDetailsParameters;
+import com.bloxbean.algodea.idea.nodeint.service.AssetTransactionService;
 import com.bloxbean.algodea.idea.nodeint.service.LogListenerAdapter;
 import com.bloxbean.algodea.idea.nodeint.service.TransactionService;
 import com.bloxbean.algodea.idea.toolwindow.AlgoConsole;
 import com.bloxbean.algodea.idea.transaction.ui.TransactionDtlsEntryForm;
 import com.bloxbean.algodea.idea.transaction.ui.TransferDialog;
 import com.bloxbean.algodea.idea.transaction.ui.TransferTxnParamEntryForm;
+import com.bloxbean.algodea.idea.util.AlgoConversionUtil;
 import com.bloxbean.algodea.idea.util.IdeaUtil;
 import com.intellij.notification.NotificationType;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -23,6 +26,7 @@ import com.intellij.openapi.progress.impl.BackgroundableProcessIndicator;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 
 public class TransferAction extends AlgoBaseAction {
@@ -48,12 +52,19 @@ public class TransferAction extends AlgoBaseAction {
         TransferTxnParamEntryForm txnEntryForm = transferDialog.getTransferTxnEntryForm();
         Account fromAccount = txnEntryForm.getFromAccount();
         Address toAddress = txnEntryForm.getToAccount();
-        Tuple<Double, BigInteger> amountTuple = txnEntryForm.getAmount();
+        Tuple<BigDecimal, BigInteger> amountTuple = txnEntryForm.getAmount();
         if(amountTuple == null) {
             IdeaUtil.showNotification(project, getTitle(), "Invalid amount", NotificationType.ERROR, null);
             return;
         }
 
+        final AccountAsset asset = txnEntryForm.getAsset();
+        String assetName = "Algo";
+
+        if(asset != null) {
+            assetName = asset.getAssetName();
+        }
+        final String finalAssetName = assetName;
         try {
             TransactionDtlsEntryForm transactionDtlsEntryForm = transferDialog.getTransactionDtlsEntryForm();
 
@@ -65,6 +76,7 @@ public class TransferAction extends AlgoBaseAction {
             txnDetailsParameters.setLease(lease);
 
             TransactionService transactionService = new TransactionService(project, new LogListenerAdapter(console));
+            AssetTransactionService assetTransactionService = new AssetTransactionService(project, new LogListenerAdapter(console));
 
             Task.Backgroundable task = new Task.Backgroundable(project, getTxnCommand()) {
 
@@ -72,11 +84,31 @@ public class TransferAction extends AlgoBaseAction {
                 public void run(@NotNull ProgressIndicator indicator) {
                     console.showInfoMessage(String.format("Starting %s ...\n", getTxnCommand()));
                     try {
-                        boolean status = transactionService.transfer(fromAccount, toAddress.toString(), amountTuple._2().longValue(), txnDetailsParameters);
+                        boolean status = false;
+
+                        String amountInDecimal = String.valueOf(amountTuple._1());
+                        //Get formatted amount string
+                        try {
+                            if(transferDialog.isAlgoTransfer()) {
+                                amountInDecimal = AlgoConversionUtil.mAlgoToAlgoFormatted(amountTuple._2());
+                            } else {
+                                amountInDecimal = AlgoConversionUtil.toAssetDecimalAmtFormatted(amountTuple._2(), (int)asset.getDecimals());
+                            }
+                        } catch (Exception e) {
+
+                        }
+
+                        if(transferDialog.isAlgoTransfer()) {
+                            status = transactionService.transfer(fromAccount, toAddress.toString(), amountTuple._2().longValue(), txnDetailsParameters);
+                        } else { //asset transfer
+                            status = assetTransactionService.assetTransfer(fromAccount, toAddress.toString(), asset, amountTuple._2(), txnDetailsParameters);
+                        }
 
                         if(status) {
-                            console.showInfoMessage(String.format("Successfully transferred %f Algo from %s to %s  ", amountTuple._1(), fromAccount.getAddress().toString(), toAddress.toString()));
-                            IdeaUtil.showNotification(project, getTitle(), String.format("%s was successful", getTxnCommand()), NotificationType.INFORMATION, null);
+                            console.showInfoMessage(String.format("Successfully transferred %s %s from %s to %s  ", amountInDecimal,
+                                    finalAssetName, fromAccount.getAddress().toString(), toAddress.toString()));
+                            IdeaUtil.showNotification(project, getTitle(), String.format("%s was successful", getTxnCommand()),
+                                    NotificationType.INFORMATION, null);
                         } else {
                             console.showErrorMessage(String.format("%s failed", getTxnCommand()));
                             IdeaUtil.showNotification(project, getTitle(), String.format("%s failed", getTxnCommand()), NotificationType.ERROR, null);

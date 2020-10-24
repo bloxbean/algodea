@@ -66,8 +66,8 @@ public class ManagedAccountEntryInputForm {
 
         if(isMandatory) {
             if (StringUtil.isEmpty(accountTf.getText())) {
-                accountTf.setToolTipText("Please select a valid account or enter valid mnemonic");
-                return new ValidationInfo("Please select a valid account or enter valid mnemonic", accountTf);
+                accountTf.setToolTipText("Please select a valid account or enter a valid account number");
+                return new ValidationInfo("Please select a valid account or enter a valid account number", accountTf);
             } else {
                 accountTf.setToolTipText("");
             }
@@ -114,7 +114,7 @@ public class ManagedAccountEntryInputForm {
     }
 
     public void setEnable(boolean flag) {
-        accountTf.setEnabled(flag);
+        accountTf.setEditable(flag);
         accountChooserBtn.setEnabled(flag);
         if(enableMultiSig) {
             multisigAccChooserBtn.setEnabled(flag);

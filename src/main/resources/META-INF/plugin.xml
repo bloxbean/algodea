@@ -233,6 +233,26 @@
                 description="OptIn Asset">
             <add-to-group group-id="AlgoActionGroup.Assets"/>
         </action>
+        <action id="com.bloxbean.algodea.idea.assets.action.FreezeAssetAction"
+                class="com.bloxbean.algodea.idea.assets.action.FreezeAssetAction" text="Freeze"
+                description="Freeze Asset">
+            <add-to-group group-id="AlgoActionGroup.Assets"/>
+        </action>
+        <action id="com.bloxbean.algodea.idea.assets.action.UnFreezeAssetAction"
+                class="com.bloxbean.algodea.idea.assets.action.UnFreezeAssetAction" text="UnFreeze"
+                description="UnFreeze Asset">
+            <add-to-group group-id="AlgoActionGroup.Assets"/>
+        </action>
+        <action id="com.bloxbean.algodea.idea.assets.action.RevokeAssetAction"
+                class="com.bloxbean.algodea.idea.assets.action.RevokeAssetAction" text="Revoke"
+                description="Revoke Asset">
+            <add-to-group group-id="AlgoActionGroup.Assets"/>
+        </action>
+        <action id="com.bloxbean.algodea.idea.assets.action.TransferAssetAction"
+                class="com.bloxbean.algodea.idea.assets.action.TransferAssetAction" text="Transfer Asset"
+                description="Transfer Asset">
+            <add-to-group group-id="AlgoActionGroup.Assets"/>
+        </action>
         <!-- Assets actions end here-->
 
         <action id="com.bloxbean.algodea.idea.transaction.action.TransferAction" class="com.bloxbean.algodea.idea.transaction.action.TransferAction" text="Transfer"

@@ -8,7 +8,6 @@ import com.bloxbean.algodea.idea.account.service.AccountService;
 import com.bloxbean.algodea.idea.assets.action.AssetActionType;
 import com.bloxbean.algodea.idea.assets.model.AssetMeta;
 import com.bloxbean.algodea.idea.assets.service.AssetCacheService;
-import com.bloxbean.algodea.idea.core.service.AlgoCacheService;
 import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
 import com.bloxbean.algodea.idea.nodeint.model.ArgType;
 import com.bloxbean.algodea.idea.nodeint.model.AssetTxnParameters;
@@ -19,7 +18,7 @@ import com.bloxbean.algodea.idea.toolwindow.AlgoConsole;
 import com.bloxbean.algodea.idea.transaction.ui.AccountEntryInputForm;
 import com.bloxbean.algodea.idea.transaction.ui.ManagedAccountEntryInputForm;
 import com.bloxbean.algodea.idea.transaction.ui.TransactionDtlsEntryForm;
-import com.bloxbean.algodea.idea.util.IdeaUtil;
+import com.bloxbean.algodea.idea.util.StringUtility;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.progress.ProgressIndicator;
@@ -32,7 +31,7 @@ import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.ui.components.JBCheckBox;
+import com.intellij.ui.components.JBLabel;
 import org.apache.commons.lang.math.NumberUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -40,7 +39,6 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 import java.math.BigInteger;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class AssetConfigurationDialog extends DialogWrapper {
     private JTabbedPane tabbedPane1;
@@ -63,26 +61,38 @@ public class AssetConfigurationDialog extends DialogWrapper {
     private JLabel assetIdLabel;
     private JComboBox assetIdCB;
     private JPanel assetIdPanel;
+    private JPanel targetFreezeAccountPanel;
+    private ManagedAccountEntryInputForm targetFreezeAddressInputForm;
+    private ManagedAccountEntryInputForm revokeAddressInputForm;
+    private ManagedAccountEntryInputForm receiverAddressInputForm;
+    private JPanel revokeAddressPanel;
+    private JTextField creatorTf;
+    private JLabel creatorLabel;
+    private JTextField revokeAmountTf;
+    private JLabel revokeAmountLabel;
+    private JPanel revokeAmountPanel;
 
-//    private boolean modifyMode;
+    //    private boolean modifyMode;
     private AssetActionType actionType;
 
     private DefaultComboBoxModel<AssetMeta> assetIdComboBoxModel;
 
     public AssetConfigurationDialog(@Nullable Project project) {
-        this(project, AssetActionType.CREATE);
+        this(project, AssetActionType.CREATE, "Asset Create");
     }
 
-    public AssetConfigurationDialog(@Nullable Project project, AssetActionType actionType) {
+    public AssetConfigurationDialog(@Nullable Project project, AssetActionType actionType, String title) {
         super(project, true);
         init();
-        setTitle("Asset Configuration");
+        setTitle(title);
 
 //        if(AssetActionType.MODIFY.equals(actionType)) {
 //            this.modifyMode = true;
 //        }
 
         this.actionType = actionType;
+        targetFreezeAccountPanel.setVisible(false);
+        revokeAddressPanel.setVisible(false);
 
         if(AssetActionType.CREATE.equals(actionType)) {
             initializeData(project);
@@ -113,6 +123,9 @@ public class AssetConfigurationDialog extends DialogWrapper {
         assetIdCB.setVisible(false);
         assetSearchBtn.setVisible(false);
 
+        creatorLabel.setVisible(false);
+        creatorTf.setVisible(false);
+
         _initialize(project);
     }
 
@@ -126,9 +139,37 @@ public class AssetConfigurationDialog extends DialogWrapper {
     }
 
     private void initializeViewMode(Project project) {
-        if(AssetActionType.OPT_IN.equals(actionType)) {
+        if (AssetActionType.OPT_IN.equals(actionType)) {
             creatorAddressInputForm.setAccountLabel("Txn Sender (OptIn account)"); //Sender here is manager
             setOKButtonText("Opt In");
+        }
+        if (AssetActionType.FREEZE.equals(actionType) || AssetActionType.UNFREEZE.equals(actionType)) {
+//            targetFreezeAddressInputForm.setEnable(true);
+            targetFreezeAddressInputForm.initializeData(project);
+            targetFreezeAccountPanel.setVisible(true);
+            targetFreezeAddressInputForm.setAccountLabel("Freeze Address *");
+
+            if (AssetActionType.FREEZE.equals(actionType))
+                setOKButtonText("Freeze");
+            else if (AssetActionType.UNFREEZE.equals(actionType)) {
+                setOKButtonText("UnFreeze");
+            }
+
+            creatorAddressInputForm.setAccountLabel("Txn Sender (Freeze Address) ");
+
+        } else if(AssetActionType.REVOKE.equals(actionType)) {
+            revokeAddressInputForm.initializeData(project);
+            receiverAddressInputForm.initializeData(project);
+            revokeAddressPanel.setVisible(true);
+            revokeAmountLabel.setVisible(true);
+            revokeAmountTf.setVisible(true);
+
+            revokeAddressInputForm.setAccountLabel("Revoke Address *");
+            receiverAddressInputForm.setAccountLabel("Receiver Address *");
+            revokeAmountLabel.setText(StringUtility.padLeft("Asset Amount", 23));
+
+            creatorAddressInputForm.setAccountLabel("Txn Sender (Clawback Address) ");
+            setOKButtonText("Revoke");
         } else {
             creatorAddressInputForm.setAccountLabel("Txn Sender "); //Sender here is manager
         }
@@ -168,8 +209,17 @@ public class AssetConfigurationDialog extends DialogWrapper {
         final AssetTransactionService finalAssetTransactionService = assetTransactionService;
         assetSearchBtn.addActionListener(e -> {
             clearFieldsForModifyMode();
-            AssetMeta assetMeta = (AssetMeta) assetIdCB.getSelectedItem();//assetIdTf.getText();
-            String assetId = assetMeta.getId();
+            Object selectedItem = assetIdCB.getSelectedItem();
+            if(selectedItem == null)
+                return;
+
+            String assetId;
+            if(selectedItem instanceof AssetMeta) {
+                AssetMeta assetMeta = (AssetMeta) assetIdCB.getSelectedItem();//assetIdTf.getText();
+                assetId = assetMeta.getId();
+            } else {
+                assetId = String.valueOf(selectedItem);
+            }
 
             assetSearchBtn.setEnabled(false);
             setOKActionEnabled(false);
@@ -256,6 +306,7 @@ public class AssetConfigurationDialog extends DialogWrapper {
         assetUrlTf.setText(asset.params.url);
         metadataHashTf.setText(asset.params.metadataHash());
         defaultFrozenCB.setSelected(asset.params.defaultFrozen);
+        creatorTf.setText(asset.params.creator);
 
         if(!StringUtil.isEmpty(asset.params.manager))
             managerAddressInputForm.setAccount(asset.params.manager);
@@ -287,6 +338,28 @@ public class AssetConfigurationDialog extends DialogWrapper {
                 }
             }
         }
+        
+        //If freeze or unfreeze action, set freeze address
+        if(AssetActionType.FREEZE.equals(actionType) || AssetActionType.UNFREEZE.equals(actionType)) {
+            if (!StringUtil.isEmpty(asset.params.freeze)) {
+                AccountService accountService = AccountService.getAccountService();
+                AlgoAccount freezeAcc = accountService.getAccountByAddress(asset.params.freeze);
+                if (freezeAcc != null) {
+                    creatorAddressInputForm.setMnemonic(freezeAcc.getMnemonic());
+                }
+            }
+        }
+
+        //If revoke
+        if(AssetActionType.REVOKE.equals(actionType)) {
+            if (!StringUtil.isEmpty(asset.params.clawback)) {
+                AccountService accountService = AccountService.getAccountService();
+                AlgoAccount clawbackAdd = accountService.getAccountByAddress(asset.params.clawback);
+                if (clawbackAdd != null) {
+                    creatorAddressInputForm.setMnemonic(clawbackAdd.getMnemonic());
+                }
+            }
+        }
     }
 
     private void showErrorMessage(String message, String title) {
@@ -307,6 +380,11 @@ public class AssetConfigurationDialog extends DialogWrapper {
         metadataHashTf.setEditable(false);
         metadataHashType.setEnabled(false);
         defaultFrozenCB.setEnabled(false);
+
+        creatorLabel.setVisible(true);
+        creatorTf.setVisible(true);
+        creatorTf.setEditable(false);
+
     }
 
 
@@ -412,15 +490,44 @@ public class AssetConfigurationDialog extends DialogWrapper {
                 return txnDtalVal;
         }
 
+        if(AssetActionType.FREEZE.equals(actionType) || AssetActionType.UNFREEZE.equals(actionType)) {
+            ValidationInfo targetFreezeAddressVal = targetFreezeAddressInputForm.doValidate();
+            if (targetFreezeAddressVal != null)
+                return targetFreezeAddressVal;
+        }
+
+        if(AssetActionType.REVOKE.equals(actionType)) {
+            ValidationInfo revokeAddressVal = revokeAddressInputForm.doValidate();
+            if (revokeAddressVal != null)
+                return revokeAddressVal;
+
+            ValidationInfo receiverAddressVal = receiverAddressInputForm.doValidate();
+            if (receiverAddressVal != null)
+                return receiverAddressVal;
+
+            if(getRevokeAssetAmount() == null)
+                return new ValidationInfo("Please enter a valid Asset Amount", revokeAmountTf);
+
+        }
+
         return null;
     }
 
     public Long getAssetId() {
         try {
-            AssetMeta assetMeta = (AssetMeta)assetIdCB.getSelectedItem();
-            if(assetMeta == null || assetMeta.getId() == null)
-                return null;
-            return Long.parseLong(StringUtil.trim(assetMeta.getId()));
+            Object selectedItem = assetIdCB.getSelectedItem();
+            if(selectedItem == null) return null;
+
+            String assetId;
+            if(selectedItem instanceof AssetMeta) {
+                AssetMeta assetMeta = (AssetMeta) selectedItem;
+                if (assetMeta == null || assetMeta.getId() == null)
+                    return null;
+                assetId = assetMeta.getId();
+            } else {
+                assetId = String.valueOf(selectedItem);
+            }
+            return Long.parseLong(StringUtil.trim(assetId));
         } catch (Exception e) {
             return null;
         }
@@ -488,6 +595,28 @@ public class AssetConfigurationDialog extends DialogWrapper {
         return clawbackAddressInputForm.getAddress();
     }
 
+    //Freeze operation
+    public Address getTargetFreezeAddress() {
+        return targetFreezeAddressInputForm.getAddress();
+    }
+
+    //Revoke Operation
+    public Address getRevokeAddress() {
+        return revokeAddressInputForm.getAddress();
+    }
+
+    public Address getReceiverAddress() {
+        return receiverAddressInputForm.getAddress();
+    }
+
+    public BigInteger getRevokeAssetAmount() {
+        try {
+            return new BigInteger(revokeAmountTf.getText());
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     public AssetTxnParameters getAssetTxnParameters() throws Exception {
         AssetTxnParameters assetTxnParameters = new AssetTxnParameters();
         if(AssetActionType.CREATE.equals(actionType)) {
@@ -507,6 +636,22 @@ public class AssetConfigurationDialog extends DialogWrapper {
             assetTxnParameters.reserveAddress = getReserveAddress();
             assetTxnParameters.freezeAddress = getFreezeAddress();
             assetTxnParameters.clawbackAddress = getClawbackAddress();
+        }
+
+        if(AssetActionType.FREEZE.equals(actionType)) {
+            assetTxnParameters.freezeTarget = getTargetFreezeAddress();
+            assetTxnParameters.freezeState = true;
+        }
+
+        if(AssetActionType.UNFREEZE.equals(actionType)) {
+            assetTxnParameters.freezeTarget = getTargetFreezeAddress();
+            assetTxnParameters.freezeState = false;
+        }
+
+        if(AssetActionType.REVOKE.equals(actionType)) {
+            assetTxnParameters.revokeAddress = getRevokeAddress();
+            assetTxnParameters.receiverAddress = getReceiverAddress();
+            assetTxnParameters.assetAmount = getRevokeAssetAmount();
         }
 
         return assetTxnParameters;
@@ -543,5 +688,14 @@ public class AssetConfigurationDialog extends DialogWrapper {
         assetIdComboBoxModel = new DefaultComboBoxModel<>();
         assetIdCB = new ComboBox(assetIdComboBoxModel);
         assetIdCB.setEditable(true);
+
+        //Freeze action
+        targetFreezeAddressInputForm = new ManagedAccountEntryInputForm(true, false);
+
+        //Revoke
+        revokeAddressInputForm = new ManagedAccountEntryInputForm(true, false);
+        receiverAddressInputForm = new ManagedAccountEntryInputForm(true, false);
+        revokeAmountLabel = new JBLabel();
+
     }
 }

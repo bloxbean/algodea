@@ -20,6 +20,7 @@ import com.intellij.ui.components.JBRadioButton;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 
 public class LogicSigSendTransactionDialog extends DialogWrapper {
@@ -176,7 +177,7 @@ public class LogicSigSendTransactionDialog extends DialogWrapper {
 
     public Tuple<Double, BigInteger> getAmount() {
         try {
-            double amtInAlgo = Double.parseDouble(amountTf.getText());
+            BigDecimal amtInAlgo = new BigDecimal(amountTf.getText());
             BigInteger microAlgo = AlgoConversionUtil.algoTomAlgo(amtInAlgo);
 
             return new Tuple(amtInAlgo, microAlgo);

@@ -1,19 +1,21 @@
 package com.bloxbean.algodea.idea.nodeint.service;
 
 import com.algorand.algosdk.account.Account;
-import com.algorand.algosdk.builder.transaction.AssetAcceptTransactionBuilder;
-import com.algorand.algosdk.builder.transaction.AssetConfigureTransactionBuilder;
-import com.algorand.algosdk.builder.transaction.AssetCreateTransactionBuilder;
+import com.algorand.algosdk.builder.transaction.*;
 import com.algorand.algosdk.transaction.Transaction;
 import com.algorand.algosdk.v2.client.common.Response;
 import com.algorand.algosdk.v2.client.model.Asset;
 import com.algorand.algosdk.v2.client.model.PendingTransactionResponse;
 import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
+import com.bloxbean.algodea.idea.nodeint.model.AccountAsset;
 import com.bloxbean.algodea.idea.nodeint.model.AssetTxnParameters;
 import com.bloxbean.algodea.idea.nodeint.model.TxnDetailsParameters;
+import com.bloxbean.algodea.idea.util.AlgoConversionUtil;
 import com.bloxbean.algodea.idea.util.JsonUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
+
+import java.math.BigInteger;
 
 public class AssetTransactionService extends AlgoBaseService {
 
@@ -98,6 +100,141 @@ public class AssetTransactionService extends AlgoBaseService {
         if(transactionResponse == null) return false;
         else
             return true;
+    }
+
+    public boolean freezeAsset(Account sender, AssetTxnParameters finalAssetTxnPrameters, TxnDetailsParameters txnDetailsParameters) throws Exception {
+        if(sender == null) {
+            logListener.error("Sender cannot be null");
+            return false;
+        }
+
+        AssetFreezeTransactionBuilder builder = Transaction.AssetFreezeTransactionBuilder();
+
+        builder = (AssetFreezeTransactionBuilder) populateBaseTransactionDetails(builder, sender.getAddress(), txnDetailsParameters);
+
+        builder.assetIndex(finalAssetTxnPrameters.assetId)
+                .freezeTarget(finalAssetTxnPrameters.freezeTarget)
+                .freezeState(true);
+
+        if (builder == null) {
+            logListener.error("Transaction could not be built");
+            return false;
+        }
+
+        Transaction txn = builder.build();
+
+        PendingTransactionResponse transactionResponse = postTransaction((transaction -> {
+            return sender.signTransaction(transaction);
+        }), txn);
+
+        if(transactionResponse == null) return false;
+        else
+            return true;
+    }
+
+    public boolean unfreezeAsset(Account sender, AssetTxnParameters finalAssetTxnPrameters, TxnDetailsParameters txnDetailsParameters) throws Exception {
+        if(sender == null) {
+            logListener.error("Sender cannot be null");
+            return false;
+        }
+
+        AssetFreezeTransactionBuilder builder = Transaction.AssetFreezeTransactionBuilder();
+
+        builder = (AssetFreezeTransactionBuilder) populateBaseTransactionDetails(builder, sender.getAddress(), txnDetailsParameters);
+
+        builder.assetIndex(finalAssetTxnPrameters.assetId)
+                .freezeTarget(finalAssetTxnPrameters.freezeTarget)
+                .freezeState(false);
+
+        if (builder == null) {
+            logListener.error("Transaction could not be built");
+            return false;
+        }
+
+        Transaction txn = builder.build();
+
+        PendingTransactionResponse transactionResponse = postTransaction((transaction -> {
+            return sender.signTransaction(transaction);
+        }), txn);
+
+        if(transactionResponse == null) return false;
+        else
+            return true;
+    }
+
+    public boolean revokeAsset(Account sender, AssetTxnParameters finalAssetTxnPrameters, TxnDetailsParameters txnDetailsParameters) throws Exception {
+        if(sender == null) {
+            logListener.error("Sender cannot be null");
+            return false;
+        }
+
+        AssetClawbackTransactionBuilder builder = Transaction.AssetClawbackTransactionBuilder();
+
+        builder = (AssetClawbackTransactionBuilder) populateBaseTransactionDetails(builder, sender.getAddress(), txnDetailsParameters);
+
+        builder.assetIndex(finalAssetTxnPrameters.assetId)
+                .assetClawbackFrom(finalAssetTxnPrameters.revokeAddress)
+                .assetReceiver(finalAssetTxnPrameters.receiverAddress)
+                .assetAmount(finalAssetTxnPrameters.assetAmount);
+
+        if (builder == null) {
+            logListener.error("Transaction could not be built");
+            return false;
+        }
+
+        Transaction txn = builder.build();
+
+        PendingTransactionResponse transactionResponse = postTransaction((transaction -> {
+            return sender.signTransaction(transaction);
+        }), txn);
+
+        if(transactionResponse == null) return false;
+        else
+            return true;
+    }
+
+    public boolean assetTransfer(Account sender, String receiver, AccountAsset asset, BigInteger amount, TxnDetailsParameters txnDetailsParameters) throws Exception {
+        if(sender == null) {
+            logListener.error("Sender cannot be null");
+            return false;
+        }
+
+        if(StringUtil.isEmpty(receiver)) {
+            logListener.error("Receiver cannot be null");
+            return false;
+        }
+
+        try {
+            logListener.info("From Address     : " + sender.getAddress().toString());
+            logListener.info("Receiver Address : " + receiver);
+            logListener.info(String.format("Amount           : %s %s ( %d )\n",
+                    AlgoConversionUtil.assetToDecimal(amount, asset.getDecimals()), asset.getAssetUnit(), amount));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        AssetTransferTransactionBuilder builder = Transaction.AssetTransferTransactionBuilder();
+        builder  = (AssetTransferTransactionBuilder) populateBaseTransactionDetails(builder, sender.getAddress(), txnDetailsParameters);
+
+        builder.assetIndex(asset.getAssetId())
+                .assetAmount(amount)
+                .assetReceiver(receiver)
+                .sender(sender.getAddress());
+
+        if (builder == null) {
+            logListener.error("Transaction could not be built");
+            return false;
+        }
+
+        Transaction txn = builder.build();
+
+        if(txn == null) {
+            logListener.error("Transaction could not be built");
+            return false;
+        }
+
+        return postApplicationTransaction(sender, txn);
     }
 
     public Asset getAsset(Long assetId) throws Exception {

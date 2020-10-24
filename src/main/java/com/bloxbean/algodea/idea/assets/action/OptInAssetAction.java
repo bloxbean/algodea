@@ -37,7 +37,7 @@ public class OptInAssetAction extends AlgoBaseAction {
         AlgoConsole console = AlgoConsole.getConsole(project);
         console.clearAndshow();
 
-        AssetConfigurationDialog dialog = new AssetConfigurationDialog(project, AssetActionType.OPT_IN);
+        AssetConfigurationDialog dialog = new AssetConfigurationDialog(project, AssetActionType.OPT_IN, getTitle());
         boolean ok = dialog.showAndGet();
 
         if(!ok) {
@@ -49,7 +49,7 @@ public class OptInAssetAction extends AlgoBaseAction {
         try {
             assetTxnParameters = dialog.getAssetTxnParameters();
         } catch (Exception exception) {
-            console.showErrorMessage("Asset modification failed. Reason: ", exception);
+            console.showErrorMessage(String.format("%s failed. Reason: ", getTxnCommand()), exception);
             IdeaUtil.showNotification(project, getTitle(), "error getting asset modification parameters", NotificationType.ERROR, null);
         }
 
@@ -110,6 +110,6 @@ public class OptInAssetAction extends AlgoBaseAction {
     }
 
     private String getTitle() {
-        return "AssetOptIn";
+        return "Asset OptIn";
     }
 }

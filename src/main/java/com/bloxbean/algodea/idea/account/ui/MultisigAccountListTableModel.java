@@ -95,7 +95,7 @@ public class MultisigAccountListTableModel extends AbstractTableModel {
                 if(balance == 0L)
                     return balance;
                 else {
-                    float algoValue = AlgoConversionUtil.mAlgoToAlgo(BigInteger.valueOf(balance));
+                    String algoValue = AlgoConversionUtil.mAlgoToAlgoFormatted(BigInteger.valueOf(balance));
                     return algoValue + " Algo (" + balance + ")";
                 }
             }

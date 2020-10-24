@@ -12,6 +12,8 @@ import com.bloxbean.algodea.idea.util.AlgoConversionUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
 
+import java.math.BigInteger;
+
 public class TransactionService extends AlgoBaseService {
 
     public TransactionService(Project project, LogListener logListener) throws DeploymentTargetNotConfigured {
@@ -53,7 +55,8 @@ public class TransactionService extends AlgoBaseService {
 
         logListener.info("From Address     : " + fromAccount.toString());
         logListener.info("Receiver Address : " + receiver);
-        logListener.info(String.format("Amount           : %f Algo ( %d )\n", AlgoConversionUtil.mAlgoToAlgo(amount), amount));
+        logListener.info(String.format("Amount           : %s Algo ( %d )\n",
+                AlgoConversionUtil.mAlgoToAlgoFormatted(BigInteger.valueOf(amount)), amount));
         // define sender
         Address sender = fromAccount;
 

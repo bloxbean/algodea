@@ -18,4 +18,11 @@ public class AssetTxnParameters {
     public Address reserveAddress;
     public Address freezeAddress;
     public Address clawbackAddress;
+
+    public Address freezeTarget;
+    public boolean freezeState; //Needed for freeze or unfreeze transaction.
+
+    public Address revokeAddress; //Needed for revoke transaction
+    public Address receiverAddress;
+    public BigInteger assetAmount;
 }
