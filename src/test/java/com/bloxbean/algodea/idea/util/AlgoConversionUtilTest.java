@@ -4,7 +4,6 @@ import junit.framework.TestCase;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.text.NumberFormat;
 
 public class AlgoConversionUtilTest extends TestCase {
 
@@ -13,7 +12,7 @@ public class AlgoConversionUtilTest extends TestCase {
         int decimal = 3;
 
         BigDecimal decimalAmt =  AlgoConversionUtil.assetToDecimal(amount, decimal);
-        assertEquals(5000000000.001, decimalAmt);
+        assertEquals(5000000000.001, decimalAmt.doubleValue());
     }
 
     public void testAssetFromDecimal() {
@@ -30,7 +29,7 @@ public class AlgoConversionUtilTest extends TestCase {
         int decimal = 0;
 
         BigDecimal decimalAmt =  AlgoConversionUtil.assetToDecimal(amount, decimal);
-        assertEquals(new BigInteger("5000000000051").doubleValue(),  decimalAmt);
+        assertEquals(new BigInteger("5000000000051").doubleValue(),  decimalAmt.doubleValue());
     }
 
     public void testAssetFromDecimalZeroDecimal() {
