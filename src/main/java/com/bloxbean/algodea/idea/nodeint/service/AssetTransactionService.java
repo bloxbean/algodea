@@ -193,6 +193,34 @@ public class AssetTransactionService extends AlgoBaseService {
             return true;
     }
 
+    public boolean destroyAsset(Account sender, AssetTxnParameters finalAssetTxnPrameters, TxnDetailsParameters txnDetailsParameters) throws Exception {
+        if(sender == null) {
+            logListener.error("Sender cannot be null");
+            return false;
+        }
+
+        AssetDestroyTransactionBuilder builder = Transaction.AssetDestroyTransactionBuilder();
+
+        builder = (AssetDestroyTransactionBuilder) populateBaseTransactionDetails(builder, sender.getAddress(), txnDetailsParameters);
+
+        builder.assetIndex(finalAssetTxnPrameters.assetId);
+
+        if (builder == null) {
+            logListener.error("Transaction could not be built");
+            return false;
+        }
+
+        Transaction txn = builder.build();
+
+        PendingTransactionResponse transactionResponse = postTransaction((transaction -> {
+            return sender.signTransaction(transaction);
+        }), txn);
+
+        if(transactionResponse == null) return false;
+        else
+            return true;
+    }
+
     public boolean assetTransfer(Account sender, String receiver, AccountAsset asset, BigInteger amount, TxnDetailsParameters txnDetailsParameters) throws Exception {
         if(sender == null) {
             logListener.error("Sender cannot be null");

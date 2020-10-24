@@ -49,7 +49,7 @@ public class AssetConfigurationDialog extends DialogWrapper {
     private JTextField decimalsTf;
     private JTextField assetUrlTf;
     private ManagedAccountEntryInputForm freezeAddressInputForm;
-    private AccountEntryInputForm creatorAddressInputForm;
+    private AccountEntryInputForm senderAddressInputForm;
     private ManagedAccountEntryInputForm managerAddressInputForm;
     private ManagedAccountEntryInputForm reserveAddressInputForm;
     private ManagedAccountEntryInputForm clawbackAddressInputForm;
@@ -130,7 +130,7 @@ public class AssetConfigurationDialog extends DialogWrapper {
     }
 
     private void initializeModify(Project project) {
-        creatorAddressInputForm.setAccountLabel("Txn Sender (Manager) "); //Sender here is manager
+        senderAddressInputForm.setAccountLabel("Txn Sender (Manager) "); //Sender here is manager
         _initialize(project);
 
         disableFieldsForModifyMode();
@@ -140,7 +140,7 @@ public class AssetConfigurationDialog extends DialogWrapper {
 
     private void initializeViewMode(Project project) {
         if (AssetActionType.OPT_IN.equals(actionType)) {
-            creatorAddressInputForm.setAccountLabel("Txn Sender (OptIn account)"); //Sender here is manager
+            senderAddressInputForm.setAccountLabel("Txn Sender (OptIn account)"); //Sender here is manager
             setOKButtonText("Opt In");
         }
         if (AssetActionType.FREEZE.equals(actionType) || AssetActionType.UNFREEZE.equals(actionType)) {
@@ -155,9 +155,9 @@ public class AssetConfigurationDialog extends DialogWrapper {
                 setOKButtonText("UnFreeze");
             }
 
-            creatorAddressInputForm.setAccountLabel("Txn Sender (Freeze Address) ");
+            senderAddressInputForm.setAccountLabel("Txn Sender (Freeze Address) ");
 
-        } else if(AssetActionType.REVOKE.equals(actionType)) {
+        } else if (AssetActionType.REVOKE.equals(actionType)) {
             revokeAddressInputForm.initializeData(project);
             receiverAddressInputForm.initializeData(project);
             revokeAddressPanel.setVisible(true);
@@ -168,10 +168,13 @@ public class AssetConfigurationDialog extends DialogWrapper {
             receiverAddressInputForm.setAccountLabel("Receiver Address *");
             revokeAmountLabel.setText(StringUtility.padLeft("Asset Amount", 23));
 
-            creatorAddressInputForm.setAccountLabel("Txn Sender (Clawback Address) ");
+            senderAddressInputForm.setAccountLabel("Txn Sender (Clawback Address) ");
             setOKButtonText("Revoke");
+        } else if (AssetActionType.DESTROY.equals(actionType)) {
+            senderAddressInputForm.setAccountLabel("Txn Sender (Manager)");
+            setOKButtonText("Destory");
         } else {
-            creatorAddressInputForm.setAccountLabel("Txn Sender "); //Sender here is manager
+            senderAddressInputForm.setAccountLabel("Txn Sender "); //Sender here is manager
         }
 
         _initialize(project);
@@ -334,7 +337,7 @@ public class AssetConfigurationDialog extends DialogWrapper {
                 AccountService accountService = AccountService.getAccountService();
                 AlgoAccount managerAcc = accountService.getAccountByAddress(asset.params.manager);
                 if (managerAcc != null) {
-                    creatorAddressInputForm.setMnemonic(managerAcc.getMnemonic());
+                    senderAddressInputForm.setMnemonic(managerAcc.getMnemonic());
                 }
             }
         }
@@ -345,7 +348,7 @@ public class AssetConfigurationDialog extends DialogWrapper {
                 AccountService accountService = AccountService.getAccountService();
                 AlgoAccount freezeAcc = accountService.getAccountByAddress(asset.params.freeze);
                 if (freezeAcc != null) {
-                    creatorAddressInputForm.setMnemonic(freezeAcc.getMnemonic());
+                    senderAddressInputForm.setMnemonic(freezeAcc.getMnemonic());
                 }
             }
         }
@@ -356,7 +359,18 @@ public class AssetConfigurationDialog extends DialogWrapper {
                 AccountService accountService = AccountService.getAccountService();
                 AlgoAccount clawbackAdd = accountService.getAccountByAddress(asset.params.clawback);
                 if (clawbackAdd != null) {
-                    creatorAddressInputForm.setMnemonic(clawbackAdd.getMnemonic());
+                    senderAddressInputForm.setMnemonic(clawbackAdd.getMnemonic());
+                }
+            }
+        }
+
+        //If revoke
+        if(AssetActionType.DESTROY.equals(actionType)) {
+            if (!StringUtil.isEmpty(asset.params.manager)) {
+                AccountService accountService = AccountService.getAccountService();
+                AlgoAccount managerAddress = accountService.getAccountByAddress(asset.params.manager);
+                if (managerAddress != null) {
+                    senderAddressInputForm.setMnemonic(managerAddress.getMnemonic());
                 }
             }
         }
@@ -416,7 +430,7 @@ public class AssetConfigurationDialog extends DialogWrapper {
         decimalsTf.setText("0");
         metadataHashTf.setToolTipText("0 or 32 bytes");
 
-        creatorAddressInputForm.initializeData(project);
+        senderAddressInputForm.initializeData(project);
         managerAddressInputForm.initializeData(project);
         reserveAddressInputForm.initializeData(project);
         freezeAddressInputForm.initializeData(project);
@@ -464,7 +478,7 @@ public class AssetConfigurationDialog extends DialogWrapper {
             }
         }
 
-        ValidationInfo createAddressVal = creatorAddressInputForm.doValidate();
+        ValidationInfo createAddressVal = senderAddressInputForm.doValidate();
         if (createAddressVal != null)
             return createAddressVal;
 
@@ -576,7 +590,7 @@ public class AssetConfigurationDialog extends DialogWrapper {
     }
 
     public Account getCreatorAddress() {
-        return creatorAddressInputForm.getAccount();
+        return senderAddressInputForm.getAccount();
     }
 
     public Address getManagerAddress() {
@@ -664,8 +678,8 @@ public class AssetConfigurationDialog extends DialogWrapper {
 
     private void createUIComponents() {
         // TODO: place custom component creation code here
-        creatorAddressInputForm = new AccountEntryInputForm(true, false);
-        creatorAddressInputForm.setAccountLabel("Creator Address ");
+        senderAddressInputForm = new AccountEntryInputForm(true, false);
+        senderAddressInputForm.setAccountLabel("Creator Address ");
 
         managerAddressInputForm = new ManagedAccountEntryInputForm(false, false);
         managerAddressInputForm.setAccountLabel("Manager Address");

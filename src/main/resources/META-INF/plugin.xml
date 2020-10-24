@@ -248,9 +248,9 @@
                 description="Revoke Asset">
             <add-to-group group-id="AlgoActionGroup.Assets"/>
         </action>
-        <action id="com.bloxbean.algodea.idea.assets.action.TransferAssetAction"
-                class="com.bloxbean.algodea.idea.assets.action.TransferAssetAction" text="Transfer Asset"
-                description="Transfer Asset">
+        <action id="com.bloxbean.algodea.idea.assets.action.DestroyAssetAction"
+                class="com.bloxbean.algodea.idea.assets.action.DestroyAssetAction" text="Destory"
+                description="Destory Asset">
             <add-to-group group-id="AlgoActionGroup.Assets"/>
         </action>
         <!-- Assets actions end here-->
