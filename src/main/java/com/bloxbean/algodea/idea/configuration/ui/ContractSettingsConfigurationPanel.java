@@ -11,6 +11,7 @@ import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.text.StringUtil;
+import org.apache.commons.lang.math.NumberUtils;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
@@ -27,6 +28,10 @@ public class ContractSettingsConfigurationPanel {
     private JComboBox contractNameCB;
     private JButton newContractBtn;
     private JButton newContractResetBtn;
+    private JTextField globalByteslicesTf;
+    private JTextField globalIntTf;
+    private JTextField localByteslicesTf;
+    private JTextField localIntsTf;
     private String sourceRootPath;
     private boolean newContractAdd = false;
 
@@ -35,10 +40,11 @@ public class ContractSettingsConfigurationPanel {
     public void poulateData(AlgoProjectState.State state, AlgoPkgJsonService pkgJsonService) {
 
         //statefulCB.setSelected(state.isSupportStatefulContract());
+        this.algoPkgJsonService = pkgJsonService;
         AlgoPackageJson packageJson = null;
         try {
             pkgJsonService.load(); //load the latest copy
-            packageJson = pkgJsonService.getPackageJson();
+            packageJson = this.algoPkgJsonService.getPackageJson();
         } catch (PackageJsonException e) {
             IdeaUtil.showNotification("Algo Package Json", "algo-package.json could not be loaded", NotificationType.ERROR, null);
         }
@@ -64,9 +70,18 @@ public class ContractSettingsConfigurationPanel {
                 if(statefulContract != null) {
                     if(!StringUtil.isEmpty(statefulContract.getApprovalProgram()))
                         appProgTf.setText(statefulContract.getApprovalProgram());
+                    else
+                        appProgTf.setText("");
 
                     if(!StringUtil.isEmpty(statefulContract.getClearStateProgram()))
                         clrProgTf.setText(statefulContract.getClearStateProgram());
+                    else
+                        clrProgTf.setText("");
+
+                    globalByteslicesTf.setText(String.valueOf(statefulContract.getGlobalByteSlices()));
+                    globalIntTf.setText(String.valueOf(statefulContract.getGlobalInts()));
+                    localByteslicesTf.setText(String.valueOf(statefulContract.getLocalByteSlices()));
+                    localIntsTf.setText(String.valueOf(statefulContract.getLocalInts()));
                 }
             } catch (PackageJsonException packageJsonException) {
                 packageJsonException.printStackTrace();
@@ -92,6 +107,11 @@ public class ContractSettingsConfigurationPanel {
 
             appProgTf.setText("");
             clrProgTf.setText("");
+
+            globalByteslicesTf.setText("1");
+            globalIntTf.setText("1");
+            localByteslicesTf.setText("1");
+            localIntsTf.setText("1");
         });
 
         newContractResetBtn.addActionListener(e -> {
@@ -124,26 +144,87 @@ public class ContractSettingsConfigurationPanel {
         return StringUtil.trim(clrProgTf.getText());
     }
 
+    public int getGlobalByteslices() {
+        try {
+            return Integer.parseInt(StringUtil.trim(globalByteslicesTf.getText()));
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
+    public int getGlobalInts() {
+        try {
+            return Integer.parseInt(StringUtil.trim(globalIntTf.getText()));
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
+    public int getLocalByteslices() {
+        try {
+            return Integer.parseInt(StringUtil.trim(localByteslicesTf.getText()));
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
+    public int getLocalInts() {
+        try {
+            return Integer.parseInt(StringUtil.trim(localIntsTf.getText()));
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
     public JPanel getMainPanel() {
         return mainPanel;
     }
 
     public ValidationInfo doValidate() {
-        if(!newContractAdd) return null; //validation disabled for existing contracts.
+        if (algoPkgJsonService == null) return null;
 
-        if(algoPkgJsonService == null) return null;
-
-        String contractName = getContractName();
-        try {
-            AlgoPackageJson.StatefulContract sfContract
-                    = algoPkgJsonService.getStatefulContract(StringUtil.trim(contractName));
-            if(sfContract != null) {
-                return new ValidationInfo("A stateful contract with same name already exists", contractNameCB);
-            }
-        } catch (PackageJsonException e) {
-            e.printStackTrace();
-            return null;
+        if(StringUtil.isEmpty(getContractName())) {
+            return new ValidationInfo("Contract Name cannot be empty", contractNameCB);
         }
+
+        if(newContractAdd) {
+            String contractName = getContractName();
+            try {
+                AlgoPackageJson.StatefulContract sfContract
+                        = algoPkgJsonService.getStatefulContract(StringUtil.trim(contractName));
+                if (sfContract != null) {
+                    return new ValidationInfo("A stateful contract with same name already exists", contractNameCB);
+                }
+            } catch (PackageJsonException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        if(StringUtil.isEmpty(getApprovalProgram())) {
+            return new ValidationInfo("Approval Program cannot be empty", appProgTf);
+        }
+
+        if(StringUtil.isEmpty(getClearStateProgram())) {
+            return new ValidationInfo("Clear State program cannot be empty", clrProgTf);
+        }
+
+        if(!NumberUtils.isNumber(globalByteslicesTf.getText())) {
+            return new ValidationInfo("Invalid Global Byteslices. Integer value expected.", globalByteslicesTf);
+        }
+
+        if(!NumberUtils.isNumber(globalIntTf.getText())) {
+            return new ValidationInfo("Invalid Global Ints. Integer value expected.", globalIntTf);
+        }
+
+        if(!NumberUtils.isNumber(localByteslicesTf.getText())) {
+            return new ValidationInfo("Invalid Local Byteslices. Integer value expected.", localByteslicesTf);
+        }
+
+        if(!NumberUtils.isNumber(localIntsTf.getText())) {
+            return new ValidationInfo("Invalid Local Ints. Integer value expected.", localIntsTf);
+        }
+
         return null;
     }
 
@@ -233,6 +314,11 @@ public class ContractSettingsConfigurationPanel {
                 sfContract.setApprovalProgram(getApprovalProgram());
                 sfContract.setClearStateProgram(getClearStateProgram());
 
+                sfContract.setGlobalByteSlices(getGlobalByteslices());
+                sfContract.setGlobalInts(getGlobalInts());
+                sfContract.setLocalByteSlices(getLocalByteslices());
+                sfContract.setLocalInts(getLocalInts());
+
                 algoPkgJsonService.setStatefulContract(sfContract);
                 algoPkgJsonService.save();
             } else { //New contract
@@ -240,6 +326,11 @@ public class ContractSettingsConfigurationPanel {
                 statefulContract.setName(name);
                 statefulContract.setApprovalProgram(getApprovalProgram());
                 statefulContract.setClearStateProgram(getClearStateProgram());
+
+                statefulContract.setGlobalByteSlices(getGlobalByteslices());
+                statefulContract.setGlobalInts(getGlobalInts());
+                statefulContract.setLocalByteSlices(getLocalByteslices());
+                statefulContract.setLocalInts(getLocalInts());
 
                 algoPkgJsonService.setStatefulContract(statefulContract);
                 algoPkgJsonService.save();

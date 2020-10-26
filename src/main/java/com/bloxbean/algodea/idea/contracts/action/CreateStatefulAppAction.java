@@ -115,8 +115,7 @@ public class CreateStatefulAppAction extends AlgoBaseAction {
                 cacheAlgoAccount = accountService.getAccountByAddress(cacheCreatorAccount);
             }
 
-            CreateAppDialog createDialog = new CreateAppDialog(project, cacheAlgoAccount, cacheService.getContract(), cacheService.getSfGlobalByteslices(),
-                    cacheService.getSfGlobalInts(), cacheService.getSfLocalByteslices(), cacheService.getSfLocalInts());
+            CreateAppDialog createDialog = new CreateAppDialog(project, cacheAlgoAccount, cacheService.getContract());
             boolean ok = createDialog.showAndGet();
             if (!ok) {
                 IdeaUtil.showNotification(project, "Create App", "Create App operation was cancelled", NotificationType.WARNING, null);
@@ -160,7 +159,6 @@ public class CreateStatefulAppAction extends AlgoBaseAction {
             //update cache
             if(!StringUtil.isEmpty(contractName))
                 cacheService.setLastContract(contractName);
-            cacheService.updateSfGlobalBytesInts(globalByteslices, globalInts, localByteslices, localInts);
             cacheService.setSfCreatorAccount(account.getAddress().toString());
 
             VirtualFile appProgVF = AlgoModuleUtils.getSourceVirtualFileByRelativePath(project, approvalProgramName);//VfsUtil.findRelativeFile(approvalProgramName, sourceRoot);//VfsUtil.findRelativeFile(sourceRoot, approvalProgramName);

@@ -15,15 +15,12 @@ public class CreateMainPanel {
     private CreateAppEntryForm createAppEntryForm;
     private TxnDetailsEntryForm txnDetailsEntryForm;
 
-    public CreateMainPanel(Project project, AlgoAccount creatorAccount, String contractName,
-                           int globalByteslices, int globalInts, int localByteslices, int localInts) {
-        initialize(project, creatorAccount, contractName,
-                 globalByteslices, globalInts, localByteslices, localInts);
+    public CreateMainPanel(Project project, AlgoAccount creatorAccount, String contractName) {
+        initialize(project, creatorAccount, contractName);
     }
 
-    private void initialize(Project project, AlgoAccount creatorAccount, String contractName,
-                            int globalByteslices, int globalInts, int localByteslices, int localInts) {
-        createAppEntryForm.initializeData(project, creatorAccount, contractName, globalByteslices, globalInts, localByteslices, localInts);
+    private void initialize(Project project, AlgoAccount creatorAccount, String contractName) {
+        createAppEntryForm.initializeData(project, creatorAccount, contractName);
         txnDetailsEntryForm.initializeData(project);
     }
 

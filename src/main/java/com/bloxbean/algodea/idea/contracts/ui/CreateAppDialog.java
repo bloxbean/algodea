@@ -1,8 +1,10 @@
 package com.bloxbean.algodea.idea.contracts.ui;
 
 import com.bloxbean.algodea.idea.account.model.AlgoAccount;
+import com.intellij.icons.AllIcons;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.ValidationInfo;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -14,11 +16,9 @@ public class CreateAppDialog extends DialogWrapper {
     private CreateMainPanel createMainPanel;
 
     public CreateAppDialog(Project project,
-                              AlgoAccount creatorAccount, String contractName,
-                              int globalByteslices, int globalInts, int localByteslices, int localInts) {
+                              AlgoAccount creatorAccount, String contractName) {
         super(project);
-        createMainPanel = new CreateMainPanel(project, creatorAccount, contractName,
-                globalByteslices, globalInts, localByteslices, localInts);
+        createMainPanel = new CreateMainPanel(project, creatorAccount, contractName);
         init();
         setTitle("Create Stateful Smart Contract App");
     }
@@ -39,5 +39,18 @@ public class CreateAppDialog extends DialogWrapper {
 
     public TxnDetailsEntryForm getTxnDetailsEntryForm() {
         return createMainPanel.getTxnDetailsEntryForm();
+    }
+
+    @Override
+    protected void doOKAction() {
+        if(getCreateForm().isContractSettingsUpdate()) {
+            int yesNo = Messages.showYesNoDialog("Contract settings have been updated. " +
+                            "\nDo you want to save these changes in algo-package.json ?", "Contract Settings Update",
+                    AllIcons.General.QuestionDialog);
+            if(yesNo == Messages.YES) {
+                getCreateForm().saveUpdatedContractSettings();
+            }
+        }
+        super.doOKAction();
     }
 }

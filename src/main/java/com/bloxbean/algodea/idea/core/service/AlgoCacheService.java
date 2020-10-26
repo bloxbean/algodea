@@ -49,10 +49,6 @@ public class AlgoCacheService implements PersistentStateComponent<AlgoCacheServi
 
         public String sfCreatorAccount;
         public String contract;
-        public int sfGlobalByteslices;
-        public int sfGlobalInts;
-        public int sfLocalByteslices;
-        public int sfLocalInts;
 
         public Map<String, List<String>> appIdMap = new HashMap<>();
         public Map<String, String> appIdContractMap = new HashMap<>();
@@ -93,15 +89,6 @@ public class AlgoCacheService implements PersistentStateComponent<AlgoCacheServi
         state.vars.put(tealFile, vars);
     }
 
-    public void updateSfGlobalBytesInts(int globalByteslices, int globalInts, int localByteslices, int localInts) {
-        initializeStateIfRequired();
-
-        state.sfGlobalByteslices = globalByteslices;
-        state.sfGlobalInts = globalInts;
-        state.sfLocalByteslices = localByteslices;
-        state.sfLocalInts = localInts;
-    }
-
     public String getContract() {
         initializeStateIfRequired();
         return state.contract;
@@ -110,30 +97,6 @@ public class AlgoCacheService implements PersistentStateComponent<AlgoCacheServi
     public void setLastContract(String contractName) {
         initializeStateIfRequired();
         state.contract = contractName;
-    }
-
-    public int getSfGlobalByteslices() {
-        initializeStateIfRequired();
-
-        return state.sfGlobalByteslices;
-    }
-
-    public int getSfGlobalInts() {
-        initializeStateIfRequired();
-
-        return state.sfGlobalInts;
-    }
-
-    public int getSfLocalByteslices() {
-        initializeStateIfRequired();
-
-        return state.sfLocalByteslices;
-    }
-
-    public int getSfLocalInts() {
-        initializeStateIfRequired();
-
-        return state.sfLocalInts;
     }
 
     public void setSfCreatorAccount(String creatorAccount) {
@@ -145,20 +108,6 @@ public class AlgoCacheService implements PersistentStateComponent<AlgoCacheServi
         initializeStateIfRequired();
         return state.sfCreatorAccount;
     }
-
-//    public void addAppId(String deployTargetId, String appId) {
-//        initializeStateIfRequired();
-//        Queue<String> appIds = state.appIdMap.get(deployTargetId);
-//        if(appIds == null)
-//            appIds = new ArrayDeque<>(10);
-//
-//        if(appIds.size() >= 5) { //remove the first element
-//            appIds.remove(0);
-//        }
-//
-//        state.appIdMap.put(deployTargetId, appIds);
-//    }
-
 
     public List<String> getAppIds(String deployServerId) {
         initializeStateIfRequired();

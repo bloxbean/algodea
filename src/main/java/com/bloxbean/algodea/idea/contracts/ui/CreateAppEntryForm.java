@@ -31,6 +31,7 @@ import com.bloxbean.algodea.idea.util.IdeaUtil;
 import com.intellij.notification.NotificationType;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.openapi.util.text.StringUtil;
@@ -46,6 +47,8 @@ import java.util.Collections;
 import java.util.List;
 
 public class CreateAppEntryForm {
+    private final static Logger LOG = Logger.getInstance(CreateAppEntryForm.class);
+
     private JPanel mainPanel;
     private JTextField accountTf;
     private JTextField approvalProgramTf;
@@ -58,12 +61,13 @@ public class CreateAppEntryForm {
     private JTextField mnemonicTf;
     private JComboBox contractCB;
     private List<AlgoPackageJson.StatefulContract> contracts;
+    private AlgoPkgJsonService pkgJsonService;
+    AlgoPackageJson.StatefulContract selectedContract;
 
     public CreateAppEntryForm() {
     }
 
-    public void initializeData(Project project, AlgoAccount creatorAccount, String contractName,
-                               int globalByteslices, int globalInts, int localByteslices, int localInts) {
+    public void initializeData(Project project, AlgoAccount creatorAccount, String contractName) {
         if(creatorAccount != null) {
             accountTf.setText(creatorAccount.getAddress().toString());
 
@@ -74,11 +78,6 @@ public class CreateAppEntryForm {
                 }
             }, ModalityState.any());
         }
-
-        globalByteslicesTf.setText(String.valueOf(globalByteslices));
-        globalIntTf.setText(String.valueOf(globalInts));
-        localByteslicesTf.setText(String.valueOf(localByteslices));
-        localIntsTf.setText(String.valueOf(localInts));
 
         accountChooser.addActionListener(new ActionListener() {
             @Override
@@ -112,7 +111,7 @@ public class CreateAppEntryForm {
         approvalProgramTf.setEditable(false);
         clearStateProgramTf.setEditable(false);
 
-        AlgoPkgJsonService pkgJsonService = AlgoPkgJsonService.getInstance(project);
+        this.pkgJsonService = AlgoPkgJsonService.getInstance(project);
         try {
             AlgoPackageJson packageJson = pkgJsonService.getPackageJson();
             if(packageJson != null) {
@@ -125,10 +124,15 @@ public class CreateAppEntryForm {
             contractCB.addActionListener(evt -> {
                 String selectedContract = (String)contractCB.getSelectedItem();
                 if(!StringUtil.isEmpty(selectedContract)) {
-                    AlgoPackageJson.StatefulContract contract = packageJson.getStatefulContractByName(selectedContract);
-                    if(contract != null) {
-                        approvalProgramTf.setText(contract.getApprovalProgram());
-                        clearStateProgramTf.setText(contract.getClearStateProgram());
+                    this.selectedContract = packageJson.getStatefulContractByName(selectedContract);
+                    if(this.selectedContract != null) {
+                        approvalProgramTf.setText(this.selectedContract.getApprovalProgram());
+                        clearStateProgramTf.setText(this.selectedContract.getClearStateProgram());
+
+                        globalByteslicesTf.setText(String.valueOf(this.selectedContract.getGlobalByteSlices()));
+                        globalIntTf.setText(String.valueOf(this.selectedContract.getGlobalInts()));
+                        localByteslicesTf.setText(String.valueOf(this.selectedContract.getLocalByteSlices()));
+                        localIntsTf.setText(String.valueOf(this.selectedContract.getLocalInts()));
                     }
                 }
             });
@@ -214,6 +218,46 @@ public class CreateAppEntryForm {
         }
 
         return null;
+    }
+
+    public boolean isContractSettingsUpdate() {
+        if(selectedContract == null)
+            return false;
+
+        if(selectedContract.getGlobalByteSlices() != getGlobalByteslices()
+                || selectedContract.getGlobalInts() != getGlobalInts()
+                || selectedContract.getLocalByteSlices() != getLocalByteslices()
+                || selectedContract.getLocalInts() != getLocalInts()) {
+            return true;
+        } else {
+            return false;
+        }
+
+    }
+
+    public void saveUpdatedContractSettings() {
+        ApplicationManager.getApplication().runWriteAction(new Runnable() {
+            @Override
+            public void run() {
+                if(pkgJsonService != null) {
+                    try {
+                        String contractName = getContractName();
+                        AlgoPackageJson.StatefulContract contract = pkgJsonService.getStatefulContract(contractName);
+                        if (contract != null) {
+                            contract.setGlobalByteSlices(getGlobalByteslices());
+                            contract.setGlobalInts(getGlobalInts());
+                            contract.setLocalByteSlices(getLocalByteslices());
+                            contract.setLocalInts(getLocalInts());
+                        }
+
+                        pkgJsonService.save();
+                        pkgJsonService.markDirty();
+                    } catch (Exception e) {
+                        LOG.error(e);
+                    }
+                }
+            }
+        });
     }
 
     private void createUIComponents() {

@@ -346,4 +346,8 @@ public class AlgoProjectConfiguration {
         contractSettingsPanel = new ContractSettingsConfigurationPanel();
 
     }
+
+    public ValidationInfo doValidate() {
+        return contractSettingsPanel.doValidate();
+    }
 }

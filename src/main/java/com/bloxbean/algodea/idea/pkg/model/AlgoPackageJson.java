@@ -94,6 +94,18 @@ public class AlgoPackageJson {
         @JsonProperty("clear_state_program")
         private String clearStateProgram;
 
+        @JsonProperty("global-byteslices")
+        private int globalByteSlices;
+
+        @JsonProperty("global-ints")
+        private int globalInts;
+
+        @JsonProperty("local-byteslices")
+        private int localByteSlices;
+
+        @JsonProperty("local-ints")
+        private int localInts;
+
         public String getName() {
             return name;
         }
@@ -116,6 +128,38 @@ public class AlgoPackageJson {
 
         public void setClearStateProgram(String clearStateProgram) {
             this.clearStateProgram = clearStateProgram;
+        }
+
+        public int getGlobalByteSlices() {
+            return globalByteSlices;
+        }
+
+        public void setGlobalByteSlices(int globalByteSlices) {
+            this.globalByteSlices = globalByteSlices;
+        }
+
+        public int getGlobalInts() {
+            return globalInts;
+        }
+
+        public void setGlobalInts(int globalInts) {
+            this.globalInts = globalInts;
+        }
+
+        public int getLocalByteSlices() {
+            return localByteSlices;
+        }
+
+        public void setLocalByteSlices(int localByteSlices) {
+            this.localByteSlices = localByteSlices;
+        }
+
+        public int getLocalInts() {
+            return localInts;
+        }
+
+        public void setLocalInts(int localInts) {
+            this.localInts = localInts;
         }
 
         @Override

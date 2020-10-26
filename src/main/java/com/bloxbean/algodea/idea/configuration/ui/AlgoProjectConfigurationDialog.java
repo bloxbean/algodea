@@ -55,6 +55,11 @@ public class AlgoProjectConfigurationDialog extends DialogWrapper {
     }
 
     @Override
+    protected @Nullable ValidationInfo doValidate() {
+        return algoProjectConfiguration.doValidate();
+    }
+
+    @Override
     protected @Nullable JComponent createCenterPanel() {
         return algoProjectConfiguration.getMainPanel();
     }
