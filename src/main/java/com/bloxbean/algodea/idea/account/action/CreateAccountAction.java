@@ -32,6 +32,8 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.Messages;
+import com.twelvemonkeys.lang.StringUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.security.NoSuchAlgorithmException;
@@ -51,12 +53,17 @@ public class CreateAccountAction extends AnAction {
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
         Project project = e.getProject();
+
+        String accountName = Messages.showInputDialog(project, "Enter a name for the new account", "New Account", AllIcons.General.Information);
+        if(!StringUtil.isEmpty(accountName))
+            accountName = accountName.trim();
+
         AccountService accountService = new AccountService();
 
         AlgoConsole console = AlgoConsole.getConsole(project);
 
         try {
-            AlgoAccount algoAccount = accountService.createNewAccount();
+            AlgoAccount algoAccount = accountService.createNewAccount(accountName);
 
             console.clearAndshow();
             console.showInfoMessage(String.format("Address: %s", algoAccount.getAddress()));

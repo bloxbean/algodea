@@ -33,7 +33,7 @@ import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
 
-class AccountCacheService {
+public class AccountCacheService {
     private final static Logger log = Logger.getInstance(AccountCacheService.class);
     //private Project project;
 
@@ -85,6 +85,18 @@ class AccountCacheService {
         globalCache.setAccountCache(accountCache);
     }
 
+    public boolean deleteAccount(AlgoAccount account) {
+        GlobalCache globalCache = new GlobalCache(getAccountCacheFolder());
+        AccountCache accountCache = globalCache.getAccountCache();
+
+        if(accountCache.deleteAccount(account)) {
+            globalCache.setAccountCache(accountCache);
+            return true;
+        }
+
+        return false;
+    }
+
     public void storeMultisigAccount(AlgoMultisigAccount multisigAccount) {
 
         GlobalCache globalCache = new GlobalCache(getAccountCacheFolder());
@@ -92,6 +104,19 @@ class AccountCacheService {
 
         accountCache.addMultisigAccount(multisigAccount);
         globalCache.setAccountCache(accountCache);
+    }
+
+    public boolean deleteMultisigAccount(AlgoMultisigAccount multisigAccount) {
+
+        GlobalCache globalCache = new GlobalCache(getAccountCacheFolder());
+        AccountCache accountCache = globalCache.getAccountCache();
+
+        if(accountCache.deleteMultisigAccount(multisigAccount)) {
+            globalCache.setAccountCache(accountCache);
+            return true;
+        }
+
+        return false;
     }
 
     public void clearCache() {
@@ -139,7 +164,7 @@ class AccountCacheService {
 //        }
 //    }
 
-    private String getAccountCacheFolder() {
+    protected String getAccountCacheFolder() {
         String home = System.getProperty("user.home");
 
         File cacheFolder = new File(home);
@@ -169,4 +194,13 @@ class AccountCacheService {
         return BigInteger.ZERO;
     }
 
+    public boolean updateAccountName(String address, String accountName) {
+        GlobalCache globalCache = new GlobalCache(getAccountCacheFolder());
+        AccountCache accountCache = globalCache.getAccountCache();
+
+        boolean successful = accountCache.updateAccountName(address, accountName);
+        globalCache.setAccountCache(accountCache);
+
+        return successful;
+    }
 }

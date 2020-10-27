@@ -137,6 +137,38 @@ public class AlgoAccountService extends AlgoBaseService {
         return accountAssets;
     }
 
+    public List<AccountAsset> getAccountAssets(Account account) throws ApiCallException {
+        if(account == null) {
+            logListener.error("Account can not null");
+            return Collections.EMPTY_LIST;
+        }
+
+        List<AssetHolding> assetHoldings = account.assets;
+        if(assetHoldings == null || assetHoldings.size() == 0)
+            return Collections.EMPTY_LIST;
+
+        List<AccountAsset> accountAssets = new ArrayList<>();
+        for(AssetHolding assetHolding: assetHoldings) {
+            AccountAsset accountAsset = new AccountAsset();
+            accountAsset.setAssetId(assetHolding.assetId);
+            accountAsset.setAmount(assetHolding.amount);
+
+            try {
+                Asset asset = getAsset(assetHolding.assetId);
+                accountAsset.setAssetName(asset.params.name);
+                accountAsset.setAssetUnit(asset.params.unitName);
+                accountAsset.setDecimals(asset.params.decimals);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            accountAssets.add(accountAsset);
+        }
+
+        return accountAssets;
+    }
+
+
     public Asset getAsset(Long assetId) throws Exception {
         if(assetId == null) {
             logListener.error("Asset id cannot be null");

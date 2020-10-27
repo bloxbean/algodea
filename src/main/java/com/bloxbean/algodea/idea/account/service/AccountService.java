@@ -10,6 +10,7 @@ import com.bloxbean.algodea.idea.account.exception.AccountException;
 import com.bloxbean.algodea.idea.account.exception.InvalidMnemonicException;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
+import com.twelvemonkeys.lang.StringUtil;
 
 import java.security.GeneralSecurityException;
 import java.security.NoSuchAlgorithmException;
@@ -30,14 +31,39 @@ public class AccountService {
         this.accountCacheService = new AccountCacheService();
     }
 
-    public AlgoAccount createNewAccount() throws NoSuchAlgorithmException {
+    public AccountService(AccountCacheService accountCacheService) {
+        this.accountCacheService = accountCacheService;
+    }
+
+    public AlgoAccount createNewAccount(String accountName) throws NoSuchAlgorithmException {
+        if(StringUtil.isEmpty(accountName))
+            accountName = "New Account";
+
         Account account = new Account();
         Address address = account.getAddress();
 
         AlgoAccount algoAccount = new AlgoAccount(address.toString(), account.toMnemonic());
+        algoAccount.setName(accountName);
 
         accountCacheService.storeAccount(algoAccount);
         return algoAccount;
+    }
+
+    public AlgoAccount createNewAccount() throws NoSuchAlgorithmException {
+        return createNewAccount(null);
+    }
+
+    public boolean importAccount(AlgoAccount algoAccount) {
+        if(algoAccount == null)
+            return false;
+
+        AlgoAccount existingAcc = getAccountByAddress(algoAccount.getAddress());
+        if(existingAcc != null) {
+            return false;
+        }
+
+        accountCacheService.storeAccount(algoAccount);
+        return true;
     }
 
     public AlgoMultisigAccount createNewMultisigAccount(int threshold, List<AlgoAccount> accounts)
@@ -111,6 +137,18 @@ public class AccountService {
 
     public void clearCache() {
         accountCacheService.clearCache();
+    }
+
+    public boolean removeAccount(AlgoAccount account) {
+        if(account == null) return false;
+        return accountCacheService.deleteAccount(account);
+    }
+
+    public boolean updateAccountName(String address, String accountName) {
+        if(StringUtil.isEmpty(address))
+            return false;
+
+        return accountCacheService.updateAccountName(address, accountName);
     }
 
     public static void main(String[] args) throws NoSuchAlgorithmException {

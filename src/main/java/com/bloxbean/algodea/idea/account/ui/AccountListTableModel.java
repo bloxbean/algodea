@@ -35,16 +35,16 @@ public class AccountListTableModel extends AbstractTableModel {
 
     private boolean showBalance;
     private List<AlgoAccount> accounts;
-    protected String[] columnNames = new String[] {"Account", "Balance"};
-    protected Class[] columnClasses = new Class[] {String.class, String.class};
+    protected String[] columnNames = new String[] {"Name", "Account", "Balance"};
+    protected Class[] columnClasses = new Class[] {String.class, String.class, String.class};
 
     public AccountListTableModel(boolean showBalance) {
         this.accounts = new ArrayList<>();
         this.showBalance = showBalance;
 
         if(!showBalance) { //Balance is not shown for local mode
-            columnNames = new String[]{"Account"};
-            columnClasses = new Class[] {String.class};
+            columnNames = new String[]{"Name", "Account"};
+            columnClasses = new Class[] {String.class, String.class};
         }
     }
 
@@ -75,8 +75,10 @@ public class AccountListTableModel extends AbstractTableModel {
 
         AlgoAccount account = accounts.get(rowIndex);
         if(columnIndex == 0)
+            return account.getName();
+        else if(columnIndex == 1)
             return account.getAddress();
-        else if(columnIndex == 1) {
+        else if(columnIndex == 2) {
             Long balance = account.getBalance();
             if(balance == null)
                 return "..";
@@ -93,11 +95,12 @@ public class AccountListTableModel extends AbstractTableModel {
     }
 
     public boolean isCellEditable(int row, int col) {
-        if (col== 0) {
-            return true;
-        } else {
-            return false;
-        }
+//        if (col== 0) {
+//            return true;
+//        } else {
+//            return false;
+//        }
+        return false;
     }
 
     public void addElement(AlgoAccount account) {

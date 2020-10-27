@@ -43,6 +43,24 @@
         <properties/>
         <border type="none"/>
         <children>
+          <component id="ad803" class="javax.swing.JLabel">
+            <constraints/>
+            <properties>
+              <text value="Select an account and right-click to see more options."/>
+            </properties>
+          </component>
+          <component id="8bcfb" class="javax.swing.JButton" binding="newAcctBtn">
+            <constraints/>
+            <properties>
+              <text value="New"/>
+            </properties>
+          </component>
+          <component id="7c87e" class="javax.swing.JButton" binding="importAccBtn">
+            <constraints/>
+            <properties>
+              <text value="Import Existing"/>
+            </properties>
+          </component>
           <component id="32da5" class="javax.swing.JButton" binding="fetchBalanceButton" default-binding="true">
             <constraints/>
             <properties>
@@ -56,7 +74,7 @@
           <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <text value="Label"/>
+          <text value=""/>
         </properties>
       </component>
     </children>

@@ -1,6 +1,7 @@
 package com.bloxbean.algodea.idea.account.model;
 
 import java.util.List;
+import java.util.Objects;
 
 public class AlgoMultisigAccount {
     private int version = 1;
@@ -57,5 +58,19 @@ public class AlgoMultisigAccount {
 
     public void setBalance(Long balance) {
         this.balance = balance;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AlgoMultisigAccount that = (AlgoMultisigAccount) o;
+        return version == that.version &&
+                address.equals(that.address);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(version, address);
     }
 }

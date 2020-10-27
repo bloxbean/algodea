@@ -30,19 +30,35 @@ import com.bloxbean.algodea.idea.nodeint.service.AlgoAccountService;
 import com.bloxbean.algodea.idea.nodeint.service.LogListenerAdapter;
 import com.bloxbean.algodea.idea.toolwindow.AlgoConsole;
 import com.bloxbean.algodea.idea.util.IdeaUtil;
+import com.intellij.icons.AllIcons;
+import com.intellij.ide.DataManager;
 import com.intellij.notification.NotificationType;
+import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.ui.popup.JBPopupFactory;
+import com.intellij.openapi.ui.popup.ListPopup;
+import com.intellij.ui.awt.RelativePoint;
+import com.twelvemonkeys.lang.StringUtil;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableColumn;
+import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 public class ListAccountDialog extends DialogWrapper {
@@ -50,6 +66,8 @@ public class ListAccountDialog extends DialogWrapper {
     private JTable accListTable;
     private JButton fetchBalanceButton;
     private JLabel messageLabel;
+    private JButton importAccBtn;
+    private JButton newAcctBtn;
     private Project project;
     private AccountListTableModel tableModel;
     private boolean isRemote;
@@ -59,13 +77,13 @@ public class ListAccountDialog extends DialogWrapper {
 
     public ListAccountDialog(Project project, boolean isRemote) {
         this(project, isRemote, true);
-        console = AlgoConsole.getConsole(project);
+        this.console = AlgoConsole.getConsole(project);
     }
 
     public ListAccountDialog(Project project, boolean isRemote, boolean showBalance) {
         super(project, true);
         init();
-        setTitle("Accounts (" + (isRemote ? "Remote Mode": "Embedded Mode") + ")");
+        setTitle("Accounts");
 
         this.accountService = AccountService.getAccountService();
         this.project = project;
@@ -79,7 +97,7 @@ public class ListAccountDialog extends DialogWrapper {
                 //Right align balance column
                 DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
                 rightRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
-                accListTable.getColumnModel().getColumn(1).setCellRenderer(rightRenderer);
+                accListTable.getColumnModel().getColumn(2).setCellRenderer(rightRenderer);
             } catch (Exception e) {
 
             }
@@ -94,7 +112,190 @@ public class ListAccountDialog extends DialogWrapper {
                 fetchBalance(isRemote);
             }
         });
+
+        attachImportAccountListener();
+        attachTableListener();
+        attachActionButtonHandlers();
+
+        accListTable.getColumnModel().getColumn(0).setMaxWidth(150);
+        accListTable.getColumnModel().getColumn(0).setMinWidth(50);
+        accListTable.getColumnModel().getColumn(0).setPreferredWidth(150);
+
+        if(showBalance) {
+            accListTable.getColumnModel().getColumn(2).setMaxWidth(250);
+            accListTable.getColumnModel().getColumn(2).setMinWidth(50);
+            accListTable.getColumnModel().getColumn(2).setPreferredWidth(200);
+        }
+//        accListTable.getColumnModel().getColumn(2).setPreferredWidth(30/);
+//        setJTableColumnsWidth(accListTable, accListTable.getWidth(), 5,80,15);
     }
+
+    private void attachActionButtonHandlers() {
+        newAcctBtn.setIcon(AllIcons.General.Add);
+        importAccBtn.setIcon(AllIcons.General.Add);
+        fetchBalanceButton.setIcon(AllIcons.General.Information);
+        newAcctBtn.addActionListener(e -> {
+            String accountName = Messages.showInputDialog(mainPanel, "Enter a name for the new account", "New Account", AllIcons.General.Information);
+            if(!StringUtil.isEmpty(accountName))
+                accountName = accountName.trim();
+
+            try {
+                accountService.createNewAccount(accountName);
+                poulateAccounts();
+            } catch (Exception exception) {
+                Messages.showErrorDialog(mainPanel, "Error adding new account");
+                return;
+            }
+        });
+    }
+
+    private void attachImportAccountListener() {
+        importAccBtn.addActionListener(e -> {
+            ImportAccountDialog dialog = new ImportAccountDialog();
+            boolean ok = dialog.showAndGet();
+            if(!ok)
+                return;
+
+            AlgoAccount account = dialog.getAccount();
+
+            if(account == null) {
+                Messages.showErrorDialog("Invalid account. Account could not be imported", "Import Account");
+                return;
+            }
+
+            ApplicationManager.getApplication().runWriteAction(() -> {
+                AccountService accountService = AccountService.getAccountService();
+                boolean result = accountService.importAccount(account);
+
+                ApplicationManager.getApplication().invokeLater(() -> {
+                    if(result) {
+                        tableModel.addElement(account);
+                        tableModel.fireTableRowsInserted(tableModel.getRowCount() - 1, tableModel.getRowCount() - 1);
+                        Messages.showInfoMessage("Account imported successfully", "Import Account");
+                    } else {
+                        Messages.showWarningDialog("Account could not be imported.\nPlease check if account already exists.",
+                                "Import Account");
+                    }
+                });
+
+            });
+        });
+    }
+
+    private void attachTableListener() {
+        accListTable.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                tableRowPopupMenuHandler(e);
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                tableRowPopupMenuHandler(e);
+            }
+        });
+
+    }
+
+    private void tableRowPopupMenuHandler(MouseEvent e) {
+        int r = accListTable.rowAtPoint(e.getPoint());
+        if (r >= 0 && r < accListTable.getRowCount()) {
+            accListTable.setRowSelectionInterval(r, r);
+        } else {
+            accListTable.clearSelection();
+        }
+
+        int rowindex = accListTable.getSelectedRow();
+        if (rowindex < 0)
+            return;
+        if (e.isPopupTrigger() && e.getComponent() instanceof JTable ) {
+            AlgoAccount account = tableModel.getAccounts().get(rowindex);
+            ListPopup popup = createPopup(account);
+            RelativePoint relativePoint = new RelativePoint(e.getComponent(), new Point(e.getX(), e.getY()));
+            popup.show(relativePoint);
+        }
+    }
+
+    private ListPopup createPopup(AlgoAccount account) {
+        final DefaultActionGroup group = new DefaultActionGroup();
+
+        group.add(createCopyAction(account));
+        if(!StringUtil.isEmpty(account.getMnemonic())) {
+            group.add(createCopyMnemonicAction(account));
+        }
+        group.add(createShowAccountDetailsAction(account));
+        group.add(createRemoveAction(account));
+
+        DataContext dataContext = DataManager.getInstance().getDataContext(accListTable);
+        return JBPopupFactory.getInstance().createActionGroupPopup("",
+                group, dataContext, JBPopupFactory.ActionSelectionAid.MNEMONICS, true);
+    }
+
+    private AnAction createShowAccountDetailsAction(AlgoAccount account) {
+        return new AnAction("Show Details", "Show Details", AllIcons.General.InspectionsEye) {
+            @Override
+            public void actionPerformed(@NotNull AnActionEvent e) {
+                AccountDetailsDialog dialog = new AccountDetailsDialog(project, account);
+                boolean ok = dialog.showAndGet();
+
+                if(dialog.getAccountInfoUpdated()) {
+                    //Update table.
+                    poulateAccounts();
+                }
+            }
+        };
+    }
+
+    @NotNull
+    private AnAction createRemoveAction(AlgoAccount account) {
+        return new AnAction("Remove", "Remove", AllIcons.General.Remove) {
+            @Override
+            public void actionPerformed(@NotNull AnActionEvent e) {
+                AlgoAccount algoAccount = getSelectAccount();
+                if (algoAccount == null)
+                    return;
+                int response = Messages.showYesNoDialog("Do you really want to delete this account ? \n " + algoAccount.getAddress(),
+                        "Delete Account", AllIcons.General.Warning);
+                if (response == Messages.YES) {
+                    if (accountService.removeAccount(algoAccount)) {
+                        int index = tableModel.getAccounts().indexOf(account);
+                        if (index != -1 && index < tableModel.getAccounts().size()) {
+                            tableModel.getAccounts().remove(index);
+                            tableModel.fireTableDataChanged();
+                        }
+                    }
+                }
+
+            }
+        };
+    }
+
+    private AnAction createCopyAction(AlgoAccount account) {
+        return new AnAction("Copy Address", "Copy Address", AllIcons.General.CopyHovered) {
+            @Override
+            public void actionPerformed(@NotNull AnActionEvent e) {
+                AlgoAccount algoAccount = getSelectAccount();
+                StringSelection stringSelection = new StringSelection(algoAccount.getAddress().toString());
+                Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                clipboard.setContents(stringSelection, null);
+                Messages.showInfoMessage("Address copied to the clipboard", "Copy Address");
+            }
+        };
+    }
+
+    private AnAction createCopyMnemonicAction(AlgoAccount account) {
+        return new AnAction("Copy Mnemonic", "Copy Mnemonic", AllIcons.General.CopyHovered) {
+            @Override
+            public void actionPerformed(@NotNull AnActionEvent e) {
+                AlgoAccount algoAccount = getSelectAccount();
+                StringSelection stringSelection = new StringSelection(algoAccount.getMnemonic().toString());
+                Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                clipboard.setContents(stringSelection, null);
+                Messages.showInfoMessage("Mnemonic phase copied to the clipboard", "Copy Mnemonic");
+            }
+        };
+    }
+
 
     public void fetchBalance(boolean isRemote) {
         if (tableModel.getAccounts() == null) return;
@@ -150,7 +351,7 @@ public class ListAccountDialog extends DialogWrapper {
             } finally {
 
             }
-        } else { //For local Avm
+        } else {
 
         }
     }
@@ -186,6 +387,10 @@ public class ListAccountDialog extends DialogWrapper {
         accListTable.setModel(tableModel);
 
         messageLabel.setText("Loading account ...");
+        poulateAccounts();
+    }
+
+    private void poulateAccounts() {
         ApplicationManager.getApplication().invokeLater(() -> {
             try {
                 List<AlgoAccount> accs = accountService.getAccounts();
@@ -207,4 +412,5 @@ public class ListAccountDialog extends DialogWrapper {
     private void createUIComponents() {
         // TODO: place custom component creation code here
     }
+
 }
