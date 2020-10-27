@@ -76,6 +76,8 @@ public class AlgoAccount {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         AlgoAccount that = (AlgoAccount) o;
+        if(address == null || that.address == null)
+            return false;
         return address.equals(that.address);
     }
 

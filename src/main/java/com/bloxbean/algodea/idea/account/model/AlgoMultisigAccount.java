@@ -65,6 +65,10 @@ public class AlgoMultisigAccount {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         AlgoMultisigAccount that = (AlgoMultisigAccount) o;
+
+        if(address == null || that.address == null)
+            return false;
+
         return version == that.version &&
                 address.equals(that.address);
     }
