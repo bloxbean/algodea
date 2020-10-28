@@ -112,7 +112,7 @@
             <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl T" second-keystroke="C"/>
             <add-to-group group-id="com.bloxbean.algodea.idea.core.action.AlgoActionGroup"/>
         </action>
-        <action id="com.bloxbean.algodea.idea.stateless.action.LogicSigSendTransactionAction_ProjectView" class="com.bloxbean.algodea.idea.stateless.action.LogicSigSendTransactionAction"
+        <action id="com.bloxbean.algodea.idea.stateless.action.LogicSigSendTransactionAction_ProjectView" class="com.bloxbean.algodea.idea.stateless.action.LogicSigSendTransactionFileNodeAction"
                 text="Send Transaction (Logic Sig)"
                 popup="true"
                 description="Send Transaction (Logic Sig)">

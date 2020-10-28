@@ -1,5 +1,6 @@
 package com.bloxbean.algodea.idea.util;
 
+import com.bloxbean.algodea.idea.core.action.util.AlgoContractModuleHelper;
 import com.bloxbean.algodea.idea.module.AlgorandModuleType;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;

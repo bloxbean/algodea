@@ -47,6 +47,11 @@ public class AlgoContractModuleHelper {
     public static final String GENERATED_SRC = "generated-src";
     private static final String LSIG_BUILD_FOLDER = "lsigs";
 
+    public static String getBuildFolder(Project project) {
+        String basePath = project.getBasePath();
+        return basePath + File.separator + AlgoContractModuleHelper.BUILD_FOLDER;
+    }
+
     public static VirtualFile getModuleBuildFolder(AlgoConsole console, Module module) {
         VirtualFile moduleOutFolder = null;
         VirtualFile moduleRoot = module.getModuleFile().getParent();
