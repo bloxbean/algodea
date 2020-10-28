@@ -219,7 +219,7 @@ public class TransferTxnParamEntryForm {
             @Override
             public void run() {
                 ProgressIndicator progressIndicator = ProgressManager.getInstance().getProgressIndicator();
-
+                progressIndicator.setIndeterminate(false);
 
                 try {
                     assetIdComboBoxModel.removeAllElements();

@@ -96,6 +96,8 @@ public class AccountDetailsDialog extends DialogWrapper {
 
                     try {
                         ProgressIndicator progressIndicator = ProgressManager.getInstance().getProgressIndicator();
+                        progressIndicator.setIndeterminate(false);
+
                         AlgoAccountService accountService = null;
 
                         progressIndicator.setText("Fetching account details ....");

@@ -62,7 +62,7 @@ public class TransactionService extends AlgoBaseService {
 
         logListener.info("Getting node suggested transaction parameters ...");
         // get node suggested parameters
-        Response<TransactionParametersResponse> transactionParametersResponse = client.TransactionParams().execute();
+        Response<TransactionParametersResponse> transactionParametersResponse = client.TransactionParams().execute(getHeaders()._1(), getHeaders()._2());
         if(!transactionParametersResponse.isSuccessful()) {
             printErrorMessage("Unable to get Transaction Params from the node", transactionParametersResponse);
             return null;

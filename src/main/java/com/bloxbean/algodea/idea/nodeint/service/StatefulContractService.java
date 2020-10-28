@@ -31,6 +31,7 @@ import com.algorand.algosdk.transaction.Transaction;
 import com.algorand.algosdk.util.Encoder;
 import com.algorand.algosdk.v2.client.common.Response;
 import com.algorand.algosdk.v2.client.model.*;
+import com.bloxbean.algodea.idea.common.Tuple;
 import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
 import com.bloxbean.algodea.idea.nodeint.model.TxnDetailsParameters;
 import com.bloxbean.algodea.idea.util.JsonUtil;
@@ -178,7 +179,8 @@ public class StatefulContractService extends AlgoBaseService {
 
     public void readLocalState(Account account, Long appId) throws Exception {
         logListener.info("Fetching local state ...");
-        Response<com.algorand.algosdk.v2.client.model.Account> acctResponse = client.AccountInformation(account.getAddress()).execute();
+        Response<com.algorand.algosdk.v2.client.model.Account> acctResponse
+                = client.AccountInformation(account.getAddress()).execute(getHeaders()._1(), getHeaders()._2());
         if(!acctResponse.isSuccessful()) {
             printErrorMessage("Reading local state failed", acctResponse);
             return;
@@ -195,7 +197,7 @@ public class StatefulContractService extends AlgoBaseService {
 
     public void readGlobalState(Long appId) throws Exception {
         logListener.info("Fetching global state ...");
-        Response<Application> acctResponse = client.GetApplicationByID(appId).execute();
+        Response<Application> acctResponse = client.GetApplicationByID(appId).execute(getHeaders()._1(), getHeaders()._2());
         if(!acctResponse.isSuccessful()) {
             printErrorMessage("Reading global state failed", acctResponse);
             return;
@@ -210,7 +212,7 @@ public class StatefulContractService extends AlgoBaseService {
 
     public void getApplication(Long appId) throws Exception {
         logListener.info("Fetching application info ...");
-        Response<Application> acctResponse = client.GetApplicationByID(appId).execute();
+        Response<Application> acctResponse = client.GetApplicationByID(appId).execute(getHeaders()._1(), getHeaders()._2());
         if(!acctResponse.isSuccessful()) {
             printErrorMessage("Reading application info failed", acctResponse);
             return;
@@ -231,7 +233,8 @@ public class StatefulContractService extends AlgoBaseService {
 
         logListener.info("Getting node suggested transaction parameters ...");
         // get node suggested parameters
-        Response<TransactionParametersResponse> transactionParametersResponse = client.TransactionParams().execute();
+        Response<TransactionParametersResponse> transactionParametersResponse
+                = client.TransactionParams().execute(getHeaders()._1(), getHeaders()._2());
         if(!transactionParametersResponse.isSuccessful()) {
             printErrorMessage("Unable to get Transaction Params from the node", transactionParametersResponse);
             return null;
@@ -261,7 +264,10 @@ public class StatefulContractService extends AlgoBaseService {
         // send to network
         byte[] encodedTxBytes = Encoder.encodeToMsgPack(signedTxn);
         logListener.info("Posting transaction to the network ...");
-        Response<PostTransactionsResponse> postTransactionsResponse = client.RawTransaction().rawtxn(encodedTxBytes).execute();
+
+        Tuple<String[], String[]> headers = algoConnectionFactory.getHeadersForBinaryContent();
+
+        Response<PostTransactionsResponse> postTransactionsResponse = client.RawTransaction().rawtxn(encodedTxBytes).execute(headers._1(), headers._2());
         if(!postTransactionsResponse.isSuccessful()) {
             printErrorMessage("Transaction could not be posted to the network", postTransactionsResponse);
             return null;
@@ -274,7 +280,8 @@ public class StatefulContractService extends AlgoBaseService {
         waitForConfirmation(id);
 
         // display results
-        Response<PendingTransactionResponse> pendingTransactionResponse = client.PendingTransactionInformation(id).execute();
+        Response<PendingTransactionResponse> pendingTransactionResponse
+                = client.PendingTransactionInformation(id).execute(getHeaders()._1(), getHeaders()._2());
         if(!pendingTransactionResponse.isSuccessful()) {
             printErrorMessage("Unable to get pending transaction info", pendingTransactionResponse);
             return null;

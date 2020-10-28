@@ -28,10 +28,10 @@ import com.algorand.algosdk.v2.client.common.Response;
 import com.algorand.algosdk.v2.client.model.Account;
 import com.algorand.algosdk.v2.client.model.Asset;
 import com.algorand.algosdk.v2.client.model.AssetHolding;
+import com.algorand.algosdk.v2.client.model.AssetResponse;
 import com.bloxbean.algodea.idea.nodeint.exception.ApiCallException;
 import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
 import com.bloxbean.algodea.idea.nodeint.model.AccountAsset;
-import com.bloxbean.algodea.idea.nodeint.purestake.CustomAlgodClient;
 import com.bloxbean.algodea.idea.util.JsonUtil;
 import com.intellij.openapi.project.Project;
 import com.twelvemonkeys.lang.StringUtil;
@@ -49,7 +49,7 @@ public class AlgoAccountService extends AlgoBaseService {
     public Long getBalance(String address) throws Exception {
         AlgodClient algodClient = getAlgodClient();
         AccountInformation accountInformation = algodClient.AccountInformation(new Address(address));
-        Response<Account> accountResponse = accountInformation.execute();
+        Response<Account> accountResponse = accountInformation.execute(getHeaders()._1(), getHeaders()._2());
         if(accountResponse.isSuccessful()) {
             Account account = accountResponse.body();
             if(account != null)
@@ -65,7 +65,7 @@ public class AlgoAccountService extends AlgoBaseService {
 
     public Account getAccount(String address) throws ApiCallException {
         try {
-            Response<Account> accountResponse = client.AccountInformation(new Address(address)).execute();
+            Response<Account> accountResponse = client.AccountInformation(new Address(address)).execute(getHeaders()._1(), getHeaders()._2());
 
             if(!accountResponse.isSuccessful()) {
                 printErrorMessage("Unable to fetch account information for address : " + address, accountResponse);
@@ -176,17 +176,32 @@ public class AlgoAccountService extends AlgoBaseService {
             return null;
         }
 
-        logListener.info("Fetching asset info ...");
-        Response<Asset> assetResponse = client.GetAssetByID(assetId).execute();
-        if(!assetResponse.isSuccessful()) {
-            printErrorMessage("Reading asset info failed", assetResponse);
-            return null;
+        Asset asset = null;
+        if(indexerClient == null) {
+            Response<Asset> assetResponse = client.GetAssetByID(assetId).execute(getHeaders()._1(), getHeaders()._2());
+            if (!assetResponse.isSuccessful()) {
+                printErrorMessage("Reading asset info failed", assetResponse);
+                return null;
+            }
+
+            asset = assetResponse.body();
+
+            logListener.info(JsonUtil.getPrettyJson(asset));
+            logListener.info("\n");
+        } else {
+            logListener.info("Fetching asset detail from Indexer Url ...");
+            Response<AssetResponse> response = indexerClient.lookupAssetByID(assetId).execute(getHeaders()._1(), getHeaders()._2());
+            if(!response.isSuccessful()) {
+                printErrorMessage("Reading asset info failed", response);
+                return null;
+            }
+
+            AssetResponse assetResponse = response.body();
+            asset = assetResponse.asset;
+
+            logListener.info(JsonUtil.getPrettyJson(asset));
+            logListener.info("\n");
         }
-
-        Asset asset = assetResponse.body();
-
-        logListener.info(JsonUtil.getPrettyJson(asset));
-        logListener.info("\n");
 
         return asset;
     }

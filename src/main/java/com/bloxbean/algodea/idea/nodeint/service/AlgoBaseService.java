@@ -29,8 +29,10 @@ import com.algorand.algosdk.transaction.SignedTransaction;
 import com.algorand.algosdk.transaction.Transaction;
 import com.algorand.algosdk.util.Encoder;
 import com.algorand.algosdk.v2.client.common.AlgodClient;
+import com.algorand.algosdk.v2.client.common.IndexerClient;
 import com.algorand.algosdk.v2.client.common.Response;
 import com.algorand.algosdk.v2.client.model.*;
+import com.bloxbean.algodea.idea.common.Tuple;
 import com.bloxbean.algodea.idea.configuration.model.NodeInfo;
 import com.bloxbean.algodea.idea.nodeint.AlgoConnectionFactory;
 import com.bloxbean.algodea.idea.nodeint.AlgoServerConfigurationHelper;
@@ -50,6 +52,7 @@ public class AlgoBaseService {
     protected AlgoConnectionFactory algoConnectionFactory;
     protected LogListener logListener;
     protected AlgodClient client;
+    protected IndexerClient indexerClient;
     protected String networkGenesisHash;
 
     public AlgoBaseService(Project project) throws DeploymentTargetNotConfigured {
@@ -76,10 +79,11 @@ public class AlgoBaseService {
         if(nodeInfo == null)
             throw new DeploymentTargetNotConfigured("No deployment node found");
         algoConnectionFactory
-                = new AlgoConnectionFactory(nodeInfo.getNodeAPIUrl(), nodeInfo.getApiKey());
+                = new AlgoConnectionFactory(nodeInfo.getNodeAPIUrl(), nodeInfo.getIndexerAPIUrl(), nodeInfo.getApiKey());
         this.logListener = logListener;
 
         this.client = algoConnectionFactory.connect();
+        this.indexerClient = algoConnectionFactory.connectToIndexerApi();
         this.networkGenesisHash = nodeInfo.getGenesisHash();
     }
 
@@ -88,9 +92,10 @@ public class AlgoBaseService {
         if(nodeInfo == null)
             throw new IllegalArgumentException("NodeInfo cannot be null");
         algoConnectionFactory
-                = new AlgoConnectionFactory(nodeInfo.getNodeAPIUrl(), nodeInfo.getApiKey());
+                = new AlgoConnectionFactory(nodeInfo.getNodeAPIUrl(), nodeInfo.getIndexerAPIUrl(), nodeInfo.getApiKey());
         this.logListener = logListener;
         this.client = algoConnectionFactory.connect();
+        this.indexerClient = algoConnectionFactory.connectToIndexerApi();
         this.networkGenesisHash = nodeInfo.getGenesisHash();
     }
 
@@ -117,7 +122,7 @@ public class AlgoBaseService {
     public String compileProgram(byte[] programSource) {
         Response<CompileResponse> compileResponse = null;
         try {
-            compileResponse = client.TealCompile().source(programSource).execute();
+            compileResponse = client.TealCompile().source(programSource).execute(getHeaders()._1(), getHeaders()._2());
         } catch (Exception e) {
             printErrorMessage("Compilation failed", compileResponse);
             logListener.error("Compilation error", e);
@@ -142,7 +147,9 @@ public class AlgoBaseService {
         // send to network
         byte[] encodedTxBytes = Encoder.encodeToMsgPack(signedTxn);
         logListener.info("Posting transaction to the network ...");
-        Response<PostTransactionsResponse> postTransactionsResponse = client.RawTransaction().rawtxn(encodedTxBytes).execute();
+
+        Tuple<String[], String[]> headers = algoConnectionFactory.getHeadersForBinaryContent();
+        Response<PostTransactionsResponse> postTransactionsResponse = client.RawTransaction().rawtxn(encodedTxBytes).execute(headers._1(), headers._2());
         if(!postTransactionsResponse.isSuccessful()) {
             printErrorMessage("Transaction could not be posted to the network", postTransactionsResponse);
             return false;
@@ -155,7 +162,8 @@ public class AlgoBaseService {
         waitForConfirmation(id);
 
         // display results
-        Response<PendingTransactionResponse> pendingTransactionResponse = client.PendingTransactionInformation(id).execute();
+        Response<PendingTransactionResponse> pendingTransactionResponse
+                = client.PendingTransactionInformation(id).execute(getHeaders()._1(), getHeaders()._2());
         if(!pendingTransactionResponse.isSuccessful()) {
             printErrorMessage("Unable to get pending transaction info", pendingTransactionResponse);
             return false;
@@ -177,7 +185,10 @@ public class AlgoBaseService {
         // send to network
         byte[] encodedTxBytes = Encoder.encodeToMsgPack(signedTxn);
         logListener.info("Posting transaction to the network ...");
-        Response<PostTransactionsResponse> postTransactionsResponse = client.RawTransaction().rawtxn(encodedTxBytes).execute();
+
+        Tuple<String[], String[]> headers = algoConnectionFactory.getHeadersForBinaryContent();
+
+        Response<PostTransactionsResponse> postTransactionsResponse = client.RawTransaction().rawtxn(encodedTxBytes).execute(headers._1(), headers._2());
         if(!postTransactionsResponse.isSuccessful()) {
             printErrorMessage("Transaction could not be posted to the network", postTransactionsResponse);
             return null  ;
@@ -190,7 +201,8 @@ public class AlgoBaseService {
         waitForConfirmation(id);
 
         // display results
-        Response<PendingTransactionResponse> pendingTransactionResponse = client.PendingTransactionInformation(id).execute();
+        Response<PendingTransactionResponse> pendingTransactionResponse
+                = client.PendingTransactionInformation(id).execute(getHeaders()._1(), getHeaders()._2());
         if(!pendingTransactionResponse.isSuccessful()) {
             printErrorMessage("Unable to get pending transaction info", pendingTransactionResponse);
             return null;
@@ -225,7 +237,8 @@ public class AlgoBaseService {
 
         logListener.info("Getting node suggested transaction parameters ...");
         // get node suggested parameters
-        Response<TransactionParametersResponse> transactionParametersResponse = client.TransactionParams().execute();
+        Response<TransactionParametersResponse> transactionParametersResponse
+                = client.TransactionParams().execute(getHeaders()._1(), getHeaders()._2());
         if(!transactionParametersResponse.isSuccessful()) {
             printErrorMessage("Unable to get Transaction Params from the node", transactionParametersResponse);
             return null;
@@ -283,7 +296,8 @@ public class AlgoBaseService {
 
         logListener.info("Getting node suggested transaction parameters ...");
         // get node suggested parameters
-        Response<TransactionParametersResponse> transactionParametersResponse = client.TransactionParams().execute();
+        Response<TransactionParametersResponse> transactionParametersResponse
+                = client.TransactionParams().execute(getHeaders()._1(), getHeaders()._2());
         if(!transactionParametersResponse.isSuccessful()) {
             printErrorMessage("Unable to get Transaction Params from the node", transactionParametersResponse);
             return null;
@@ -315,7 +329,7 @@ public class AlgoBaseService {
     protected void waitForConfirmation(String txID) throws Exception {
 //        if (client == null)
 //            this.client = connectToNetwork();
-        Response<NodeStatusResponse> response = client.GetStatus().execute();
+        Response<NodeStatusResponse> response = client.GetStatus().execute(getHeaders()._1(), getHeaders()._2());
         if(!response.isSuccessful()) {
             printErrorMessage("Failed to get transaction status for txId :" + txID, response);
         }
@@ -324,7 +338,8 @@ public class AlgoBaseService {
         while (true) {
             try {
                 // Check the pending transactions
-                Response<PendingTransactionResponse> pendingInfo = client.PendingTransactionInformation(txID).execute();
+                Response<PendingTransactionResponse> pendingInfo
+                        = client.PendingTransactionInformation(txID).execute(getHeaders()._1(), getHeaders()._2());
                 if (pendingInfo.body().confirmedRound != null && pendingInfo.body().confirmedRound > 0) {
                     // Got the completed Transaction
                     logListener.info(
@@ -332,7 +347,7 @@ public class AlgoBaseService {
                     break;
                 }
                 lastRound++;
-                client.WaitForBlock(lastRound).execute();
+                client.WaitForBlock(lastRound).execute(getHeaders()._1(), getHeaders()._2());
             } catch (Exception e) {
                 throw (e);
             }
@@ -341,5 +356,13 @@ public class AlgoBaseService {
 
     public String getNetworkGenesisHash() {
         return networkGenesisHash;
+    }
+
+    protected Tuple<String[], String[]> getHeaders() {
+        return algoConnectionFactory.getHeaders();
+    }
+
+    protected Tuple<String[], String[]> getHeadersForBinaryContent() {
+        return algoConnectionFactory.getHeadersForBinaryContent();
     }
 }

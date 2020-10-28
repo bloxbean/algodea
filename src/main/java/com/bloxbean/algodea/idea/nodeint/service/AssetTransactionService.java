@@ -3,8 +3,11 @@ package com.bloxbean.algodea.idea.nodeint.service;
 import com.algorand.algosdk.account.Account;
 import com.algorand.algosdk.builder.transaction.*;
 import com.algorand.algosdk.transaction.Transaction;
+import com.algorand.algosdk.v2.client.common.AlgodClient;
 import com.algorand.algosdk.v2.client.common.Response;
+import com.algorand.algosdk.v2.client.indexer.LookupAssetByID;
 import com.algorand.algosdk.v2.client.model.Asset;
+import com.algorand.algosdk.v2.client.model.AssetResponse;
 import com.algorand.algosdk.v2.client.model.PendingTransactionResponse;
 import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
 import com.bloxbean.algodea.idea.nodeint.model.AccountAsset;
@@ -272,16 +275,32 @@ public class AssetTransactionService extends AlgoBaseService {
         }
 
         logListener.info("Fetching asset info ...");
-        Response<Asset> assetResponse = client.GetAssetByID(assetId).execute();
-        if(!assetResponse.isSuccessful()) {
-            printErrorMessage("Reading asset info failed", assetResponse);
-            return null;
+        Asset asset = null;
+        if(indexerClient == null) {
+            Response<Asset> assetResponse = client.GetAssetByID(assetId).execute(getHeaders()._1(), getHeaders()._2());
+            if (!assetResponse.isSuccessful()) {
+                printErrorMessage("Reading asset info failed", assetResponse);
+                return null;
+            }
+
+            asset = assetResponse.body();
+
+            logListener.info(JsonUtil.getPrettyJson(asset));
+            logListener.info("\n");
+        } else {
+            logListener.info("Fetching asset detail from Indexer Url ...");
+            Response<AssetResponse> response = indexerClient.lookupAssetByID(assetId).execute(getHeaders()._1(), getHeaders()._2());
+            if(!response.isSuccessful()) {
+                printErrorMessage("Reading asset info failed", response);
+                return null;
+            }
+
+            AssetResponse assetResponse = response.body();
+            asset = assetResponse.asset;
+
+            logListener.info(JsonUtil.getPrettyJson(asset));
+            logListener.info("\n");
         }
-
-        Asset asset = assetResponse.body();
-
-        logListener.info(JsonUtil.getPrettyJson(asset));
-        logListener.info("\n");
 
         return asset;
     }

@@ -22,23 +22,67 @@
 package com.bloxbean.algodea.idea.nodeint;
 
 import com.algorand.algosdk.v2.client.common.AlgodClient;
-import com.bloxbean.algodea.idea.nodeint.purestake.CustomAlgodClient;
+import com.algorand.algosdk.v2.client.common.IndexerClient;
+import com.bloxbean.algodea.idea.common.Tuple;
+import com.intellij.openapi.util.text.StringUtil;
 import com.squareup.okhttp.HttpUrl;
+import org.apache.commons.lang3.ArrayUtils;
 
 public class AlgoConnectionFactory {
+    private final static String PURESTAKE = "purestake.io";
 
     private String apiUrl;
+    private String indexerApiUrl;
     private String apiKey;
 
-    public AlgoConnectionFactory(String apiUrl, String apiKey) {
+    private boolean purestakeUrl;
+
+    private String[] headers;
+    private String[] values;
+
+    public AlgoConnectionFactory(String apiUrl, String indexerApiUrl, String apiKey) {
         this.apiUrl = apiUrl;
+        this.indexerApiUrl = indexerApiUrl;
         this.apiKey = apiKey;
+
+        if(apiUrl != null && apiUrl.contains(PURESTAKE)) {
+            purestakeUrl = true;
+            headers = new String[] {"X-API-Key"};
+            values = new String[] {apiKey};
+        } else {
+            headers = new String[0];
+            values = new String[0];
+        }
     }
 
     public AlgodClient connect() {
         HttpUrl url = HttpUrl.parse(apiUrl);
-        CustomAlgodClient algodClient = new CustomAlgodClient(apiUrl, url.port(), apiKey);
+        AlgodClient algodClient = new AlgodClient(apiUrl, url.port(), apiKey);
         return algodClient;
+    }
+
+    public IndexerClient connectToIndexerApi() {
+        if(StringUtil.isEmpty(indexerApiUrl))
+            return null;
+
+        HttpUrl url = HttpUrl.parse(indexerApiUrl);
+        IndexerClient indexerClient = new IndexerClient(indexerApiUrl, url.port(), apiKey);
+        return indexerClient;
+    }
+
+    public Tuple<String[], String[]> getHeaders() {
+        return new Tuple<>(headers, values);
+    }
+
+    public Tuple<String[], String[]> getHeadersForBinaryContent() {
+        String[] txHeaders = ArrayUtils.add(headers, "Content-Type");
+        String[] txValues = ArrayUtils.add(values, "application/x-binary");
+
+        return new Tuple<>(txHeaders, txValues);
+    }
+
+    public boolean isPurestakeUrl() {
+        return purestakeUrl;
     }
 
 }
