@@ -28,6 +28,7 @@ import com.algorand.algosdk.crypto.Address;
 import com.algorand.algosdk.transaction.SignedTransaction;
 import com.algorand.algosdk.transaction.Transaction;
 import com.algorand.algosdk.util.Encoder;
+import com.algorand.algosdk.v2.client.common.AlgodClient;
 import com.algorand.algosdk.v2.client.common.Response;
 import com.algorand.algosdk.v2.client.model.*;
 import com.bloxbean.algodea.idea.configuration.model.NodeInfo;
@@ -35,7 +36,6 @@ import com.bloxbean.algodea.idea.nodeint.AlgoConnectionFactory;
 import com.bloxbean.algodea.idea.nodeint.AlgoServerConfigurationHelper;
 import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
 import com.bloxbean.algodea.idea.nodeint.model.TxnDetailsParameters;
-import com.bloxbean.algodea.idea.nodeint.purestake.CustomAlgodClient;
 import com.bloxbean.algodea.idea.util.JsonUtil;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
@@ -49,7 +49,7 @@ public class AlgoBaseService {
     protected Project project;
     protected AlgoConnectionFactory algoConnectionFactory;
     protected LogListener logListener;
-    protected CustomAlgodClient client;
+    protected AlgodClient client;
     protected String networkGenesisHash;
 
     public AlgoBaseService(Project project) throws DeploymentTargetNotConfigured {
@@ -94,7 +94,7 @@ public class AlgoBaseService {
         this.networkGenesisHash = nodeInfo.getGenesisHash();
     }
 
-    public CustomAlgodClient getAlgodClient() {
+    public AlgodClient getAlgodClient() {
         return algoConnectionFactory.connect();
     }
 

@@ -23,6 +23,7 @@ package com.bloxbean.algodea.idea.nodeint.service;
 
 import com.algorand.algosdk.crypto.Address;
 import com.algorand.algosdk.v2.client.algod.AccountInformation;
+import com.algorand.algosdk.v2.client.common.AlgodClient;
 import com.algorand.algosdk.v2.client.common.Response;
 import com.algorand.algosdk.v2.client.model.Account;
 import com.algorand.algosdk.v2.client.model.Asset;
@@ -46,7 +47,7 @@ public class AlgoAccountService extends AlgoBaseService {
     }
 
     public Long getBalance(String address) throws Exception {
-        CustomAlgodClient algodClient = getAlgodClient();
+        AlgodClient algodClient = getAlgodClient();
         AccountInformation accountInformation = algodClient.AccountInformation(new Address(address));
         Response<Account> accountResponse = accountInformation.execute();
         if(accountResponse.isSuccessful()) {

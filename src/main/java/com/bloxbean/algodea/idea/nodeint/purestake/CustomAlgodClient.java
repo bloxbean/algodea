@@ -18,171 +18,73 @@ import com.algorand.algosdk.v2.client.algod.GetAssetByID;
 import com.algorand.algosdk.v2.client.algod.TealCompile;
 import com.algorand.algosdk.v2.client.algod.TealDryrun;
 import com.algorand.algosdk.crypto.Address;
+import com.algorand.algosdk.v2.client.common.AlgodClient;
 import com.algorand.algosdk.v2.client.common.Client;
+import com.algorand.algosdk.v2.client.common.HttpMethod;
+import com.algorand.algosdk.v2.client.common.QueryData;
+import com.squareup.okhttp.Response;
 
-//TEMPORARY workaround till the x-api-key fix is availble in V2 Java SDK
-public class CustomAlgodClient extends Client {
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+public class CustomAlgodClient extends AlgodClient {
+    private final static String PURESTAKE = "purestake.io";
+
+    private boolean isPurestake;
+    private String[] headers;
+    private String[] values;
 
     /**
      * Construct an AlgodClient for communicating with the REST API.
-     * @param host using a URI format. If the scheme is not supplied the client will use HTTP.
-     * @param port REST server port.
+     *
+     * @param host  using a URI format. If the scheme is not supplied the client will use HTTP.
+     * @param port  REST server port.
      * @param token authentication token.
      */
     public CustomAlgodClient(String host, int port, String token) {
-        super(host, port, token, host.contains("purestake") ? "x-api-key": "X-Algo-API-Token");
+        super(host, port, token);
+
+        if(host != null && host.contains(PURESTAKE)) {
+            isPurestake = true;
+            headers = new String[]{"X-API-Key"};
+            values = new String[]{token};
+        }
     }
 
-    /**
-     * Returns OK if healthy.
-     * /health
-     */
-    public HealthCheck HealthCheck() {
-        return new HealthCheck((Client) this);
-    }
+//    /**
+//     * Construct an AlgodClient for communicating with the REST API.
+//     * @param host using a URI format. If the scheme is not supplied the client will use HTTP.
+//     * @param port REST server port.
+//     * @param token authentication token.
+//     */
+//    public CustomAlgodClient(String host, int port, String token) {
+//        super(host, port, token, host.contains("purestake") ? "x-api-key": "X-Algo-API-Token");
+//    }
 
-    /**
-     * Return metrics about algod functioning.
-     * /metrics
-     */
-    public Metrics Metrics() {
-        return new Metrics((Client) this);
-    }
+    @Override
+    public Response executeCall(QueryData qData, HttpMethod httpMethod, String[] headers, String[] values) throws Exception {
+        if(isPurestake) {
+            if(headers == null) {
+                headers = this.headers;
+            } else {
+                String[] _headers = new String[headers.length + this.headers.length];
+                System.arraycopy(headers, 0, _headers, 0, headers.length);
+                System.arraycopy(this.headers, 0, _headers, headers.length, this.headers.length);
 
-    /**
-     * Returns the entire swagger spec in json.
-     * /swagger.json
-     */
-    public SwaggerJSON SwaggerJSON() {
-        return new SwaggerJSON((Client) this);
-    }
+                headers = _headers;
+            }
+            if(values == null) {
+                values = this.values;
+            } else {
+                String[] _values = new String[values.length + this.values.length];
+                System.arraycopy(values, 0, _values, 0, values.length);
+                System.arraycopy(this.values, 0, _values, values.length, this.values.length);
 
-    /**
-     * Given a specific account public key, this call returns the accounts status,
-     * balance and spendable amounts
-     * /v2/accounts/{address}
-     */
-    public AccountInformation AccountInformation(Address address) {
-        return new AccountInformation((Client) this, address);
+                values = _values;
+            }
+        }
+        return super.executeCall(qData, httpMethod, headers, values);
     }
-
-    /**
-     * Get the list of pending transactions by address, sorted by priority, in
-     * decreasing order, truncated at the end at MAX. If MAX = 0, returns all pending
-     * transactions.
-     * /v2/accounts/{address}/transactions/pending
-     */
-    public GetPendingTransactionsByAddress GetPendingTransactionsByAddress(Address address) {
-        return new GetPendingTransactionsByAddress((Client) this, address);
-    }
-
-    /**
-     * Get the block for the given round.
-     * /v2/blocks/{round}
-     */
-    public GetBlock GetBlock(Long round) {
-        return new GetBlock((Client) this, round);
-    }
-
-    /**
-     * Get the current supply reported by the ledger.
-     * /v2/ledger/supply
-     */
-    public GetSupply GetSupply() {
-        return new GetSupply((Client) this);
-    }
-
-    /**
-     * Gets the current node status.
-     * /v2/status
-     */
-    public GetStatus GetStatus() {
-        return new GetStatus((Client) this);
-    }
-
-    /**
-     * Waits for a block to appear after round {round} and returns the node's status at
-     * the time.
-     * /v2/status/wait-for-block-after/{round}
-     */
-    public WaitForBlock WaitForBlock(Long round) {
-        return new WaitForBlock((Client) this, round);
-    }
-
-    /**
-     * Broadcasts a raw transaction to the network.
-     * /v2/transactions
-     */
-    public RawTransaction RawTransaction() {
-        return new RawTransaction((Client) this);
-    }
-
-    /**
-     * Get parameters for constructing a new transaction
-     * /v2/transactions/params
-     */
-    public TransactionParams TransactionParams() {
-        return new TransactionParams((Client) this);
-    }
-
-    /**
-     * Get the list of pending transactions, sorted by priority, in decreasing order,
-     * truncated at the end at MAX. If MAX = 0, returns all pending transactions.
-     * /v2/transactions/pending
-     */
-    public GetPendingTransactions GetPendingTransactions() {
-        return new GetPendingTransactions((Client) this);
-    }
-
-    /**
-     * Given a transaction id of a recently submitted transaction, it returns
-     * information about it. There are several cases when this might succeed:
-     * - transaction committed (committed round > 0) - transaction still in the pool
-     * (committed round = 0, pool error = "") - transaction removed from pool due to
-     * error (committed round = 0, pool error != "")
-     * Or the transaction may have happened sufficiently long ago that the node no
-     * longer remembers it, and this will return an error.
-     * /v2/transactions/pending/{txid}
-     */
-    public PendingTransactionInformation PendingTransactionInformation(String txid) {
-        return new PendingTransactionInformation((Client) this, txid);
-    }
-
-    /**
-     * Given a application id, it returns application information including creator,
-     * approval and clear programs, global and local schemas, and global state.
-     * /v2/applications/{application-id}
-     */
-    public GetApplicationByID GetApplicationByID(Long applicationId) {
-        return new GetApplicationByID((Client) this, applicationId);
-    }
-
-    /**
-     * Given a asset id, it returns asset information including creator, name, total
-     * supply and special addresses.
-     * /v2/assets/{asset-id}
-     */
-    public GetAssetByID GetAssetByID(Long assetId) {
-        return new GetAssetByID((Client) this, assetId);
-    }
-
-    /**
-     * Given TEAL source code in plain text, return base64 encoded program bytes and
-     * base32 SHA512_256 hash of program bytes (Address style).
-     * /v2/teal/compile
-     */
-    public TealCompile TealCompile() {
-        return new TealCompile((Client) this);
-    }
-
-    /**
-     * Executes TEAL program(s) in context and returns debugging information about the
-     * execution.
-     * /v2/teal/dryrun
-     */
-    public TealDryrun TealDryrun() {
-        return new TealDryrun((Client) this);
-    }
-
 }
 

@@ -21,6 +21,7 @@
  */
 package com.bloxbean.algodea.idea.nodeint;
 
+import com.algorand.algosdk.v2.client.common.AlgodClient;
 import com.bloxbean.algodea.idea.nodeint.purestake.CustomAlgodClient;
 import com.squareup.okhttp.HttpUrl;
 
@@ -34,12 +35,9 @@ public class AlgoConnectionFactory {
         this.apiKey = apiKey;
     }
 
-    public CustomAlgodClient connect() {
+    public AlgodClient connect() {
         HttpUrl url = HttpUrl.parse(apiUrl);
-
-        CustomAlgodClient algodClient = new CustomAlgodClient(url.host(), url.port(), apiKey);
-
-//        client.addDefaultHeader("x-api-key", apiKey);
+        CustomAlgodClient algodClient = new CustomAlgodClient(apiUrl, url.port(), apiKey);
         return algodClient;
     }
 
