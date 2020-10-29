@@ -68,12 +68,7 @@ public class TransferAction extends AlgoBaseAction {
         try {
             TransactionDtlsEntryForm transactionDtlsEntryForm = transferDialog.getTransactionDtlsEntryForm();
 
-            byte[] note = transactionDtlsEntryForm.getNoteBytes();
-            byte[] lease = transactionDtlsEntryForm.getLeaseBytes();
-
-            TxnDetailsParameters txnDetailsParameters = new TxnDetailsParameters();
-            txnDetailsParameters.setNote(note);
-            txnDetailsParameters.setLease(lease);
+            TxnDetailsParameters txnDetailsParameters = transactionDtlsEntryForm.getTxnDetailsParameters();
 
             TransactionService transactionService = new TransactionService(project, new LogListenerAdapter(console));
             AssetTransactionService assetTransactionService = new AssetTransactionService(project, new LogListenerAdapter(console));

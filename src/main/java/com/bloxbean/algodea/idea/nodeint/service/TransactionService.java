@@ -87,6 +87,15 @@ public class TransactionService extends AlgoBaseService {
             paymentTransactionBuilder.lease(txnDetailsParameters.getLease());
         }
 
+        if(txnDetailsParameters.getFee() != null) {
+            paymentTransactionBuilder.fee(txnDetailsParameters.getFee());
+        }
+
+        if(txnDetailsParameters.getFlatFee() != null) {
+            paymentTransactionBuilder.fee((BigInteger)null);
+            paymentTransactionBuilder.flatFee(txnDetailsParameters.getFlatFee());
+        }
+
         return paymentTransactionBuilder.build();
     }
 }

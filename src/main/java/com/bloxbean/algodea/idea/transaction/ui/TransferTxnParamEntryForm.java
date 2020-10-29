@@ -184,20 +184,20 @@ public class TransferTxnParamEntryForm {
         if(algoAccountService == null || StringUtil.isEmpty(account))
             return;
 
-        Task.Backgroundable task = new Task.Backgroundable(project, "Fetching Account Balance ...") {
+        ProgressManager.getInstance().runProcessWithProgressSynchronously(new Runnable() {
 
             @Override
-            public void run(@NotNull ProgressIndicator indicator) {
+            public void run() {
                 try {
                     Long balance = algoAccountService.getBalance(account);
                     balanceCallback.accept(balance);
                 } catch (Exception e) {
                     e.printStackTrace();
+                } finally {
+
                 }
             }
-        };
-
-        ProgressManager.getInstance().runProcessWithProgressAsynchronously(task, new BackgroundableProcessIndicator(task));
+        }, "Fetching account balance ...", true, project);
     }
 
     private void enableOtherAssetPanel(boolean flag) {

@@ -11,6 +11,7 @@ import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.openapi.util.text.StringUtil;
 
 import javax.swing.*;
+import java.math.BigInteger;
 
 public class TransactionDtlsEntryForm {
     private JPanel mainPanel;
@@ -18,6 +19,10 @@ public class TransactionDtlsEntryForm {
     private JComboBox noteTypeCB;
     private JTextField leaseTf;
     private JComboBox leaseCB;
+    private JTextField feeTf;
+    private JTextField flatFeeTf;
+    private JLabel flatFeeHelpLabel;
+    private JLabel feePerByteHelpLabel;
 
     DefaultComboBoxModel<ArgType> noteTypeDefaultComboBoxModel;
     DefaultComboBoxModel<ArgType> leaseTypeDefaultComboBoxModel;
@@ -25,14 +30,15 @@ public class TransactionDtlsEntryForm {
     Project project;
 
     public TransactionDtlsEntryForm() {
-
+        feePerByteHelpLabel.setText("<html>Set the fee per bytes value. This value is multiplied by the estimated <br/>size of the transaction  to reach a final transaction fee, or 1000, whichever is higher.</html>");
+        flatFeeHelpLabel.setText("<html>Set the flatFee. This value will be used for the transaction fee,<br/> or 1000, whichever is higher.</html>");
     }
 
     public void initializeData(Project project) {
         this.project = project;
     }
 
-    public Note getNote() {
+    private Note getNote() {
         ArgType noteType = (ArgType) noteTypeCB.getSelectedItem();
         if(noteType == null)
             return null;
@@ -41,7 +47,7 @@ public class TransactionDtlsEntryForm {
         }
     }
 
-    public byte[] getNoteBytes() throws Exception {
+    private byte[] getNoteBytes() throws Exception {
         ArgType noteType = (ArgType) noteTypeCB.getSelectedItem();
         if(noteType == null)
             return null;
@@ -51,7 +57,7 @@ public class TransactionDtlsEntryForm {
         }
     }
 
-    public Lease getLease() {
+    private Lease getLease() {
         ArgType type = (ArgType) leaseCB.getSelectedItem();
         if(type == null)
             return null;
@@ -60,7 +66,7 @@ public class TransactionDtlsEntryForm {
         }
     }
 
-    public byte[] getLeaseBytes() throws Exception {
+    private byte[] getLeaseBytes() throws Exception {
         ArgType type = (ArgType) leaseCB.getSelectedItem();
         if(type == null)
             return null;
@@ -70,10 +76,34 @@ public class TransactionDtlsEntryForm {
         }
     }
 
+    private BigInteger getFee() {
+        if(StringUtil.isEmpty(feeTf.getText()))
+            return null;
+
+        try {
+            return new BigInteger(StringUtil.trim(feeTf.getText()));
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private BigInteger getFlatFee() {
+        if(StringUtil.isEmpty(flatFeeTf.getText()))
+            return null;
+
+        try {
+            return new BigInteger(StringUtil.trim(flatFeeTf.getText()));
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     public TxnDetailsParameters getTxnDetailsParameters() throws Exception {
         TxnDetailsParameters txnDetailsParameters = new TxnDetailsParameters();
         txnDetailsParameters.setNote(getNoteBytes());
         txnDetailsParameters.setLease(getLeaseBytes());
+        txnDetailsParameters.setFee(getFee());
+        txnDetailsParameters.setFlatFee(getFlatFee());
 
         return txnDetailsParameters;
     }
@@ -109,6 +139,26 @@ public class TransactionDtlsEntryForm {
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+
+        if(!StringUtil.isEmpty(feeTf.getText()) && !StringUtil.isEmpty(flatFeeTf.getText())) {
+            return new ValidationInfo("Fee per bytes and Flat fee can not be specified together", flatFeeTf);
+        }
+
+        try {
+            if(!StringUtil.isEmpty(feeTf.getText())) {
+                new BigInteger(StringUtil.trim(feeTf.getText()));
+            }
+        } catch (Exception e) {
+            return new ValidationInfo("Invalid fee", feeTf);
+        }
+
+        try {
+            if(!StringUtil.isEmpty(flatFeeTf.getText())) {
+                new BigInteger(StringUtil.trim(flatFeeTf.getText()));
+            }
+        } catch (Exception e) {
+            return new ValidationInfo("Invalid Flat Fee", flatFeeTf);
         }
 
         return null;
