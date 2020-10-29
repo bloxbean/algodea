@@ -24,7 +24,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class TxnDetailsEntryForm {
+public class AppTxnDetailsEntryForm {
     private JTextField foreignAppsTf;
     private JTextField foreignAssetsTf;
     private JTextField accountsTf;
@@ -50,7 +50,7 @@ public class TxnDetailsEntryForm {
 
     Project project;
 
-    public TxnDetailsEntryForm() {
+    public AppTxnDetailsEntryForm() {
 
     }
 
@@ -136,43 +136,43 @@ public class TxnDetailsEntryForm {
         return argsBytes;
     }
 
-    public Note getNote() {
-        ArgType noteType = (ArgType) noteTypeCB.getSelectedItem();
-        if(noteType == null)
-            return null;
-        else {
-            return new Note(noteType, StringUtil.trim(noteTf.getText()));
-        }
-    }
-
-    public byte[] getNoteBytes() throws Exception {
-        ArgType noteType = (ArgType) noteTypeCB.getSelectedItem();
-        if(noteType == null)
-            return null;
-        else {
-            byte[] bytes = ArgTypeToByteConverter.convert(noteType, StringUtil.trim(noteTf.getText()));
-            return bytes;
-        }
-    }
-
-    public Lease getLease() {
-        ArgType type = (ArgType) leaseCB.getSelectedItem();
-        if(type == null)
-            return null;
-        else {
-            return new Lease(type, StringUtil.trim(leaseTf.getText()));
-        }
-    }
-
-    public byte[] getLeaseBytes() throws Exception {
-        ArgType type = (ArgType) leaseCB.getSelectedItem();
-        if(type == null)
-            return null;
-        else {
-            byte[] bytes = ArgTypeToByteConverter.convert(type, StringUtil.trim(leaseTf.getText()));
-            return bytes;
-        }
-    }
+//    public Note getNote() {
+//        ArgType noteType = (ArgType) noteTypeCB.getSelectedItem();
+//        if(noteType == null)
+//            return null;
+//        else {
+//            return new Note(noteType, StringUtil.trim(noteTf.getText()));
+//        }
+//    }
+//
+//    public byte[] getNoteBytes() throws Exception {
+//        ArgType noteType = (ArgType) noteTypeCB.getSelectedItem();
+//        if(noteType == null)
+//            return null;
+//        else {
+//            byte[] bytes = ArgTypeToByteConverter.convert(noteType, StringUtil.trim(noteTf.getText()));
+//            return bytes;
+//        }
+//    }
+//
+//    public Lease getLease() {
+//        ArgType type = (ArgType) leaseCB.getSelectedItem();
+//        if(type == null)
+//            return null;
+//        else {
+//            return new Lease(type, StringUtil.trim(leaseTf.getText()));
+//        }
+//    }
+//
+//    public byte[] getLeaseBytes() throws Exception {
+//        ArgType type = (ArgType) leaseCB.getSelectedItem();
+//        if(type == null)
+//            return null;
+//        else {
+//            byte[] bytes = ArgTypeToByteConverter.convert(type, StringUtil.trim(leaseTf.getText()));
+//            return bytes;
+//        }
+//    }
 
     public List<Address> getAccounts() throws InvalidInputParamException {
         Enumeration<String> elems = ((DefaultListModel)accountsList.getModel()).elements();

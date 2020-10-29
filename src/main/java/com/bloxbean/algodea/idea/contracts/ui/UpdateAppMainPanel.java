@@ -1,5 +1,6 @@
 package com.bloxbean.algodea.idea.contracts.ui;
 
+import com.bloxbean.algodea.idea.transaction.ui.TransactionDtlsEntryForm;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ValidationInfo;
 import org.jetbrains.annotations.Nullable;
@@ -13,7 +14,8 @@ public class UpdateAppMainPanel {
     private JPanel mainPanel;
     private AppTxnBaseParamEntryForm appTxnBaseForm;
     private UpdateAppEntryForm updateAppEntryForm;
-    private TxnDetailsEntryForm txnDetailsEntryForm;
+    private AppTxnDetailsEntryForm appTxnDetailsEntryForm;
+    private TransactionDtlsEntryForm txnDetailsEntryForm;
 
     public UpdateAppMainPanel(Project project, String contract) {
         initialize(project, contract);
@@ -22,6 +24,7 @@ public class UpdateAppMainPanel {
     private void initialize(Project project, String contract) {
         appTxnBaseForm.initializeData(project);
         updateAppEntryForm.initializeData(project, contract );
+        appTxnDetailsEntryForm.initializeData(project);
         txnDetailsEntryForm.initializeData(project);
     }
 
@@ -33,7 +36,11 @@ public class UpdateAppMainPanel {
         return updateAppEntryForm;
     }
 
-    public TxnDetailsEntryForm getTxnDetailsEntryForm() {
+    public AppTxnDetailsEntryForm getAppTxnDetailsEntryForm() {
+        return appTxnDetailsEntryForm;
+    }
+
+    public TransactionDtlsEntryForm getTxnDetailsEntryForm() {
         return txnDetailsEntryForm;
     }
 
@@ -41,6 +48,7 @@ public class UpdateAppMainPanel {
 
         ValidationInfo appTxnValidateInfo = appTxnBaseForm.doValidate();
         ValidationInfo updateAppEntryValidateInfo = updateAppEntryForm.doValidate();
+        ValidationInfo appTxnDetailsValidateInfo = appTxnDetailsEntryForm.doValidate();
         ValidationInfo txnDetailsValidateInfo = txnDetailsEntryForm.doValidate();
 
         List<ValidationInfo> validationInfos = new ArrayList<>();
@@ -50,6 +58,9 @@ public class UpdateAppMainPanel {
         }
         if(updateAppEntryValidateInfo != null) {
             validationInfos.add(updateAppEntryValidateInfo);
+        }
+        if(appTxnDetailsValidateInfo != null) {
+            validationInfos.add(appTxnDetailsValidateInfo);
         }
         if(txnDetailsValidateInfo != null) {
             validationInfos.add(txnDetailsValidateInfo);
@@ -66,6 +77,7 @@ public class UpdateAppMainPanel {
         // TODO: place custom component creation code here
         appTxnBaseForm = new AppTxnBaseParamEntryForm();
         updateAppEntryForm = new UpdateAppEntryForm();
-        txnDetailsEntryForm = new TxnDetailsEntryForm();
+        appTxnDetailsEntryForm = new AppTxnDetailsEntryForm();
+        txnDetailsEntryForm = new TransactionDtlsEntryForm();
     }
 }

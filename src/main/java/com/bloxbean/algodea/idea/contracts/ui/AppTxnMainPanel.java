@@ -1,7 +1,9 @@
 package com.bloxbean.algodea.idea.contracts.ui;
 
+import com.bloxbean.algodea.idea.transaction.ui.TransactionDtlsEntryForm;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ValidationInfo;
+import org.apache.xerces.impl.dv.ValidatedInfo;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -12,7 +14,8 @@ public class AppTxnMainPanel {
     private JPanel mainPanel;
     private JTabbedPane tabbedPane1;
     private AppTxnBaseParamEntryForm appTxnBaseEntryForm;
-    private TxnDetailsEntryForm txnDetailsEntryForm;
+    private AppTxnDetailsEntryForm appTxnDetailsEntryForm;
+    private TransactionDtlsEntryForm txnDtlEntryForm;
 
     public AppTxnMainPanel(Project project) {
         initialize(project);
@@ -22,19 +25,28 @@ public class AppTxnMainPanel {
         return appTxnBaseEntryForm;
     }
 
-    public TxnDetailsEntryForm getTxnDetailsEntryForm() {
-        return txnDetailsEntryForm;
+    public AppTxnDetailsEntryForm getAppTxnDetailsEntryForm() {
+        return appTxnDetailsEntryForm;
+    }
+
+    public TransactionDtlsEntryForm getTxnDtlEntryForm() {
+        return txnDtlEntryForm;
     }
 
     protected @Nullable List<ValidationInfo> doValidate() {
 
         ValidationInfo appTxnValidateInfo = appTxnBaseEntryForm.doValidate();
-        ValidationInfo txnDetailsValidateInfo = txnDetailsEntryForm.doValidate();
+        ValidationInfo appTxnDetailsValidateInfo = appTxnDetailsEntryForm.doValidate();
+        ValidationInfo txnDetailsValidateInfo = txnDtlEntryForm.doValidate();
 
         List<ValidationInfo> validationInfos = new ArrayList<>();
 
         if(appTxnValidateInfo != null) {
             validationInfos.add(appTxnValidateInfo);
+        }
+
+        if(appTxnDetailsValidateInfo != null) {
+            validationInfos.add(appTxnDetailsValidateInfo);
         }
 
         if(txnDetailsValidateInfo != null) {
@@ -51,11 +63,13 @@ public class AppTxnMainPanel {
 
     private void initialize(Project project) {
         appTxnBaseEntryForm.initializeData(project);
-        txnDetailsEntryForm.initializeData(project);
+        appTxnDetailsEntryForm.initializeData(project);
+        txnDtlEntryForm.initializeData(project);
     }
     private void createUIComponents() {
         // TODO: place custom component creation code here
         appTxnBaseEntryForm = new AppTxnBaseParamEntryForm();
-        txnDetailsEntryForm = new TxnDetailsEntryForm();
+        appTxnDetailsEntryForm = new AppTxnDetailsEntryForm();
+        txnDtlEntryForm = new TransactionDtlsEntryForm();
     }
 }

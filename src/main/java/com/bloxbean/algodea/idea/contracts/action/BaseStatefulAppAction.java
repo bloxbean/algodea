@@ -4,14 +4,15 @@ import com.algorand.algosdk.account.Account;
 import com.algorand.algosdk.crypto.Address;
 import com.bloxbean.algodea.idea.configuration.service.AlgoProjectState;
 import com.bloxbean.algodea.idea.contracts.ui.AppTxnBaseParamEntryForm;
+import com.bloxbean.algodea.idea.contracts.ui.AppTxnDetailsEntryForm;
 import com.bloxbean.algodea.idea.contracts.ui.AppTxnParamEntryDialog;
-import com.bloxbean.algodea.idea.contracts.ui.TxnDetailsEntryForm;
 import com.bloxbean.algodea.idea.core.action.AlgoBaseAction;
 import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
 import com.bloxbean.algodea.idea.nodeint.model.TxnDetailsParameters;
 import com.bloxbean.algodea.idea.nodeint.service.LogListenerAdapter;
 import com.bloxbean.algodea.idea.nodeint.service.StatefulContractService;
 import com.bloxbean.algodea.idea.toolwindow.AlgoConsole;
+import com.bloxbean.algodea.idea.transaction.ui.TransactionDtlsEntryForm;
 import com.bloxbean.algodea.idea.util.IdeaUtil;
 import com.intellij.notification.NotificationType;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -76,8 +77,7 @@ public abstract class  BaseStatefulAppAction extends AlgoBaseAction {
         if(LOG.isDebugEnabled()) {
             LOG.debug("*****  App Id: " + dialog.getAppTxnBaseEntryForm().getAppId());
             LOG.debug("****** From Account: " + dialog.getAppTxnBaseEntryForm().getFromAccount());
-            LOG.debug("******* Args : " + dialog.getTxnDetailsEntryForm().getArgs());
-            LOG.debug("******** Note : " + dialog.getTxnDetailsEntryForm().getNote());
+            LOG.debug("******* Args : " + dialog.getAppTxnDetailsEntryForm().getArgs());
         }
 
         AlgoProjectState projectState = AlgoProjectState.getInstance(project);
@@ -93,25 +93,30 @@ public abstract class  BaseStatefulAppAction extends AlgoBaseAction {
                     = new StatefulContractService(project, new LogListenerAdapter(console));
 
             AppTxnBaseParamEntryForm appBaseEntryForm = dialog.getAppTxnBaseEntryForm();
-            TxnDetailsEntryForm txnDetailsEntryForm = dialog.getTxnDetailsEntryForm();
+            AppTxnDetailsEntryForm appTxnDetailsEntryForm = dialog.getAppTxnDetailsEntryForm();
 
             Long appId = appBaseEntryForm.getAppId();
             Account fromAccount = appBaseEntryForm.getFromAccount();
-            List<byte[]> appArgs = txnDetailsEntryForm.getArgsAsBytes();
+            List<byte[]> appArgs = appTxnDetailsEntryForm.getArgsAsBytes();
 
-            byte[] note = txnDetailsEntryForm.getNoteBytes();
-            byte[] lease = txnDetailsEntryForm.getLeaseBytes();
-            List<Address> accounts = txnDetailsEntryForm.getAccounts();
-            List<Long> foreignApps = txnDetailsEntryForm.getForeignApps();
-            List<Long> foreignAssets = txnDetailsEntryForm.getForeignAssets();
+            List<Address> accounts = appTxnDetailsEntryForm.getAccounts();
+            List<Long> foreignApps = appTxnDetailsEntryForm.getForeignApps();
+            List<Long> foreignAssets = appTxnDetailsEntryForm.getForeignAssets();
+
+            TransactionDtlsEntryForm txnDetailsEntryForm = dialog.getTxnDetailsEntryForm();
+            TxnDetailsParameters generalTxnDetailsParam = txnDetailsEntryForm.getTxnDetailsParameters();
 
             TxnDetailsParameters txnDetailsParameters = new TxnDetailsParameters();
             txnDetailsParameters.setAppArgs(appArgs);
-            txnDetailsParameters.setNote(note);
-            txnDetailsParameters.setLease(lease);
             txnDetailsParameters.setAccounts(accounts);
             txnDetailsParameters.setForeignApps(foreignApps);
             txnDetailsParameters.setForeignAssets(foreignAssets);
+
+            //general txn parameters
+            txnDetailsParameters.setNote(generalTxnDetailsParam.getNote());
+            txnDetailsParameters.setLease(generalTxnDetailsParam.getLease());
+            txnDetailsParameters.setFee(generalTxnDetailsParam.getFee());
+            txnDetailsParameters.setFlatFee(generalTxnDetailsParam.getFlatFee());
 
             Task.Backgroundable task = new Task.Backgroundable(project, getApplicationTxnDescription()) {
 

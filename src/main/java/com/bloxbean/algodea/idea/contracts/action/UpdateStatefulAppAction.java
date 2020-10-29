@@ -4,7 +4,7 @@ import com.algorand.algosdk.account.Account;
 import com.algorand.algosdk.crypto.Address;
 import com.bloxbean.algodea.idea.configuration.service.AlgoProjectState;
 import com.bloxbean.algodea.idea.contracts.ui.AppTxnBaseParamEntryForm;
-import com.bloxbean.algodea.idea.contracts.ui.TxnDetailsEntryForm;
+import com.bloxbean.algodea.idea.contracts.ui.AppTxnDetailsEntryForm;
 import com.bloxbean.algodea.idea.contracts.ui.UpdateAppDialog;
 import com.bloxbean.algodea.idea.contracts.ui.UpdateAppEntryForm;
 import com.bloxbean.algodea.idea.core.action.AlgoBaseAction;
@@ -17,6 +17,7 @@ import com.bloxbean.algodea.idea.nodeint.service.StatefulContractService;
 import com.bloxbean.algodea.idea.pkg.AlgoPkgJsonService;
 import com.bloxbean.algodea.idea.pkg.model.AlgoPackageJson;
 import com.bloxbean.algodea.idea.toolwindow.AlgoConsole;
+import com.bloxbean.algodea.idea.transaction.ui.TransactionDtlsEntryForm;
 import com.bloxbean.algodea.idea.util.AlgoModuleUtils;
 import com.bloxbean.algodea.idea.util.IdeaUtil;
 import com.intellij.icons.AllIcons;
@@ -94,7 +95,7 @@ public class UpdateStatefulAppAction extends AlgoBaseAction {
 
             UpdateAppEntryForm updateForm = dialog.getUpdateAppEntryForm();
             AppTxnBaseParamEntryForm appTxnBaseForm = dialog.getAppTxnBaseEntryForm();
-            TxnDetailsEntryForm txnDetailsEntryForm = dialog.getTxnDetailsEntryForm();
+            AppTxnDetailsEntryForm appTxnDetailsEntryForm = dialog.getAppTxnDetailsEntryForm();
 
             Long appId = appTxnBaseForm.getAppId();
             if(appId == null) {
@@ -125,20 +126,25 @@ public class UpdateStatefulAppAction extends AlgoBaseAction {
                 return;
             }
 
-            List<byte[]> appArgs = txnDetailsEntryForm.getArgsAsBytes();
-            byte[] note = txnDetailsEntryForm.getNoteBytes();
-            byte[] lease = txnDetailsEntryForm.getLeaseBytes();
-            List<Address> accounts = txnDetailsEntryForm.getAccounts();
-            List<Long> foreignApps = txnDetailsEntryForm.getForeignApps();
-            List<Long> foreignAssets = txnDetailsEntryForm.getForeignAssets();
+            List<byte[]> appArgs = appTxnDetailsEntryForm.getArgsAsBytes();
+            List<Address> accounts = appTxnDetailsEntryForm.getAccounts();
+            List<Long> foreignApps = appTxnDetailsEntryForm.getForeignApps();
+            List<Long> foreignAssets = appTxnDetailsEntryForm.getForeignAssets();
+
+            TransactionDtlsEntryForm txnDetailsEntryForm = dialog.getTxnDetailsEntryForm();
+            TxnDetailsParameters generalTxnDetailsParam = txnDetailsEntryForm.getTxnDetailsParameters();
 
             TxnDetailsParameters txnDetailsParameters = new TxnDetailsParameters();
             txnDetailsParameters.setAppArgs(appArgs);
-            txnDetailsParameters.setNote(note);
-            txnDetailsParameters.setLease(lease);
             txnDetailsParameters.setAccounts(accounts);
             txnDetailsParameters.setForeignApps(foreignApps);
             txnDetailsParameters.setForeignAssets(foreignAssets);
+
+            //general txn parameters
+            txnDetailsParameters.setNote(generalTxnDetailsParam.getNote());
+            txnDetailsParameters.setLease(generalTxnDetailsParam.getLease());
+            txnDetailsParameters.setFee(generalTxnDetailsParam.getFee());
+            txnDetailsParameters.setFlatFee(generalTxnDetailsParam.getFlatFee());
 
             //update cache.. For update from account, save it inside creator account for now.
             cacheService.setSfCreatorAccount(account.getAddress().toString());

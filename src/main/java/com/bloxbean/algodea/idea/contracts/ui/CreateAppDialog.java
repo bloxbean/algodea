@@ -1,6 +1,7 @@
 package com.bloxbean.algodea.idea.contracts.ui;
 
 import com.bloxbean.algodea.idea.account.model.AlgoAccount;
+import com.bloxbean.algodea.idea.transaction.ui.TransactionDtlsEntryForm;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
@@ -37,7 +38,11 @@ public class CreateAppDialog extends DialogWrapper {
         return createMainPanel.getCreateAppEntryForm();
     }
 
-    public TxnDetailsEntryForm getTxnDetailsEntryForm() {
+    public AppTxnDetailsEntryForm getAppTxnDetailsEntryForm() {
+        return createMainPanel.getAppTxnDetailsEntryForm();
+    }
+
+    public TransactionDtlsEntryForm getTxnDetailsEntryForm() {
         return createMainPanel.getTxnDetailsEntryForm();
     }
 

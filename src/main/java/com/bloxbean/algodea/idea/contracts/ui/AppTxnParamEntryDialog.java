@@ -1,5 +1,6 @@
 package com.bloxbean.algodea.idea.contracts.ui;
 
+import com.bloxbean.algodea.idea.transaction.ui.TransactionDtlsEntryForm;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.ValidationInfo;
@@ -23,8 +24,12 @@ public class AppTxnParamEntryDialog extends DialogWrapper {
         return appTxnMainPanel.getAppTxnBaseEntryForm();
     }
 
-    public TxnDetailsEntryForm getTxnDetailsEntryForm() {
-        return appTxnMainPanel.getTxnDetailsEntryForm();
+    public AppTxnDetailsEntryForm getAppTxnDetailsEntryForm() {
+        return appTxnMainPanel.getAppTxnDetailsEntryForm();
+    }
+
+    public TransactionDtlsEntryForm getTxnDetailsEntryForm() {
+        return appTxnMainPanel.getTxnDtlEntryForm();
     }
 
     @Override

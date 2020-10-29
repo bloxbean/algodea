@@ -43,6 +43,7 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 
+import java.math.BigInteger;
 import java.util.List;
 
 public class AlgoBaseService {
@@ -285,6 +286,15 @@ public class AlgoBaseService {
         if(foreignAssets != null && foreignAssets.size() > 0)
             appTransactionBuilder.foreignAssets(foreignAssets);
 
+        if(txnDetailsParameters.getFee() != null) {
+            appTransactionBuilder.fee(txnDetailsParameters.getFee());
+        }
+
+        if(txnDetailsParameters.getFlatFee() != null) {
+            appTransactionBuilder.fee((BigInteger)null);
+            appTransactionBuilder.flatFee(txnDetailsParameters.getFlatFee());
+        }
+
         return appTransactionBuilder.build();
     }
 
@@ -321,6 +331,15 @@ public class AlgoBaseService {
 
         if(lease != null) {
             transactionBuilder.lease(lease);
+        }
+
+        if(txnDetailsParameters.getFee() != null) {
+            transactionBuilder.fee(txnDetailsParameters.getFee());
+        }
+
+        if(txnDetailsParameters.getFlatFee() != null) {
+            transactionBuilder.fee((BigInteger)null);
+            transactionBuilder.flatFee(txnDetailsParameters.getFlatFee());
         }
 
         return transactionBuilder;
