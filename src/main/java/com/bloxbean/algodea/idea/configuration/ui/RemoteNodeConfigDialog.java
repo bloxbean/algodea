@@ -131,6 +131,16 @@ public class RemoteNodeConfigDialog extends DialogWrapper{
             return new ValidationInfo("Invalid Node api endpoint", nodeApiEndpoint);
         }
 
+        if(StringUtil.isEmpty(apiKey.getText())) {
+            return new ValidationInfo("Api key cannot be empty", apiKey);
+        }
+
+        if(!StringUtil.isEmpty(nodeApiEndpoint.getText())
+                && nodeApiEndpoint.getText().contains("purestake.io")
+                && StringUtil.isEmpty(indexerApiEndpoint.getText())) {
+            return new ValidationInfo("Indexer Api Endpoint is mandatory for Purestake.io node integration", indexerApiEndpoint);
+        }
+
         if(!StringUtil.isEmpty(indexerApiEndpoint.getText())
                 && !indexerApiEndpoint.getText().startsWith("http://")
                 && !indexerApiEndpoint.getText().startsWith("https://")) {
