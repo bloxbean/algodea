@@ -17,6 +17,7 @@ public class ImportAccountDialog extends DialogWrapper {
     private JTextField mnemonicTf;
     private JTextField accountTf;
     private JCheckBox readOnlyAccount;
+    private JTextField accountNameTf;
 
     protected ImportAccountDialog() {
         super(false);
@@ -62,6 +63,10 @@ public class ImportAccountDialog extends DialogWrapper {
 
     @Override
     protected @Nullable ValidationInfo doValidate() {
+        if(StringUtil.isEmpty(accountNameTf.getText())) {
+            return new ValidationInfo("Account name cannot be empty", accountNameTf);
+        }
+
         if (readOnlyAccount.isSelected()) {
             if (StringUtil.isEmpty(accountTf.getText()))
                 return new ValidationInfo("Enter a valid address", accountTf);
@@ -96,13 +101,16 @@ public class ImportAccountDialog extends DialogWrapper {
 
     public AlgoAccount getAccount() {
         if(readOnlyAccount.isSelected()) {
-            return new AlgoAccount(StringUtil.trim(accountTf.getText()));
+            AlgoAccount algoAccount = new AlgoAccount(StringUtil.trim(accountTf.getText()));
+            algoAccount.setName(accountNameTf.getText());
+            return algoAccount;
         } else {
             Account account = deriveAccountFromMnemonic();
             if(account == null)
                 return null;
 
             AlgoAccount algoAccount = new AlgoAccount(account.getAddress().toString(), account.toMnemonic());
+            algoAccount.setName(accountNameTf.getText());
             return algoAccount;
         }
     }
