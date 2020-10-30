@@ -1,22 +1,17 @@
 package com.bloxbean.algodea.idea.configuration.ui;
 
-import com.bloxbean.algodea.idea.configuration.service.AlgoProjectState;
 import com.bloxbean.algodea.idea.common.Tuple;
-import com.bloxbean.algodea.idea.core.messaging.AlgoProjectNodeConfigChangeNotifier;
-import com.bloxbean.algodea.idea.core.messaging.AlgoSDKChangeNotifier;
+import com.bloxbean.algodea.idea.configuration.service.AlgoProjectState;
+import com.bloxbean.algodea.idea.configuration.service.ConfiguraionHelperService;
 import com.bloxbean.algodea.idea.pkg.AlgoPkgJsonService;
-import com.bloxbean.algodea.idea.pkg.model.AlgoPackageJson;
 import com.bloxbean.algodea.idea.util.IdeaUtil;
 import com.intellij.notification.NotificationType;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.ValidationInfo;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import java.util.List;
 
 public class AlgoProjectConfigurationDialog extends DialogWrapper {
 
@@ -52,9 +47,7 @@ public class AlgoProjectConfigurationDialog extends DialogWrapper {
             algoProjectState.setState(state);
 
             if(algoProjectConfiguration.isConfigChanged()) {
-                AlgoProjectNodeConfigChangeNotifier algoProjectNodeConfigChangeNotifier
-                        = ApplicationManager.getApplication().getMessageBus().syncPublisher(AlgoProjectNodeConfigChangeNotifier.CHANGE_ALGO_PROJECT_NODES_CONFIG_TOPIC);
-                algoProjectNodeConfigChangeNotifier.configUpdated(project);
+                ConfiguraionHelperService.notifyProjectNodeConfigChange(project);
             }
         } else {
             IdeaUtil.showNotification(project, "Algorand node configuration",

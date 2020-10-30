@@ -11,6 +11,8 @@ import com.intellij.ui.JBColor;
 public class AlgoServerNodeDescriptor extends NodeDescriptor {
 
     private NodeInfo node;
+    private boolean isCompilerTarget;
+    private boolean isDeploymentTarget;
 
     public AlgoServerNodeDescriptor(final Project project, final NodeDescriptor parentDescriptor, NodeInfo node, String compilerNodeId, String deploymentNodeId) {
         super(project, parentDescriptor);
@@ -24,10 +26,14 @@ public class AlgoServerNodeDescriptor extends NodeDescriptor {
                 myClosedIcon = AlgoIcons.NODE;
             } else if (node.getId().equals(compilerNodeId) && node.getId().equals(deploymentNodeId)){
                 myClosedIcon = AlgoIcons.NODE_COMPILE_DEPLOY;
+                isCompilerTarget = true;
+                isDeploymentTarget = true;
             } else if(node.getId().equals(compilerNodeId)) {
                 myClosedIcon = AlgoIcons.NODE_COMPILE;
+                isCompilerTarget = true;
             } else if(node.getId().equals(deploymentNodeId)) {
                 myClosedIcon = AlgoIcons.NODE_DEPLOY;
+                isDeploymentTarget = true;
             }
         } else {
             myClosedIcon = AlgoIcons.NODE;
@@ -48,4 +54,19 @@ public class AlgoServerNodeDescriptor extends NodeDescriptor {
         return node;
     }
 
+    public boolean isCompilerTarget() {
+        return isCompilerTarget;
+    }
+
+    public void setCompilerTarget(boolean compilerTarget) {
+        isCompilerTarget = compilerTarget;
+    }
+
+    public boolean isDeploymentTarget() {
+        return isDeploymentTarget;
+    }
+
+    public void setDeploymentTarget(boolean deploymentTarget) {
+        isDeploymentTarget = deploymentTarget;
+    }
 }

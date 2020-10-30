@@ -3,12 +3,15 @@ package com.bloxbean.algodea.idea.toolwindow.ui;
 import com.bloxbean.algodea.idea.configuration.action.*;
 import com.bloxbean.algodea.idea.configuration.model.AlgoLocalSDK;
 import com.bloxbean.algodea.idea.configuration.model.NodeInfo;
+import com.bloxbean.algodea.idea.configuration.service.AlgoProjectState;
 import com.bloxbean.algodea.idea.core.messaging.AlgoNodeChangeNotifier;
 import com.bloxbean.algodea.idea.core.messaging.AlgoProjectNodeConfigChangeNotifier;
 import com.bloxbean.algodea.idea.core.messaging.AlgoSDKChangeNotifier;
 import com.bloxbean.algodea.idea.toolwindow.AlgoExplorerTreeStructure;
 import com.bloxbean.algodea.idea.toolwindow.AlgoSDKDescriptor;
 import com.bloxbean.algodea.idea.toolwindow.AlgoServerNodeDescriptor;
+import com.bloxbean.algodea.idea.toolwindow.action.SetCompilerTargetAction;
+import com.bloxbean.algodea.idea.toolwindow.action.SetDeploymentTargetAction;
 import com.intellij.ide.util.treeView.NodeRenderer;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.actionSystem.*;
@@ -138,18 +141,32 @@ public class AlgoExplorer extends SimpleToolWindowPanel implements DataProvider,
 
         final DefaultActionGroup group = new DefaultActionGroup();
         if(userObject instanceof AlgoServerNodeDescriptor) {
-            NodeInfo nodeInfo = ((AlgoServerNodeDescriptor)userObject).getNode();
+            AlgoServerNodeDescriptor algoServerNodeDescriptor = ((AlgoServerNodeDescriptor)userObject);
+            NodeInfo nodeInfo = algoServerNodeDescriptor.getNode();
 
             group.add(new UpdateAlgoNodeAction(nodeInfo));
+            if(!algoServerNodeDescriptor.isCompilerTarget()) {
+                group.add(new SetCompilerTargetAction(AlgoProjectState.ConfigType.remote_node, nodeInfo.getId()));
+            }
+
+            if(!algoServerNodeDescriptor.isDeploymentTarget()) {
+                group.add(new SetDeploymentTargetAction(nodeInfo.getId()));
+            }
             group.add(new DeleteAlgoNodeAction(nodeInfo));
+
         } else if(userObject instanceof AlgoExplorerTreeStructure.AlgoNodesNodeDescriptor) {
             group.add(ActionManager.getInstance().getAction(CreateNewServerAction.ACTION_ID));
         } else if(userObject instanceof AlgoExplorerTreeStructure.AlgoSDKNodeDescriptor) {
             group.add(ActionManager.getInstance().getAction(CreateNewLocalSDKAction.ACTION_ID));
         } else if(userObject instanceof AlgoSDKDescriptor) {
-            AlgoLocalSDK sdk = ((AlgoSDKDescriptor)userObject).getSdk();
+            AlgoSDKDescriptor algoSDKDescriptor = ((AlgoSDKDescriptor)userObject);
+            AlgoLocalSDK sdk = algoSDKDescriptor.getSdk();
 
             group.add(new UpdateAlgoSDKAction(sdk));
+
+            if(!algoSDKDescriptor.isCompilerTarget()) {
+                group.add(new SetCompilerTargetAction(AlgoProjectState.ConfigType.local_sdk, sdk.getId()));
+            }
             group.add(new DeleteAlgoSDKAction(sdk));
         }
 

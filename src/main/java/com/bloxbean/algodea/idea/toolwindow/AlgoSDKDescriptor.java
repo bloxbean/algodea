@@ -10,6 +10,7 @@ import com.intellij.ui.JBColor;
 public class AlgoSDKDescriptor extends NodeDescriptor {
 
     private AlgoLocalSDK sdk;
+    private boolean isCompilerTarget;
 
     public AlgoSDKDescriptor(final Project project, final NodeDescriptor parentDescriptor, AlgoLocalSDK sdk, String compilerNodeId, String deploymentNodeId) {
         super(project, parentDescriptor);
@@ -22,6 +23,7 @@ public class AlgoSDKDescriptor extends NodeDescriptor {
         if(sdk.getId() != null) {
             if (sdk.getId().equals(compilerNodeId)){
                 myClosedIcon = AlgoIcons.LOCALSDK_COMPILE;
+                isCompilerTarget = true;
             } else {
                 myClosedIcon = AlgoIcons.LOCALSDK;
             }
@@ -42,6 +44,10 @@ public class AlgoSDKDescriptor extends NodeDescriptor {
 
     public AlgoLocalSDK getSdk() {
         return sdk;
+    }
+
+    public boolean isCompilerTarget() {
+        return isCompilerTarget;
     }
 
 }

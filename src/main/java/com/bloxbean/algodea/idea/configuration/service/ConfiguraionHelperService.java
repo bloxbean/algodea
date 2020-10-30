@@ -5,16 +5,18 @@ import com.bloxbean.algodea.idea.configuration.model.NodeInfo;
 import com.bloxbean.algodea.idea.configuration.ui.LocalSDKDialog;
 import com.bloxbean.algodea.idea.configuration.ui.RemoteNodeConfigDialog;
 import com.bloxbean.algodea.idea.core.messaging.AlgoNodeChangeNotifier;
+import com.bloxbean.algodea.idea.core.messaging.AlgoProjectNodeConfigChangeNotifier;
 import com.bloxbean.algodea.idea.core.messaging.AlgoSDKChangeNotifier;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.text.StringUtil;
 
 import java.util.UUID;
 
 public class ConfiguraionHelperService {
     public static NodeInfo createOrUpdateNewNodeConfiguration(Project project, NodeInfo existingNodeInfo) {
         NodeConfigState stateService = NodeConfigState.getInstance();
-        System.out.println(stateService.getNodes());
+        //System.out.println(stateService.getNodes());
 
         RemoteNodeConfigDialog remoteNodeConfigDialog = new RemoteNodeConfigDialog(project, existingNodeInfo);
         boolean ok = remoteNodeConfigDialog.showAndGet();
@@ -112,4 +114,38 @@ public class ConfiguraionHelperService {
         algoSDKChangeNotifier.sdkDeleted(sdk);
 
     }
+
+    public static void setCompilerId(Project project, AlgoProjectState.ConfigType compilerType, String compilerId) {
+        if(project == null || StringUtil.isEmpty(compilerId) || compilerType == null)
+            return;
+        AlgoProjectState state = AlgoProjectState.getInstance(project);
+
+        if(state != null) {
+            state.getState().setCompilerType(compilerType);
+            state.getState().setCompilerId(compilerId);
+
+            notifyProjectNodeConfigChange(project);
+        }
+
+    }
+
+    public static void setDeploymenetServerId(Project project, String deployServerId) {
+        if(project == null || StringUtil.isEmpty(deployServerId))
+            return;
+
+        AlgoProjectState state = AlgoProjectState.getInstance(project);
+
+        if(state != null) {
+            state.getState().setDeploymentServerId(deployServerId);
+
+            notifyProjectNodeConfigChange(project);
+        }
+    }
+
+    public static void notifyProjectNodeConfigChange(Project project) {
+        AlgoProjectNodeConfigChangeNotifier algoProjectNodeConfigChangeNotifier
+                = ApplicationManager.getApplication().getMessageBus().syncPublisher(AlgoProjectNodeConfigChangeNotifier.CHANGE_ALGO_PROJECT_NODES_CONFIG_TOPIC);
+        algoProjectNodeConfigChangeNotifier.configUpdated(project);
+    }
+
 }
