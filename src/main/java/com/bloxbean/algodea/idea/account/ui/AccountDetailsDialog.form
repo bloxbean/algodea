@@ -96,7 +96,9 @@
               </grid>
               <forms defaultalign-horz="false"/>
             </constraints>
-            <properties/>
+            <properties>
+              <editable value="false"/>
+            </properties>
           </component>
           <component id="b7b6b" class="javax.swing.JLabel">
             <constraints>

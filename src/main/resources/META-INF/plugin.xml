@@ -153,6 +153,7 @@
         </action>
         <action id="Algo.account.list" class="com.bloxbean.algodea.idea.account.action.AccountListAction" text="List Accounts"
                 description="List Accounts">
+            <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl T" second-keystroke="A"/>
             <add-to-group group-id="AlgoActionGroup.Accounts"/>
         </action>
         <action id="Algo.multisig-account.list" class="com.bloxbean.algodea.idea.account.action.MultisigAccountListAction" text="List Multi-Sig Accounts"
