@@ -38,6 +38,7 @@ import com.bloxbean.algodea.idea.nodeint.AlgoConnectionFactory;
 import com.bloxbean.algodea.idea.nodeint.AlgoServerConfigurationHelper;
 import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
 import com.bloxbean.algodea.idea.nodeint.model.TxnDetailsParameters;
+import com.bloxbean.algodea.idea.nodeint.util.NetworkHelper;
 import com.bloxbean.algodea.idea.util.JsonUtil;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
@@ -147,7 +148,7 @@ public class AlgoBaseService {
 
         // send to network
         byte[] encodedTxBytes = Encoder.encodeToMsgPack(signedTxn);
-        logListener.info("Posting transaction to the network ...");
+        logListener.info(String.format("Posting transaction to the network (%s) ...", client.getHost()));
 
         Tuple<String[], String[]> headers = algoConnectionFactory.getHeadersForBinaryContent();
         Response<PostTransactionsResponse> postTransactionsResponse = client.RawTransaction().rawtxn(encodedTxBytes).execute(headers._1(), headers._2());
@@ -173,6 +174,9 @@ public class AlgoBaseService {
         if(pendingTransactionResponse.body() != null) {
             logListener.info("\nTransaction Info :-");
             logListener.info(JsonUtil.getPrettyJson(pendingTransactionResponse.body().toString()));
+
+            if(NetworkHelper.getInstance().getExplorerBaseUrl(getNetworkGenesisHash()) != null)
+                logListener.info("Check transaction details here : " + NetworkHelper.getInstance().getTxnHashUrl(getNetworkGenesisHash(), id));
         }
 
         return true;
@@ -185,7 +189,7 @@ public class AlgoBaseService {
 
         // send to network
         byte[] encodedTxBytes = Encoder.encodeToMsgPack(signedTxn);
-        logListener.info("Posting transaction to the network ...");
+        logListener.info(String.format("Posting transaction to the network (%s) ...", client.getHost()));
 
         Tuple<String[], String[]> headers = algoConnectionFactory.getHeadersForBinaryContent();
 
@@ -212,6 +216,9 @@ public class AlgoBaseService {
         if(pendingTransactionResponse.body() != null) {
             logListener.info("\nTransaction Info :-");
             logListener.info(JsonUtil.getPrettyJson(pendingTransactionResponse.body().toString()));
+
+            if(NetworkHelper.getInstance().getExplorerBaseUrl(getNetworkGenesisHash()) != null)
+                logListener.info("Check transaction details here : " + NetworkHelper.getInstance().getTxnHashUrl(getNetworkGenesisHash(), id));
         }
 
         return pendingTransactionResponse.body();

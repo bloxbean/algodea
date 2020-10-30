@@ -13,6 +13,7 @@ import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured
 import com.bloxbean.algodea.idea.nodeint.model.AccountAsset;
 import com.bloxbean.algodea.idea.nodeint.model.AssetTxnParameters;
 import com.bloxbean.algodea.idea.nodeint.model.TxnDetailsParameters;
+import com.bloxbean.algodea.idea.nodeint.util.NetworkHelper;
 import com.bloxbean.algodea.idea.util.AlgoConversionUtil;
 import com.bloxbean.algodea.idea.util.JsonUtil;
 import com.intellij.openapi.project.Project;
@@ -43,6 +44,13 @@ public class AssetTransactionService extends AlgoBaseService {
             return sender.signTransaction(transaction);
         }), txn);
 
+        if(transactionResponse != null) {
+            if(NetworkHelper.getInstance().getExplorerBaseUrl(getNetworkGenesisHash()) != null) {
+                logListener.info("Check asset details here : "
+                        + NetworkHelper.getInstance().getAssetUrl(getNetworkGenesisHash(), String.valueOf(transactionResponse.assetIndex)));
+            }
+        }
+
         if(transactionResponse == null) return null;
         else
             return transactionResponse.assetIndex;
@@ -70,6 +78,13 @@ public class AssetTransactionService extends AlgoBaseService {
         PendingTransactionResponse transactionResponse = postTransaction((transaction -> {
             return sender.signTransaction(transaction);
         }), txn);
+
+        if(transactionResponse != null) {
+            if(NetworkHelper.getInstance().getExplorerBaseUrl(getNetworkGenesisHash()) != null) {
+                logListener.info("Check asset details here : "
+                        + NetworkHelper.getInstance().getAssetUrl(getNetworkGenesisHash(), String.valueOf(finalAssetTxnPrameters.assetId)));
+            }
+        }
 
         if(transactionResponse == null) return false;
         else
@@ -99,6 +114,13 @@ public class AssetTransactionService extends AlgoBaseService {
         PendingTransactionResponse transactionResponse = postTransaction((transaction -> {
             return sender.signTransaction(transaction);
         }), txn);
+
+        if(transactionResponse != null) {
+            if(NetworkHelper.getInstance().getExplorerBaseUrl(getNetworkGenesisHash()) != null) {
+                logListener.info("Check asset details here : "
+                        + NetworkHelper.getInstance().getAssetUrl(getNetworkGenesisHash(), String.valueOf(finalAssetTxnPrameters.assetId)));
+            }
+        }
 
         if(transactionResponse == null) return false;
         else
@@ -130,6 +152,13 @@ public class AssetTransactionService extends AlgoBaseService {
             return sender.signTransaction(transaction);
         }), txn);
 
+        if(transactionResponse != null) {
+            if(NetworkHelper.getInstance().getExplorerBaseUrl(getNetworkGenesisHash()) != null) {
+                logListener.info("Check asset details here : "
+                        + NetworkHelper.getInstance().getAssetUrl(getNetworkGenesisHash(), String.valueOf(finalAssetTxnPrameters.assetId)));
+            }
+        }
+
         if(transactionResponse == null) return false;
         else
             return true;
@@ -159,6 +188,13 @@ public class AssetTransactionService extends AlgoBaseService {
         PendingTransactionResponse transactionResponse = postTransaction((transaction -> {
             return sender.signTransaction(transaction);
         }), txn);
+
+        if(transactionResponse != null) {
+            if(NetworkHelper.getInstance().getExplorerBaseUrl(getNetworkGenesisHash()) != null) {
+                logListener.info("Check asset details here : "
+                        + NetworkHelper.getInstance().getAssetUrl(getNetworkGenesisHash(), String.valueOf(finalAssetTxnPrameters.assetId)));
+            }
+        }
 
         if(transactionResponse == null) return false;
         else
@@ -190,6 +226,13 @@ public class AssetTransactionService extends AlgoBaseService {
         PendingTransactionResponse transactionResponse = postTransaction((transaction -> {
             return sender.signTransaction(transaction);
         }), txn);
+
+        if(transactionResponse != null) {
+            if(NetworkHelper.getInstance().getExplorerBaseUrl(getNetworkGenesisHash()) != null) {
+                logListener.info("Check asset details here : "
+                        + NetworkHelper.getInstance().getAssetUrl(getNetworkGenesisHash(), String.valueOf(finalAssetTxnPrameters.assetId)));
+            }
+        }
 
         if(transactionResponse == null) return false;
         else
