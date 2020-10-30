@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="14px" height="12px" viewBox="0 0 14 12" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Group 22</title>
+    <g id="Welcome" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Desktop-HD" transform="translate(-231.000000, -786.000000)">
+            <g id="Group-21" transform="translate(231.000000, 786.000000)">
+                <g id="services">
+                    <rect id="frame" x="0" y="0" width="14" height="12"></rect>
+                    <path d="M14,6 L10.5,12 L3.5,12 L0,6 L3.5,0 L10.5,0 L14,6 Z M4.846,2.446 L4.846,9.554 L10.504,6 L4.846,2.446 Z" id="Shape" fill-opacity="0.8" fill="#9AA7B0"></path>
+                </g>
+                <g id="services">
+                    <rect id="frame" x="0" y="0" width="14" height="12"></rect>
+                    <path d="M14,6 L10.5,12 L3.5,12 L0,6 L3.5,0 L10.5,0 L14,6 Z M4.846,2.446 L4.846,9.554 L10.504,6 L4.846,2.446 Z" id="Shape" fill-opacity="0.8" fill="#9AA7B0"></path>
+                </g>
+                <polygon id="Path-2" stroke="#0FC269" fill="#2A7D1C" points="5 2.446 5 9.554 10.504 6"></polygon>
+            </g>
+        </g>
+    </g>
+</svg>

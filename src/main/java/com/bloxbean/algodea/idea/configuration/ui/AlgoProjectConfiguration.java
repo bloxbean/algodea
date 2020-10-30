@@ -18,6 +18,8 @@ import com.intellij.ui.components.JBRadioButton;
 import com.twelvemonkeys.lang.StringUtil;
 
 import javax.swing.*;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.List;
 
 public class AlgoProjectConfiguration {
@@ -42,10 +44,16 @@ public class AlgoProjectConfiguration {
     private NodeInfo emptyNodeInfo = new NodeInfo();
     private AlgoLocalSDK emptyLocalSDK = new AlgoLocalSDK();
 
+    private boolean configChanged;
+
     public AlgoProjectConfiguration(Project project) {
         initializeData(project);
         attachHandlers(project);
         setCurrentSelection(project);
+
+        //Don't change this call sequence. This is needed for change notifier
+        //Keep it at the end to ignore initial selection
+        listenSelectionChange();
     }
 
     private void initializeData(Project project) {
@@ -228,6 +236,25 @@ public class AlgoProjectConfiguration {
                 updateNodeInfoInComboBox(deployNodeCB, updatedNodeInfo);
             }
         });
+    }
+
+    //This is required for change notifier
+    private void listenSelectionChange() {
+        localSDKCB.addActionListener(e -> {
+            configChanged = true;
+        });
+
+        algorandNodeCB.addActionListener(e -> {
+            configChanged = true;
+        });
+
+        deployNodeCB.addActionListener(e -> {
+            configChanged = true;
+        });
+    }
+
+    public boolean isConfigChanged() {
+        return configChanged;
     }
 
     //For update operation

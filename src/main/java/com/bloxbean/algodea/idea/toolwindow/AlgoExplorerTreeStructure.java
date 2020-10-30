@@ -3,6 +3,7 @@ package com.bloxbean.algodea.idea.toolwindow;
 import com.bloxbean.algodea.idea.configuration.model.AlgoLocalSDK;
 import com.bloxbean.algodea.idea.configuration.service.AlgoLocalSDKState;
 import com.bloxbean.algodea.idea.configuration.service.NodeConfigState;
+import com.bloxbean.algodea.idea.nodeint.AlgoServerConfigurationHelper;
 import com.bloxbean.algodea.idea.toolwindow.model.AlgoLocalSDKRoot;
 import com.bloxbean.algodea.idea.toolwindow.model.AlgoNodesRoot;
 import com.bloxbean.algodea.idea.toolwindow.model.AlgoRoot;
@@ -23,10 +24,33 @@ public class AlgoExplorerTreeStructure extends AbstractTreeStructure {
     private AlgoRoot root;
     private AlgoNodesRoot nodesRoot;
     private AlgoLocalSDKRoot sdkRoot;
+    private String compilerNodeId;
+    private String deploymentNodeId;
 
     public AlgoExplorerTreeStructure(Project project) {
         this.project = project;
+        updateSelectedNodeInfos();
+
     }
+
+    public void updateSelectedNodeInfos() {
+        if(project == null)
+            return;
+        NodeInfo compilerNodeInfo = AlgoServerConfigurationHelper.getCompilerNodeInfo(project);
+        if(compilerNodeInfo != null) {
+            compilerNodeId = compilerNodeInfo.getId();
+        }
+        AlgoLocalSDK localSDK = AlgoServerConfigurationHelper.getCompilerLocalSDK(project);
+        if(localSDK != null) {
+            compilerNodeId = localSDK.getId();
+        }
+
+        NodeInfo deployNodeInfo = AlgoServerConfigurationHelper.getDeploymentNodeInfo(project);
+        if(deployNodeInfo != null) {
+            deploymentNodeId = deployNodeInfo.getId();
+        }
+    }
+
     @Override
     public @NotNull Object getRootElement() {
         if(root == null)
@@ -85,11 +109,11 @@ public class AlgoExplorerTreeStructure extends AbstractTreeStructure {
         }
 
         if(element instanceof NodeInfo) {
-            return new AlgoServerNodeDescriptor(project, parentDescriptor, (NodeInfo)element);
+            return new AlgoServerNodeDescriptor(project, parentDescriptor, (NodeInfo)element, compilerNodeId, deploymentNodeId);
         }
 
         if(element instanceof AlgoLocalSDK) {
-            return new AlgoSDKDescriptor(project, parentDescriptor, (AlgoLocalSDK) element);
+            return new AlgoSDKDescriptor(project, parentDescriptor, (AlgoLocalSDK) element, compilerNodeId, deploymentNodeId);
         }
 
         return null;
@@ -160,7 +184,7 @@ public class AlgoExplorerTreeStructure extends AbstractTreeStructure {
 
         public AlgoSDKNodeDescriptor(@Nullable Project project, @Nullable NodeDescriptor parentDescriptor) {
             super(project, parentDescriptor);
-            myName = "Local SDKs";
+            myName = "Local SDKs (goal)";
             myClosedIcon = AllIcons.Nodes.Folder;
             myColor = Color.blue;
         }

@@ -70,7 +70,7 @@
                             <properties>
                               <name value="compileRadioGroup"/>
                               <selected value="false"/>
-                              <text value="Local Algorand SDK"/>
+                              <text value="Local Algorand SDK (goal)"/>
                               <toolTipText value="Algorand Node Folder"/>
                             </properties>
                           </component>

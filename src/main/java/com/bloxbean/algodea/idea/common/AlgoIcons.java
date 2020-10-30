@@ -39,4 +39,13 @@ public class AlgoIcons {
     public static final Icon LOGIC_SIG_ICON = IconLoader.getIcon("/icons/logicsig.png");
     public static final Icon MLOGIC_SIG_ICON = IconLoader.getIcon("/icons/mlogicsig.png");
     public static final Icon LOGIC_SIG_RUN_ICON = IconLoader.getIcon("/icons/logicsig_run.png");
+
+    //AlgoExplorer icons
+    public static final Icon NODE = IconLoader.getIcon("/icons/node.png");
+    public static final Icon NODE_DEPLOY = IconLoader.getIcon("/icons/node_deploy.png");
+    public static final Icon NODE_COMPILE = IconLoader.getIcon("/icons/node_compile.png");
+    public static final Icon NODE_COMPILE_DEPLOY = IconLoader.getIcon("/icons/node_compile_deploy.png");
+
+    public static final Icon LOCALSDK = IconLoader.getIcon("/icons/localsdk.png");
+    public static final Icon LOCALSDK_COMPILE = IconLoader.getIcon("/icons/localsdk_compile.png");
 }

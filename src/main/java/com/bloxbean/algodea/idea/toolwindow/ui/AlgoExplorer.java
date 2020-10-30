@@ -4,6 +4,7 @@ import com.bloxbean.algodea.idea.configuration.action.*;
 import com.bloxbean.algodea.idea.configuration.model.AlgoLocalSDK;
 import com.bloxbean.algodea.idea.configuration.model.NodeInfo;
 import com.bloxbean.algodea.idea.core.messaging.AlgoNodeChangeNotifier;
+import com.bloxbean.algodea.idea.core.messaging.AlgoProjectNodeConfigChangeNotifier;
 import com.bloxbean.algodea.idea.core.messaging.AlgoSDKChangeNotifier;
 import com.bloxbean.algodea.idea.toolwindow.AlgoExplorerTreeStructure;
 import com.bloxbean.algodea.idea.toolwindow.AlgoSDKDescriptor;
@@ -108,6 +109,18 @@ public class AlgoExplorer extends SimpleToolWindowPanel implements DataProvider,
                     @Override
                     public void sdkDeleted(AlgoLocalSDK sdk) {
                         myTreeModel.invalidate();
+                    }
+                });
+
+        ApplicationManager.getApplication().getMessageBus().connect(this)
+                .subscribe(AlgoProjectNodeConfigChangeNotifier.CHANGE_ALGO_PROJECT_NODES_CONFIG_TOPIC, new AlgoProjectNodeConfigChangeNotifier() {
+                    @Override
+                    public void configUpdated(Project project) {
+                        if(myProject != null && myProject.equals(project)) {
+                            myTreeStructure.updateSelectedNodeInfos();
+                            myTreeModel.invalidate();
+                        }
+
                     }
                 });
 

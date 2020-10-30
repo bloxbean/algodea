@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="14px" height="12px" viewBox="0 0 14 12" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Shape 3</title>
+    <defs>
+        <filter id="filter-1">
+            <feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0.552103 0 0 0 0 0.624943 0 0 0 0 0.189091 0 0 0 1.000000 0"></feColorMatrix>
+        </filter>
+    </defs>
+    <g id="Welcome" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" fill-opacity="0.8">
+        <g id="Desktop-HD" transform="translate(-264.000000, -753.000000)">
+            <g id="Shape-2" transform="translate(264.000000, 753.000000)" filter="url(#filter-1)">
+                <g>
+                    <path d="M14,6 L10.5,12 L3.5,12 L0,6 L3.5,0 L10.5,0 L14,6 Z M4.846,2.446 L4.846,9.554 L10.504,6 L4.846,2.446 Z" id="Shape" fill="#9AA7B0"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
