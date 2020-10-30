@@ -1,4 +1,4 @@
-### 0.1.0
+### 0.1.0-beta
   - Algorand Smart Contract Project type
   - Code Completion, Syntax Highlighter and other editor level support for TEAL file
   - Create Stateless & Stateful Smart Contract
