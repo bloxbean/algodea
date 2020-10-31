@@ -57,6 +57,11 @@ public class CreateAccountAction extends AnAction {
         String accountName = Messages.showInputDialog(project, "Enter a name for the new account", "New Account", AllIcons.General.Information);
         if(!StringUtil.isEmpty(accountName))
             accountName = accountName.trim();
+        else {
+            IdeaUtil.showNotification(project, "Account Create",
+                    "Account name cannot be empty", NotificationType.ERROR, null);
+            return;
+        }
 
         AccountService accountService = new AccountService();
 
