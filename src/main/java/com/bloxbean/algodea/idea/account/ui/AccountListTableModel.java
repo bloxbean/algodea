@@ -109,7 +109,15 @@ public class AccountListTableModel extends AbstractTableModel {
     }
 
     public void setElements(List<AlgoAccount> accounts) {
+        int size = this.accounts.size();
         this.accounts.clear();
+
+        if(size == 0)
+            size = 1;
+        if(size > 0) { //Refresh based on old size
+            fireTableRowsDeleted(0, size - 1);
+        }
+
         this.accounts.addAll(accounts);
         fireTableRowsUpdated(0, this.accounts.size()-1);
     }

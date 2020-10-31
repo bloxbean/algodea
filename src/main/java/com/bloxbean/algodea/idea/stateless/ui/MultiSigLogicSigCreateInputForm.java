@@ -29,7 +29,6 @@ public class MultiSigLogicSigCreateInputForm  {
     private JTextField thresholdTf;
     private JComboBox accountsCB;
     private JButton addOtherAccBtn;
-    private JButton addAccountBtn;
     private JTextField otherAccountTf;
     private JButton removeAccBtn;
     private JScrollPane jscrollpane;
@@ -81,12 +80,6 @@ public class MultiSigLogicSigCreateInputForm  {
             if(selectedIndex != -1) {
                 selectedAccountListModel.remove(selectedIndex);
             }
-        });
-
-        addAccountBtn.addActionListener(e -> {
-            clearMessage();
-
-            addSelectedAccountToList();
         });
 
         addOtherAccBtn.addActionListener(e -> {
