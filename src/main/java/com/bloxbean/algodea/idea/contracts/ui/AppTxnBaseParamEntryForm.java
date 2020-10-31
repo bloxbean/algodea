@@ -4,6 +4,7 @@ import com.algorand.algosdk.account.Account;
 import com.bloxbean.algodea.idea.account.model.AlgoAccount;
 import com.bloxbean.algodea.idea.account.service.AccountChooser;
 import com.bloxbean.algodea.idea.configuration.service.AlgoProjectState;
+import com.bloxbean.algodea.idea.configuration.service.NodeConfigState;
 import com.bloxbean.algodea.idea.core.service.AlgoCacheService;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
@@ -47,8 +48,14 @@ public class AppTxnBaseParamEntryForm {
         AlgoCacheService cacheService = AlgoCacheService.getInstance(project);
         List<String> cachedAppIds = null;
         if(cacheService != null) {
-            if(!StringUtil.isEmpty(deploymentServerId))
-                cachedAppIds = cacheService.getAppIds(deploymentServerId);
+            if(!StringUtil.isEmpty(deploymentServerId)) {
+                //Get genesisHash of this deploymentServer
+                String genesisHash = NodeConfigState.getGenesisHash(deploymentServerId);
+                if(StringUtil.isEmpty(genesisHash))
+                    genesisHash = deploymentServerId;
+
+                cachedAppIds = cacheService.getAppIds(genesisHash);
+            }
 
             if(cachedAppIds != null) {
                 appIdCB.addItem("");

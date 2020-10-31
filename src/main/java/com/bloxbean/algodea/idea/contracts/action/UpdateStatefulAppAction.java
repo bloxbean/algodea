@@ -223,7 +223,11 @@ public class UpdateStatefulAppAction extends AlgoBaseAction {
                     if(success) {
                         LOG.info(appId + "");
 
-                        cacheService.addAppId(deploymentServerId, contractName, String.valueOf(appId));
+                        String genesisHash = sfService.getNetworkGenesisHash();
+                        if(StringUtil.isEmpty(genesisHash))
+                            genesisHash = deploymentServerId;
+
+                        cacheService.addAppId(genesisHash, contractName, String.valueOf(appId));
 
                         console.showInfoMessage("Stateful smart contract app updated with app Id : " + appId);
                         IdeaUtil.showNotification(project, "Update App", String.format("%s App Created Successfully with appId: %s", contractName, appId), NotificationType.INFORMATION, null);

@@ -113,4 +113,23 @@ final public class NodeConfigState implements PersistentStateComponent<Element> 
         if(nodes == null || node == null) return;
         nodes.remove(node);
     }
+
+    //Helper method to get genesisHash for the deployment server id
+    public static String getGenesisHash(String deploymentServerId) {
+        NodeConfigState nodeConfigState = NodeConfigState.getInstance();
+        if(nodeConfigState == null)
+            return null;
+
+        List<NodeInfo> nodes = nodeConfigState.getNodes();
+        if(StringUtil.isEmpty(deploymentServerId)
+                || nodes == null || nodes.size() == 0)
+            return null;
+
+        for(NodeInfo node: nodes) {
+            if(deploymentServerId.equals(node.getId()))
+                return node.getGenesisHash();
+        }
+
+        return null;
+    }
 }

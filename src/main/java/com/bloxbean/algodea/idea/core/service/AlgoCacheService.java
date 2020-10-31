@@ -109,10 +109,11 @@ public class AlgoCacheService implements PersistentStateComponent<AlgoCacheServi
         return state.sfCreatorAccount;
     }
 
-    public List<String> getAppIds(String deployServerId) {
+    //If genesisHash is not available... deploymentServerId will be passed
+    public List<String> getAppIds(String genesisHash) {
         initializeStateIfRequired();
 
-        List<String>  appIds = state.appIdMap.get(deployServerId);
+        List<String>  appIds = state.appIdMap.get(genesisHash);
         if(appIds == null) {
             return Collections.EMPTY_LIST;
         }
@@ -130,14 +131,14 @@ public class AlgoCacheService implements PersistentStateComponent<AlgoCacheServi
         return state.appIdContractMap.get(appId);
     }
 
-    public void addAppId(String deployServerId, String contractName, String appId) {
+    public void addAppId(String genesisHash, String contractName, String appId) {
 
         initializeStateIfRequired();
-        if(StringUtil.isEmpty(deployServerId)) {
+        if(StringUtil.isEmpty(genesisHash)) {
             return;
         }
 
-        List<String> appIds = state.appIdMap.get(deployServerId);
+        List<String> appIds = state.appIdMap.get(genesisHash);
         if(appIds == null)
             appIds = new ArrayList(MAX_APP_IDS_TO_STORE);
 
@@ -152,7 +153,7 @@ public class AlgoCacheService implements PersistentStateComponent<AlgoCacheServi
         if(!appIds.contains(appId))
             appIds.add(appId);
 
-        state.appIdMap.put(deployServerId, appIds);
+        state.appIdMap.put(genesisHash, appIds);
 
         if(!StringUtil.isEmpty(contractName)) {
             state.appIdContractMap.put(appId, contractName);
