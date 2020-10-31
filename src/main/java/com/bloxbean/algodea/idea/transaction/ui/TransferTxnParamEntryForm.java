@@ -15,6 +15,7 @@ import com.bloxbean.algodea.idea.toolwindow.AlgoConsole;
 import com.bloxbean.algodea.idea.util.AlgoConversionUtil;
 import com.bloxbean.algodea.idea.util.IdeaUtil;
 import com.intellij.notification.NotificationType;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
@@ -37,6 +38,8 @@ import java.util.function.Consumer;
 import static com.bloxbean.algodea.idea.common.AlgoConstants.ALGO;
 
 public class TransferTxnParamEntryForm {
+    private final static Logger LOG = Logger.getInstance(TransactionDtlsEntryForm.class);
+
     private JTextField fromAccountTf;
     private JButton fromAccChooserBtn;
     private JPanel mainPanel;
@@ -192,7 +195,8 @@ public class TransferTxnParamEntryForm {
                     Long balance = algoAccountService.getBalance(account);
                     balanceCallback.accept(balance);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                   if(LOG.isDebugEnabled())
+                       LOG.warn(e);
                 } finally {
 
                 }
@@ -315,7 +319,9 @@ public class TransferTxnParamEntryForm {
                     return new Tuple<>(assetAmount, mAmount);
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                if(LOG.isDebugEnabled())
+                    LOG.warn(e);
+
                 return null;
             }
 

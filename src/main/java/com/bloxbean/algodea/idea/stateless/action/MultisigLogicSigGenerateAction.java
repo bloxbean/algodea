@@ -162,7 +162,8 @@ public class MultisigLogicSigGenerateAction extends AnAction {
                 try {
                     outputVfsFile.delete(this);
                 } catch (IOException ioException) {
-                    ioException.printStackTrace();
+                    if(LOG.isDebugEnabled())
+                        LOG.warn(ioException);
                 }
             });
         }
@@ -188,7 +189,6 @@ public class MultisigLogicSigGenerateAction extends AnAction {
                         console.getView().attachToProcess(handler);
                     } catch (IncorrectOperationException ex) {
                         //This should not happen
-                        ex.printStackTrace();
                         console.showInfoMessage(ex.getMessage());
                         console.dispose();
                         console.getView().attachToProcess(handler);

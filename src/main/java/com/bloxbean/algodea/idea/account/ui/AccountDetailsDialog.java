@@ -105,7 +105,7 @@ public class AccountDetailsDialog extends DialogWrapper {
                         try {
                             accountService = new AlgoAccountService(project, new LogListenerAdapter(console));
                         } catch (DeploymentTargetNotConfigured deploymentTargetNotConfigured) {
-                            deploymentTargetNotConfigured.printStackTrace();
+                            //deploymentTargetNotConfigured.printStackTrace();
                             IdeaUtil.showNotification(project, "Algorand Configuration",
                                     "Algorand deployment node is not configured.", NotificationType.ERROR, ConfigurationAction.ACTION_ID);
                         }

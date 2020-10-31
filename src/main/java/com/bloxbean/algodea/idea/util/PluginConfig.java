@@ -66,13 +66,14 @@ public class PluginConfig {
             props.store(output, null);
 
         } catch (Exception io) {
-            io.printStackTrace();
+           if(log.isDebugEnabled())
+               log.warn(io);
         } finally {
             if (output != null) {
                 try {
                     output.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+//                    e.printStackTrace();
                 }
             }
         }
@@ -100,14 +101,15 @@ public class PluginConfig {
             return properties;
 
         } catch (Exception io) {
-            io.printStackTrace();
+            if(log.isDebugEnabled())
+                log.warn(io);
             return new Properties();
         } finally {
             if (input != null) {
                 try {
                     input.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+//                    e.printStackTrace();
                 }
             }
 

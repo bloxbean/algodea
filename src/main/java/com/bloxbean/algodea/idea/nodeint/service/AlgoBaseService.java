@@ -66,7 +66,7 @@ public class AlgoBaseService {
 
             @Override
             public void error(String msg) {
-                LOG.error(msg);
+                LOG.warn(msg);
             }
 
             @Override

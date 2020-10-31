@@ -157,7 +157,6 @@ public class LogicSigSendTransactionAction extends AlgoBaseAction {
                             IdeaUtil.showNotification(project, getTitle(), String.format("%s failed", getTxnCommand()), NotificationType.ERROR, null);
                         }
                     } catch (Exception exception) {
-                        exception.printStackTrace();
                         console.showErrorMessage(String.format("%s failed", getTxnCommand()), exception);
                         IdeaUtil.showNotification(project, getTitle(), String.format("%s failed, Reason: %s", getTxnCommand(), exception.getMessage()), NotificationType.ERROR, null);
                     }
@@ -166,10 +165,11 @@ public class LogicSigSendTransactionAction extends AlgoBaseAction {
 
             ProgressManager.getInstance().runProcessWithProgressAsynchronously(task, new BackgroundableProcessIndicator(task));
         } catch (DeploymentTargetNotConfigured deploymentTargetNotConfigured) {
-            deploymentTargetNotConfigured.printStackTrace();
             warnDeploymentTargetNotConfigured(project, getTitle());
         } catch (Exception ex) {
-            LOG.error(ex);
+            if(LOG.isDebugEnabled()) {
+                LOG.error(ex);
+            }
             console.showErrorMessage(ex.getMessage(), ex);
             IdeaUtil.showNotification(project, getTitle(), String.format("Logic sig transaction failed, reason: %s", ex.getMessage()), NotificationType.ERROR, null);
         }

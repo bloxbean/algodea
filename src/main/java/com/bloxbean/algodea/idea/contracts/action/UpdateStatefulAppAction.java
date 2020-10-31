@@ -68,7 +68,9 @@ public class UpdateStatefulAppAction extends AlgoBaseAction {
 
             AlgoProjectState projectState = AlgoProjectState.getInstance(project);
             if(projectState == null) {
-                LOG.error("Project state is null");
+                if(LOG.isDebugEnabled()) {
+                    LOG.error("Project state is null");
+                }
                 IdeaUtil.showNotificationWithAction(project, "UpdateApplication",
                         "Project data could not be found. Something is wrong", NotificationType.ERROR, null);
                 return;
@@ -218,7 +220,9 @@ public class UpdateStatefulAppAction extends AlgoBaseAction {
                     try {
                        success = sfService.updateApp(appId, account, appProgText, clearProgText, txnDetailsParameters);
                     } catch (Exception exception) {
-                        exception.printStackTrace();
+                        if(LOG.isDebugEnabled()) {
+                            LOG.warn(exception);
+                        }
                     }
                     if(success) {
                         LOG.info(appId + "");
@@ -243,10 +247,12 @@ public class UpdateStatefulAppAction extends AlgoBaseAction {
 
 
         } catch (DeploymentTargetNotConfigured deploymentTargetNotConfigured) {
-            deploymentTargetNotConfigured.printStackTrace();
+            //deploymentTargetNotConfigured.printStackTrace();
             warnDeploymentTargetNotConfigured(project, "UpdateApplication");
         } catch (Exception ex) {
-            LOG.error(ex);
+            if(LOG.isDebugEnabled()) {
+                LOG.error(ex);
+            }
             IdeaUtil.showNotification(project, "UpdateApplication", "Update App failed : " + ex.getMessage(), NotificationType.ERROR, null);
         }
     }

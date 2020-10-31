@@ -91,7 +91,9 @@ public class CreateStatefulAppAction extends AlgoBaseAction {
 
             AlgoProjectState projectState = AlgoProjectState.getInstance(project);
             if (projectState == null) {
-                LOG.error("Project state is null");
+                if(LOG.isDebugEnabled()) {
+                    LOG.error("Project state is null");
+                }
                 IdeaUtil.showNotificationWithAction(project, "Create App",
                         "Project data could not be found. Something is wrong", NotificationType.ERROR, null);
                 return;
@@ -234,7 +236,9 @@ public class CreateStatefulAppAction extends AlgoBaseAction {
                                 globalByteslices, globalInts, localByteslices, localInts,
                                 txnDetailsParameters);
                     } catch (Exception exception) {
-                        exception.printStackTrace();
+                        if(LOG.isDebugEnabled()) {
+                            LOG.warn(exception);
+                        }
                     }
                     if (appId != null) {
                         LOG.info(appId + "");
@@ -256,14 +260,20 @@ public class CreateStatefulAppAction extends AlgoBaseAction {
             ProgressManager.getInstance().runProcessWithProgressAsynchronously(task, new BackgroundableProcessIndicator(task));
 
         } catch (DeploymentTargetNotConfigured deploymentTargetNotConfigured) {
-            LOG.error(deploymentTargetNotConfigured);
+            if(LOG.isDebugEnabled()) {
+                LOG.error(deploymentTargetNotConfigured);
+            }
             warnDeploymentTargetNotConfigured(project, "Create App");
         } catch (PackageJsonException pkex) {
-            LOG.error(pkex);
+            if(LOG.isDebugEnabled()) {
+                LOG.error(pkex);
+            }
             IdeaUtil.showNotification(project, "Create App",
                     "algo-package.json could not be loaded", NotificationType.ERROR, null);
         } catch (Exception ex) {
-            LOG.error(ex);
+            if(LOG.isDebugEnabled()) {
+                LOG.error(ex);
+            }
             IdeaUtil.showNotification(project, "Create App", "Create App failed : " + ex.getMessage(), NotificationType.ERROR, null);
         }
     }

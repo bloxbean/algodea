@@ -284,7 +284,7 @@ public class AssetTransactionService extends AlgoBaseService {
             logListener.info(String.format("Amount           : %s %s ( %d )\n",
                     AlgoConversionUtil.assetToDecimal(amount, asset.getDecimals()), asset.getAssetUnit(), amount));
         } catch (Exception e) {
-            e.printStackTrace();
+
         }
 
 

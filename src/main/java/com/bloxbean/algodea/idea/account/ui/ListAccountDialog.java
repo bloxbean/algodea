@@ -319,7 +319,6 @@ public class ListAccountDialog extends DialogWrapper {
                         try {
                              accountService = new AlgoAccountService(project, new LogListenerAdapter(console));
                         } catch (DeploymentTargetNotConfigured deploymentTargetNotConfigured) {
-                            deploymentTargetNotConfigured.printStackTrace();
                             IdeaUtil.showNotification(project, "Algorand Configuration",
                                     "Algorand deployment node is not configured.", NotificationType.ERROR, ConfigurationAction.ACTION_ID);
                         }
@@ -341,7 +340,6 @@ public class ListAccountDialog extends DialogWrapper {
                                 }
                                 tableModel.fireTableRowsUpdated((int)counter - 1, (int)counter-1);
                             } catch (Exception e) {
-                                e.printStackTrace();
                                 console.showErrorMessage("Error getting balance for account : " + account.getAddress());
                                 console.showErrorMessage(e.getMessage());
                             }

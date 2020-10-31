@@ -78,8 +78,8 @@ public class CreateAccountAction extends AnAction {
             IdeaUtil.showNotification(project, "Account Create",
                     "A new account created successfully", NotificationType.INFORMATION, IdeaUtil.ACCOUNT_LIST_ACTION);
         } catch (NoSuchAlgorithmException ex) {
-            LOG.error("Unable to create new Algorand Account", ex);
-            console.showErrorMessage("Account creation failed");
+            LOG.warn("Unable to create new Algorand Account", ex);
+            console.showErrorMessage("Account creation failed", ex);
         }
     }
 

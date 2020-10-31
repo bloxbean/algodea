@@ -193,7 +193,7 @@ public class AssetConfigurationDialog extends DialogWrapper {
         try {
             assetTransactionService = new AssetTransactionService(project, new LogListenerAdapter(algoConsole));
         } catch (DeploymentTargetNotConfigured deploymentTargetNotConfigured) {
-            deploymentTargetNotConfigured.printStackTrace();
+            //deploymentTargetNotConfigured.printStackTrace();
             showErrorMessage("Algorand Node is not configured for deployment target", "Asset Search");
             return;
         }

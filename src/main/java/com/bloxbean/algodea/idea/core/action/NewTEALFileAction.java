@@ -113,7 +113,9 @@ public class NewTEALFileAction extends CreateFromTemplateAction<PsiFile> {
             return createFile(tealName, dir, templateName).getContainingFile();
         }
         catch (Exception e) {
-            LOG.error("Unable to create teal file");
+            if(LOG.isDebugEnabled()) {
+                LOG.error("Unable to create teal file");
+            }
             throw new RuntimeException(e);
         }
     }

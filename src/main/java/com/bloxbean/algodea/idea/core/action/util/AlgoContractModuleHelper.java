@@ -65,7 +65,9 @@ public class AlgoContractModuleHelper {
 
             moduleOutFolder = VfsUtil.findFileByIoFile(moduleOutFolderFile, true);
         } catch (Exception io) {
-            LOG.error(io);
+            if(LOG.isDebugEnabled()) {
+                LOG.error(io);
+            }
             console.showErrorMessage("Unable to create build folder " + io.getMessage());
         }
 
@@ -86,7 +88,9 @@ public class AlgoContractModuleHelper {
             moduleOutFolder = VfsUtil.findFileByIoFile(moduleOutFolderFile, true);
 
         } catch (Exception io) {
-            LOG.error(io);
+            if(LOG.isDebugEnabled()) {
+                LOG.error(io);
+            }
             console.showErrorMessage("Unable to create out folder " + io.getMessage());
         }
 
@@ -107,7 +111,9 @@ public class AlgoContractModuleHelper {
             moduleOutFolder = VfsUtil.findFileByIoFile(moduleOutFolderFile, true);
 
         } catch (Exception io) {
-            LOG.error(io);
+            if(LOG.isDebugEnabled()) {
+                LOG.error(io);
+            }
             console.showErrorMessage("Unable to create out folder " + io.getMessage());
         }
 
@@ -121,8 +127,8 @@ public class AlgoContractModuleHelper {
         try {
             varParams = VarTmplUtil.getListOfVarTmplInTEALFile(sourceFile);
         } catch (IOException ioException) {
-            ioException.printStackTrace();
-            console.showErrorMessage("Unable to read teal file to get VAR_TMPL_ variables");
+            //ioException.printStackTrace();
+            console.showErrorMessage("Unable to read teal file to get VAR_TMPL_ variables", ioException);
             return null;
         }
 
@@ -161,7 +167,9 @@ public class AlgoContractModuleHelper {
             try {
                 mergedSource = VarTmplUtil.createMergeSourceFile(requestor, sourceFile, genSrcFolder, relativeDestinationFilePath, varParamsValues);
             } catch (IOException ioException) {
-                LOG.error("Error merging VAR_TMPL_* values with the source", ioException);
+                if(LOG.isDebugEnabled()) {
+                    LOG.error("Error merging VAR_TMPL_* values with the source", ioException);
+                }
                 console.showErrorMessage("Compilation failed. VAR_TMPL_ values could not be merged");
                 return null;
             }
@@ -189,8 +197,9 @@ public class AlgoContractModuleHelper {
                 genFolder = VfsUtil.findFileByIoFile(genFile, true);
                         //moduleOutFolder.createChildDirectory(new Object(), GENERATED_SRC);
             } catch (Exception e) {
-                LOG.error("Unable to create generated_src folder", e);
-                e.printStackTrace();
+                if(LOG.isDebugEnabled()) {
+                    LOG.warn("Unable to create generated_src folder", e);
+                }
                 return null;
             }
         }

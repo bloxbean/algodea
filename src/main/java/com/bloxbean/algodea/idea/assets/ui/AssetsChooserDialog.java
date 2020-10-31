@@ -41,7 +41,7 @@ public abstract class AssetsChooserDialog {
         try {
             assetTransactionService = new AssetTransactionService(project, logListener);
         } catch (DeploymentTargetNotConfigured deploymentTargetNotConfigured) {
-            deploymentTargetNotConfigured.printStackTrace();
+            //deploymentTargetNotConfigured.printStackTrace();
             showErrorMessage("Algorand Node is not configured for deployment target", "Asset Search");
             return;
         }

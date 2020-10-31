@@ -253,7 +253,9 @@ public class CreateAppEntryForm {
                         pkgJsonService.save();
                         pkgJsonService.markDirty();
                     } catch (Exception e) {
-                        LOG.error(e);
+                        if(LOG.isDebugEnabled()) {
+                            LOG.error(e);
+                        }
                     }
                 }
             }

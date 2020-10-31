@@ -58,7 +58,7 @@ public class GoalCompileService extends BaseCompileService {
             );
 
         } catch (ExecutionException ex) {
-            ex.printStackTrace();
+            //ex.printStackTrace();
             failed(listener, sourceFilePath, "Compilation failed : " + ex.getMessage(), ex);
             return;
         }

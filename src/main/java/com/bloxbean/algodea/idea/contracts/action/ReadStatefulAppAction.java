@@ -86,10 +86,14 @@ public class ReadStatefulAppAction extends AlgoBaseAction {
 
             ProgressManager.getInstance().runProcessWithProgressAsynchronously(task, new BackgroundableProcessIndicator(task));
         } catch (DeploymentTargetNotConfigured deploymentTargetNotConfigured) {
-            LOG.error(deploymentTargetNotConfigured);
-            deploymentTargetNotConfigured.printStackTrace();
+            if(LOG.isDebugEnabled()) {
+                LOG.warn(deploymentTargetNotConfigured);
+            }
+            IdeaUtil.showNotification(project, "Application - ReadState", "ReadState failed", NotificationType.ERROR, null);
         } catch (Exception ex) {
-            LOG.error(ex);
+            if(LOG.isDebugEnabled()) {
+                LOG.error(ex);
+            }
             IdeaUtil.showNotification(project, "Application - ReadState", "ReadState failed", NotificationType.ERROR, null);
         }
 

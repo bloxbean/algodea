@@ -31,7 +31,9 @@ public class AlgoSdkUtil {
                 LOG.debug(result);
                 return result;
             } catch (Exception e) {
-                LOG.error(e);
+                if(LOG.isDebugEnabled()) {
+                    LOG.error(e);
+                }
                 throw e;
             }
         }
@@ -69,7 +71,9 @@ public class AlgoSdkUtil {
             }
 
         } catch (Exception e) {
-            LOG.error(e);
+            if(LOG.isDebugEnabled()) {
+                LOG.error(e);
+            }
             throw e;
         }
 

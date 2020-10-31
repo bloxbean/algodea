@@ -138,7 +138,7 @@ public class TransactionDtlsEntryForm {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
 
         if(!StringUtil.isEmpty(feeTf.getText()) && !StringUtil.isEmpty(flatFeeTf.getText())) {

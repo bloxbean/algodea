@@ -10,11 +10,13 @@ import com.bloxbean.algodea.idea.stateless.model.LogicSigParams;
 import com.bloxbean.algodea.idea.util.IOUtil;
 import com.bloxbean.algodea.idea.util.JsonUtil;
 import com.intellij.execution.process.OSProcessHandler;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.util.io.FileUtil;
 
 import java.io.File;
 
 public abstract class BaseCompileService implements CompileService{
+    private final static Logger LOG = Logger.getInstance(BaseCompileService.class);
 
     @Override
     public void lsig(String sourceFilePath, String compileDestination, String lsigDestination, LogicSigParams logicSigParams, CompilationResultListener listener) {
@@ -100,7 +102,10 @@ public abstract class BaseCompileService implements CompileService{
 
                         FileUtil.writeToFile(new File(lsigMetadataJson), logicSigMetaDataStr);
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        //e.printStackTrace();
+                        if(LOG.isDebugEnabled()) {
+                            LOG.warn(e);
+                        }
                     }
 
                     byte[] encodedBytes = Encoder.encodeToMsgPack(logicsigSignature);

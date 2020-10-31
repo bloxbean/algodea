@@ -33,6 +33,7 @@ import com.bloxbean.algodea.idea.nodeint.exception.ApiCallException;
 import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
 import com.bloxbean.algodea.idea.nodeint.model.AccountAsset;
 import com.bloxbean.algodea.idea.util.JsonUtil;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.twelvemonkeys.lang.StringUtil;
 
@@ -42,6 +43,8 @@ import java.util.Collections;
 import java.util.List;
 
 public class AlgoAccountService extends AlgoBaseService {
+    private final static Logger LOG = Logger.getInstance(AlgoAccountService.class);
+
     public AlgoAccountService(Project project, LogListener logListener) throws DeploymentTargetNotConfigured {
         super(project, logListener);
     }
@@ -129,7 +132,9 @@ public class AlgoAccountService extends AlgoBaseService {
                 accountAsset.setAssetUnit(asset.params.unitName);
                 accountAsset.setDecimals(asset.params.decimals);
             } catch (Exception e) {
-                e.printStackTrace();
+                if(LOG.isDebugEnabled()) {
+                    LOG.warn(e);
+                }
             }
 
             accountAssets.add(accountAsset);
@@ -160,7 +165,9 @@ public class AlgoAccountService extends AlgoBaseService {
                 accountAsset.setAssetUnit(asset.params.unitName);
                 accountAsset.setDecimals(asset.params.decimals);
             } catch (Exception e) {
-                e.printStackTrace();
+                if(LOG.isDebugEnabled()) {
+                    LOG.warn(e);
+                }
             }
 
             accountAssets.add(accountAsset);

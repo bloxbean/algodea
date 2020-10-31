@@ -157,7 +157,9 @@ public class AlgorandModuleBuilder extends ModuleBuilder implements ModuleBuilde
                             "Project creation",
                             "algo-package.json could not be crated. Please create it " +
                                     "manually and restart the IDE.", NotificationType.WARNING, null);
-                    LOG.error("Unable to create algo-package.json", e);
+                    if(LOG.isDebugEnabled()) {
+                        LOG.error("Unable to create algo-package.json", e);
+                    }
                 }
             });
         }

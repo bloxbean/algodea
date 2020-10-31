@@ -7,6 +7,7 @@ import com.bloxbean.algodea.idea.pkg.exception.PackageJsonException;
 import com.bloxbean.algodea.idea.pkg.model.AlgoPackageJson;
 import com.bloxbean.algodea.idea.util.IdeaUtil;
 import com.intellij.notification.NotificationType;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.openapi.util.io.FileUtil;
@@ -20,6 +21,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ContractSettingsConfigurationPanel {
+    private final static Logger LOG = Logger.getInstance(ContractSettingsConfigurationPanel.class);
+
     private JTextField appProgTf;
     private JTextField clrProgTf;
     private TextFieldWithBrowseButton clearProgramTf;
@@ -84,8 +87,12 @@ public class ContractSettingsConfigurationPanel {
                     localIntsTf.setText(String.valueOf(statefulContract.getLocalInts()));
                 }
             } catch (PackageJsonException packageJsonException) {
-                packageJsonException.printStackTrace();
-                IdeaUtil.showNotification("Algo Package Json Error", "Unable to read algo-package.json file", NotificationType.ERROR, null);
+                if(LOG.isDebugEnabled()) {
+                    LOG.warn(packageJsonException);
+                }
+
+                IdeaUtil.showNotification("Algo Package Json Error", "Unable to read algo-package.json file : "
+                        + packageJsonException.getMessage(), NotificationType.ERROR, null);
                 return;
             }
         });
@@ -199,7 +206,9 @@ public class ContractSettingsConfigurationPanel {
                     return new ValidationInfo("A stateful contract with same name already exists", contractNameCB);
                 }
             } catch (PackageJsonException e) {
-                e.printStackTrace();
+                if(LOG.isDebugEnabled()) {
+                    LOG.warn(e);
+                }
                 return null;
             }
         }

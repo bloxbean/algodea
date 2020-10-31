@@ -82,7 +82,7 @@ public abstract class  BaseStatefulAppAction extends AlgoBaseAction {
 
         AlgoProjectState projectState = AlgoProjectState.getInstance(project);
         if(projectState == null) {
-            LOG.error("Project state is null");
+            LOG.warn("Project state is null");
             IdeaUtil.showNotificationWithAction(project, getTitle(),
                     "Project data could not be found. Something is wrong", NotificationType.ERROR, null);
             return;
@@ -136,7 +136,9 @@ public abstract class  BaseStatefulAppAction extends AlgoBaseAction {
                             IdeaUtil.showNotification(project, getTitle(), String.format("%s failed", getApplicationTxnCommand()), NotificationType.ERROR, null);
                         }
                     } catch (Exception exception) {
-                        exception.printStackTrace();
+                        if(LOG.isDebugEnabled()) {
+                            LOG.warn(exception);
+                        }
                         console.showErrorMessage(String.format("%s failed", getApplicationTxnCommand()));
                         IdeaUtil.showNotification(project, getTitle(), String.format("%s failed", getApplicationTxnCommand()), NotificationType.ERROR, null);
                     }
@@ -145,10 +147,11 @@ public abstract class  BaseStatefulAppAction extends AlgoBaseAction {
 
             ProgressManager.getInstance().runProcessWithProgressAsynchronously(task, new BackgroundableProcessIndicator(task));
         } catch (DeploymentTargetNotConfigured deploymentTargetNotConfigured) {
-            deploymentTargetNotConfigured.printStackTrace();
             warnDeploymentTargetNotConfigured(project, getTitle());
         } catch (Exception ex) {
-            LOG.error(ex);
+            if(LOG.isDebugEnabled()) {
+                LOG.warn(ex);
+            }
             console.showErrorMessage(ex.getMessage());
             IdeaUtil.showNotification(project, getTitle(), String.format("%s failed, reason: %s", getApplicationTxnCommand(), ex.getMessage()), NotificationType.ERROR, null);
         }

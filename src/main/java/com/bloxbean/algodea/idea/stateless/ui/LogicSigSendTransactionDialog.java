@@ -13,6 +13,7 @@ import com.bloxbean.algodea.idea.transaction.ui.TransactionDtlsEntryForm;
 import com.bloxbean.algodea.idea.util.AlgoConversionUtil;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
@@ -20,6 +21,7 @@ import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.ui.components.JBRadioButton;
+import org.apache.commons.logging.Log;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -29,6 +31,8 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 
 public class LogicSigSendTransactionDialog extends DialogWrapper {
+    private static final Logger LOG = Logger.getInstance(LogicSigSendTransactionDialog.class);
+
     private JPanel mainPanel;
     private JTabbedPane tabbedPane1;
     private TextFieldWithBrowseButton senderLogicSigTextFieldWithBrowse;
@@ -156,7 +160,8 @@ public class LogicSigSendTransactionDialog extends DialogWrapper {
 //                    }
 
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    if(LOG.isDebugEnabled())
+                        LOG.warn(e);
                 }
             }
         }, ModalityState.any());
@@ -202,7 +207,6 @@ public class LogicSigSendTransactionDialog extends DialogWrapper {
 
             return new Tuple(amtInAlgo, microAlgo);
         } catch (Exception e) {
-            e.printStackTrace();
             return null;
         }
     }

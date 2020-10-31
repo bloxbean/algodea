@@ -11,6 +11,7 @@ import com.intellij.ide.fileTemplates.FileTemplateManager;
 import com.intellij.notification.NotificationType;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.WriteCommandAction;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ModifiableModelsProvider;
@@ -23,6 +24,8 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 
 public class AlgoModuleConfigurable extends FrameworkSupportInModuleConfigurable {
+    private final static Logger LOG = Logger.getInstance(AlgoModuleConfigurable.class);
+
     private StatefulContractPanel statefulContractPanel = new StatefulContractPanel();
 
     @Nullable
@@ -78,7 +81,9 @@ public class AlgoModuleConfigurable extends FrameworkSupportInModuleConfigurable
                                 createFile(approvalProgramName, srcRoot, "_Algo.ApprovalProgram");
                                 createFile(clearStateProgramName, srcRoot, "_Algo.ClearStateProgram");
                             } catch (Exception e) {
-                                e.printStackTrace();
+                                if(LOG.isDebugEnabled()) {
+                                    LOG.error(e);
+                                }
                             }
                         }
                     });

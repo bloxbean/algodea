@@ -5,6 +5,7 @@ import com.bloxbean.algodea.idea.pkg.model.AlgoPackageJson;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -16,7 +17,7 @@ import java.io.IOException;
 import static com.bloxbean.algodea.idea.module.AlgoModuleConstant.ALGO_PACKAGE_JSON;
 
 public class AlgoPkgJsonService {
-   // private final static Logger LOG = Logger.getInstance(AlgoPackageJson.class);
+    private final static Logger LOG = Logger.getInstance(AlgoPkgJsonService.class);
 
     private static ObjectMapper mapper;
     private Project project;
@@ -142,7 +143,8 @@ public class AlgoPkgJsonService {
             //Refresh
             VfsUtil.findFileByIoFile(file, false).refresh(true, false);
         } catch (Exception e) {
-            e.printStackTrace();
+            if(LOG.isDebugEnabled())
+                LOG.warn(e);
         }
     }
 

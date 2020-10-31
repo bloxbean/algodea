@@ -179,7 +179,9 @@ public class AlgoConsole {
                 }
 
                 if(view == null) {
-                    LOG.error("Console view could not be created.");
+                    if(LOG.isDebugEnabled()) {
+                        LOG.error("Console view could not be created.");
+                    }
                     return;
                 }
 

@@ -78,11 +78,15 @@ public class CreateMultisigAccountAction extends AnAction {
                             "Multisig account created successfully", NotificationType.INFORMATION, IdeaUtil.MULTISIG_ACCOUNT_LIST_ACTION);
 
                 } catch (AccountException accountException) {
-                    LOG.error(accountException);
+                    if(LOG.isDebugEnabled()) {
+                        LOG.warn(accountException);
+                    }
                     IdeaUtil.showNotification(project, "Multisig Account Create",
                             "Multisig account creation failed", NotificationType.WARNING, null);
                 } catch (InvalidMnemonicException invalidMnemonicException) {
-                    LOG.error(invalidMnemonicException);
+                    if(LOG.isDebugEnabled()) {
+                        LOG.warn(invalidMnemonicException);
+                    }
                     IdeaUtil.showNotification(project, "Multisig Account Create",
                             "Multisig account creation failed", NotificationType.WARNING, null);
                 }

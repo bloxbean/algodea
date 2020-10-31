@@ -109,7 +109,10 @@ public class TransferAction extends AlgoBaseAction {
                             IdeaUtil.showNotification(project, getTitle(), String.format("%s failed", getTxnCommand()), NotificationType.ERROR, null);
                         }
                     } catch (Exception exception) {
-                        exception.printStackTrace();
+                        if(LOG.isDebugEnabled()) {
+                            LOG.warn(exception);
+                        }
+
                         console.showErrorMessage(String.format("%s failed", getTxnCommand()));
                         IdeaUtil.showNotification(project, getTitle(), String.format("%s failed, Reason: %s", getTxnCommand(), exception.getMessage()), NotificationType.ERROR, null);
                     }
@@ -120,10 +123,12 @@ public class TransferAction extends AlgoBaseAction {
 
 
         } catch (DeploymentTargetNotConfigured deploymentTargetNotConfigured) {
-            deploymentTargetNotConfigured.printStackTrace();
+            //deploymentTargetNotConfigured.printStackTrace();
             warnDeploymentTargetNotConfigured(project, getTitle());
         } catch (Exception ex) {
-            LOG.error(ex);
+            if(LOG.isDebugEnabled()) {
+                LOG.error(ex);
+            }
             console.showErrorMessage(ex.getMessage());
             IdeaUtil.showNotification(project, getTitle(), String.format("Transfer transaction failed, reason: %s", ex.getMessage()), NotificationType.ERROR, null);
         }

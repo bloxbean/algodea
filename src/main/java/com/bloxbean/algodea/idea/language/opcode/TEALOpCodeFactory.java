@@ -76,7 +76,7 @@ public class TEALOpCodeFactory {
 
             ops = opCodeMap.keySet();
         } catch (Exception e) {
-            LOG.error("Error parsing opcodes.json at " + OPCODE_FILE, e);
+            LOG.warn("Error parsing opcodes.json at " + OPCODE_FILE, e);
             opCodeMap = new HashMap<>();
         }
     }
@@ -103,7 +103,7 @@ public class TEALOpCodeFactory {
                         }
                     });
         } catch (Exception e) {
-            LOG.error("Error parsing fields.json at " + FIELDS_FILE, e);
+            LOG.warn("Error parsing fields.json at " + FIELDS_FILE, e);
             fields = new HashMap<>();
         }
     }

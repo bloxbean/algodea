@@ -85,7 +85,7 @@ public abstract class BaseAssetOperationAction extends AlgoBaseAction {
                             IdeaUtil.showNotification(project, getTitle(), String.format("%s failed", getTxnCommand()), NotificationType.ERROR, null);
                         }
                     } catch (Exception exception) {
-                        exception.printStackTrace();
+                        //exception.printStackTrace();
                         console.showErrorMessage(String.format("%s failed", getTxnCommand()), exception);
                         IdeaUtil.showNotification(project, getTitle(), String.format("%s failed, Reason: %s", getTxnCommand(), exception.getMessage()), NotificationType.ERROR, null);
                     }
@@ -96,10 +96,11 @@ public abstract class BaseAssetOperationAction extends AlgoBaseAction {
 
 
         } catch (DeploymentTargetNotConfigured deploymentTargetNotConfigured) {
-            deploymentTargetNotConfigured.printStackTrace();
             warnDeploymentTargetNotConfigured(project, getTitle());
         } catch (Exception ex) {
-            LOG.error(ex);
+            if(LOG.isDebugEnabled()) {
+                LOG.warn(ex);
+            }
             console.showErrorMessage(ex.getMessage(), ex);
             IdeaUtil.showNotification(project, getTitle(), String.format("%s transaction failed, reason: %s", getTxnCommand(), ex.getMessage()), NotificationType.ERROR, null);
         }

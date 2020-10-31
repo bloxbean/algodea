@@ -51,7 +51,7 @@ public class TEALKeywordElement implements TEALElement {
                     .withIcon(AlgoIcons.OPCODE_ICON);
         } else  {
             if(LOG.isDebugEnabled() && keyword == null)
-                LOG.error("keyword cannot be null");
+                LOG.warn("keyword cannot be null");
 
             return LookupElementBuilder
                     .create(keyword)

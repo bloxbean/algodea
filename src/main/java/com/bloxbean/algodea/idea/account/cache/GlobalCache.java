@@ -110,10 +110,9 @@ public class GlobalCache {
             accountCache = objectMapper.readValue(content, AccountCache.class);
         } catch (Exception e) {
             accountCache = new AccountCache();
-            e.printStackTrace();
             log.warn("Could not read from account cache: " + e.getMessage());
             if(log.isDebugEnabled()) {
-                log.error("Could not read from account cache", e);
+                log.debug("Could not read from account cache", e);
             }
         }
         return accountCache;
@@ -129,7 +128,7 @@ public class GlobalCache {
             //e.printStackTrace();
             log.warn("Could not read from account cache: " + e.getMessage());
             if(log.isDebugEnabled()) {
-                log.error("Could not read from account cache", e);
+                log.debug("Could not read from account cache", e);
             }
         }
         return accountCache;
@@ -232,13 +231,15 @@ public class GlobalCache {
             props.store(output, null);
 
         } catch (Exception io) {
-            io.printStackTrace();
+            if(log.isDebugEnabled()) {
+                log.warn(io);
+            }
         } finally {
             if (output != null) {
                 try {
                     output.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    //e.printStackTrace();
                 }
             }
         }
@@ -257,14 +258,16 @@ public class GlobalCache {
             return properties;
 
         } catch (Exception io) {
-            io.printStackTrace();
+            if(log.isDebugEnabled()) {
+                log.warn(io);
+            }
             return new Properties();
         } finally {
             if (input != null) {
                 try {
                     input.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+//                    e.printStackTrace();
                 }
             }
 
