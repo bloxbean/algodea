@@ -93,27 +93,27 @@ public class RemoteNodeConfigDialog extends DialogWrapper{
     }
 
     public String getServerName() {
-        return serverName.getText();
+        return StringUtil.trim(serverName.getText());
     }
 
     public String getNodeApiUrl() {
-        return nodeApiEndpoint.getText();
+        return StringUtil.trim(nodeApiEndpoint.getText());
     }
 
     public String getApiKey() {
-        return apiKey.getText();
+        return StringUtil.trim(apiKey.getText());
     }
 
     public String getIndexerApiUrl() {
-        return indexerApiEndpoint.getText();
+        return StringUtil.trim(indexerApiEndpoint.getText());
     }
 
     public String getGenesisHash() {
-        return genesisHashTf.getText();
+        return StringUtil.trim(genesisHashTf.getText());
     }
 
     public String getGenesisId() {
-        return genesisIdTf.getText();
+        return StringUtil.trim(genesisIdTf.getText());
     }
 
     @Override
