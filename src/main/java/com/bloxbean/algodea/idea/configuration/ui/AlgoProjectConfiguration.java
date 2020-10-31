@@ -67,23 +67,22 @@ public class AlgoProjectConfiguration {
         AlgoProjectState.State state = algoProjectState.getState();
 
         //set compiler setting
-        if (AlgoProjectState.ConfigType.remote_node == state.getCompilerType()) {
-            algorandNodeRB.setSelected(true);
-
-            setSelectedNode(algorandNodeCB, state.getCompilerId());
-        } else {
+        if(AlgoProjectState.ConfigType.local_sdk == state.getCompilerType()){
             localAlgorandSDKRB.setSelected(true);
             setSelectedLocalSDK(localSDKCB, state.getCompilerId());
+        } else {
+            algorandNodeRB.setSelected(true);
+            setSelectedNode(algorandNodeCB, state.getCompilerId());
         }
 
         if (!StringUtil.isEmpty(state.getDeploymentServerId())) {
             setSelectedNode(deployNodeCB, state.getDeploymentServerId());
         }
 
-        if (AlgoProjectState.ConfigType.remote_node.equals(state.getCompilerType())) {
-            algorandNodeRB.setSelected(true);
-        } else {
+        if (AlgoProjectState.ConfigType.local_sdk.equals(state.getCompilerType())) {
             localAlgorandSDKRB.setSelected(true);
+        } else {
+            algorandNodeRB.setSelected(true);
         }
 
         enableDisableCompilationType();
