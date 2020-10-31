@@ -61,7 +61,7 @@ public class NewTEALFileAction extends CreateFromTemplateAction<PsiFile> {
         final ModuleType moduleType = module == null ? null : ModuleType.get(module);
         boolean isAlgorandModule = moduleType instanceof AlgorandModuleType;
 
-        if(!isAlgorandModule) { //For non algorand modules. Check if algo-package.json available.
+        if(!isAlgorandModule && module != null) { //For non algorand modules. Check if algo-package.json available.
             AlgoPkgJsonService pkgJsonService = AlgoPkgJsonService.getInstance(module.getProject());
             if (pkgJsonService != null)
                 isAlgorandModule = pkgJsonService.isAlgoProject();
