@@ -138,10 +138,14 @@ public class ListAccountDialog extends DialogWrapper {
             String accountName = Messages.showInputDialog(mainPanel, "Enter a name for the new account", "New Account", AllIcons.General.Information);
             if(!StringUtil.isEmpty(accountName))
                 accountName = accountName.trim();
+            else
+                return; //cancel
 
             try {
                 accountService.createNewAccount(accountName);
                 poulateAccounts();
+                Messages.showInfoMessage(project, String.format("New account '%s' has been added successfully. " +
+                        "\nIf you don't see the account, please close and re-open the account list dialog", accountName), "Account  Create");
             } catch (Exception exception) {
                 Messages.showErrorDialog(mainPanel, "Error adding new account");
                 return;
