@@ -4,6 +4,7 @@ import com.bloxbean.algodea.idea.configuration.model.AlgoLocalSDK;
 import com.bloxbean.algodea.idea.core.util.AlgoSdkUtil;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
+import com.intellij.openapi.util.SystemInfo;
 import com.twelvemonkeys.lang.StringUtil;
 
 import javax.swing.*;
@@ -32,6 +33,8 @@ public class LocalSDKPanel {
             homeTf.setText(algoLocalSDK.getHome());
             versionTf.setText(algoLocalSDK.getVersion());
         }
+
+        homeTf.setToolTipText("<html>Folder where the \'goal\' binary is available. \n Example: AlgorandNode folder or AlgorandNode/bin folder</html>");
     }
 
     public JPanel getMainPanel() {
@@ -66,19 +69,43 @@ public class LocalSDKPanel {
 
             homeTf.setText(file.getAbsolutePath());
 
-            String version = AlgoSdkUtil.getVersionString(homeTf.getText());
+            if(!new File(homeTf.getText() + File.separator + getGoalCommand()).exists()) {
+                versionTf.setText("");
+                printError("<html>\'goal\' was not found. Please make sure \'goal\' file is available under the selected folder.</html>");
+                return;
+            }
+
+            String version = null;
+            try {
+                version = AlgoSdkUtil.getVersionString(homeTf.getText());
+            } catch (Exception exception) {
+                versionTf.setText("");
+                printError(exception.getMessage());
+                return;
+            }
             if(StringUtil.isEmpty(version)) {
                 versionTf.setText("");
                 //Invalid version
-                //LOG.info("Invalid sdk path : " + homeTf.getText());
-                errorMsgLabel.setText("<html>Invalid Algorand home. Version could not be determined. " +
-                        "<br/> Make sure \'goal\' is available under $ALGORAND_HOME/bin</html>");
-                errorMsgLabel.setForeground(Color.red);
+                printError("<html>Invalid Algorand Binary folder. Version could not be determined. " +
+                        "<br/> Make sure \'goal\' is available under the selected folder</html>");
                 return;
             } else {
                 versionTf.setText(version);
             }
         });
+    }
+
+    private void printError(String msg) {
+        errorMsgLabel.setText(msg);
+        errorMsgLabel.setForeground(Color.red);
+    }
+
+    private String getGoalCommand() {
+        String goalCmd = "goal";
+        if(SystemInfo.isWindows)
+            goalCmd = "goal.exe";
+
+        return goalCmd;
     }
 
     public JTextField getVersionTf() {

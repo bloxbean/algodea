@@ -5,10 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.intellij.openapi.util.text.StringUtil;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class AlgoPackageJson {
@@ -38,6 +35,8 @@ public class AlgoPackageJson {
     }
 
     public List<StatefulContract> getStatefulContractList() {
+        if(statefulContractList == null)
+            statefulContractList = new ArrayList<>();
         return statefulContractList;
     }
 

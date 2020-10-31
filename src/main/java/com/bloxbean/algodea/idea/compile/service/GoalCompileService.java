@@ -11,6 +11,7 @@ import com.intellij.execution.process.ProcessEvent;
 import com.intellij.execution.process.ProcessListener;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Key;
+import com.intellij.openapi.util.SystemInfo;
 import com.intellij.openapi.util.io.FileUtil;
 import com.twelvemonkeys.lang.StringUtil;
 import org.jetbrains.annotations.NotNull;
@@ -39,7 +40,7 @@ public class GoalCompileService extends BaseCompileService {
         }
 
         List<String> cmd = new ArrayList<>();
-        cmd.add(localSDK.getHome() + File.separator + "bin" + File.separator + "goal");
+        cmd.add(localSDK.getHome() + File.separator + getGoalCommand());
         cmd.add("clerk");
         cmd.add("compile");
 
@@ -89,5 +90,13 @@ public class GoalCompileService extends BaseCompileService {
 
 
         return;
+    }
+
+    private String getGoalCommand() {
+        String goalCmd = "goal";
+        if(SystemInfo.isWindows)
+            goalCmd = "goal.exe";
+
+        return goalCmd;
     }
 }
