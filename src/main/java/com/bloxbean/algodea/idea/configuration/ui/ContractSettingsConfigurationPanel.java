@@ -183,6 +183,9 @@ public class ContractSettingsConfigurationPanel {
     public ValidationInfo doValidate() {
         if (algoPkgJsonService == null) return null;
 
+        if(contractNameCB.getModel().getSize() == 0) //No validation required.
+            return null;
+
         if(StringUtil.isEmpty(getContractName())) {
             return new ValidationInfo("Contract Name cannot be empty", contractNameCB);
         }
