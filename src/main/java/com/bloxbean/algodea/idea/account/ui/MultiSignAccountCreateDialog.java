@@ -8,6 +8,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.ValidationInfo;
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.ui.components.JBList;
 import com.intellij.ui.components.JBScrollPane;
 import org.jetbrains.annotations.Nullable;
@@ -25,7 +26,6 @@ public class MultiSignAccountCreateDialog extends DialogWrapper {
     private JTextField thresholdTf;
     private JComboBox accountsCB;
     private JButton addOtherAccBtn;
-    private JButton addAccountBtn;
     private JTextField otherAccountTf;
     private JButton removeAccBtn;
     private JScrollPane jscrollpane;
@@ -51,12 +51,6 @@ public class MultiSignAccountCreateDialog extends DialogWrapper {
             if(selectedIndex != -1) {
                 selectedAccountListModel.remove(selectedIndex);
             }
-        });
-
-        addAccountBtn.addActionListener(e -> {
-            clearMessage();
-
-            addSelectedAccountToList();
         });
 
         addOtherAccBtn.addActionListener(e -> {
@@ -93,6 +87,9 @@ public class MultiSignAccountCreateDialog extends DialogWrapper {
         ApplicationManager.getApplication().invokeLater(() -> {
             try {
                 List<AlgoAccount> accounts = accountService.getAccounts();
+
+                accountsCB.addItem(new AlgoAccount()); //Empty account
+
                 accounts.forEach(acc -> accountsCB.addItem(acc));
                 messageLabel.setText("");
             } catch(Exception e) {
@@ -101,13 +98,14 @@ public class MultiSignAccountCreateDialog extends DialogWrapper {
 
             accountsCB.addActionListener(evt -> {
                 addSelectedAccountToList();
+                accountsCB.setSelectedIndex(0);
             });
         }, ModalityState.stateForComponent(accountsCB));
     }
 
     private void addSelectedAccountToList() {
         AlgoAccount selectedAlgoAcc = (AlgoAccount)accountsCB.getSelectedItem();
-        if(selectedAlgoAcc == null) return;
+        if(selectedAlgoAcc == null || StringUtil.isEmpty(selectedAlgoAcc.getAddress())) return;
 
         if(!selectedAccountListModel.contains(selectedAlgoAcc))
             selectedAccountListModel.addElement(selectedAlgoAcc);
