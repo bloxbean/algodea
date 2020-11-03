@@ -2,7 +2,9 @@
 
 ![algoDEA](https://github.com/bloxbean/algodea/raw/master/src/main/resources/icons/algorand_intellij.png)
 
-algoDEA - Algorand Smart Contract Plugin for Intellij
+algoDEA - Algorand Plugin for Intellij
+
+![Document](https://algodea-docs.bloxbean.com)
 
 **Features**
   - Algorand Smart Contract Project type
