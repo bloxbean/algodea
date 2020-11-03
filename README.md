@@ -33,6 +33,13 @@ algoDEA - Algorand Plugin for Intellij
       
   - Transfer 
       - Algo, ASA
+      
+## Supported IntelliJ version (2020.2 and above)
+- IntelliJ IDEA Community
+
+- IntelliJ IDEA Ultimate
+
+- IntelliJ IDEA Educational      
 
 ## Installation
 - algoDEA plugin is available on IntelliJ Marketplace as "AlgoDEA Algorand Integration". You can directly install it from IntelliJ IDE.
