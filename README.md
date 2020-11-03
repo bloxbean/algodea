@@ -6,7 +6,7 @@ algoDEA - Algorand Plugin for Intellij
 
 [algoDEA Documents](https://algodea-docs.bloxbean.com)
 
-**Features**
+## Features
   - Algorand Smart Contract Project type
   - Code Completion, Syntax Highlighter and other editor level support for TEAL file
   - Create Stateless & Stateful Smart Contract
@@ -33,4 +33,21 @@ algoDEA - Algorand Plugin for Intellij
       
   - Transfer 
       - Algo, ASA
+
+## Installation
+- algoDEA plugin is available on IntelliJ Marketplace as "AlgoDEA Algorand Integration". You can directly install it from IntelliJ IDE.
+(https://plugins.jetbrains.com/plugin/15300-algodea-algorand-integration)
+
+- You can also manually download and install the plugin from the "releases" section of this project.
+(https://github.com/bloxbean/algodea/releases)
+
+
+## Documents
+
+* algoDEA IntelliJ IDEA Plugin documents can be found at  (https://algodea-docs.bloxbean.com)
+
+## Build From Source
+* Clone the repository
+* $> ./gradlew clean build
+* $> Get the plugin zip file from build/distributions/algodea-{version}.zip 
 
