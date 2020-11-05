@@ -1,6 +1,6 @@
 package com.bloxbean.algodea.idea.transaction.ui;
 
-import com.bloxbean.algodea.idea.nodeint.service.LogListener;
+import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.ValidationInfo;
@@ -14,7 +14,7 @@ public class TransferDialog extends DialogWrapper {
     private TransactionDtlsEntryForm transactionDtlsEntryForm;
     private JTabbedPane tabbedPane1;
 
-    public TransferDialog(@Nullable Project project) {
+    public TransferDialog(@Nullable Project project) throws DeploymentTargetNotConfigured {
         super(project, true);
         transferTxnForm.initializeData(project);
         transactionDtlsEntryForm.initializeData(project);

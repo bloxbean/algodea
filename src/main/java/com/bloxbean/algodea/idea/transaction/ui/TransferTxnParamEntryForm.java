@@ -6,25 +6,19 @@ import com.bloxbean.algodea.idea.account.model.AlgoAccount;
 import com.bloxbean.algodea.idea.account.model.AlgoMultisigAccount;
 import com.bloxbean.algodea.idea.account.service.AccountChooser;
 import com.bloxbean.algodea.idea.common.Tuple;
-import com.bloxbean.algodea.idea.configuration.action.ConfigurationAction;
 import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
 import com.bloxbean.algodea.idea.nodeint.model.AccountAsset;
 import com.bloxbean.algodea.idea.nodeint.service.AlgoAccountService;
 import com.bloxbean.algodea.idea.nodeint.service.LogListenerAdapter;
 import com.bloxbean.algodea.idea.toolwindow.AlgoConsole;
 import com.bloxbean.algodea.idea.util.AlgoConversionUtil;
-import com.bloxbean.algodea.idea.util.IdeaUtil;
-import com.intellij.notification.NotificationType;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
-import com.intellij.openapi.progress.Task;
-import com.intellij.openapi.progress.impl.BackgroundableProcessIndicator;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.openapi.util.text.StringUtil;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -66,14 +60,12 @@ public class TransferTxnParamEntryForm {
         enableOtherAssetPanel(false);
     }
 
-    public void initializeData(Project project) {
+    public void initializeData(Project project) throws DeploymentTargetNotConfigured {
         console = AlgoConsole.getConsole(project);
         try {
             algoAccountService = new AlgoAccountService(project, new LogListenerAdapter(console));
         } catch (DeploymentTargetNotConfigured deploymentTargetNotConfigured) {
-            IdeaUtil.showNotification(project, "Transfer", "Algorand Node for deployment node is not configured. Click here to configure.",
-                    NotificationType.ERROR, ConfigurationAction.ACTION_ID);
-            return;
+            throw deploymentTargetNotConfigured;
         }
 
         fromAccChooserBtn.addActionListener(e -> {
