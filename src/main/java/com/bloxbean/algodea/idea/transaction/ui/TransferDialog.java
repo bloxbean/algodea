@@ -1,14 +1,14 @@
 package com.bloxbean.algodea.idea.transaction.ui;
 
+import com.bloxbean.algodea.idea.core.action.ui.TxnDialogWrapper;
 import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.ValidationInfo;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 
-public class TransferDialog extends DialogWrapper {
+public class TransferDialog extends TxnDialogWrapper {
     private JPanel mainPanel;
     private TransferTxnParamEntryForm transferTxnForm;
     private TransactionDtlsEntryForm transactionDtlsEntryForm;
@@ -30,29 +30,12 @@ public class TransferDialog extends DialogWrapper {
         return transactionDtlsEntryForm;
     }
 
-//    @Override
-//    protected @NotNull List<ValidationInfo> doValidateAll() {
-//        ValidationInfo transferValidateInfo = transferTxnForm.doValidate();
-//        ValidationInfo txnDtlValidateInfo = transactionDtlsEntryForm.doValidate();
-//
-//        List<ValidationInfo> validationInfos = null;
-//
-//        if(transferValidateInfo != null) {
-//            validationInfos = new ArrayList<>();
-//            validationInfos.add(transferValidateInfo);
-//        }
-//
-//        if(txnDtlValidateInfo != null) {
-//
-//        }
-//    }
-
     public boolean isAlgoTransfer() {
         return transferTxnForm.isAlgoTransfer();
     }
 
     @Override
-    protected @Nullable ValidationInfo doValidate() {
+    protected @Nullable ValidationInfo doTransactionInputValidation() {
         ValidationInfo validatedInfo = transferTxnForm.doValidate();
         if( validatedInfo == null)
             return transactionDtlsEntryForm.doValidate();

@@ -11,6 +11,7 @@ import com.bloxbean.algodea.idea.core.action.AlgoBaseAction;
 import com.bloxbean.algodea.idea.core.action.util.AlgoContractModuleHelper;
 import com.bloxbean.algodea.idea.core.service.AlgoCacheService;
 import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
+import com.bloxbean.algodea.idea.nodeint.model.Result;
 import com.bloxbean.algodea.idea.nodeint.model.TxnDetailsParameters;
 import com.bloxbean.algodea.idea.nodeint.service.LogListenerAdapter;
 import com.bloxbean.algodea.idea.nodeint.service.StatefulContractService;
@@ -216,15 +217,15 @@ public class UpdateStatefulAppAction extends AlgoBaseAction {
                 public void run(@NotNull ProgressIndicator indicator) {
                     console.showInfoMessage("Updating stateful smart contract ...");
                     Long appId = appTxnBaseForm.getAppId();
-                    boolean success = false;
+                    Result result = null;
                     try {
-                       success = sfService.updateApp(appId, account, appProgText, clearProgText, txnDetailsParameters);
+                       result = sfService.updateApp(appId, account, appProgText, clearProgText, txnDetailsParameters);
                     } catch (Exception exception) {
                         if(LOG.isDebugEnabled()) {
                             LOG.warn(exception);
                         }
                     }
-                    if(success) {
+                    if(result != null && result.isSuccessful()) {
                         LOG.info(appId + "");
 
                         String genesisHash = sfService.getNetworkGenesisHash();

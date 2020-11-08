@@ -6,6 +6,7 @@ import com.bloxbean.algodea.idea.account.model.AlgoAccount;
 import com.bloxbean.algodea.idea.account.model.AlgoMultisigAccount;
 import com.bloxbean.algodea.idea.account.service.AccountChooser;
 import com.bloxbean.algodea.idea.common.Tuple;
+import com.bloxbean.algodea.idea.core.action.ui.TxnDialogWrapper;
 import com.bloxbean.algodea.idea.core.action.util.AlgoContractModuleHelper;
 import com.bloxbean.algodea.idea.nodeint.model.LogicSigType;
 import com.bloxbean.algodea.idea.nodeint.util.AlgoLogicsigUtil;
@@ -30,7 +31,7 @@ import java.io.File;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-public class LogicSigSendTransactionDialog extends DialogWrapper {
+public class LogicSigSendTransactionDialog extends TxnDialogWrapper {
     private static final Logger LOG = Logger.getInstance(LogicSigSendTransactionDialog.class);
 
     private JPanel mainPanel;
@@ -220,7 +221,7 @@ public class LogicSigSendTransactionDialog extends DialogWrapper {
     }
 
     @Override
-    protected @Nullable ValidationInfo doValidate() {
+    protected @Nullable ValidationInfo doTransactionInputValidation() {
         if(getReceiverAddress() == null) {
             return new ValidationInfo("Choose or enter a valid account", receiverAccountTf);
         }

@@ -2,22 +2,24 @@ package com.bloxbean.algodea.idea.nodeint.service;
 
 import com.algorand.algosdk.account.Account;
 import com.algorand.algosdk.builder.transaction.*;
+import com.algorand.algosdk.transaction.SignedTransaction;
 import com.algorand.algosdk.transaction.Transaction;
-import com.algorand.algosdk.v2.client.common.AlgodClient;
 import com.algorand.algosdk.v2.client.common.Response;
-import com.algorand.algosdk.v2.client.indexer.LookupAssetByID;
 import com.algorand.algosdk.v2.client.model.Asset;
 import com.algorand.algosdk.v2.client.model.AssetResponse;
 import com.algorand.algosdk.v2.client.model.PendingTransactionResponse;
+import com.bloxbean.algodea.idea.nodeint.common.RequestMode;
 import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
 import com.bloxbean.algodea.idea.nodeint.model.AccountAsset;
 import com.bloxbean.algodea.idea.nodeint.model.AssetTxnParameters;
+import com.bloxbean.algodea.idea.nodeint.model.Result;
 import com.bloxbean.algodea.idea.nodeint.model.TxnDetailsParameters;
 import com.bloxbean.algodea.idea.nodeint.util.NetworkHelper;
 import com.bloxbean.algodea.idea.util.AlgoConversionUtil;
 import com.bloxbean.algodea.idea.util.JsonUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
+import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
 
@@ -27,7 +29,7 @@ public class AssetTransactionService extends AlgoBaseService {
         super(project, logListener);
     }
 
-    public Long createAsset(Account sender, AssetTxnParameters assetTxnParameters, TxnDetailsParameters txnDetailsParameters) throws Exception {
+    public Result<Long> createAsset(Account sender, AssetTxnParameters assetTxnParameters, TxnDetailsParameters txnDetailsParameters, RequestMode requestMode) throws Exception {
         AssetCreateTransactionBuilder builder = Transaction.AssetCreateTransactionBuilder();
 
         populateAssetCreateTransaction(builder, assetTxnParameters);
@@ -40,23 +42,33 @@ public class AssetTransactionService extends AlgoBaseService {
 
         Transaction txn = builder.build();
 
-        PendingTransactionResponse transactionResponse = postTransaction((transaction -> {
+        SignedTransaction signTxn = signTransaction((transaction -> {
             return sender.signTransaction(transaction);
         }), txn);
 
-        if(transactionResponse != null) {
-            if(NetworkHelper.getInstance().getExplorerBaseUrl(getNetworkGenesisHash()) != null) {
-                logListener.info("Check asset details here : "
-                        + NetworkHelper.getInstance().getAssetUrl(getNetworkGenesisHash(), String.valueOf(transactionResponse.assetIndex)));
-            }
-        }
+        if (requestMode == null || requestMode.equals(RequestMode.TRANSACTION)) {
+            PendingTransactionResponse transactionResponse = postTransaction(signTxn);
 
-        if(transactionResponse == null) return null;
-        else
-            return transactionResponse.assetIndex;
+            if (transactionResponse != null) {
+                if (NetworkHelper.getInstance().getExplorerBaseUrl(getNetworkGenesisHash()) != null) {
+                    logListener.info("Check asset details here : "
+                            + NetworkHelper.getInstance().getAssetUrl(getNetworkGenesisHash(), String.valueOf(transactionResponse.assetIndex)));
+                }
+            }
+
+            if (transactionResponse == null) return Result.error();
+            else
+                return Result.success(JsonUtil.getPrettyJson(transactionResponse)).withValue(transactionResponse.assetIndex);
+        } else if (requestMode.equals(RequestMode.EXPORT_SIGNED)) {
+            return Result.success(JsonUtil.getPrettyJson(signTxn));
+        } else if(requestMode.equals(RequestMode.EXPORT_UNSIGNED)) {
+            return Result.success(JsonUtil.getPrettyJson(txn));
+        } else {
+            return Result.error("Invalid request mode : " + requestMode);
+        }
     }
 
-    public boolean modifyAsset(Account sender, AssetTxnParameters finalAssetTxnPrameters, TxnDetailsParameters txnDetailsParameters) throws Exception {
+    public Result modifyAsset(Account sender, AssetTxnParameters finalAssetTxnPrameters, TxnDetailsParameters txnDetailsParameters, RequestMode requestMode) throws Exception {
         AssetConfigureTransactionBuilder builder = Transaction.AssetConfigureTransactionBuilder();
 
         builder.strictEmptyAddressChecking(false);
@@ -70,31 +82,22 @@ public class AssetTransactionService extends AlgoBaseService {
 
         if (builder == null) {
             logListener.error("Transaction could not be built");
-            return false;
+            return Result.error();
         }
 
         Transaction txn = builder.build();
 
-        PendingTransactionResponse transactionResponse = postTransaction((transaction -> {
+        SignedTransaction signTxn = signTransaction((transaction -> {
             return sender.signTransaction(transaction);
         }), txn);
 
-        if(transactionResponse != null) {
-            if(NetworkHelper.getInstance().getExplorerBaseUrl(getNetworkGenesisHash()) != null) {
-                logListener.info("Check asset details here : "
-                        + NetworkHelper.getInstance().getAssetUrl(getNetworkGenesisHash(), String.valueOf(finalAssetTxnPrameters.assetId)));
-            }
-        }
-
-        if(transactionResponse == null) return false;
-        else
-            return true;
+        return processAssetTransaction(finalAssetTxnPrameters, requestMode, txn, signTxn);
     }
 
-    public boolean optInAsset(Account sender, AssetTxnParameters finalAssetTxnPrameters, TxnDetailsParameters txnDetailsParameters) throws Exception {
+    public Result optInAsset(Account sender, AssetTxnParameters finalAssetTxnPrameters, TxnDetailsParameters txnDetailsParameters, RequestMode requestMode) throws Exception {
         if(sender == null) {
             logListener.error("Sender cannot be null");
-            return false;
+            return Result.error();
         }
 
         AssetAcceptTransactionBuilder builder = Transaction.AssetAcceptTransactionBuilder();
@@ -106,31 +109,22 @@ public class AssetTransactionService extends AlgoBaseService {
 
         if (builder == null) {
             logListener.error("Transaction could not be built");
-            return false;
+            return Result.error();
         }
 
         Transaction txn = builder.build();
 
-        PendingTransactionResponse transactionResponse = postTransaction((transaction -> {
+        SignedTransaction signTxn = signTransaction((transaction -> {
             return sender.signTransaction(transaction);
         }), txn);
 
-        if(transactionResponse != null) {
-            if(NetworkHelper.getInstance().getExplorerBaseUrl(getNetworkGenesisHash()) != null) {
-                logListener.info("Check asset details here : "
-                        + NetworkHelper.getInstance().getAssetUrl(getNetworkGenesisHash(), String.valueOf(finalAssetTxnPrameters.assetId)));
-            }
-        }
-
-        if(transactionResponse == null) return false;
-        else
-            return true;
+        return processAssetTransaction(finalAssetTxnPrameters, requestMode, txn, signTxn);
     }
 
-    public boolean freezeAsset(Account sender, AssetTxnParameters finalAssetTxnPrameters, TxnDetailsParameters txnDetailsParameters) throws Exception {
+    public Result freezeAsset(Account sender, AssetTxnParameters finalAssetTxnPrameters, TxnDetailsParameters txnDetailsParameters, RequestMode requestMode) throws Exception {
         if(sender == null) {
             logListener.error("Sender cannot be null");
-            return false;
+            return Result.error();
         }
 
         AssetFreezeTransactionBuilder builder = Transaction.AssetFreezeTransactionBuilder();
@@ -143,31 +137,22 @@ public class AssetTransactionService extends AlgoBaseService {
 
         if (builder == null) {
             logListener.error("Transaction could not be built");
-            return false;
+            return Result.error();
         }
 
         Transaction txn = builder.build();
 
-        PendingTransactionResponse transactionResponse = postTransaction((transaction -> {
+        SignedTransaction signTxn = signTransaction((transaction -> {
             return sender.signTransaction(transaction);
         }), txn);
 
-        if(transactionResponse != null) {
-            if(NetworkHelper.getInstance().getExplorerBaseUrl(getNetworkGenesisHash()) != null) {
-                logListener.info("Check asset details here : "
-                        + NetworkHelper.getInstance().getAssetUrl(getNetworkGenesisHash(), String.valueOf(finalAssetTxnPrameters.assetId)));
-            }
-        }
-
-        if(transactionResponse == null) return false;
-        else
-            return true;
+        return processAssetTransaction(finalAssetTxnPrameters, requestMode, txn, signTxn);
     }
 
-    public boolean unfreezeAsset(Account sender, AssetTxnParameters finalAssetTxnPrameters, TxnDetailsParameters txnDetailsParameters) throws Exception {
+    public Result unfreezeAsset(Account sender, AssetTxnParameters finalAssetTxnPrameters, TxnDetailsParameters txnDetailsParameters, RequestMode requestMode) throws Exception {
         if(sender == null) {
             logListener.error("Sender cannot be null");
-            return false;
+            return Result.error();
         }
 
         AssetFreezeTransactionBuilder builder = Transaction.AssetFreezeTransactionBuilder();
@@ -180,31 +165,22 @@ public class AssetTransactionService extends AlgoBaseService {
 
         if (builder == null) {
             logListener.error("Transaction could not be built");
-            return false;
+            return Result.error();
         }
 
         Transaction txn = builder.build();
 
-        PendingTransactionResponse transactionResponse = postTransaction((transaction -> {
+        SignedTransaction signTxn = signTransaction((transaction -> {
             return sender.signTransaction(transaction);
         }), txn);
 
-        if(transactionResponse != null) {
-            if(NetworkHelper.getInstance().getExplorerBaseUrl(getNetworkGenesisHash()) != null) {
-                logListener.info("Check asset details here : "
-                        + NetworkHelper.getInstance().getAssetUrl(getNetworkGenesisHash(), String.valueOf(finalAssetTxnPrameters.assetId)));
-            }
-        }
-
-        if(transactionResponse == null) return false;
-        else
-            return true;
+        return processAssetTransaction(finalAssetTxnPrameters, requestMode, txn, signTxn);
     }
 
-    public boolean revokeAsset(Account sender, AssetTxnParameters finalAssetTxnPrameters, TxnDetailsParameters txnDetailsParameters) throws Exception {
+    public Result revokeAsset(Account sender, AssetTxnParameters finalAssetTxnPrameters, TxnDetailsParameters txnDetailsParameters, RequestMode requestMode) throws Exception {
         if(sender == null) {
             logListener.error("Sender cannot be null");
-            return false;
+            return Result.error();
         }
 
         AssetClawbackTransactionBuilder builder = Transaction.AssetClawbackTransactionBuilder();
@@ -218,31 +194,22 @@ public class AssetTransactionService extends AlgoBaseService {
 
         if (builder == null) {
             logListener.error("Transaction could not be built");
-            return false;
+            return Result.error();
         }
 
         Transaction txn = builder.build();
 
-        PendingTransactionResponse transactionResponse = postTransaction((transaction -> {
+        SignedTransaction signTxn = signTransaction((transaction -> {
             return sender.signTransaction(transaction);
         }), txn);
 
-        if(transactionResponse != null) {
-            if(NetworkHelper.getInstance().getExplorerBaseUrl(getNetworkGenesisHash()) != null) {
-                logListener.info("Check asset details here : "
-                        + NetworkHelper.getInstance().getAssetUrl(getNetworkGenesisHash(), String.valueOf(finalAssetTxnPrameters.assetId)));
-            }
-        }
-
-        if(transactionResponse == null) return false;
-        else
-            return true;
+        return processAssetTransaction(finalAssetTxnPrameters, requestMode, txn, signTxn);
     }
 
-    public boolean destroyAsset(Account sender, AssetTxnParameters finalAssetTxnPrameters, TxnDetailsParameters txnDetailsParameters) throws Exception {
+    public Result destroyAsset(Account sender, AssetTxnParameters finalAssetTxnPrameters, TxnDetailsParameters txnDetailsParameters, RequestMode requestMode) throws Exception {
         if(sender == null) {
             logListener.error("Sender cannot be null");
-            return false;
+            return Result.error();
         }
 
         AssetDestroyTransactionBuilder builder = Transaction.AssetDestroyTransactionBuilder();
@@ -253,29 +220,28 @@ public class AssetTransactionService extends AlgoBaseService {
 
         if (builder == null) {
             logListener.error("Transaction could not be built");
-            return false;
+            return Result.error();
         }
 
         Transaction txn = builder.build();
 
-        PendingTransactionResponse transactionResponse = postTransaction((transaction -> {
+        SignedTransaction signTxn = signTransaction((transaction -> {
             return sender.signTransaction(transaction);
         }), txn);
 
-        if(transactionResponse == null) return false;
-        else
-            return true;
+        return processAssetTransaction(finalAssetTxnPrameters, requestMode, txn, signTxn);
     }
 
-    public boolean assetTransfer(Account sender, String receiver, AccountAsset asset, BigInteger amount, TxnDetailsParameters txnDetailsParameters) throws Exception {
+    public Result assetTransfer(Account sender, String receiver, AccountAsset asset, BigInteger amount,
+                                TxnDetailsParameters txnDetailsParameters, RequestMode requestMode) throws Exception {
         if(sender == null) {
             logListener.error("Sender cannot be null");
-            return false;
+            return Result.error();
         }
 
         if(StringUtil.isEmpty(receiver)) {
             logListener.error("Receiver cannot be null");
-            return false;
+            return Result.error();
         }
 
         try {
@@ -287,7 +253,6 @@ public class AssetTransactionService extends AlgoBaseService {
 
         }
 
-
         AssetTransferTransactionBuilder builder = Transaction.AssetTransferTransactionBuilder();
         builder  = (AssetTransferTransactionBuilder) populateBaseTransactionDetails(builder, sender.getAddress(), txnDetailsParameters);
 
@@ -298,17 +263,27 @@ public class AssetTransactionService extends AlgoBaseService {
 
         if (builder == null) {
             logListener.error("Transaction could not be built");
-            return false;
+            return Result.error();
         }
 
         Transaction txn = builder.build();
 
         if(txn == null) {
             logListener.error("Transaction could not be built");
-            return false;
+            return Result.error();
         }
 
-        return postApplicationTransaction(sender, txn);
+        SignedTransaction signedTransaction = signTransaction(sender, txn);
+
+        if (requestMode == null || requestMode.equals(RequestMode.TRANSACTION)) {
+            return postApplicationTransaction(sender, signedTransaction);
+        } else if (requestMode.equals(RequestMode.EXPORT_SIGNED)) {
+            return Result.success(JsonUtil.getPrettyJson(signedTransaction));
+        } else if(requestMode.equals(RequestMode.EXPORT_UNSIGNED)) {
+            return Result.success(JsonUtil.getPrettyJson(txn));
+        } else {
+            return Result.error("Invalid request mode : " + requestMode);
+        }
     }
 
     public Asset getAsset(Long assetId) throws Exception {
@@ -346,6 +321,30 @@ public class AssetTransactionService extends AlgoBaseService {
         }
 
         return asset;
+    }
+
+    @NotNull
+    private Result processAssetTransaction(AssetTxnParameters finalAssetTxnPrameters, RequestMode requestMode, Transaction txn, SignedTransaction signTxn) throws Exception {
+        if (requestMode == null || requestMode.equals(RequestMode.TRANSACTION)) {
+            PendingTransactionResponse transactionResponse = postTransaction(signTxn);
+
+            if(transactionResponse != null) {
+                if(NetworkHelper.getInstance().getExplorerBaseUrl(getNetworkGenesisHash()) != null) {
+                    logListener.info("Check asset details here : "
+                            + NetworkHelper.getInstance().getAssetUrl(getNetworkGenesisHash(), String.valueOf(finalAssetTxnPrameters.assetId)));
+                }
+            }
+
+            if(transactionResponse == null) return Result.error();
+            else
+                return Result.success(transactionResponse.toString());
+        } else if (requestMode.equals(RequestMode.EXPORT_SIGNED)) {
+            return Result.success(JsonUtil.getPrettyJson(signTxn));
+        } else if(requestMode.equals(RequestMode.EXPORT_UNSIGNED)) {
+            return Result.success(JsonUtil.getPrettyJson(txn));
+        } else {
+            return Result.error("Invalid request mode : " + requestMode);
+        }
     }
 
     private void populateAssetCreateTransaction(AssetCreateTransactionBuilder builder, AssetTxnParameters assetTxnParameters) {

@@ -46,6 +46,7 @@ public class AlgoContractModuleHelper {
     public static final String TEAL_BUILD_FOLDER = "toks";
     public static final String GENERATED_SRC = "generated-src";
     private static final String LSIG_BUILD_FOLDER = "lsigs";
+    private static final String TXN_OUTPUT_FOLDER = "txns";
 
     public static String getBuildFolder(Project project) {
         String basePath = project.getBasePath();
@@ -115,6 +116,30 @@ public class AlgoContractModuleHelper {
                 LOG.error(io);
             }
             console.showErrorMessage("Unable to create out folder " + io.getMessage());
+        }
+
+        return moduleOutFolder;
+    }
+
+    public static VirtualFile getTxnOutputFolder(Module module) throws Exception{
+        VirtualFile moduleOutFolder = null;
+        VirtualFile moduleRoot = module.getModuleFile().getParent();
+
+        try {
+            File moduleOutFolderFile = new File(
+                    VfsUtil.virtualToIoFile(moduleRoot).getAbsolutePath() + File.separator
+                            + BUILD_FOLDER + File.separator + TXN_OUTPUT_FOLDER);// + File.separator + module.getName());
+
+            boolean created = FileUtil.createDirectory(moduleOutFolderFile);
+
+            moduleOutFolder = VfsUtil.findFileByIoFile(moduleOutFolderFile, true);
+
+        } catch (Exception io) {
+            if(LOG.isDebugEnabled()) {
+                LOG.error(io);
+            }
+            throw io;
+            //console.showErrorMessage("Unable to create out folder " + io.getMessage());
         }
 
         return moduleOutFolder;

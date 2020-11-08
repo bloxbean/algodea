@@ -33,6 +33,7 @@ import com.algorand.algosdk.v2.client.common.Response;
 import com.algorand.algosdk.v2.client.model.*;
 import com.bloxbean.algodea.idea.common.Tuple;
 import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
+import com.bloxbean.algodea.idea.nodeint.model.Result;
 import com.bloxbean.algodea.idea.nodeint.model.TxnDetailsParameters;
 import com.bloxbean.algodea.idea.nodeint.util.NetworkHelper;
 import com.bloxbean.algodea.idea.util.JsonUtil;
@@ -78,10 +79,10 @@ public class StatefulContractService extends AlgoBaseService {
         return appId;
     }
 
-    public boolean updateApp(Long appId, Account fromAccount, String approvalProgram, String clearStateProgram, TxnDetailsParameters txnDetailsParameters) throws Exception {
+    public Result updateApp(Long appId, Account fromAccount, String approvalProgram, String clearStateProgram, TxnDetailsParameters txnDetailsParameters) throws Exception {
         if(fromAccount == null) {
             logListener.error("From account cannot be null");
-            return false;
+            return Result.error();
         }
 
         // compile programs
@@ -89,7 +90,7 @@ public class StatefulContractService extends AlgoBaseService {
         String approvalProgramBytes = compileProgram(approvalProgram.getBytes("UTF-8"));
         if(approvalProgramBytes == null) {
             logListener.error("Approval Program compilation failed");
-            return false;
+            return Result.error();
         } else {
             logListener.info("Approval Program compiled successfully.");
         }
@@ -99,7 +100,7 @@ public class StatefulContractService extends AlgoBaseService {
 
         if(clearProgramBytes == null) {
             logListener.error("Clear State Program compilation failed");
-            return false;
+            return Result.error();
         } else {
             logListener.info("Clear State Program compiled successfully.");
         }
@@ -111,71 +112,77 @@ public class StatefulContractService extends AlgoBaseService {
         Transaction txn = populateBaseAppTransaction( txnBuilder, appId, fromAccount, txnDetailsParameters);
         if(txn == null) {
             logListener.error("Transaction could not be built");
-            return false;
+            return Result.error();
         }
 
-        return postApplicationTransaction(fromAccount, txn);
+        SignedTransaction stxn = signTransaction(fromAccount, txn);
+        return postApplicationTransaction(fromAccount, stxn);
     }
 
-    public boolean optIn(Long appId, Account fromAccount, TxnDetailsParameters txnDetailsParameters)  throws Exception {
+    public Result optIn(Long appId, Account fromAccount, TxnDetailsParameters txnDetailsParameters)  throws Exception {
 
         ApplicationOptInTransactionBuilder txnBuilder = Transaction.ApplicationOptInTransactionBuilder();
 
         Transaction txn = populateBaseAppTransaction( txnBuilder, appId, fromAccount, txnDetailsParameters);
         if(txn == null) {
             logListener.error("Transaction could not be built");
-            return false;
+            return Result.error();
         }
 
-        return postApplicationTransaction(fromAccount, txn);
+        SignedTransaction stxn = signTransaction(fromAccount, txn);
+        return postApplicationTransaction(fromAccount, stxn);
     }
 
-    public boolean call(Long appId, Account fromAccount, TxnDetailsParameters txnDetailsParameters) throws Exception {
+    public Result call(Long appId, Account fromAccount, TxnDetailsParameters txnDetailsParameters) throws Exception {
         ApplicationCallTransactionBuilder txnBuilder = Transaction.ApplicationCallTransactionBuilder();
 
         Transaction txn = populateBaseAppTransaction( txnBuilder, appId, fromAccount, txnDetailsParameters);
         if(txn == null) {
             logListener.error("Transaction could not be built");
-            return false;
+            return Result.error();
         }
 
-        return postApplicationTransaction(fromAccount, txn);
+        SignedTransaction stxn = signTransaction(fromAccount, txn);
+        return postApplicationTransaction(fromAccount, stxn);
     }
 
-    public boolean closeOut(Long appId, Account fromAccount, TxnDetailsParameters txnDetailsParameters) throws Exception {
+    public Result closeOut(Long appId, Account fromAccount, TxnDetailsParameters txnDetailsParameters) throws Exception {
         ApplicationCloseTransactionBuilder txnBuilder = Transaction.ApplicationCloseTransactionBuilder();
 
         Transaction txn = populateBaseAppTransaction( txnBuilder, appId, fromAccount, txnDetailsParameters);
         if(txn == null) {
             logListener.error("Transaction could not be built");
-            return false;
+            return Result.error();
         }
 
-        return postApplicationTransaction(fromAccount, txn);
+        SignedTransaction stxn = signTransaction(fromAccount, txn);
+        return postApplicationTransaction(fromAccount, stxn);
     }
 
-    public boolean clear(Long appId, Account fromAccount, TxnDetailsParameters txnDetailsParameters) throws Exception {
+    public Result clear(Long appId, Account fromAccount, TxnDetailsParameters txnDetailsParameters) throws Exception {
         ApplicationClearTransactionBuilder txnBuilder = Transaction.ApplicationClearTransactionBuilder();
 
         Transaction txn = populateBaseAppTransaction( txnBuilder, appId, fromAccount, txnDetailsParameters);
         if(txn == null) {
             logListener.error("Transaction could not be built");
-            return false;
+            return Result.error();
         }
 
-        return postApplicationTransaction(fromAccount, txn);
+        SignedTransaction stxn = signTransaction(fromAccount, txn);
+        return postApplicationTransaction(fromAccount, stxn);
     }
 
-    public boolean delete(Long appId, Account fromAccount, TxnDetailsParameters txnDetailsParameters) throws Exception {
+    public Result delete(Long appId, Account fromAccount, TxnDetailsParameters txnDetailsParameters) throws Exception {
         ApplicationDeleteTransactionBuilder txnBuilder = Transaction.ApplicationDeleteTransactionBuilder();
 
         Transaction txn = populateBaseAppTransaction( txnBuilder, appId, fromAccount, txnDetailsParameters);
         if(txn == null) {
             logListener.error("Transaction could not be built");
-            return false;
+            return Result.error();
         }
 
-        return postApplicationTransaction(fromAccount, txn);
+        SignedTransaction stxn = signTransaction(fromAccount, txn);
+        return postApplicationTransaction(fromAccount, stxn);
     }
 
     public void readLocalState(Account account, Long appId) throws Exception {

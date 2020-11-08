@@ -3,13 +3,13 @@ package com.bloxbean.algodea.idea.transaction.action;
 import com.algorand.algosdk.account.Account;
 import com.algorand.algosdk.crypto.Address;
 import com.bloxbean.algodea.idea.common.Tuple;
-import com.bloxbean.algodea.idea.core.action.AlgoBaseAction;
+import com.bloxbean.algodea.idea.core.action.BaseTxnAction;
+import com.bloxbean.algodea.idea.nodeint.common.RequestMode;
 import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
 import com.bloxbean.algodea.idea.nodeint.model.AccountAsset;
+import com.bloxbean.algodea.idea.nodeint.model.Result;
 import com.bloxbean.algodea.idea.nodeint.model.TxnDetailsParameters;
-import com.bloxbean.algodea.idea.nodeint.service.AssetTransactionService;
-import com.bloxbean.algodea.idea.nodeint.service.LogListenerAdapter;
-import com.bloxbean.algodea.idea.nodeint.service.TransactionService;
+import com.bloxbean.algodea.idea.nodeint.service.*;
 import com.bloxbean.algodea.idea.toolwindow.AlgoConsole;
 import com.bloxbean.algodea.idea.transaction.ui.TransactionDtlsEntryForm;
 import com.bloxbean.algodea.idea.transaction.ui.TransferDialog;
@@ -18,7 +18,9 @@ import com.bloxbean.algodea.idea.util.AlgoConversionUtil;
 import com.bloxbean.algodea.idea.util.IdeaUtil;
 import com.intellij.notification.NotificationType;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.LangDataKeys;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.module.Module;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
@@ -29,7 +31,7 @@ import org.jetbrains.annotations.NotNull;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-public class TransferAction extends AlgoBaseAction {
+public class TransferAction extends BaseTxnAction {
     private final static Logger LOG = Logger.getInstance(TransferAction.class);
 
     @Override
@@ -37,6 +39,8 @@ public class TransferAction extends AlgoBaseAction {
         Project project = e.getProject();
         if (project == null)
             return;
+
+        final Module module = LangDataKeys.MODULE.getData(e.getDataContext());
 
         AlgoConsole console = AlgoConsole.getConsole(project);
         console.clearAndshow();
@@ -71,8 +75,11 @@ public class TransferAction extends AlgoBaseAction {
 
             TxnDetailsParameters txnDetailsParameters = transactionDtlsEntryForm.getTxnDetailsParameters();
 
-            TransactionService transactionService = new TransactionService(project, new LogListenerAdapter(console));
-            AssetTransactionService assetTransactionService = new AssetTransactionService(project, new LogListenerAdapter(console));
+            LogListener logListener = new LogListenerAdapter(console);
+            TransactionService transactionService = new TransactionService(project, logListener);
+            AssetTransactionService assetTransactionService = new AssetTransactionService(project, logListener);
+
+            RequestMode requestMode = transferDialog.getRequestMode();
 
             Task.Backgroundable task = new Task.Backgroundable(project, getTxnCommand()) {
 
@@ -80,7 +87,7 @@ public class TransferAction extends AlgoBaseAction {
                 public void run(@NotNull ProgressIndicator indicator) {
                     console.showInfoMessage(String.format("Starting %s ...\n", getTxnCommand()));
                     try {
-                        boolean status = false;
+                        Result result = null;
 
                         String amountInDecimal = String.valueOf(amountTuple._1());
                         //Get formatted amount string
@@ -95,20 +102,25 @@ public class TransferAction extends AlgoBaseAction {
                         }
 
                         if (transferDialog.isAlgoTransfer()) {
-                            status = transactionService.transfer(fromAccount, toAddress.toString(), amountTuple._2().longValue(), txnDetailsParameters);
+                            result = transactionService.transfer(fromAccount, toAddress.toString(), amountTuple._2().longValue(), txnDetailsParameters, requestMode);
                         } else { //asset transfer
-                            status = assetTransactionService.assetTransfer(fromAccount, toAddress.toString(), asset, amountTuple._2(), txnDetailsParameters);
+                            result = assetTransactionService.assetTransfer(fromAccount, toAddress.toString(), asset, amountTuple._2(), txnDetailsParameters, requestMode);
                         }
 
-                        if (status) {
-                            console.showInfoMessage(String.format("Successfully transferred %s %s from %s to %s  ", amountInDecimal,
-                                    finalAssetName, fromAccount.getAddress().toString(), toAddress.toString()));
-                            IdeaUtil.showNotification(project, getTitle(), String.format("%s was successful", getTxnCommand()),
-                                    NotificationType.INFORMATION, null);
-                        } else {
-                            console.showErrorMessage(String.format("%s failed", getTxnCommand()));
-                            IdeaUtil.showNotification(project, getTitle(), String.format("%s failed", getTxnCommand()), NotificationType.ERROR, null);
-                        }
+                        processResult(project, module, result, requestMode, logListener);
+//                        if(requestMode == null || requestMode.equals(RequestMode.TRANSACTION)) {
+//                            if (result.isSuccessful()) {
+//                                console.showInfoMessage(String.format("Successfully transferred %s %s from %s to %s  ", amountInDecimal,
+//                                        finalAssetName, fromAccount.getAddress().toString(), toAddress.toString()));
+//                                IdeaUtil.showNotification(project, getTitle(), String.format("%s was successful", getTxnCommand()),
+//                                        NotificationType.INFORMATION, null);
+//                            } else {
+//                                console.showErrorMessage(String.format("%s failed", getTxnCommand()));
+//                                IdeaUtil.showNotification(project, getTitle(), String.format("%s failed", getTxnCommand()), NotificationType.ERROR, null);
+//                            }
+//                        } else if(requestMode.equals(RequestMode.EXPORT_SIGNED) || requestMode.equals(RequestMode.EXPORT_UNSIGNED)) {
+//                            exportTransaction(project, module, requestMode, result, logListener);
+//                        }
                     } catch (Exception exception) {
                         if (LOG.isDebugEnabled()) {
                             LOG.warn(exception);
@@ -141,6 +153,6 @@ public class TransferAction extends AlgoBaseAction {
     }
 
     public String getTxnCommand() {
-        return "Transfer Transaction";
+        return "Transfer";
     }
 }

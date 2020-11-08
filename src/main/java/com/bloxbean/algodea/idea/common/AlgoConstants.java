@@ -9,6 +9,9 @@ public class AlgoConstants {
     public final static String SDK_TYPE_ID = "Algorand";
     public final static String ALGODEA_FOLDER = ".algodea";
 
+    public final static String ALGO_TXN_FILE_EXT = ".atx";
+    public final static String ALGO_GROUP_TXN_FILE_EXT = ".agtx";
+
     public final static String ASSET_EXPLORER_BASE_URL = "https://goalseeker.purestake.io/algorand/";
 
 }

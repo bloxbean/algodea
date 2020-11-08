@@ -1,10 +1,17 @@
 package com.bloxbean.algodea.idea.transaction.ui;
 
+import com.algorand.algosdk.v2.client.model.TransactionParametersResponse;
 import com.bloxbean.algodea.idea.nodeint.model.ArgType;
 import com.bloxbean.algodea.idea.nodeint.model.Lease;
 import com.bloxbean.algodea.idea.nodeint.model.Note;
 import com.bloxbean.algodea.idea.nodeint.model.TxnDetailsParameters;
+import com.bloxbean.algodea.idea.nodeint.service.AlgoBaseService;
+import com.bloxbean.algodea.idea.nodeint.service.LogListenerAdapter;
 import com.bloxbean.algodea.idea.nodeint.util.ArgTypeToByteConverter;
+import com.bloxbean.algodea.idea.toolwindow.AlgoConsole;
+import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.ui.ValidationInfo;
@@ -14,6 +21,8 @@ import javax.swing.*;
 import java.math.BigInteger;
 
 public class TransactionDtlsEntryForm {
+    private final static Logger LOG = Logger.getInstance(TransactionDtlsEntryForm.class);
+
     private JPanel mainPanel;
     private JTextField noteTf;
     private JComboBox noteTypeCB;
@@ -23,6 +32,10 @@ public class TransactionDtlsEntryForm {
     private JTextField flatFeeTf;
     private JLabel flatFeeHelpLabel;
     private JLabel feePerByteHelpLabel;
+    private JLabel firstValidLastValidLabel;
+    private JTextField firstValidTf;
+    private JTextField lastValidTf;
+    private JButton fetchSuggedParamsBtn;
 
     DefaultComboBoxModel<ArgType> noteTypeDefaultComboBoxModel;
     DefaultComboBoxModel<ArgType> leaseTypeDefaultComboBoxModel;
@@ -32,10 +45,42 @@ public class TransactionDtlsEntryForm {
     public TransactionDtlsEntryForm() {
         feePerByteHelpLabel.setText("<html>Set the fee per bytes value. This value is multiplied by the estimated <br/>size of the transaction  to reach a final transaction fee, or 1000, whichever is higher.</html>");
         flatFeeHelpLabel.setText("<html>Set the flatFee. This value will be used for the transaction fee,<br/> or 1000, whichever is higher.</html>");
+        firstValidLastValidLabel.setText("<html>The first valid and last valid round will be automatically <br/>set if not specified.</html>");
+
+        attachListeners();
     }
 
     public void initializeData(Project project) {
         this.project = project;
+    }
+
+    private void attachListeners() {
+        fetchSuggedParamsBtn.addActionListener(e -> {
+            ProgressManager.getInstance().runProcessWithProgressSynchronously(new Runnable() {
+                @Override
+                public void run() {
+                    AlgoConsole algoConsole = AlgoConsole.getConsole(project);
+                    algoConsole.clearAndshow();
+                    ProgressIndicator progressIndicator = ProgressManager.getInstance().getProgressIndicator();
+                    try {
+                        progressIndicator.setFraction(0.2);
+                        AlgoBaseService algoBaseService = new AlgoBaseService(project, new LogListenerAdapter(algoConsole));
+                        TransactionParametersResponse transactionParametersResponse = algoBaseService.getSuggestedTxnParams();
+                        if(transactionParametersResponse.lastRound != null) {
+                            firstValidTf.setText(String.valueOf(transactionParametersResponse.lastRound));
+                            lastValidTf.setText(String.valueOf(transactionParametersResponse.lastRound + 1000));
+                        }
+                    } catch (Exception ex) {
+                        algoConsole.showErrorMessage("Error getting suggested params", ex);
+                        if(LOG.isDebugEnabled()) {
+                            LOG.warn(ex);
+                        }
+                    } finally {
+                        progressIndicator.setFraction(1.0);
+                    }
+                }
+            }, "Fetching suggested params ...", true, project);
+        });
     }
 
     private Note getNote() {
@@ -98,12 +143,36 @@ public class TransactionDtlsEntryForm {
         }
     }
 
+    private BigInteger getFirstValid() {
+        if(StringUtil.isEmpty(firstValidTf.getText()))
+            return null;
+
+        try {
+            return new BigInteger(StringUtil.trim(firstValidTf.getText()));
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private BigInteger getLastValid() {
+        if(StringUtil.isEmpty(lastValidTf.getText()))
+            return null;
+
+        try {
+            return new BigInteger(StringUtil.trim(lastValidTf.getText()));
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     public TxnDetailsParameters getTxnDetailsParameters() throws Exception {
         TxnDetailsParameters txnDetailsParameters = new TxnDetailsParameters();
         txnDetailsParameters.setNote(getNoteBytes());
         txnDetailsParameters.setLease(getLeaseBytes());
         txnDetailsParameters.setFee(getFee());
         txnDetailsParameters.setFlatFee(getFlatFee());
+        txnDetailsParameters.setFirstValid(getFirstValid());
+        txnDetailsParameters.setLastValid(getLastValid());
 
         return txnDetailsParameters;
     }
@@ -159,6 +228,22 @@ public class TransactionDtlsEntryForm {
             }
         } catch (Exception e) {
             return new ValidationInfo("Invalid Flat Fee", flatFeeTf);
+        }
+
+        try {
+            if(!StringUtil.isEmpty(firstValidTf.getText())) {
+                new BigInteger(StringUtil.trim(firstValidTf.getText()));
+            }
+        } catch (Exception e) {
+            return new ValidationInfo("Invalid value for first valid round", firstValidTf);
+        }
+
+        try {
+            if(!StringUtil.isEmpty(lastValidTf.getText())) {
+                new BigInteger(StringUtil.trim(lastValidTf.getText()));
+            }
+        } catch (Exception e) {
+            return new ValidationInfo("Invalid value for last valid round", lastValidTf);
         }
 
         return null;

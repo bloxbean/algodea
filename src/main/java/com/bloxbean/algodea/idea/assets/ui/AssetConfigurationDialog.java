@@ -8,6 +8,7 @@ import com.bloxbean.algodea.idea.account.service.AccountService;
 import com.bloxbean.algodea.idea.assets.action.AssetActionType;
 import com.bloxbean.algodea.idea.assets.model.AssetMeta;
 import com.bloxbean.algodea.idea.assets.service.AssetCacheService;
+import com.bloxbean.algodea.idea.core.action.ui.TxnDialogWrapper;
 import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
 import com.bloxbean.algodea.idea.nodeint.model.ArgType;
 import com.bloxbean.algodea.idea.nodeint.model.AssetTxnParameters;
@@ -42,7 +43,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
 
-public class AssetConfigurationDialog extends DialogWrapper {
+public class AssetConfigurationDialog extends TxnDialogWrapper {
     private JTabbedPane tabbedPane1;
     private JPanel mainPanel;
     private JTextField assetNameTf;
@@ -444,7 +445,7 @@ public class AssetConfigurationDialog extends DialogWrapper {
     }
 
     @Override
-    protected @Nullable ValidationInfo doValidate() {
+    protected @Nullable ValidationInfo doTransactionInputValidation() {
 
         if(AssetActionType.CREATE.equals(actionType)) {
             //Assets form validation

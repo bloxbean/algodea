@@ -8,8 +8,11 @@ import com.algorand.algosdk.transaction.SignedTransaction;
 import com.algorand.algosdk.transaction.Transaction;
 import com.algorand.algosdk.util.Encoder;
 import com.algorand.algosdk.v2.client.model.PendingTransactionResponse;
+import com.bloxbean.algodea.idea.nodeint.common.RequestMode;
 import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
+import com.bloxbean.algodea.idea.nodeint.model.Result;
 import com.bloxbean.algodea.idea.nodeint.model.TxnDetailsParameters;
+import com.bloxbean.algodea.idea.util.JsonUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.io.FileUtil;
 
@@ -22,29 +25,29 @@ public class LogicSigTransactionService extends TransactionService{
         super(project, logListener);
     }
 
-    public boolean logicSigTransaction(String lsigPath, Address sender, Address receiver, BigInteger amount, TxnDetailsParameters txnDetailsParameters)
+    public Result logicSigTransaction(String lsigPath, Address sender, Address receiver, BigInteger amount, TxnDetailsParameters txnDetailsParameters, RequestMode requestMode)
             throws Exception {
 
         byte[] logicSigBytes = FileUtil.loadFileBytes(new File(lsigPath));
         if(sender == null) {
-            return contractAccountTransaction(logicSigBytes, receiver, amount, txnDetailsParameters);
+            return contractAccountTransaction(logicSigBytes, receiver, amount, txnDetailsParameters, requestMode);
         } else {
-            return accountDelegationTransaction(logicSigBytes, sender, receiver, amount, txnDetailsParameters);
+            return accountDelegationTransaction(logicSigBytes, sender, receiver, amount, txnDetailsParameters, requestMode);
         }
 
     }
 
-    public boolean contractAccountTransaction(byte[] logicSigBytes, Address receiver, BigInteger amount, TxnDetailsParameters txnDetailsParameters)
+    public Result contractAccountTransaction(byte[] logicSigBytes, Address receiver, BigInteger amount, TxnDetailsParameters txnDetailsParameters, RequestMode requestMode)
             throws Exception {
 
         if(receiver == null) {
             logListener.error("Receiver account cannot be null");
-            return false;
+            return Result.error();
         }
 
         if(amount == null) {
             logListener.error("Amount cannot be null");
-            return false;
+            return Result.error();
         }
 
         LogicsigSignature logicsigSignature = Encoder.decodeFromMsgPack(logicSigBytes, LogicsigSignature.class);
@@ -53,15 +56,13 @@ public class LogicSigTransactionService extends TransactionService{
         logListener.info("Starting Contract Account transaction ...\n");
 
         logListener.info("From Contract Address     : " + fromAddress.toString());
-//        logListener.info("Receiver Address          : " + receiver);
-//        logListener.info(String.format("Amount           : %f Algo ( %d )\n", AlgoConversionUtil.mAlgoToAlgo(amount), amount));
 
         PaymentTransactionBuilder paymentTransactionBuilder = Transaction.PaymentTransactionBuilder();
         Transaction txn = populatePaymentTransaction(paymentTransactionBuilder, fromAddress, receiver.toString(), amount.longValue(), txnDetailsParameters);
 
         if(txn == null) {
             logListener.error("Transaction could not be built");
-            return false;
+            return Result.error();
         }
 
         TransactionSigner txnSigner = new TransactionSigner() {
@@ -71,42 +72,48 @@ public class LogicSigTransactionService extends TransactionService{
             }
         };
 
-       PendingTransactionResponse txnResponse = postTransaction(txnSigner, txn);
-       return txnResponse != null? true: false;
+        SignedTransaction signTxn = signTransaction(txnSigner, txn);
+
+        if (requestMode == null || requestMode.equals(RequestMode.TRANSACTION)) {
+            PendingTransactionResponse txnResponse = postTransaction(signTxn);
+            return txnResponse != null? Result.success(txnResponse.toString()): Result.error();
+        } else if (requestMode.equals(RequestMode.EXPORT_SIGNED)) {
+            return Result.success(JsonUtil.getPrettyJson(signTxn));
+        } else if(requestMode.equals(RequestMode.EXPORT_UNSIGNED)) {
+            return Result.success(JsonUtil.getPrettyJson(txn));
+        } else {
+            return Result.error("Invalid request mode : " + requestMode);
+        }
 
     }
 
-    public boolean accountDelegationTransaction(byte[] logicSigBytes, Address sender, Address receiver, BigInteger amount,
-                                                TxnDetailsParameters txnDetailsParameters) throws Exception {
+    public Result accountDelegationTransaction(byte[] logicSigBytes, Address sender, Address receiver, BigInteger amount,
+                                                TxnDetailsParameters txnDetailsParameters, RequestMode requestMode) throws Exception {
         if(sender == null) {
-            logListener.error("Sendre address cannot be empty");
-            return false;
+            logListener.error("Sender address cannot be empty");
+            return Result.error();
         }
 
         if(receiver == null) {
             logListener.error("Receiver address cannot be empty");
-            return false;
+            return Result.error();
         }
 
         if(amount == null) {
             logListener.error("Amount cannot be null");
-            return false;
+            return Result.error();
         }
 
         LogicsigSignature logicsigSignature = Encoder.decodeFromMsgPack(logicSigBytes, LogicsigSignature.class);
 
         logListener.info("Starting Account Delegation transaction ...\n");
 
-//        logListener.info("From Address     : " + fromAccount.getAddress().toString());
-//        logListener.info("Receiver Address : " + receiver);
-//        logListener.info(String.format("Amount           : %f Algo ( %d )\n", AlgoConversionUtil.mAlgoToAlgo(amount), amount));
-
         PaymentTransactionBuilder paymentTransactionBuilder = Transaction.PaymentTransactionBuilder();
         Transaction txn = populatePaymentTransaction(paymentTransactionBuilder, sender, receiver.toString(), amount.longValue(), txnDetailsParameters);
 
         if(txn == null) {
             logListener.error("Transaction could not be built");
-            return false;
+            return Result.error();
         }
 
         TransactionSigner txnSigner = new TransactionSigner() {
@@ -116,7 +123,17 @@ public class LogicSigTransactionService extends TransactionService{
             }
         };
 
-        PendingTransactionResponse txnResponse = postTransaction(txnSigner, txn);
-        return txnResponse != null? true: false;
+        SignedTransaction signTxn = signTransaction(txnSigner, txn);
+
+        if (requestMode == null || requestMode.equals(RequestMode.TRANSACTION)) {
+            PendingTransactionResponse txnResponse = postTransaction(signTxn);
+            return txnResponse != null? Result.success(txnResponse.toString()): Result.error();
+        } else if (requestMode.equals(RequestMode.EXPORT_SIGNED)) {
+            return Result.success(JsonUtil.getPrettyJson(signTxn));
+        } else if(requestMode.equals(RequestMode.EXPORT_UNSIGNED)) {
+            return Result.success(JsonUtil.getPrettyJson(txn));
+        } else {
+            return Result.error("Invalid request mode : " + requestMode);
+        }
     }
 }

@@ -11,6 +11,9 @@ public class TxnDetailsParameters {
     private byte[] lease;
     private BigInteger fee;
     private BigInteger flatFee;
+    private BigInteger firstValid;
+    private BigInteger lastValid;
+    private Address rekey;
 
     private List<Address> accounts;
     private List<Long> foreignApps;
@@ -54,6 +57,30 @@ public class TxnDetailsParameters {
 
     public void setFlatFee(BigInteger flatFee) {
         this.flatFee = flatFee;
+    }
+
+    public BigInteger getFirstValid() {
+        return firstValid;
+    }
+
+    public void setFirstValid(BigInteger firstValid) {
+        this.firstValid = firstValid;
+    }
+
+    public BigInteger getLastValid() {
+        return lastValid;
+    }
+
+    public void setLastValid(BigInteger lastValid) {
+        this.lastValid = lastValid;
+    }
+
+    public Address getRekey() {
+        return rekey;
+    }
+
+    public void setRekey(Address rekey) {
+        this.rekey = rekey;
     }
 
     public List<Address> getAccounts() {

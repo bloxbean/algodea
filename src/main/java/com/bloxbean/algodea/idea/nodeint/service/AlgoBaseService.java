@@ -37,6 +37,7 @@ import com.bloxbean.algodea.idea.configuration.model.NodeInfo;
 import com.bloxbean.algodea.idea.nodeint.AlgoConnectionFactory;
 import com.bloxbean.algodea.idea.nodeint.AlgoServerConfigurationHelper;
 import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
+import com.bloxbean.algodea.idea.nodeint.model.Result;
 import com.bloxbean.algodea.idea.nodeint.model.TxnDetailsParameters;
 import com.bloxbean.algodea.idea.nodeint.util.NetworkHelper;
 import com.bloxbean.algodea.idea.util.JsonUtil;
@@ -141,11 +142,14 @@ public class AlgoBaseService {
         }
     }
 
-    protected boolean postApplicationTransaction(Account fromAccount, Transaction txn) throws Exception {
+    protected SignedTransaction signTransaction(Account fromAccount, Transaction txn) throws Exception {
         // sign transaction
         SignedTransaction signedTxn = fromAccount.signTransaction(txn);
         logListener.info("Signed transaction with txid: " + signedTxn.transactionID);
+        return signedTxn;
+    }
 
+    protected Result postApplicationTransaction(Account fromAccount, SignedTransaction signedTxn) throws Exception {
         // send to network
         byte[] encodedTxBytes = Encoder.encodeToMsgPack(signedTxn);
         logListener.info(String.format("Posting transaction to the network (%s) ...", client.getHost()));
@@ -154,7 +158,7 @@ public class AlgoBaseService {
         Response<PostTransactionsResponse> postTransactionsResponse = client.RawTransaction().rawtxn(encodedTxBytes).execute(headers._1(), headers._2());
         if(!postTransactionsResponse.isSuccessful()) {
             printErrorMessage("Transaction could not be posted to the network", postTransactionsResponse);
-            return false;
+            return Result.error();
         }
 
         String id = postTransactionsResponse.body().txId;
@@ -168,7 +172,7 @@ public class AlgoBaseService {
                 = client.PendingTransactionInformation(id).execute(getHeaders()._1(), getHeaders()._2());
         if(!pendingTransactionResponse.isSuccessful()) {
             printErrorMessage("Unable to get pending transaction info", pendingTransactionResponse);
-            return false;
+            return Result.error();
         }
 
         if(pendingTransactionResponse.body() != null) {
@@ -177,16 +181,23 @@ public class AlgoBaseService {
 
             if(NetworkHelper.getInstance().getExplorerBaseUrl(getNetworkGenesisHash()) != null)
                 logListener.info("Check transaction details here : " + NetworkHelper.getInstance().getTxnHashUrl(getNetworkGenesisHash(), id));
+
+            return Result.success(pendingTransactionResponse.body().toString());
+        } else {
+            return Result.success(null);
         }
 
-        return true;
     }
 
-    protected PendingTransactionResponse postTransaction(TransactionSigner signer, Transaction txn) throws Exception {
+    protected  SignedTransaction signTransaction(TransactionSigner signer, Transaction txn) throws Exception {
         // sign transaction
         SignedTransaction signedTxn = signer.signTransaction(txn);
         logListener.info("Signed transaction with txid: " + signedTxn.transactionID);
 
+        return signedTxn;
+    }
+
+    protected PendingTransactionResponse postTransaction(SignedTransaction signedTxn) throws Exception {
         // send to network
         byte[] encodedTxBytes = Encoder.encodeToMsgPack(signedTxn);
         logListener.info(String.format("Posting transaction to the network (%s) ...", client.getHost()));
@@ -230,11 +241,6 @@ public class AlgoBaseService {
             return null;
         }
 
-//        if(appId == null || appId == 0) {
-//            logListener.error("Invalid application id");
-//            return null;
-//        }
-
         if(appId != null) {
             logListener.info("Application : " + appId);
         }
@@ -243,45 +249,17 @@ public class AlgoBaseService {
         // define sender
         Address sender = fromAccount.getAddress();
 
-        logListener.info("Getting node suggested transaction parameters ...");
-        // get node suggested parameters
-        Response<TransactionParametersResponse> transactionParametersResponse
-                = client.TransactionParams().execute(getHeaders()._1(), getHeaders()._2());
-        if(!transactionParametersResponse.isSuccessful()) {
-            printErrorMessage("Unable to get Transaction Params from the node", transactionParametersResponse);
-            return null;
-        }
-
-        TransactionParametersResponse params = transactionParametersResponse.body();
-        logListener.info("Got node suggested transaction parameters.");
-
-        logListener.info("Signing transaction ...");
-        // create unsigned transaction
-        appTransactionBuilder
-                .sender(sender)
-                .suggestedParams(params);
-
         if(appId != null && appId != 0) {
             appTransactionBuilder.applicationId(appId);
         }
 
         List<byte[]> appArgs = txnDetailsParameters.getAppArgs();
-        byte[] note = txnDetailsParameters.getNote();
-        byte[] lease = txnDetailsParameters.getLease();
         List<Address> accounts = txnDetailsParameters.getAccounts();
         List<Long> foreignApps = txnDetailsParameters.getForeignApps();
         List<Long> foreignAssets = txnDetailsParameters.getForeignAssets();
 
         if(appArgs != null && appArgs.size() > 0) {
             appTransactionBuilder.args(appArgs);
-        }
-
-        if(note != null) {
-            appTransactionBuilder.note(note);
-        }
-
-        if(lease != null) {
-            appTransactionBuilder.lease(lease);
         }
 
         if(accounts != null && accounts.size() > 0)
@@ -293,14 +271,7 @@ public class AlgoBaseService {
         if(foreignAssets != null && foreignAssets.size() > 0)
             appTransactionBuilder.foreignAssets(foreignAssets);
 
-        if(txnDetailsParameters.getFee() != null) {
-            appTransactionBuilder.fee(txnDetailsParameters.getFee());
-        }
-
-        if(txnDetailsParameters.getFlatFee() != null) {
-            appTransactionBuilder.fee((BigInteger)null);
-            appTransactionBuilder.flatFee(txnDetailsParameters.getFlatFee());
-        }
+        populateBaseTransactionDetails(appTransactionBuilder, sender, txnDetailsParameters);
 
         return appTransactionBuilder.build();
     }
@@ -323,7 +294,6 @@ public class AlgoBaseService {
         TransactionParametersResponse params = transactionParametersResponse.body();
         logListener.info("Got node suggested transaction parameters.");
 
-        logListener.info("Signing transaction ...");
         // create unsigned transaction
         transactionBuilder
                 .sender(sender)
@@ -349,12 +319,18 @@ public class AlgoBaseService {
             transactionBuilder.flatFee(txnDetailsParameters.getFlatFee());
         }
 
+        if(txnDetailsParameters.getFirstValid() != null) {
+            transactionBuilder.firstValid(txnDetailsParameters.getFirstValid());
+        }
+
+        if(txnDetailsParameters.getLastValid() != null) {
+            transactionBuilder.lastValid(txnDetailsParameters.getLastValid());
+        }
+
         return transactionBuilder;
     }
 
     protected void waitForConfirmation(String txID) throws Exception {
-//        if (client == null)
-//            this.client = connectToNetwork();
         Response<NodeStatusResponse> response = client.GetStatus().execute(getHeaders()._1(), getHeaders()._2());
         if(!response.isSuccessful()) {
             printErrorMessage("Failed to get transaction status for txId :" + txID, response);
@@ -378,6 +354,21 @@ public class AlgoBaseService {
                 throw (e);
             }
         }
+    }
+
+    public TransactionParametersResponse getSuggestedTxnParams() throws Exception {
+        logListener.info("Getting node suggested transaction parameters ...");
+        // get node suggested parameters
+        Response<TransactionParametersResponse> transactionParametersResponse
+                = client.TransactionParams().execute(getHeaders()._1(), getHeaders()._2());
+        if(!transactionParametersResponse.isSuccessful()) {
+            printErrorMessage("Unable to get Transaction Params from the node", transactionParametersResponse);
+            return null;
+        }
+
+        TransactionParametersResponse params = transactionParametersResponse.body();
+        logListener.info("Got node suggested transaction parameters.");
+        return params;
     }
 
     public String getNetworkGenesisHash() {

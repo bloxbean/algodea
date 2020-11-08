@@ -4,10 +4,14 @@ import com.algorand.algosdk.crypto.Address;
 import com.bloxbean.algodea.idea.common.AlgoIcons;
 import com.bloxbean.algodea.idea.common.Tuple;
 import com.bloxbean.algodea.idea.core.action.AlgoBaseAction;
+import com.bloxbean.algodea.idea.core.action.BaseTxnAction;
 import com.bloxbean.algodea.idea.module.AlgorandModuleType;
 import com.bloxbean.algodea.idea.module.filetypes.LSigFileType;
+import com.bloxbean.algodea.idea.nodeint.common.RequestMode;
 import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
+import com.bloxbean.algodea.idea.nodeint.model.Result;
 import com.bloxbean.algodea.idea.nodeint.model.TxnDetailsParameters;
+import com.bloxbean.algodea.idea.nodeint.service.LogListener;
 import com.bloxbean.algodea.idea.nodeint.service.LogListenerAdapter;
 import com.bloxbean.algodea.idea.nodeint.service.LogicSigTransactionService;
 import com.bloxbean.algodea.idea.pkg.AlgoPkgJsonService;
@@ -36,7 +40,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.math.BigInteger;
 
-public class LogicSigSendTransactionAction extends AlgoBaseAction {
+public class LogicSigSendTransactionAction extends BaseTxnAction {
     private final static Logger LOG = Logger.getInstance(LogicSigSendTransactionAction.class);
 
     public LogicSigSendTransactionAction() {
@@ -64,6 +68,8 @@ public class LogicSigSendTransactionAction extends AlgoBaseAction {
         Project project = CommonDataKeys.PROJECT.getData(e.getDataContext());
         if (project == null)
             return;
+
+        final Module module = LangDataKeys.MODULE.getData(e.getDataContext());
 
         final AlgoConsole console = AlgoConsole.getConsole(project);
         console.clearAndshow();
@@ -138,8 +144,10 @@ public class LogicSigSendTransactionAction extends AlgoBaseAction {
         Address finalSenderAccount = senderAddress;
         TxnDetailsParameters finalTxnDetailsParams = txnDetailsParameters;
 
+        RequestMode requestMode = dialog.getRequestMode();
+        LogListener logListener = new LogListenerAdapter(console);
         try {
-            LogicSigTransactionService transactionService = new LogicSigTransactionService(project, new LogListenerAdapter(console));
+            LogicSigTransactionService transactionService = new LogicSigTransactionService(project, logListener);
 
             Task.Backgroundable task = new Task.Backgroundable(project, getTxnCommand()) {
 
@@ -147,15 +155,9 @@ public class LogicSigSendTransactionAction extends AlgoBaseAction {
                 public void run(@NotNull ProgressIndicator indicator) {
                     console.showInfoMessage(String.format("Starting %s ...\n", getTxnCommand()));
                     try {
-                        boolean status = transactionService.logicSigTransaction(lsigPath, finalSenderAccount, receiverAddress, amounts._2(), finalTxnDetailsParams);
+                        Result result = transactionService.logicSigTransaction(lsigPath, finalSenderAccount, receiverAddress, amounts._2(), finalTxnDetailsParams, requestMode);
 
-                        if (status) {
-                            console.showInfoMessage(String.format("%s transaction executed successfully", getTxnCommand()));
-                            IdeaUtil.showNotification(project, getTitle(), String.format("%s was successful", getTxnCommand()), NotificationType.INFORMATION, null);
-                        } else {
-                            console.showErrorMessage(String.format("%s failed", getTxnCommand()));
-                            IdeaUtil.showNotification(project, getTitle(), String.format("%s failed", getTxnCommand()), NotificationType.ERROR, null);
-                        }
+                        processResult(project, module, result, requestMode, logListener);
                     } catch (Exception exception) {
                         console.showErrorMessage(String.format("%s failed", getTxnCommand()), exception);
                         IdeaUtil.showNotification(project, getTitle(), String.format("%s failed, Reason: %s", getTxnCommand(), exception.getMessage()), NotificationType.ERROR, null);
@@ -181,6 +183,6 @@ public class LogicSigSendTransactionAction extends AlgoBaseAction {
     }
 
     public String getTxnCommand() {
-        return "Stateless Contract Transaction";
+        return "Stateless Contract";
     }
 }

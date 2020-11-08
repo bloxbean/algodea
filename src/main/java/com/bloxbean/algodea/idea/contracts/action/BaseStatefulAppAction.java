@@ -8,6 +8,7 @@ import com.bloxbean.algodea.idea.contracts.ui.AppTxnDetailsEntryForm;
 import com.bloxbean.algodea.idea.contracts.ui.AppTxnParamEntryDialog;
 import com.bloxbean.algodea.idea.core.action.AlgoBaseAction;
 import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
+import com.bloxbean.algodea.idea.nodeint.model.Result;
 import com.bloxbean.algodea.idea.nodeint.model.TxnDetailsParameters;
 import com.bloxbean.algodea.idea.nodeint.service.LogListenerAdapter;
 import com.bloxbean.algodea.idea.nodeint.service.StatefulContractService;
@@ -50,8 +51,8 @@ public abstract class  BaseStatefulAppAction extends AlgoBaseAction {
         return "Application - " + getApplicationTxnCommand();
     }
 
-    public abstract boolean invokeTransaction(StatefulContractService statefulContractService, Long appId, Account fromAccount,
-                                              TxnDetailsParameters txnDetailsParameters) throws Exception;
+    public abstract Result invokeTransaction(StatefulContractService statefulContractService, Long appId, Account fromAccount,
+                                             TxnDetailsParameters txnDetailsParameters) throws Exception;
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
@@ -124,11 +125,11 @@ public abstract class  BaseStatefulAppAction extends AlgoBaseAction {
                 public void run(@NotNull ProgressIndicator indicator) {
                     console.showInfoMessage(String.format("Starting %s transaction ...", getApplicationTxnCommand()));
                     try {
-                        boolean status = invokeTransaction(sfService, appId, fromAccount, txnDetailsParameters);
+                        Result result = invokeTransaction(sfService, appId, fromAccount, txnDetailsParameters);
 
                         String fromAccountAddress = fromAccount != null ? fromAccount.getAddress().toString(): "";
 
-                        if(status) {
+                        if(result.isSuccessful()) {
                             console.showInfoMessage(String.format("%s was successful with app id : %s, from account: %s",  getApplicationTxnCommand(), appId, fromAccountAddress));
                             IdeaUtil.showNotification(project, getTitle(), String.format("%s was successful", getApplicationTxnCommand()), NotificationType.INFORMATION, null);
                         } else {

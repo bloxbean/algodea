@@ -3,12 +3,14 @@ package com.bloxbean.algodea.idea.nodeint.service;
 import com.algorand.algosdk.account.Account;
 import com.algorand.algosdk.builder.transaction.PaymentTransactionBuilder;
 import com.algorand.algosdk.crypto.Address;
+import com.algorand.algosdk.transaction.SignedTransaction;
 import com.algorand.algosdk.transaction.Transaction;
-import com.algorand.algosdk.v2.client.common.Response;
-import com.algorand.algosdk.v2.client.model.TransactionParametersResponse;
+import com.bloxbean.algodea.idea.nodeint.common.RequestMode;
 import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
+import com.bloxbean.algodea.idea.nodeint.model.Result;
 import com.bloxbean.algodea.idea.nodeint.model.TxnDetailsParameters;
 import com.bloxbean.algodea.idea.util.AlgoConversionUtil;
+import com.bloxbean.algodea.idea.util.JsonUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
 
@@ -20,21 +22,31 @@ public class TransactionService extends AlgoBaseService {
         super(project, logListener);
     }
 
-    public boolean transfer(Account sender, String receiver, Long amount, TxnDetailsParameters txnDetailsParameters) throws Exception {
-        if(sender == null) {
+    public Result transfer(Account sender, String receiver, Long amount, TxnDetailsParameters txnDetailsParameters, RequestMode requestMode) throws Exception {
+        if (sender == null) {
             logListener.error("Sender cannot be null");
-            return false;
+            return Result.error();
         }
 
         PaymentTransactionBuilder paymentTransactionBuilder = Transaction.PaymentTransactionBuilder();
         Transaction txn = populatePaymentTransaction(paymentTransactionBuilder, sender.getAddress(), receiver, amount, txnDetailsParameters);
 
-        if(txn == null) {
+        if (txn == null) {
             logListener.error("Transaction could not be built");
-            return false;
+            return Result.error();
         }
 
-        return postApplicationTransaction(sender, txn);
+        SignedTransaction stxn = signTransaction(sender, txn);
+
+        if (requestMode == null || requestMode.equals(RequestMode.TRANSACTION)) {
+            return postApplicationTransaction(sender, stxn);
+        } else if (requestMode.equals(RequestMode.EXPORT_SIGNED)) {
+            return Result.success(JsonUtil.getPrettyJson(stxn));
+        } else if(requestMode.equals(RequestMode.EXPORT_UNSIGNED)) {
+            return Result.success(JsonUtil.getPrettyJson(txn));
+        } else {
+            return Result.error("Invalid request mode : " + requestMode);
+        }
     }
 
     protected Transaction populatePaymentTransaction(PaymentTransactionBuilder paymentTransactionBuilder, Address fromAccount,
@@ -57,44 +69,12 @@ public class TransactionService extends AlgoBaseService {
         logListener.info("Receiver Address : " + receiver);
         logListener.info(String.format("Amount           : %s Algo ( %d )\n",
                 AlgoConversionUtil.mAlgoToAlgoFormatted(BigInteger.valueOf(amount)), amount));
-        // define sender
-        Address sender = fromAccount;
 
-        logListener.info("Getting node suggested transaction parameters ...");
-        // get node suggested parameters
-        Response<TransactionParametersResponse> transactionParametersResponse = client.TransactionParams().execute(getHeaders()._1(), getHeaders()._2());
-        if(!transactionParametersResponse.isSuccessful()) {
-            printErrorMessage("Unable to get Transaction Params from the node", transactionParametersResponse);
-            return null;
-        }
-
-        TransactionParametersResponse params = transactionParametersResponse.body();
-        logListener.info("Got node suggested transaction parameters.");
-
-        // create unsigned transaction
-        paymentTransactionBuilder
-                .sender(sender)
-                .suggestedParams(params);
-
+        //TODO .. Let's check if the amount setting has to be here
         paymentTransactionBuilder.amount(amount)
                 .receiver(receiver);
 
-        if(txnDetailsParameters.getNote() != null) {
-            paymentTransactionBuilder.note(txnDetailsParameters.getNote());
-        }
-
-        if(txnDetailsParameters.getLease() != null) {
-            paymentTransactionBuilder.lease(txnDetailsParameters.getLease());
-        }
-
-        if(txnDetailsParameters.getFee() != null) {
-            paymentTransactionBuilder.fee(txnDetailsParameters.getFee());
-        }
-
-        if(txnDetailsParameters.getFlatFee() != null) {
-            paymentTransactionBuilder.fee((BigInteger)null);
-            paymentTransactionBuilder.flatFee(txnDetailsParameters.getFlatFee());
-        }
+        populateBaseTransactionDetails(paymentTransactionBuilder, fromAccount, txnDetailsParameters);
 
         return paymentTransactionBuilder.build();
     }
