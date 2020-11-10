@@ -6,8 +6,6 @@ import com.intellij.openapi.ui.ValidationInfo;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public class UpdateAppMainPanel {
     private JTabbedPane tabbedPane1;
@@ -44,29 +42,28 @@ public class UpdateAppMainPanel {
         return txnDetailsEntryForm;
     }
 
-    protected @Nullable List<ValidationInfo> doValidate() {
-
+    protected @Nullable ValidationInfo doValidate() {
         ValidationInfo appTxnValidateInfo = appTxnBaseForm.doValidate();
-        ValidationInfo updateAppEntryValidateInfo = updateAppEntryForm.doValidate();
-        ValidationInfo appTxnDetailsValidateInfo = appTxnDetailsEntryForm.doValidate();
-        ValidationInfo txnDetailsValidateInfo = txnDetailsEntryForm.doValidate();
-
-        List<ValidationInfo> validationInfos = new ArrayList<>();
-
         if(appTxnValidateInfo != null) {
-            validationInfos.add(appTxnValidateInfo);
-        }
-        if(updateAppEntryValidateInfo != null) {
-            validationInfos.add(updateAppEntryValidateInfo);
-        }
-        if(appTxnDetailsValidateInfo != null) {
-            validationInfos.add(appTxnDetailsValidateInfo);
-        }
-        if(txnDetailsValidateInfo != null) {
-            validationInfos.add(txnDetailsValidateInfo);
+            return appTxnValidateInfo;
         }
 
-        return validationInfos;
+        ValidationInfo updateAppEntryValidateInfo = updateAppEntryForm.doValidate();
+        if(updateAppEntryValidateInfo != null) {
+            return updateAppEntryValidateInfo;
+        }
+
+        ValidationInfo appTxnDetailsValidateInfo = appTxnDetailsEntryForm.doValidate();
+        if(appTxnDetailsValidateInfo != null) {
+           return appTxnDetailsValidateInfo;
+        }
+
+        ValidationInfo txnDetailsValidateInfo = txnDetailsEntryForm.doValidate();
+        if(txnDetailsValidateInfo != null) {
+            return txnDetailsValidateInfo;
+        }
+
+        return null;
     }
 
     public JComponent getMainPanel() {

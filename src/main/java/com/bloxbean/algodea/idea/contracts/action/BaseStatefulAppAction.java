@@ -6,7 +6,8 @@ import com.bloxbean.algodea.idea.configuration.service.AlgoProjectState;
 import com.bloxbean.algodea.idea.contracts.ui.AppTxnBaseParamEntryForm;
 import com.bloxbean.algodea.idea.contracts.ui.AppTxnDetailsEntryForm;
 import com.bloxbean.algodea.idea.contracts.ui.AppTxnParamEntryDialog;
-import com.bloxbean.algodea.idea.core.action.AlgoBaseAction;
+import com.bloxbean.algodea.idea.core.action.BaseTxnAction;
+import com.bloxbean.algodea.idea.nodeint.common.RequestMode;
 import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
 import com.bloxbean.algodea.idea.nodeint.model.Result;
 import com.bloxbean.algodea.idea.nodeint.model.TxnDetailsParameters;
@@ -30,7 +31,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 import java.util.List;
 
-public abstract class  BaseStatefulAppAction extends AlgoBaseAction {
+public abstract class  BaseStatefulAppAction extends BaseTxnAction {
     private final static Logger LOG = Logger.getInstance(BaseStatefulAppAction.class);
 
     public BaseStatefulAppAction() {
@@ -45,14 +46,12 @@ public abstract class  BaseStatefulAppAction extends AlgoBaseAction {
 
     public abstract String getApplicationTxnDescription();
 
-    public abstract String getApplicationTxnCommand();
-
     public String getTitle() {
-        return "Application - " + getApplicationTxnCommand();
+        return "Application - " + getTxnCommand();
     }
 
     public abstract Result invokeTransaction(StatefulContractService statefulContractService, Long appId, Account fromAccount,
-                                             TxnDetailsParameters txnDetailsParameters) throws Exception;
+                                             TxnDetailsParameters txnDetailsParameters, RequestMode requestMode) throws Exception;
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
@@ -71,7 +70,7 @@ public abstract class  BaseStatefulAppAction extends AlgoBaseAction {
         boolean ok = dialog.showAndGet();
 
         if(!ok) {
-            IdeaUtil.showNotification(project, getTitle(), getApplicationTxnCommand() + " call was cancelled", NotificationType.WARNING, null);
+            IdeaUtil.showNotification(project, getTitle(), getTxnCommand() + " call was cancelled", NotificationType.WARNING, null);
             return;
         }
 
@@ -90,8 +89,9 @@ public abstract class  BaseStatefulAppAction extends AlgoBaseAction {
         }
 
         try {
+            LogListenerAdapter logListener = new LogListenerAdapter(console);
             StatefulContractService sfService
-                    = new StatefulContractService(project, new LogListenerAdapter(console));
+                    = new StatefulContractService(project, logListener);
 
             AppTxnBaseParamEntryForm appBaseEntryForm = dialog.getAppTxnBaseEntryForm();
             AppTxnDetailsEntryForm appTxnDetailsEntryForm = dialog.getAppTxnDetailsEntryForm();
@@ -119,29 +119,34 @@ public abstract class  BaseStatefulAppAction extends AlgoBaseAction {
             txnDetailsParameters.setFee(generalTxnDetailsParam.getFee());
             txnDetailsParameters.setFlatFee(generalTxnDetailsParam.getFlatFee());
 
+            RequestMode requestMode = dialog.getRequestMode();
             Task.Backgroundable task = new Task.Backgroundable(project, getApplicationTxnDescription()) {
 
                 @Override
                 public void run(@NotNull ProgressIndicator indicator) {
-                    console.showInfoMessage(String.format("Starting %s transaction ...", getApplicationTxnCommand()));
+                    console.showInfoMessage(String.format("Starting %s transaction ...", getTxnCommand()));
                     try {
-                        Result result = invokeTransaction(sfService, appId, fromAccount, txnDetailsParameters);
+                        Result result = invokeTransaction(sfService, appId, fromAccount, txnDetailsParameters, requestMode);
 
                         String fromAccountAddress = fromAccount != null ? fromAccount.getAddress().toString(): "";
 
-                        if(result.isSuccessful()) {
-                            console.showInfoMessage(String.format("%s was successful with app id : %s, from account: %s",  getApplicationTxnCommand(), appId, fromAccountAddress));
-                            IdeaUtil.showNotification(project, getTitle(), String.format("%s was successful", getApplicationTxnCommand()), NotificationType.INFORMATION, null);
+                        if(requestMode == null || requestMode.equals(RequestMode.TRANSACTION)) {
+                            if (result.isSuccessful()) {
+                                console.showInfoMessage(String.format("%s was successful with app id : %s, from account: %s", getTxnCommand(), appId, fromAccountAddress));
+                                IdeaUtil.showNotification(project, getTitle(), String.format("%s was successful", getTxnCommand()), NotificationType.INFORMATION, null);
+                            } else {
+                                console.showErrorMessage(String.format("%s failed", getTxnCommand()));
+                                IdeaUtil.showNotification(project, getTitle(), String.format("%s failed", getTxnCommand()), NotificationType.ERROR, null);
+                            }
                         } else {
-                            console.showErrorMessage(String.format("%s failed", getApplicationTxnCommand()));
-                            IdeaUtil.showNotification(project, getTitle(), String.format("%s failed", getApplicationTxnCommand()), NotificationType.ERROR, null);
+                            processResult(project, module, result, requestMode, logListener);
                         }
                     } catch (Exception exception) {
                         if(LOG.isDebugEnabled()) {
                             LOG.warn(exception);
                         }
-                        console.showErrorMessage(String.format("%s failed", getApplicationTxnCommand()));
-                        IdeaUtil.showNotification(project, getTitle(), String.format("%s failed", getApplicationTxnCommand()), NotificationType.ERROR, null);
+                        console.showErrorMessage(String.format("%s failed", getTxnCommand()));
+                        IdeaUtil.showNotification(project, getTitle(), String.format("%s failed", getTxnCommand()), NotificationType.ERROR, null);
                     }
                 }
             };
@@ -154,7 +159,7 @@ public abstract class  BaseStatefulAppAction extends AlgoBaseAction {
                 LOG.warn(ex);
             }
             console.showErrorMessage(ex.getMessage());
-            IdeaUtil.showNotification(project, getTitle(), String.format("%s failed, reason: %s", getApplicationTxnCommand(), ex.getMessage()), NotificationType.ERROR, null);
+            IdeaUtil.showNotification(project, getTitle(), String.format("%s failed, reason: %s", getTxnCommand(), ex.getMessage()), NotificationType.ERROR, null);
         }
     }
 }

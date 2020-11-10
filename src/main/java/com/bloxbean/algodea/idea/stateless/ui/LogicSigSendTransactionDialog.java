@@ -221,7 +221,7 @@ public class LogicSigSendTransactionDialog extends TxnDialogWrapper {
     }
 
     @Override
-    protected @Nullable ValidationInfo doTransactionInputValidation() {
+    protected ValidationInfo doTransactionInputValidation() {
         if(getReceiverAddress() == null) {
             return new ValidationInfo("Choose or enter a valid account", receiverAccountTf);
         }

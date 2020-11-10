@@ -26,20 +26,23 @@ import com.algorand.algosdk.crypto.Address;
 import com.bloxbean.algodea.idea.account.model.AlgoAccount;
 import com.bloxbean.algodea.idea.account.service.AccountService;
 import com.bloxbean.algodea.idea.configuration.service.AlgoProjectState;
-import com.bloxbean.algodea.idea.contracts.ui.CreateAppDialog;
 import com.bloxbean.algodea.idea.contracts.ui.AppTxnDetailsEntryForm;
-import com.bloxbean.algodea.idea.core.action.AlgoBaseAction;
+import com.bloxbean.algodea.idea.contracts.ui.CreateAppDialog;
+import com.bloxbean.algodea.idea.contracts.ui.CreateAppEntryForm;
+import com.bloxbean.algodea.idea.core.action.BaseTxnAction;
+import com.bloxbean.algodea.idea.core.action.util.AlgoContractModuleHelper;
+import com.bloxbean.algodea.idea.core.service.AlgoCacheService;
+import com.bloxbean.algodea.idea.nodeint.common.RequestMode;
+import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
+import com.bloxbean.algodea.idea.nodeint.model.Result;
 import com.bloxbean.algodea.idea.nodeint.model.TxnDetailsParameters;
+import com.bloxbean.algodea.idea.nodeint.service.LogListener;
+import com.bloxbean.algodea.idea.nodeint.service.LogListenerAdapter;
+import com.bloxbean.algodea.idea.nodeint.service.StatefulContractService;
 import com.bloxbean.algodea.idea.pkg.AlgoPkgJsonService;
 import com.bloxbean.algodea.idea.pkg.exception.PackageJsonException;
 import com.bloxbean.algodea.idea.pkg.model.AlgoPackageJson;
 import com.bloxbean.algodea.idea.toolwindow.AlgoConsole;
-import com.bloxbean.algodea.idea.contracts.ui.CreateAppEntryForm;
-import com.bloxbean.algodea.idea.core.action.util.AlgoContractModuleHelper;
-import com.bloxbean.algodea.idea.core.service.AlgoCacheService;
-import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
-import com.bloxbean.algodea.idea.nodeint.service.LogListenerAdapter;
-import com.bloxbean.algodea.idea.nodeint.service.StatefulContractService;
 import com.bloxbean.algodea.idea.transaction.ui.TransactionDtlsEntryForm;
 import com.bloxbean.algodea.idea.util.AlgoModuleUtils;
 import com.bloxbean.algodea.idea.util.IdeaUtil;
@@ -64,11 +67,21 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.util.List;
 
-public class CreateStatefulAppAction extends AlgoBaseAction {
+public class CreateStatefulAppAction extends BaseTxnAction {
     private final static Logger LOG = Logger.getInstance(CreateStatefulAppAction.class);
 
     public CreateStatefulAppAction() {
         super(AllIcons.Actions.Install);
+    }
+
+    @Override
+    protected String getTitle() {
+        return "Create Application";
+    }
+
+    @Override
+    protected String getTxnCommand() {
+        return "Create App";
     }
 
     @Override
@@ -86,8 +99,9 @@ public class CreateStatefulAppAction extends AlgoBaseAction {
         AlgoConsole console = AlgoConsole.getConsole(project);
         console.clearAndshow();
         try {
+            LogListener logListener = new LogListenerAdapter(console);
             StatefulContractService sfService
-                    = new StatefulContractService(project, new LogListenerAdapter(console));
+                    = new StatefulContractService(project, logListener);
 
             AlgoProjectState projectState = AlgoProjectState.getInstance(project);
             if (projectState == null) {
@@ -225,34 +239,40 @@ public class CreateStatefulAppAction extends AlgoBaseAction {
             final String appProgText = appProgSource;
             final String clearProgText = clearProgSource;
 
+            RequestMode requestMode = createDialog.getRequestMode();
+
             Task.Backgroundable task = new Task.Backgroundable(project, "Creating Stateful Smart Contract app") {
 
                 @Override
                 public void run(@NotNull ProgressIndicator indicator) {
                     console.showInfoMessage("Creating stateful smart contract ...");
-                    Long appId = null;
+                    Result<Long> result = null;
                     try {
-                        appId = sfService.createApp(appProgText, clearProgText, account,
+                        result = sfService.createApp(appProgText, clearProgText, account,
                                 globalByteslices, globalInts, localByteslices, localInts,
-                                txnDetailsParameters);
+                                txnDetailsParameters, requestMode);
                     } catch (Exception exception) {
                         if(LOG.isDebugEnabled()) {
                             LOG.warn(exception);
                         }
                     }
-                    if (appId != null) {
-                        LOG.info(appId + "");
 
-                        String genesisHash = sfService.getNetworkGenesisHash();
-                        if(StringUtil.isEmpty(genesisHash))
-                            genesisHash = deploymentServerId;
-                        cacheService.addAppId(genesisHash, contractName, String.valueOf(appId)) ;
+                    if(requestMode == null || requestMode.equals(RequestMode.TRANSACTION)) {
+                        if (result != null && result.getValue() != null) {
+                            Long appId = result.getValue();
+                            String genesisHash = sfService.getNetworkGenesisHash();
+                            if(StringUtil.isEmpty(genesisHash))
+                                genesisHash = deploymentServerId;
+                            cacheService.addAppId(genesisHash, contractName, String.valueOf(appId)) ;
 
-                        console.showInfoMessage("Stateful smart contract app created with app Id : " + appId);
-                        IdeaUtil.showNotification(project, "Create App", String.format("%s App Created Successfully with appId: %s", contractName, appId), NotificationType.INFORMATION, null);
+                            console.showInfoMessage("Stateful smart contract app created with app Id : " + appId);
+                            IdeaUtil.showNotification(project, "Create App", String.format("%s App Created Successfully with appId: %s", contractName, appId), NotificationType.INFORMATION, null);
+                        } else {
+                            console.showErrorMessage("Create App failed");
+                            IdeaUtil.showNotification(project, "Create App", "Create App failed", NotificationType.ERROR, null);
+                        }
                     } else {
-                        console.showErrorMessage("Create App failed");
-                        IdeaUtil.showNotification(project, "Create App", "Create App failed", NotificationType.ERROR, null);
+                        processResult(project, module, result, requestMode, logListener);
                     }
                 }
             };

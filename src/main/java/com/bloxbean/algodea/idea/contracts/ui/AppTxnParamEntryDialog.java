@@ -1,16 +1,14 @@
 package com.bloxbean.algodea.idea.contracts.ui;
 
+import com.bloxbean.algodea.idea.core.action.ui.TxnDialogWrapper;
 import com.bloxbean.algodea.idea.transaction.ui.TransactionDtlsEntryForm;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.ValidationInfo;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import java.util.List;
 
-public class AppTxnParamEntryDialog extends DialogWrapper {
+public class AppTxnParamEntryDialog extends TxnDialogWrapper {
     AppTxnMainPanel appTxnMainPanel;
 
     public AppTxnParamEntryDialog(Project project, String title) {
@@ -38,7 +36,7 @@ public class AppTxnParamEntryDialog extends DialogWrapper {
     }
 
     @Override
-    protected @NotNull List<ValidationInfo> doValidateAll() {
+    protected ValidationInfo doTransactionInputValidation() {
         return appTxnMainPanel.doValidate();
     }
 }

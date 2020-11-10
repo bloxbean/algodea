@@ -35,7 +35,7 @@ public class TransferDialog extends TxnDialogWrapper {
     }
 
     @Override
-    protected @Nullable ValidationInfo doTransactionInputValidation() {
+    protected ValidationInfo doTransactionInputValidation() {
         ValidationInfo validatedInfo = transferTxnForm.doValidate();
         if( validatedInfo == null)
             return transactionDtlsEntryForm.doValidate();

@@ -445,7 +445,7 @@ public class AssetConfigurationDialog extends TxnDialogWrapper {
     }
 
     @Override
-    protected @Nullable ValidationInfo doTransactionInputValidation() {
+    protected ValidationInfo doTransactionInputValidation() {
 
         if(AssetActionType.CREATE.equals(actionType)) {
             //Assets form validation

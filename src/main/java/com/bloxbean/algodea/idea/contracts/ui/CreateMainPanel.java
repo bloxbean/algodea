@@ -39,25 +39,23 @@ public class CreateMainPanel {
         return txnDtlEntryForm;
     }
 
-    protected @Nullable List<ValidationInfo> doValidate() {
-
+    protected @Nullable ValidationInfo doValidate() {
         ValidationInfo updateAppEntryValidateInfo = createAppEntryForm.doValidate();
-        ValidationInfo appTxnDetailsValidateInfo = appTxnDetailsEntryForm.doValidate();
-        ValidationInfo txnDetailsValidateInfo = txnDtlEntryForm.doValidate();
-
-        List<ValidationInfo> validationInfos = new ArrayList<>();
         if(updateAppEntryValidateInfo != null) {
-            validationInfos.add(updateAppEntryValidateInfo);
+            return updateAppEntryValidateInfo;
         }
+
+        ValidationInfo appTxnDetailsValidateInfo = appTxnDetailsEntryForm.doValidate();
         if(appTxnDetailsValidateInfo != null) {
-            validationInfos.add(appTxnDetailsValidateInfo);
+            return appTxnDetailsValidateInfo;
         }
 
+        ValidationInfo txnDetailsValidateInfo = txnDtlEntryForm.doValidate();
         if(txnDetailsValidateInfo != null) {
-            validationInfos.add(txnDetailsValidateInfo);
+            return txnDetailsValidateInfo;
         }
 
-        return validationInfos;
+        return null;
     }
 
     public JComponent getMainPanel() {

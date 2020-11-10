@@ -8,11 +8,14 @@ import com.bloxbean.algodea.idea.contracts.ui.AppTxnDetailsEntryForm;
 import com.bloxbean.algodea.idea.contracts.ui.UpdateAppDialog;
 import com.bloxbean.algodea.idea.contracts.ui.UpdateAppEntryForm;
 import com.bloxbean.algodea.idea.core.action.AlgoBaseAction;
+import com.bloxbean.algodea.idea.core.action.BaseTxnAction;
 import com.bloxbean.algodea.idea.core.action.util.AlgoContractModuleHelper;
 import com.bloxbean.algodea.idea.core.service.AlgoCacheService;
+import com.bloxbean.algodea.idea.nodeint.common.RequestMode;
 import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
 import com.bloxbean.algodea.idea.nodeint.model.Result;
 import com.bloxbean.algodea.idea.nodeint.model.TxnDetailsParameters;
+import com.bloxbean.algodea.idea.nodeint.service.LogListener;
 import com.bloxbean.algodea.idea.nodeint.service.LogListenerAdapter;
 import com.bloxbean.algodea.idea.nodeint.service.StatefulContractService;
 import com.bloxbean.algodea.idea.pkg.AlgoPkgJsonService;
@@ -42,11 +45,21 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.util.List;
 
-public class UpdateStatefulAppAction extends AlgoBaseAction {
+public class UpdateStatefulAppAction extends BaseTxnAction {
     private final static Logger LOG = Logger.getInstance(UpdateStatefulAppAction.class);
 
     public UpdateStatefulAppAction() {
         super(AllIcons.Actions.EditSource);
+    }
+
+    @Override
+    protected String getTitle() {
+        return "Update App";
+    }
+
+    @Override
+    protected String getTxnCommand() {
+        return "Update App";
     }
 
     @Override
@@ -64,8 +77,9 @@ public class UpdateStatefulAppAction extends AlgoBaseAction {
         AlgoConsole console = AlgoConsole.getConsole(project);
         console.clearAndshow();
         try {
+            LogListener logListener = new LogListenerAdapter(console);
             StatefulContractService sfService
-                    = new StatefulContractService(project, new LogListenerAdapter(console));
+                    = new StatefulContractService(project, logListener);
 
             AlgoProjectState projectState = AlgoProjectState.getInstance(project);
             if(projectState == null) {
@@ -211,6 +225,8 @@ public class UpdateStatefulAppAction extends AlgoBaseAction {
             final String appProgText = appProgSource;
             final String clearProgText = clearProgSource;
 
+            RequestMode requestMode = dialog.getRequestMode();
+
             Task.Backgroundable task = new Task.Backgroundable(project, "Updating Stateful Smart Contract app") {
 
                 @Override
@@ -219,26 +235,31 @@ public class UpdateStatefulAppAction extends AlgoBaseAction {
                     Long appId = appTxnBaseForm.getAppId();
                     Result result = null;
                     try {
-                       result = sfService.updateApp(appId, account, appProgText, clearProgText, txnDetailsParameters);
+                       result = sfService.updateApp(appId, account, appProgText, clearProgText, txnDetailsParameters, requestMode);
                     } catch (Exception exception) {
                         if(LOG.isDebugEnabled()) {
                             LOG.warn(exception);
                         }
                     }
-                    if(result != null && result.isSuccessful()) {
-                        LOG.info(appId + "");
 
-                        String genesisHash = sfService.getNetworkGenesisHash();
-                        if(StringUtil.isEmpty(genesisHash))
-                            genesisHash = deploymentServerId;
+                    if(requestMode == null || requestMode.equals(RequestMode.TRANSACTION)) {
+                        if (result != null && result.isSuccessful()) {
+                            LOG.info(appId + "");
 
-                        cacheService.addAppId(genesisHash, contractName, String.valueOf(appId));
+                            String genesisHash = sfService.getNetworkGenesisHash();
+                            if (StringUtil.isEmpty(genesisHash))
+                                genesisHash = deploymentServerId;
 
-                        console.showInfoMessage("Stateful smart contract app updated with app Id : " + appId);
-                        IdeaUtil.showNotification(project, "Update App", String.format("%s App Created Successfully with appId: %s", contractName, appId), NotificationType.INFORMATION, null);
+                            cacheService.addAppId(genesisHash, contractName, String.valueOf(appId));
+
+                            console.showInfoMessage("Stateful smart contract app updated with app Id : " + appId);
+                            IdeaUtil.showNotification(project, "Update App", String.format("%s App Created Successfully with appId: %s", contractName, appId), NotificationType.INFORMATION, null);
+                        } else {
+                            console.showErrorMessage("Update App failed");
+                            IdeaUtil.showNotification(project, "Update App", "Update App failed", NotificationType.ERROR, null);
+                        }
                     } else {
-                        console.showErrorMessage("Update App failed");
-                        IdeaUtil.showNotification(project, "Update App", "Update App failed", NotificationType.ERROR, null);
+                        processResult(project, module, result, requestMode, logListener);
                     }
                 }
             };

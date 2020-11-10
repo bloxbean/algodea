@@ -28,14 +28,15 @@ import com.algorand.algosdk.crypto.TEALProgram;
 import com.algorand.algosdk.logic.StateSchema;
 import com.algorand.algosdk.transaction.SignedTransaction;
 import com.algorand.algosdk.transaction.Transaction;
-import com.algorand.algosdk.util.Encoder;
 import com.algorand.algosdk.v2.client.common.Response;
-import com.algorand.algosdk.v2.client.model.*;
-import com.bloxbean.algodea.idea.common.Tuple;
+import com.algorand.algosdk.v2.client.model.Application;
+import com.algorand.algosdk.v2.client.model.ApplicationLocalState;
+import com.algorand.algosdk.v2.client.model.PendingTransactionResponse;
+import com.algorand.algosdk.v2.client.model.TransactionParametersResponse;
+import com.bloxbean.algodea.idea.nodeint.common.RequestMode;
 import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
 import com.bloxbean.algodea.idea.nodeint.model.Result;
 import com.bloxbean.algodea.idea.nodeint.model.TxnDetailsParameters;
-import com.bloxbean.algodea.idea.nodeint.util.NetworkHelper;
 import com.bloxbean.algodea.idea.util.JsonUtil;
 import com.intellij.openapi.project.Project;
 
@@ -46,9 +47,9 @@ public class StatefulContractService extends AlgoBaseService {
         super(project, logListener);
     }
 
-    public Long createApp(String approvalProgram, String clearStateProgram, Account creator,
+    public Result<Long> createApp(String approvalProgram, String clearStateProgram, Account creator,
                           int globalBytes, int globalInts, int localBytes, int localInts,
-                          TxnDetailsParameters txnDetailsParameters) throws Exception {
+                          TxnDetailsParameters txnDetailsParameters, RequestMode requestMode) throws Exception {
         if(creator == null) {
             logListener.error("Creator account cannot be null");
             return null;
@@ -74,12 +75,12 @@ public class StatefulContractService extends AlgoBaseService {
             logListener.info("Clear State Program compiled successfully.");
         }
 
-        Long appId = _createApp(creator, new TEALProgram(approvalProgramBytes), new TEALProgram(clearProgramBytes),
-                globalInts, globalBytes, localInts, localBytes, txnDetailsParameters);
-        return appId;
+        return _createApp(creator, new TEALProgram(approvalProgramBytes), new TEALProgram(clearProgramBytes),
+                globalInts, globalBytes, localInts, localBytes, txnDetailsParameters, requestMode);
     }
 
-    public Result updateApp(Long appId, Account fromAccount, String approvalProgram, String clearStateProgram, TxnDetailsParameters txnDetailsParameters) throws Exception {
+    public Result updateApp(Long appId, Account fromAccount, String approvalProgram, String clearStateProgram
+            , TxnDetailsParameters txnDetailsParameters, RequestMode requestMode) throws Exception {
         if(fromAccount == null) {
             logListener.error("From account cannot be null");
             return Result.error();
@@ -116,10 +117,11 @@ public class StatefulContractService extends AlgoBaseService {
         }
 
         SignedTransaction stxn = signTransaction(fromAccount, txn);
-        return postApplicationTransaction(fromAccount, stxn);
+
+        return processContractTransaction(fromAccount, txn, stxn, requestMode);
     }
 
-    public Result optIn(Long appId, Account fromAccount, TxnDetailsParameters txnDetailsParameters)  throws Exception {
+    public Result optIn(Long appId, Account fromAccount, TxnDetailsParameters txnDetailsParameters, RequestMode requestMode)  throws Exception {
 
         ApplicationOptInTransactionBuilder txnBuilder = Transaction.ApplicationOptInTransactionBuilder();
 
@@ -130,10 +132,11 @@ public class StatefulContractService extends AlgoBaseService {
         }
 
         SignedTransaction stxn = signTransaction(fromAccount, txn);
-        return postApplicationTransaction(fromAccount, stxn);
+
+        return processContractTransaction(fromAccount, txn, stxn, requestMode);
     }
 
-    public Result call(Long appId, Account fromAccount, TxnDetailsParameters txnDetailsParameters) throws Exception {
+    public Result call(Long appId, Account fromAccount, TxnDetailsParameters txnDetailsParameters, RequestMode requestMode) throws Exception {
         ApplicationCallTransactionBuilder txnBuilder = Transaction.ApplicationCallTransactionBuilder();
 
         Transaction txn = populateBaseAppTransaction( txnBuilder, appId, fromAccount, txnDetailsParameters);
@@ -143,10 +146,11 @@ public class StatefulContractService extends AlgoBaseService {
         }
 
         SignedTransaction stxn = signTransaction(fromAccount, txn);
-        return postApplicationTransaction(fromAccount, stxn);
+
+        return processContractTransaction(fromAccount, txn, stxn, requestMode);
     }
 
-    public Result closeOut(Long appId, Account fromAccount, TxnDetailsParameters txnDetailsParameters) throws Exception {
+    public Result closeOut(Long appId, Account fromAccount, TxnDetailsParameters txnDetailsParameters, RequestMode requestMode) throws Exception {
         ApplicationCloseTransactionBuilder txnBuilder = Transaction.ApplicationCloseTransactionBuilder();
 
         Transaction txn = populateBaseAppTransaction( txnBuilder, appId, fromAccount, txnDetailsParameters);
@@ -156,10 +160,11 @@ public class StatefulContractService extends AlgoBaseService {
         }
 
         SignedTransaction stxn = signTransaction(fromAccount, txn);
-        return postApplicationTransaction(fromAccount, stxn);
+
+        return processContractTransaction(fromAccount, txn, stxn, requestMode);
     }
 
-    public Result clear(Long appId, Account fromAccount, TxnDetailsParameters txnDetailsParameters) throws Exception {
+    public Result clear(Long appId, Account fromAccount, TxnDetailsParameters txnDetailsParameters, RequestMode requestMode) throws Exception {
         ApplicationClearTransactionBuilder txnBuilder = Transaction.ApplicationClearTransactionBuilder();
 
         Transaction txn = populateBaseAppTransaction( txnBuilder, appId, fromAccount, txnDetailsParameters);
@@ -169,10 +174,11 @@ public class StatefulContractService extends AlgoBaseService {
         }
 
         SignedTransaction stxn = signTransaction(fromAccount, txn);
-        return postApplicationTransaction(fromAccount, stxn);
+
+        return processContractTransaction(fromAccount, txn, stxn, requestMode);
     }
 
-    public Result delete(Long appId, Account fromAccount, TxnDetailsParameters txnDetailsParameters) throws Exception {
+    public Result delete(Long appId, Account fromAccount, TxnDetailsParameters txnDetailsParameters, RequestMode requestMode) throws Exception {
         ApplicationDeleteTransactionBuilder txnBuilder = Transaction.ApplicationDeleteTransactionBuilder();
 
         Transaction txn = populateBaseAppTransaction( txnBuilder, appId, fromAccount, txnDetailsParameters);
@@ -182,7 +188,8 @@ public class StatefulContractService extends AlgoBaseService {
         }
 
         SignedTransaction stxn = signTransaction(fromAccount, txn);
-        return postApplicationTransaction(fromAccount, stxn);
+
+        return processContractTransaction(fromAccount, txn, stxn, requestMode);
     }
 
     public void readLocalState(Account account, Long appId) throws Exception {
@@ -233,8 +240,9 @@ public class StatefulContractService extends AlgoBaseService {
     }
 
 
-    private Long _createApp(Account creator, TEALProgram approvalProgramSource,
-                          TEALProgram clearProgramSource, int globalInts, int globalBytes, int localInts, int localBytes, TxnDetailsParameters txnDetailsParameters)
+    private Result<Long> _createApp(Account creator, TEALProgram approvalProgramSource,
+                          TEALProgram clearProgramSource, int globalInts, int globalBytes, int localInts, int localBytes,
+                                    TxnDetailsParameters txnDetailsParameters, RequestMode requestMode)
             throws Exception {
         // define sender as creator
         Address sender = creator.getAddress();
@@ -269,6 +277,22 @@ public class StatefulContractService extends AlgoBaseService {
         SignedTransaction signedTxn = creator.signTransaction(txn);
         logListener.info("Signed transaction with txid: " + signedTxn.transactionID);
 
+        if (requestMode == null || requestMode.equals(RequestMode.TRANSACTION)) {
+            PendingTransactionResponse transactionResponse = postTransaction(signedTxn);
+
+            if (transactionResponse == null) return Result.error();
+            else {
+                logListener.info("Created new app-id: " + transactionResponse.applicationIndex);
+                return Result.success(JsonUtil.getPrettyJson(transactionResponse)).withValue(transactionResponse.applicationIndex);
+            }
+        } else if (requestMode.equals(RequestMode.EXPORT_SIGNED)) {
+            return Result.success(JsonUtil.getPrettyJson(signedTxn));
+        } else if(requestMode.equals(RequestMode.EXPORT_UNSIGNED)) {
+            return Result.success(JsonUtil.getPrettyJson(txn));
+        } else {
+            return Result.error("Invalid request mode : " + requestMode);
+        }
+        /**
         // send to network
         byte[] encodedTxBytes = Encoder.encodeToMsgPack(signedTxn);
         logListener.info(String.format("Posting transaction to the network (%s) ...", client.getHost()));
@@ -308,7 +332,18 @@ public class StatefulContractService extends AlgoBaseService {
         Long appId = pTrx.applicationIndex;
         logListener.info("Created new app-id: " + appId);
 
-        return appId;
+        return appId;**/
     }
 
+    private Result processContractTransaction(Account fromAccount, Transaction txn, SignedTransaction stxn, RequestMode requestMode) throws Exception {
+        if (requestMode == null || requestMode.equals(RequestMode.TRANSACTION)) {
+            return postApplicationTransaction(fromAccount, stxn);
+        } else if (requestMode.equals(RequestMode.EXPORT_SIGNED)) {
+            return Result.success(JsonUtil.getPrettyJson(stxn));
+        } else if(requestMode.equals(RequestMode.EXPORT_UNSIGNED)) {
+            return Result.success(JsonUtil.getPrettyJson(txn));
+        } else {
+            return Result.error("Invalid request mode : " + requestMode);
+        }
+    }
 }

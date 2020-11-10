@@ -1,19 +1,17 @@
 package com.bloxbean.algodea.idea.contracts.ui;
 
 import com.bloxbean.algodea.idea.account.model.AlgoAccount;
+import com.bloxbean.algodea.idea.core.action.ui.TxnDialogWrapper;
 import com.bloxbean.algodea.idea.transaction.ui.TransactionDtlsEntryForm;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.ValidationInfo;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import java.util.List;
 
-public class CreateAppDialog extends DialogWrapper {
+public class CreateAppDialog extends TxnDialogWrapper {
     private CreateMainPanel createMainPanel;
 
     public CreateAppDialog(Project project,
@@ -25,7 +23,7 @@ public class CreateAppDialog extends DialogWrapper {
     }
 
     @Override
-    protected @NotNull List<ValidationInfo> doValidateAll() {
+    protected ValidationInfo doTransactionInputValidation() {
         return createMainPanel.doValidate();
     }
 
@@ -58,4 +56,5 @@ public class CreateAppDialog extends DialogWrapper {
         }
         super.doOKAction();
     }
+
 }

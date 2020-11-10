@@ -18,12 +18,12 @@ public abstract class TxnDialogWrapper extends DialogWrapper {
 
     protected TxnDialogWrapper(@Nullable Project project, boolean canBeParent) {
         super(project, canBeParent);
-        exportSignedAction = new ExportTransactionAction("Export (Signed)", RequestMode.EXPORT_SIGNED);
-        exportUnsignedAction = new ExportTransactionAction("Export (Unsigned)", RequestMode.EXPORT_UNSIGNED);
+        exportSignedAction = new ExportTransactionAction("Export signed Tx", RequestMode.EXPORT_SIGNED);
+        exportUnsignedAction = new ExportTransactionAction("Export Tx", RequestMode.EXPORT_UNSIGNED);
     }
 
     protected TxnDialogWrapper(@Nullable Project project) {
-        super(project, true);
+        this(project, true);
     }
 
     @Override

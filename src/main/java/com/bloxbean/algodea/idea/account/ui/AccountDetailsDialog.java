@@ -6,6 +6,7 @@ import com.algorand.algosdk.v2.client.model.Asset;
 import com.bloxbean.algodea.idea.account.model.AlgoAccount;
 import com.bloxbean.algodea.idea.account.service.AccountService;
 import com.bloxbean.algodea.idea.configuration.action.ConfigurationAction;
+import com.bloxbean.algodea.idea.nodeint.common.RequestMode;
 import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
 import com.bloxbean.algodea.idea.nodeint.model.AccountAsset;
 import com.bloxbean.algodea.idea.nodeint.model.Result;
@@ -232,7 +233,7 @@ public class AccountDetailsDialog extends DialogWrapper {
                     try {
                         com.algorand.algosdk.account.Account account = new com.algorand.algosdk.account.Account(algoAccount.getMnemonic());
 
-                        Result result = statefulContractService.delete(appId, account, new TxnDetailsParameters());
+                        Result result = statefulContractService.delete(appId, account, new TxnDetailsParameters(), RequestMode.TRANSACTION);
                         if (result != null && result.isSuccessful()) {
                             showMessage("Application deleted successfully, App Id: " + appId, "Application Delete", false);
                             createdAppsCB.removeItem(appId);

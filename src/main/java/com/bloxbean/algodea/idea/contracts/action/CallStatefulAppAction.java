@@ -1,6 +1,7 @@
 package com.bloxbean.algodea.idea.contracts.action;
 
 import com.algorand.algosdk.account.Account;
+import com.bloxbean.algodea.idea.nodeint.common.RequestMode;
 import com.bloxbean.algodea.idea.nodeint.model.Result;
 import com.bloxbean.algodea.idea.nodeint.model.TxnDetailsParameters;
 import com.bloxbean.algodea.idea.nodeint.service.StatefulContractService;
@@ -23,12 +24,13 @@ public class CallStatefulAppAction extends BaseStatefulAppAction {
     }
 
     @Override
-    public String getApplicationTxnCommand() {
+    public String getTxnCommand() {
         return "Call (NoOp)";
     }
 
     @Override
-    public Result invokeTransaction(StatefulContractService sfService, Long appId, Account fromAccount, TxnDetailsParameters txnDetailsParameters) throws Exception {
-        return sfService.call(appId, fromAccount, txnDetailsParameters);
+    public Result invokeTransaction(StatefulContractService sfService, Long appId, Account fromAccount,
+                                    TxnDetailsParameters txnDetailsParameters, RequestMode requestMode) throws Exception {
+        return sfService.call(appId, fromAccount, txnDetailsParameters, requestMode);
     }
 }
