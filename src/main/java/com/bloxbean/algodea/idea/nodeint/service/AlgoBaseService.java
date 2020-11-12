@@ -152,6 +152,12 @@ public class AlgoBaseService {
     protected Result postApplicationTransaction(Account fromAccount, SignedTransaction signedTxn) throws Exception {
         // send to network
         byte[] encodedTxBytes = Encoder.encodeToMsgPack(signedTxn);
+        return postRawTransaction(encodedTxBytes);
+
+    }
+
+    @NotNull
+    protected Result postRawTransaction(byte[] encodedTxBytes) throws Exception {
         logListener.info(String.format("Posting transaction to the network (%s) ...", client.getHost()));
 
         Tuple<String[], String[]> headers = algoConnectionFactory.getHeadersForBinaryContent();
@@ -186,7 +192,6 @@ public class AlgoBaseService {
         } else {
             return Result.success(null);
         }
-
     }
 
     protected  SignedTransaction signTransaction(TransactionSigner signer, Transaction txn) throws Exception {

@@ -49,6 +49,13 @@ public class TransactionService extends AlgoBaseService {
         }
     }
 
+    public Result atomicTransfer(byte[] groupTransactions) throws Exception{
+        if(groupTransactions == null || groupTransactions.length == 0)
+            return Result.error("Empty group transaction bytes");
+
+        return postRawTransaction(groupTransactions);
+    }
+
     protected Transaction populatePaymentTransaction(PaymentTransactionBuilder paymentTransactionBuilder, Address fromAccount,
                                                      String receiver, Long amount, TxnDetailsParameters txnDetailsParameters) throws Exception {
         if(fromAccount == null) {

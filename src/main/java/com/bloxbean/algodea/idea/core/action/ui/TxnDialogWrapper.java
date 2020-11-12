@@ -29,8 +29,8 @@ public abstract class TxnDialogWrapper extends DialogWrapper {
     @Override
     protected @NotNull Action[] createLeftSideActions() {
         return new Action[] {
-               exportSignedAction,
-                exportUnsignedAction
+                exportUnsignedAction,
+                exportSignedAction
         };
     }
 
