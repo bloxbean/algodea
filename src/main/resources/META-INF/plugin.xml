@@ -260,6 +260,7 @@
                 description="Transfer Algo">
             <add-to-group group-id="com.bloxbean.algodea.idea.core.action.AlgoActionGroup"
                           relative-to-action="com.bloxbean.algodea.idea.atomic.action.AtomicTransferAction" anchor="before"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl T" second-keystroke="X"/>
         </action>
 
         <action id="com.bloxbean.algodea.idea.atomic.action.AtomicTransferAction" class="com.bloxbean.algodea.idea.atomic.action.AtomicTransferAction" text="Atomic Transfer"

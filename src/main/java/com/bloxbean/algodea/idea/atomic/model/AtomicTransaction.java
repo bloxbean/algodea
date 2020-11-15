@@ -2,7 +2,8 @@ package com.bloxbean.algodea.idea.atomic.model;
 
 import com.algorand.algosdk.transaction.SignedTransaction;
 import com.algorand.algosdk.transaction.Transaction;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.algorand.algosdk.util.Encoder;
+import com.intellij.openapi.util.io.FileUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -45,8 +46,8 @@ public class AtomicTransaction {
         if(file == null || !file.exists())
             return null;
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        Transaction transaction = objectMapper.readValue(file, Transaction.class);
+        String content = FileUtil.loadFile(file);
+        Transaction transaction = Encoder.decodeFromJson(content, Transaction.class);
 
         AtomicTransaction atomicTransaction = new AtomicTransaction(file.getAbsolutePath());
         atomicTransaction.setTransaction(transaction);

@@ -164,7 +164,7 @@ public class AlgoBaseService {
         Response<PostTransactionsResponse> postTransactionsResponse = client.RawTransaction().rawtxn(encodedTxBytes).execute(headers._1(), headers._2());
         if(!postTransactionsResponse.isSuccessful()) {
             printErrorMessage("Transaction could not be posted to the network", postTransactionsResponse);
-            return Result.error();
+            return Result.error(postTransactionsResponse.message());
         }
 
         String id = postTransactionsResponse.body().txId;

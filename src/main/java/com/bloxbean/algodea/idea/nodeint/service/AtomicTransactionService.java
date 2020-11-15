@@ -15,15 +15,17 @@ public class AtomicTransactionService {
 //        super(project, logListener);
 //    }
 
-    public static void assignGroup(List<Transaction> transactions) throws IOException {
+    public static Digest assignGroup(List<Transaction> transactions) throws IOException {
         if(transactions == null || transactions.size() == 0)
-            return;
+            return null;
 
         Digest gid = TxGroup.computeGroupID(transactions.toArray(new Transaction[0]));
 
         for(Transaction txn: transactions) {
             txn.assignGroupID(gid);
         }
+
+        return gid;
     }
 
     public static byte[] assembleTransactionGroup(List<SignedTransaction> signTransactions) throws IOException {

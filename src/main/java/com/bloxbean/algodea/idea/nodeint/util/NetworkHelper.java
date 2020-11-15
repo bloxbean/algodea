@@ -2,6 +2,8 @@ package com.bloxbean.algodea.idea.nodeint.util;
 
 import com.intellij.openapi.util.text.StringUtil;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -43,6 +45,20 @@ public class NetworkHelper {
         if(StringUtil.isEmpty(url)) return null;
 
         return url + "/asset/" + assetId;
+    }
+
+    public String getGroupUrl(String genesisHash, String group) {
+        String url = getExplorerBaseUrl(genesisHash);
+        if(StringUtil.isEmpty(url)) return null;
+
+        if(group != null) {
+            try {
+                group = URLEncoder.encode(group, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+
+            }
+        }
+        return url + "/tx/group/" + group;
     }
 
 }

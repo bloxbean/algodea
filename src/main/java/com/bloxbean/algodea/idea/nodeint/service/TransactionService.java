@@ -9,6 +9,7 @@ import com.bloxbean.algodea.idea.nodeint.common.RequestMode;
 import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
 import com.bloxbean.algodea.idea.nodeint.model.Result;
 import com.bloxbean.algodea.idea.nodeint.model.TxnDetailsParameters;
+import com.bloxbean.algodea.idea.nodeint.util.NetworkHelper;
 import com.bloxbean.algodea.idea.util.AlgoConversionUtil;
 import com.bloxbean.algodea.idea.util.JsonUtil;
 import com.intellij.openapi.project.Project;
@@ -49,11 +50,18 @@ public class TransactionService extends AlgoBaseService {
         }
     }
 
-    public Result atomicTransfer(byte[] groupTransactions) throws Exception{
+    public Result atomicTransfer(String group, byte[] groupTransactions) throws Exception{
         if(groupTransactions == null || groupTransactions.length == 0)
             return Result.error("Empty group transaction bytes");
 
-        return postRawTransaction(groupTransactions);
+        Result result = postRawTransaction(groupTransactions);
+
+        if(result.isSuccessful()) {
+            if (NetworkHelper.getInstance().getExplorerBaseUrl(getNetworkGenesisHash()) != null)
+                logListener.info("Check group details here : " + NetworkHelper.getInstance().getGroupUrl(getNetworkGenesisHash(), group));
+        }
+
+        return result;
     }
 
     protected Transaction populatePaymentTransaction(PaymentTransactionBuilder paymentTransactionBuilder, Address fromAccount,

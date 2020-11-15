@@ -45,6 +45,7 @@ public class AtomicTransferAction extends AlgoBaseAction {
             }
 
             byte[] groupTxnBytes = dialog.getGroupTransactionBytes();
+            String groupId = dialog.getGroupId();
 
             LogListener logListener = new LogListenerAdapter(console);
             TransactionService transactionService = new TransactionService(project, logListener);
@@ -57,7 +58,7 @@ public class AtomicTransferAction extends AlgoBaseAction {
                     try {
                         Result result = null;
 
-                        result = transactionService.atomicTransfer(groupTxnBytes);
+                        result = transactionService.atomicTransfer(groupId, groupTxnBytes);
 
                         if (result.isSuccessful()) {
                                 console.showInfoMessage("Atomic transfer completed successfully");
@@ -82,9 +83,10 @@ public class AtomicTransferAction extends AlgoBaseAction {
             //deploymentTargetNotConfigured.printStackTrace();
             warnDeploymentTargetNotConfigured(project, getTitle());
         } catch (Exception ex) {
-            if (LOG.isDebugEnabled()) {
-                LOG.error(ex);
-            }
+            LOG.warn(ex);
+//            if (LOG.isDebugEnabled()) {
+//                LOG.error(ex);
+//            }
             console.showErrorMessage(ex.getMessage());
             IdeaUtil.showNotification(project, getTitle(), String.format("Atomic Transfer failed, reason: %s", ex.getMessage()), NotificationType.ERROR, null);
         }
