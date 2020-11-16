@@ -6,10 +6,12 @@ import com.bloxbean.algodea.idea.account.model.AlgoAccount;
 import com.bloxbean.algodea.idea.account.model.AlgoMultisigAccount;
 import com.bloxbean.algodea.idea.account.service.AccountChooser;
 import com.bloxbean.algodea.idea.common.Tuple;
+import com.bloxbean.algodea.idea.compile.model.LogicSigMetaData;
 import com.bloxbean.algodea.idea.core.action.ui.TxnDialogWrapper;
 import com.bloxbean.algodea.idea.core.action.util.AlgoContractModuleHelper;
 import com.bloxbean.algodea.idea.nodeint.model.LogicSigType;
 import com.bloxbean.algodea.idea.nodeint.util.AlgoLogicsigUtil;
+import com.bloxbean.algodea.idea.nodeint.util.LogicSigUtil;
 import com.bloxbean.algodea.idea.transaction.ui.TransactionDtlsEntryForm;
 import com.bloxbean.algodea.idea.util.AlgoConversionUtil;
 import com.intellij.openapi.application.ApplicationManager;
@@ -125,6 +127,12 @@ public class LogicSigSendTransactionDialog extends TxnDialogWrapper {
                     LogicsigSignature logicsigSignature = AlgoLogicsigUtil.getLogicSigFromFile(lsigPath);
                     LogicSigType type = AlgoLogicsigUtil.getType(logicsigSignature);
 
+                    LogicSigMetaData logicSigMetaData = null;
+                    try {
+                        //Check if the metadata file is there and populate
+                        logicSigMetaData = LogicSigUtil.getLogicSigMetaData(lsigPath);
+                    } catch (Exception e) {}
+
                     if(type != null) {
                         if (LogicSigType.DELEGATION_ACCOUNT.equals(type)) {
                             contractAccountRadioButton.setEnabled(false);
@@ -134,11 +142,21 @@ public class LogicSigSendTransactionDialog extends TxnDialogWrapper {
                             if(AlgoLogicsigUtil.isMultisigDelegatedAccount(logicsigSignature)) {
                                 multiSigChooserBtn.setEnabled(true);
                                 senderAccountChooserBtn.setEnabled(false);
-                                logicSigTypeLabel.setText("Multi-Signature Delegated Logic Sig");
+                                logicSigTypeLabel.setText("Delegated Signature(Multi-Sig) Logic Sig");
+
+                                if(logicSigMetaData != null
+                                        && !StringUtil.isEmpty(logicSigMetaData.multisigAddress)) {
+                                    senderAccountTf.setText(logicSigMetaData.multisigAddress);
+                                }
                             } else {
-                                logicSigTypeLabel.setText("Account Delegated Logic Sig");
+                                logicSigTypeLabel.setText("Delegated Signature Logic Sig");
                                 multiSigChooserBtn.setEnabled(false);
                                 senderAccountChooserBtn.setEnabled(true);
+
+                                if(logicSigMetaData != null
+                                        && logicSigMetaData.signingAddresses != null && logicSigMetaData.signingAddresses.size() != 0) {
+                                    senderAccountTf.setText(logicSigMetaData.signingAddresses.get(0));
+                                }
                             }
 
                         } else if(LogicSigType.CONTRACT_ACCOUNT.equals(type)) {
@@ -222,6 +240,10 @@ public class LogicSigSendTransactionDialog extends TxnDialogWrapper {
 
     @Override
     protected ValidationInfo doTransactionInputValidation() {
+        if(StringUtil.isEmpty(getLsigPath())) {
+            return new ValidationInfo("Please select a valid lsig fie", senderLogSigTf);
+        }
+
         if(getReceiverAddress() == null) {
             return new ValidationInfo("Choose or enter a valid account", receiverAccountTf);
         }
@@ -257,6 +279,7 @@ public class LogicSigSendTransactionDialog extends TxnDialogWrapper {
 
 
         senderLogSigTf = new JTextField();
+        senderLogSigTf.setEditable(false);
         senderLogicSigTextFieldWithBrowse = new TextFieldWithBrowseButton(senderLogSigTf, e -> {
             JFileChooser fc = new JFileChooser();
             if(buildFolder != null) {

@@ -15,11 +15,14 @@ public abstract class TxnDialogWrapper extends DialogWrapper {
     protected RequestMode requestMode = RequestMode.TRANSACTION;
     protected Action exportSignedAction;
     protected Action exportUnsignedAction;
+    protected Action dryRunAction;
 
     protected TxnDialogWrapper(@Nullable Project project, boolean canBeParent) {
         super(project, canBeParent);
-        exportSignedAction = new ExportTransactionAction("Export signed Tx", RequestMode.EXPORT_SIGNED);
-        exportUnsignedAction = new ExportTransactionAction("Export Tx", RequestMode.EXPORT_UNSIGNED);
+        exportSignedAction = new RequestAction("Export signed Tx", RequestMode.EXPORT_SIGNED);
+        exportUnsignedAction = new RequestAction("Export Tx", RequestMode.EXPORT_UNSIGNED);
+        dryRunAction = new RequestAction("Dry Run", RequestMode.DRY_RUN);
+        dryRunAction.setEnabled(false);
     }
 
     protected TxnDialogWrapper(@Nullable Project project) {
@@ -28,9 +31,11 @@ public abstract class TxnDialogWrapper extends DialogWrapper {
 
     @Override
     protected @NotNull Action[] createLeftSideActions() {
-        return new Action[] {
+
+        return new Action[]{
                 exportUnsignedAction,
-                exportSignedAction
+                exportSignedAction,
+                dryRunAction
         };
     }
 
@@ -57,11 +62,15 @@ public abstract class TxnDialogWrapper extends DialogWrapper {
         }
     }
 
+    public void enableDryRun() {
+        dryRunAction.setEnabled(true);
+    }
+
     protected abstract ValidationInfo doTransactionInputValidation();
 
-    class ExportTransactionAction extends DialogWrapperAction {
+    class RequestAction extends DialogWrapperAction {
         private RequestMode reqMode;
-        protected ExportTransactionAction(String label, RequestMode reqMode) {
+        protected RequestAction(String label, RequestMode reqMode) {
             super(label);
             this.reqMode = reqMode;
         }
@@ -72,13 +81,6 @@ public abstract class TxnDialogWrapper extends DialogWrapper {
             List<ValidationInfo> infoList = doValidateAll();
             if (!infoList.isEmpty()) {
                 ValidationInfo info = infoList.get(0);
-//                if (info.component != null && info.component.isVisible()) {
-//                    IdeFocusManager.getInstance(null).requestFocus(info.component, true);
-//                }
-//
-//                if (!Registry.is("ide.inplace.validation.tooltip")) {
-//                    DialogEarthquakeShaker.shake(getPeer().getWindow());
-//                }
 
                 startTrackingValidation();
                 if(infoList.stream().anyMatch(info1 -> !info1.okEnabled)) return;
@@ -86,19 +88,6 @@ public abstract class TxnDialogWrapper extends DialogWrapper {
             requestMode = reqMode;
             doOKAction();
         }
-
-//        @Override
-//        protected void doAction(ActionEvent e) {
-////            if (doValidate() == null) {
-////                getOKAction().setEnabled(true);
-////            } else {
-////                getOKAction().setEnabled(false);
-////                this.setEnabled(false);
-////            }
-//            // set implementation specific values to signal that this custom button was the cause for closing the dialog
-//            // .....
-//            requestMode = reqMode;
-//            myOKAction.actionPerformed(e);
-//        }
     }
+
 }

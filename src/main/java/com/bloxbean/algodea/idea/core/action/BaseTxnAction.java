@@ -93,6 +93,63 @@ public abstract class BaseTxnAction extends AlgoBaseAction {
             }
         } else if(requestMode.equals(RequestMode.EXPORT_SIGNED) || requestMode.equals(RequestMode.EXPORT_UNSIGNED)) {
             exportTransaction(project, module, requestMode, result, logListener);
+        } else if(requestMode.equals(RequestMode.DRY_RUN)) {
+            processDryRunResult(project, module, result, logListener);
+        }
+    }
+
+    protected void processDryRunResult(Project project, Module module, Result result, LogListener logListener) {
+        if(result == null) {
+            logListener.error("Dry run failed. Result : " + result.getResponse());
+            return;
+        }
+        if (result.isSuccessful()) {
+            Result finalResult = result;
+
+            ApplicationManager.getApplication().invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        String dryRunOutputFile = Messages.showInputDialog("Dry run file name (Without extension) : ",
+                                "Dry Run Result", AllIcons.General.QuestionDialog, "NewDryRun", new InputValidator() {
+                                    @Override
+                                    public boolean checkInput(String inputString) {
+                                        if(inputString != null && inputString.contains("."))
+                                            return false;
+                                        else
+                                            return true;
+                                    }
+
+                                    @Override
+                                    public boolean canClose(String inputString) {
+                                        if(inputString != null && inputString.contains("."))
+                                            return false;
+                                        else
+                                            return true;
+                                    }
+                                });
+                        if(StringUtil.isEmpty(dryRunOutputFile)) {
+                            //logListener.warn("Dry run export was cancelled");
+                            return;
+                        }
+
+//                      logListener.info(finalResult.getResponse());
+                        boolean status = TransactionExporterUtil.exportDryRunResponse(module, finalResult.getResponse(), dryRunOutputFile, logListener);
+                        if(status) {
+                            IdeaUtil.showNotification(project, "Dry Run", String.format("Dry run transaction has been completed"),
+                                    NotificationType.INFORMATION, null);
+                        }
+                    } catch (Exception exception) {
+                        IdeaUtil.showNotification(project, "Dry Run export", String.format("Dry run result export was not successful"),
+                                NotificationType.INFORMATION, null);
+                    }
+                }
+            });
+
+        } else {
+            logListener.error("Dry run result export was not successful");
+            IdeaUtil.showNotification(project, "Dry Run export", String.format("Dry run result export was not successful"),
+                    NotificationType.INFORMATION, null);
         }
     }
 

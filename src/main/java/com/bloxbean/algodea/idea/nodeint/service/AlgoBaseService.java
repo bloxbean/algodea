@@ -46,6 +46,7 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 
 public class AlgoBaseService {
@@ -333,6 +334,56 @@ public class AlgoBaseService {
         }
 
         return transactionBuilder;
+    }
+
+    protected DryrunResponse postDryRunTransaction(List<SignedTransaction> stxns, List<byte[]> sourceBytes) throws Exception {
+
+        List<DryrunSource> sources = new ArrayList<DryrunSource>();
+//        List<SignedTransaction> stxns = new ArrayList<SignedTransaction>();
+        // compiled
+//        if (source == null) {
+//            stxns.add(stxn);
+//        }
+        // source
+        if (sourceBytes != null && sourceBytes.size() > 0) {
+            long i = 0;
+            for(byte[] sourceByte: sourceBytes) {
+                DryrunSource drs = new DryrunSource();
+                drs.fieldName = "lsig";
+                drs.source = new String(sourceByte);
+                drs.txnIndex = i;
+                sources.add(drs);
+                i++;
+            }
+        }
+        Response<DryrunResponse> dryrunResponse;
+        DryrunRequest dr = new DryrunRequest();
+        dr.txns = stxns;
+        dr.sources = sources;
+//        dr.sources = sources;
+
+        dryrunResponse = client.TealDryrun().request(dr).execute();
+
+        if(!dryrunResponse.isSuccessful()) {
+            printErrorMessage("Dry run failed", dryrunResponse);
+            if(dryrunResponse.body() != null) {
+                logListener.error("Error: " + dryrunResponse.body().error);
+            }
+            return dryrunResponse.body();
+        }
+
+        if(dryrunResponse.isSuccessful()) {
+            logListener.info("Dry Run Result :");
+            if(dryrunResponse.body() != null && dryrunResponse.body().txns != null) {
+                for(DryrunTxnResult dryrunTxnResult:dryrunResponse.body().txns)
+                    logListener.info(JsonUtil.getPrettyJson(dryrunTxnResult));
+            }
+        } else {
+            logListener.info("Dry Run error :");
+            logListener.error(dryrunResponse.body().error);
+        }
+
+        return dryrunResponse.body();
     }
 
     protected void waitForConfirmation(String txID) throws Exception {

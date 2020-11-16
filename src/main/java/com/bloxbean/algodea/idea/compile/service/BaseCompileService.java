@@ -48,6 +48,7 @@ public abstract class BaseCompileService implements CompileService{
 
                 byte[] program = new byte[0];
                 LogicSigMetaData logicSigMetaData = new LogicSigMetaData();
+                logicSigMetaData.sourcePath = sourceFile;
                 try {
                     listener.info("Logic sig generation started ...");
                     program = FileUtil.loadFileBytes(new File(compileDestination));
@@ -65,7 +66,7 @@ public abstract class BaseCompileService implements CompileService{
 
                             //update logic sig metadata
                             logicSigMetaData.addSigningAddress(signingAccount.getAddress().toString());
-                            logicSigMetaData.isDelegatedAccount = true;
+                            logicSigMetaData.isDelegatedSignature = true;
                         } else { //Multisig account
                             MultisigAddress multisigAddress = logicSigParams.getMultisigAddress();
                             if (logicSigParams.getSigningAccounts().size() > 0) {
@@ -83,7 +84,7 @@ public abstract class BaseCompileService implements CompileService{
                             }
 
                             logicSigMetaData.multisigAddress = multisigAddress.toAddress().toString();
-                            logicSigMetaData.isMultiDelegatedAccount = true;
+                            logicSigMetaData.isMultiDelegatedSignature = true;
                         }
                     } else { //Signing required for delegation account.
                         logicSigMetaData.contractAddress = logicsigSignature.toAddress().toString();

@@ -9,11 +9,12 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class LogicSigMetaData {
     public String contractAddress;
-    public boolean isMultiDelegatedAccount;
-    public boolean isDelegatedAccount;
+    public boolean isMultiDelegatedSignature;
+    public boolean isDelegatedSignature;
     public List<String> signingAddresses;
     public String multisigAddress;
     public LogicsigSignature logicsigSignature;
+    public String sourcePath;
 
     public void addSigningAddress(String signingAddress) {
         if(signingAddresses == null)

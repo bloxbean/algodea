@@ -99,6 +99,8 @@ public class LogicSigSendTransactionAction extends BaseTxnAction {
         } else { //Opened from editor context menu
             dialog = new LogicSigSendTransactionDialog(project);
         }
+        //Enable dry run button
+        dialog.enableDryRun();
 
         TransactionDtlsEntryForm transactionDtlsEntryForm = dialog.getTransactionDtlsEntryForm();
 
