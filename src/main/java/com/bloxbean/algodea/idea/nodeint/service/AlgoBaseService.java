@@ -36,6 +36,7 @@ import com.bloxbean.algodea.idea.common.Tuple;
 import com.bloxbean.algodea.idea.configuration.model.NodeInfo;
 import com.bloxbean.algodea.idea.nodeint.AlgoConnectionFactory;
 import com.bloxbean.algodea.idea.nodeint.AlgoServerConfigurationHelper;
+import com.bloxbean.algodea.idea.nodeint.model.DryRunContext;
 import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
 import com.bloxbean.algodea.idea.nodeint.model.Result;
 import com.bloxbean.algodea.idea.nodeint.model.TxnDetailsParameters;
@@ -43,8 +44,11 @@ import com.bloxbean.algodea.idea.nodeint.util.NetworkHelper;
 import com.bloxbean.algodea.idea.util.JsonUtil;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.io.FileUtil;
+import com.twelvemonkeys.lang.StringUtil;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,6 +62,7 @@ public class AlgoBaseService {
     protected AlgodClient client;
     protected IndexerClient indexerClient;
     protected String networkGenesisHash;
+    private DryRunContext dryRunContext;
 
     public AlgoBaseService(Project project) throws DeploymentTargetNotConfigured {
         this(project, new LogListener() {
@@ -362,7 +367,7 @@ public class AlgoBaseService {
         dr.sources = sources;
 //        dr.sources = sources;
 
-        dryrunResponse = client.TealDryrun().request(dr).execute();
+        dryrunResponse = client.TealDryrun().request(dr).execute(getHeaders()._1(), getHeaders()._2());
 
         if(!dryrunResponse.isSuccessful()) {
             printErrorMessage("Dry run failed", dryrunResponse);
@@ -384,6 +389,91 @@ public class AlgoBaseService {
         }
 
         return dryrunResponse.body();
+    }
+
+    protected DryrunResponse postStatefulDryRunTransaction(List<SignedTransaction> stxns) throws Exception {
+
+        List<DryrunSource> sources = new ArrayList<DryrunSource>();
+
+        // source
+        if (dryRunContext != null && dryRunContext.sources != null && dryRunContext.sources.size() > 0) {
+            for(DryRunContext.Source source: dryRunContext.sources) {
+                DryrunSource drs = new DryrunSource();
+                drs.fieldName = source.type; // clearp
+
+                if(!StringUtil.isEmpty(source.code)) {
+                    drs.source = FileUtil.loadFile(new File(source.code));
+                }
+
+                drs.appIndex = source.appIndex;
+                drs.txnIndex = source.txnIndex;
+                sources.add(drs);
+            }
+        }
+
+        DryrunRequest dr = new DryrunRequest();
+
+        if(dryRunContext != null) {
+            if(dryRunContext.appIds != null && dryRunContext.appIds.size() > 0) {
+                for(Long appId: dryRunContext.appIds) {
+                    Application application = client.GetApplicationByID(appId).execute(getHeaders()._1(), getHeaders()._2()).body();
+                    dr.apps.add(application);
+                }
+            }
+
+            if(dryRunContext.addresses != null && dryRunContext.addresses.size() > 0) {
+                for(String address: dryRunContext.addresses) {
+                    com.algorand.algosdk.v2.client.model.Account account =
+                            client.AccountInformation(new Address(address)).execute(getHeaders()._1(), getHeaders()._2()).body();
+                    dr.accounts.add(account);
+                }
+            }
+
+            if(dryRunContext.latestTimestamp != null) {
+                dr.latestTimestamp = dryRunContext.latestTimestamp;
+            }
+
+            if(dryRunContext.round != null) {
+                dr.round = dryRunContext.round;
+            }
+
+            if(dryRunContext.protocol != null) {
+                dr.protocolVersion = dryRunContext.protocol;
+            }
+        }
+
+        dr.txns = stxns;
+        dr.sources = sources;
+
+        Response<DryrunResponse> dryrunResponse;
+
+        dryrunResponse = client.TealDryrun().request(dr).execute(getHeaders()._1(), getHeaders()._2());
+
+        if(!dryrunResponse.isSuccessful()) {
+            printErrorMessage("Dry run failed", dryrunResponse);
+            if(dryrunResponse.body() != null) {
+                logListener.error("Error: " + dryrunResponse.body().error);
+            }
+            return dryrunResponse.body();
+        }
+
+        if(dryrunResponse.isSuccessful()) {
+            logListener.info("Dry Run Result :");
+            if(dryrunResponse.body() != null && dryrunResponse.body().txns != null) {
+                for(DryrunTxnResult dryrunTxnResult:dryrunResponse.body().txns)
+                    logListener.info(JsonUtil.getPrettyJson(dryrunTxnResult));
+            }
+        }
+
+        if(dryrunResponse.body() != null && !StringUtil.isEmpty(dryrunResponse.body().error)) {
+            logListener.error(dryrunResponse.body().toString());
+        }
+
+        return dryrunResponse.body();
+    }
+
+    public void setDryRunContext(DryRunContext dryRunContext) {
+        this.dryRunContext = dryRunContext;
     }
 
     protected void waitForConfirmation(String txID) throws Exception {

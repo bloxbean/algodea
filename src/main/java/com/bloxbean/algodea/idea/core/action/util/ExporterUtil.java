@@ -13,7 +13,7 @@ import java.io.IOException;
 import static com.bloxbean.algodea.idea.common.AlgoConstants.ALGO_DRY_RUN_FILE_EXT;
 import static com.bloxbean.algodea.idea.common.AlgoConstants.ALGO_TXN_FILE_EXT;
 
-public class TransactionExporterUtil {
+public class ExporterUtil {
     public static boolean exportTransaction(Module module, String txnJson, String outputFileName, LogListener logListener) throws Exception {
         VirtualFile txnOutputFolder = AlgoContractModuleHelper.getTxnOutputFolder(module);
 
@@ -52,6 +52,50 @@ public class TransactionExporterUtil {
             } catch (IOException e) {
                 e.printStackTrace();
                 logListener.error("Dry run export failed", e);
+            }
+        });
+
+        return true;
+    }
+
+    public static boolean exportDryRunAccounts(Module module, String accounts, String outputFileName, LogListener logListener) throws Exception {
+        VirtualFile dryRunOutputFolder = AlgoContractModuleHelper.getDryRunOutputFolder(module);
+
+        String accountsOutputFie = getOutputFileName(dryRunOutputFolder, outputFileName, ".json", "Export accounts", logListener);
+        if(StringUtil.isEmpty(accountsOutputFie))
+            return false;
+
+        ApplicationManager.getApplication().runWriteAction(()  -> {
+            VirtualFile outputFile = null;
+            try {
+                outputFile = dryRunOutputFolder.findOrCreateChildData(module, accountsOutputFie);
+                outputFile.setBinaryContent(accounts.getBytes("UTF-8"));
+                logListener.info("Exported accounts to " + outputFile.getCanonicalPath());
+            } catch (IOException e) {
+                e.printStackTrace();
+                logListener.error("Export accounts failed", e);
+            }
+        });
+
+        return true;
+    }
+
+    public static boolean exportDryRunApplications(Module module, String accounts, String outputFileName, LogListener logListener) throws Exception {
+        VirtualFile dryRunOutputFolder = AlgoContractModuleHelper.getDryRunOutputFolder(module);
+
+        String applicationsOutputFile = getOutputFileName(dryRunOutputFolder, outputFileName, ".json", "Export applications", logListener);
+        if(StringUtil.isEmpty(applicationsOutputFile))
+            return false;
+
+        ApplicationManager.getApplication().runWriteAction(()  -> {
+            VirtualFile outputFile = null;
+            try {
+                outputFile = dryRunOutputFolder.findOrCreateChildData(module, applicationsOutputFile);
+                outputFile.setBinaryContent(accounts.getBytes("UTF-8"));
+                logListener.info("Exported applications to " + outputFile.getCanonicalPath());
+            } catch (IOException e) {
+                e.printStackTrace();
+                logListener.error("Export applications failed", e);
             }
         });
 

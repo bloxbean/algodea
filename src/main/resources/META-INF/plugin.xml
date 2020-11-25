@@ -106,6 +106,8 @@
             </group>
             <group id="AlgoActionGroup.Assets" text="Assets" description="Assets" popup="true">
             </group>
+            <group id="AlgoActionGroup.DryRun" text="Dry Run" description="Dry Run" popup="true">
+            </group>
         </group>
         <action id="Algo.teal.compile" class="com.bloxbean.algodea.idea.compile.action.TEALCompileAction" text="Compile TEAL"
                 description="Compile TEAL file">
@@ -255,6 +257,19 @@
             <add-to-group group-id="AlgoActionGroup.Assets"/>
         </action>
         <!-- Assets actions end here-->
+
+        <!-- Dry Run -->
+        <action id="com.bloxbean.algodea.idea.dryrun.action.AccountStateExportAction"
+                class="com.bloxbean.algodea.idea.dryrun.action.AccountStateExportAction" text="Export Account(s)"
+                description="Export Account(s)">
+            <add-to-group group-id="AlgoActionGroup.DryRun"/>
+        </action>
+        <action id="com.bloxbean.algodea.idea.dryrun.action.ApplicationStateExportAction"
+                class="com.bloxbean.algodea.idea.dryrun.action.ApplicationStateExportAction" text="Export Applications(s)"
+                description="Export Applications(s)">
+            <add-to-group group-id="AlgoActionGroup.DryRun"/>
+        </action>
+        <!-- Dry Run ends here -->
 
         <action id="com.bloxbean.algodea.idea.transaction.action.TransferAction" class="com.bloxbean.algodea.idea.transaction.action.TransferAction" text="Transfer"
                 description="Transfer Algo">

@@ -5,6 +5,8 @@ import com.algorand.algosdk.builder.transaction.PaymentTransactionBuilder;
 import com.algorand.algosdk.crypto.Address;
 import com.algorand.algosdk.transaction.SignedTransaction;
 import com.algorand.algosdk.transaction.Transaction;
+import com.algorand.algosdk.v2.client.model.DryrunResponse;
+import com.algorand.algosdk.v2.client.model.DryrunTxnResult;
 import com.bloxbean.algodea.idea.nodeint.common.RequestMode;
 import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
 import com.bloxbean.algodea.idea.nodeint.model.Result;
@@ -16,6 +18,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
 
 import java.math.BigInteger;
+import java.util.List;
 
 public class TransactionService extends AlgoBaseService {
 
@@ -62,6 +65,23 @@ public class TransactionService extends AlgoBaseService {
         }
 
         return result;
+    }
+
+    public Result atomicTransferDryRun(String group, List<SignedTransaction> stxns) throws Exception {
+        if(stxns == null || stxns.size() == 0) {
+            return Result.error("No transaction found");
+        }
+
+        DryrunResponse dryrunResponse = postStatefulDryRunTransaction(stxns);
+        if(dryrunResponse == null) {
+            return Result.error("Dry run failed");
+        } else {
+            List<DryrunTxnResult> dryrunTxnResults = dryrunResponse.txns;
+            if(dryrunTxnResults == null || dryrunTxnResults.size() == 0)
+                return Result.error("Dry run failed");
+
+            return Result.success(JsonUtil.getPrettyJson(dryrunTxnResults.get(0)));
+        }
     }
 
     protected Transaction populatePaymentTransaction(PaymentTransactionBuilder paymentTransactionBuilder, Address fromAccount,

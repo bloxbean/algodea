@@ -104,6 +104,21 @@ public class AlgoAccountService extends AlgoBaseService {
         return JsonUtil.getPrettyJson(account);
     }
 
+    public List<Account> getAccounts(List<String> addresses) throws ApiCallException {
+
+        if(addresses == null || addresses.size() == 0)
+            return Collections.EMPTY_LIST;
+
+        List<Account> accounts = new ArrayList<>();
+        for(String address: addresses) {
+            Account account = getAccount(address);
+            accounts.add(account);
+        }
+
+
+        return accounts;
+    }
+
     public List<AccountAsset> getAccountAssets(String address) throws ApiCallException {
         if(StringUtil.isEmpty(address)) {
             logListener.error("Account can not be fetched for empty address");

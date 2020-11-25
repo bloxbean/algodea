@@ -1,6 +1,8 @@
 package com.bloxbean.algodea.idea.core.action;
 
-import com.bloxbean.algodea.idea.core.action.util.TransactionExporterUtil;
+import com.bloxbean.algodea.idea.core.action.util.ExporterUtil;
+import com.bloxbean.algodea.idea.dryrun.ui.DryRunContextEntryDialog;
+import com.bloxbean.algodea.idea.nodeint.model.DryRunContext;
 import com.bloxbean.algodea.idea.nodeint.model.Result;
 import com.bloxbean.algodea.idea.nodeint.service.LogListener;
 import com.bloxbean.algodea.idea.nodeint.common.RequestMode;
@@ -15,7 +17,8 @@ import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.text.StringUtil;
 
 import javax.swing.*;
-import java.util.function.Consumer;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class BaseTxnAction extends AlgoBaseAction {
 
@@ -63,7 +66,7 @@ public abstract class BaseTxnAction extends AlgoBaseAction {
                         }
 
                         logListener.info(finalResult.getResponse());
-                        boolean status = TransactionExporterUtil.exportTransaction(module, finalResult.getResponse(), txnOutputFileName, logListener);
+                        boolean status = ExporterUtil.exportTransaction(module, finalResult.getResponse(), txnOutputFileName, logListener);
                         if(status) {
                             IdeaUtil.showNotification(project, "Export Transaction", String.format("Export transaction has been completed"),
                                     NotificationType.INFORMATION, null);
@@ -134,7 +137,7 @@ public abstract class BaseTxnAction extends AlgoBaseAction {
                         }
 
 //                      logListener.info(finalResult.getResponse());
-                        boolean status = TransactionExporterUtil.exportDryRunResponse(module, finalResult.getResponse(), dryRunOutputFile, logListener);
+                        boolean status = ExporterUtil.exportDryRunResponse(module, finalResult.getResponse(), dryRunOutputFile, logListener);
                         if(status) {
                             IdeaUtil.showNotification(project, "Dry Run", String.format("Dry run transaction has been completed"),
                                     NotificationType.INFORMATION, null);
@@ -151,6 +154,32 @@ public abstract class BaseTxnAction extends AlgoBaseAction {
             IdeaUtil.showNotification(project, "Dry Run export", String.format("Dry run result export was not successful"),
                     NotificationType.INFORMATION, null);
         }
+    }
+
+    protected DryRunContext captureDryRunContext(Project project, List<Long> appIds, boolean isStatefulContract, boolean enableGeneralContextInfo, boolean enableSourceInfo) {
+        DryRunContextEntryDialog dialog = new DryRunContextEntryDialog(project, appIds, isStatefulContract, enableGeneralContextInfo, enableSourceInfo);
+        boolean ok = dialog.showAndGet();
+        if(!ok)
+            return null;
+
+        return dialog.getDryRunContext();
+    }
+
+    protected DryRunContext captureDryRunContext(Project project, List<Long> appIds) {
+        return captureDryRunContext(project, appIds, true, true, true);
+    }
+
+    protected DryRunContext.Source captureDryRunSource(Project project, Long appId, boolean isStatefulContract) {
+        List<Long> appIds = new ArrayList<>();
+        if(appId != null)
+            appIds.add(appId);
+
+        DryRunContextEntryDialog dialog = new DryRunContextEntryDialog(project, appIds, isStatefulContract, false, true);
+        boolean ok = dialog.showAndGet();
+        if(!ok)
+            return null;
+
+        return dialog.getDryRunSource();
     }
 
     protected abstract String getTitle();

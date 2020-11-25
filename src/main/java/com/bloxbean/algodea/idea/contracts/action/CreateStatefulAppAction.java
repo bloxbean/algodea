@@ -133,6 +133,10 @@ public class CreateStatefulAppAction extends BaseTxnAction {
             }
 
             CreateAppDialog createDialog = new CreateAppDialog(project, cacheAlgoAccount, cacheService.getContract());
+
+            //Disable DryRun for create
+//            createDialog.enableDryRun();
+
             boolean ok = createDialog.showAndGet();
             if (!ok) {
                 IdeaUtil.showNotification(project, "Create App", "Create App operation was cancelled", NotificationType.WARNING, null);

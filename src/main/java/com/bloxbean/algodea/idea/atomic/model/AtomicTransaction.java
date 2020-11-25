@@ -3,6 +3,7 @@ package com.bloxbean.algodea.idea.atomic.model;
 import com.algorand.algosdk.transaction.SignedTransaction;
 import com.algorand.algosdk.transaction.Transaction;
 import com.algorand.algosdk.util.Encoder;
+import com.bloxbean.algodea.idea.nodeint.model.DryRunContext;
 import com.intellij.openapi.util.io.FileUtil;
 
 import java.io.File;
@@ -12,6 +13,9 @@ public class AtomicTransaction {
     private String txnFile;
     private Transaction transaction;
     private SignedTransaction signedTransaction;
+
+    //DryRunSource required for Dryrun
+    private DryRunContext.Source dryRunSource;
 
     public AtomicTransaction(String txnFile) {
         this.txnFile = txnFile;
@@ -31,6 +35,14 @@ public class AtomicTransaction {
 
     public void setSignedTransaction(SignedTransaction signedTransaction) {
         this.signedTransaction = signedTransaction;
+    }
+
+    public DryRunContext.Source getDryRunSource() {
+        return dryRunSource;
+    }
+
+    public void setDryRunSource(DryRunContext.Source dryRunSource) {
+        this.dryRunSource = dryRunSource;
     }
 
     @Override

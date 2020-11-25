@@ -10,22 +10,16 @@ import com.algorand.algosdk.util.Encoder;
 import com.algorand.algosdk.v2.client.model.DryrunResponse;
 import com.algorand.algosdk.v2.client.model.DryrunTxnResult;
 import com.algorand.algosdk.v2.client.model.PendingTransactionResponse;
-import com.bloxbean.algodea.idea.compile.model.LogicSigMetaData;
 import com.bloxbean.algodea.idea.nodeint.common.RequestMode;
 import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
 import com.bloxbean.algodea.idea.nodeint.model.Result;
 import com.bloxbean.algodea.idea.nodeint.model.TxnDetailsParameters;
-import com.bloxbean.algodea.idea.nodeint.util.LogicSigUtil;
-import com.bloxbean.algodea.idea.util.IOUtil;
 import com.bloxbean.algodea.idea.util.JsonUtil;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.io.FileUtil;
-import com.intellij.openapi.util.text.StringUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,9 +37,9 @@ public class LogicSigTransactionService extends TransactionService{
 
         byte[] sourceBytes = null;
 
-        if(RequestMode.DRY_RUN.equals(requestMode)) {
-            sourceBytes = LogicSigUtil.readSourceBytesIfAvailable(lsigPath);
-        }
+//        if(RequestMode.DRY_RUN.equals(requestMode)) {
+//            sourceBytes = LogicSigUtil.readSourceBytesIfAvailable(lsigPath);
+//        }
 
         if(sender == null) {
             return contractAccountTransaction(logicSigBytes, receiver, amount, txnDetailsParameters, sourceBytes, requestMode);

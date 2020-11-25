@@ -5,13 +5,16 @@ import com.algorand.algosdk.crypto.Address;
 import com.algorand.algosdk.crypto.Digest;
 import com.algorand.algosdk.crypto.LogicsigSignature;
 import com.algorand.algosdk.transaction.SignedTransaction;
-import com.algorand.algosdk.transaction.Transaction;
 import com.algorand.algosdk.util.Encoder;
 import com.bloxbean.algodea.idea.account.model.AlgoAccount;
 import com.bloxbean.algodea.idea.account.service.AccountService;
 import com.bloxbean.algodea.idea.atomic.model.AtomicTransaction;
 import com.bloxbean.algodea.idea.common.AlgoConstants;
+import com.bloxbean.algodea.idea.common.AlgoIcons;
 import com.bloxbean.algodea.idea.core.action.util.AlgoContractModuleHelper;
+import com.bloxbean.algodea.idea.dryrun.ui.DryRunContextEntryDialog;
+import com.bloxbean.algodea.idea.nodeint.common.RequestMode;
+import com.bloxbean.algodea.idea.nodeint.model.DryRunContext;
 import com.bloxbean.algodea.idea.nodeint.service.AtomicTransactionService;
 import com.bloxbean.algodea.idea.util.IdeaUtil;
 import com.bloxbean.algodea.idea.util.JsonUtil;
@@ -41,11 +44,14 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -65,8 +71,13 @@ public class AtomicTransferDialog extends DialogWrapper {
     private String buildFolder;
     private TxnListDataModel txnFileListModel;
 
+    protected RequestMode requestMode = RequestMode.TRANSACTION;
+    protected Action dryRunAction;
+
     public AtomicTransferDialog(@Nullable Project project, Module module) {
         super(project, true);
+        dryRunAction = new RequestAction("Dry Run", RequestMode.DRY_RUN);
+
         init();
         setTitle("Atomic Transfer");
 
@@ -83,7 +94,6 @@ public class AtomicTransferDialog extends DialogWrapper {
         } catch (Exception exception) {
 
         }
-
         reset();
         attachAddTxnBtnListener(project);
         attachGroupBtnListener(project);
@@ -286,8 +296,22 @@ public class AtomicTransferDialog extends DialogWrapper {
         return groupIdTf.getText();
     }
 
-    @Override
-    protected @Nullable ValidationInfo doValidate() {
+    public List<DryRunContext.Source> getDryContextSources() {
+        int count = txnFileListModel.getSize();
+        List<DryRunContext.Source> sources = new ArrayList<>();
+        for(int i=0;i<count; i++) {
+            AtomicTransaction atomicTransaction = (AtomicTransaction) txnFileListModel.getElementAt(i);
+            DryRunContext.Source source = atomicTransaction.getDryRunSource();
+            if(source == null)
+                continue;
+
+            sources.add(source);
+        }
+
+        return sources;
+    }
+
+    protected @Nullable ValidationInfo doAtomicTransactionInputValidation() {
         if(txnFileListModel.getAtomicTransactions() == null ||
                 txnFileListModel.getAtomicTransactions().size() == 0) {
             return new ValidationInfo("No transaction is found. Please add transactions to create a group", txnList);
@@ -304,6 +328,30 @@ public class AtomicTransferDialog extends DialogWrapper {
         }
 
         return null;
+    }
+
+    @Override
+    protected @Nullable ValidationInfo doValidate() {
+        ValidationInfo validationInfo = doAtomicTransactionInputValidation();
+        if(validationInfo == null) {
+            dryRunAction.setEnabled(true);
+            return null;
+        } else {
+            dryRunAction.setEnabled(false);
+            return validationInfo;
+        }
+    }
+
+    @Override
+    protected @NotNull Action[] createLeftSideActions() {
+
+        return new Action[]{
+                dryRunAction
+        };
+    }
+
+    public RequestMode getRequestMode() {
+        return requestMode;
     }
 
     //Table row popup
@@ -326,13 +374,15 @@ public class AtomicTransferDialog extends DialogWrapper {
             AtomicTransaction atomicTransaction = getSelectedTxn();
             if(atomicTransaction == null)
                 return;
-            ListPopup popup = createPopup(project, atomicTransaction);
+
+            int selectedIndex = txnList.getSelectedIndex();
+            ListPopup popup = createPopup(project, atomicTransaction, selectedIndex);
             RelativePoint relativePoint = new RelativePoint(e.getComponent(), new Point(e.getX(), e.getY()));
             popup.show(relativePoint);
         }
     }
 
-    private ListPopup createPopup(Project project, AtomicTransaction atomicTransaction) {
+    private ListPopup createPopup(Project project, AtomicTransaction atomicTransaction, int selectedIndex) {
         final DefaultActionGroup group = new DefaultActionGroup();
 
         if(groupAssignmentDone()) {
@@ -343,6 +393,8 @@ public class AtomicTransferDialog extends DialogWrapper {
         if(!groupAssignmentDone()) {
             group.add(removeTxnFromListAction(atomicTransaction));
         }
+
+        group.add(captureDryRunSourceAction(project, atomicTransaction, selectedIndex));
 
         DataContext dataContext = DataManager.getInstance().getDataContext(txnList);
         return JBPopupFactory.getInstance().createActionGroupPopup("",
@@ -391,6 +443,38 @@ public class AtomicTransferDialog extends DialogWrapper {
         };
     }
 
+    private AnAction captureDryRunSourceAction(Project project, AtomicTransaction atomicTransaction, int selectedIndex) {
+        return new AnAction("DryRun Source", "Configure DryRun Source", AlgoIcons.TEAL_FILE_ICON) {
+            @Override
+            public void actionPerformed(@NotNull AnActionEvent e) {
+                if(atomicTransaction == null) return;
+
+                DryRunContext.Source source = atomicTransaction.getDryRunSource();
+
+                Long appId = atomicTransaction.getTransaction().applicationId;
+                List<Long> appIds = appId != null ? Arrays.asList(appId): Collections.EMPTY_LIST;
+                DryRunContextEntryDialog dialog = new DryRunContextEntryDialog(project, appIds,
+                        appId != null && appId != 0, false, true);
+
+                if(source != null) {
+                    dialog.getDryRunSourceInputForm().setSource(source);
+                }
+
+                if(selectedIndex != -1) {
+                    dialog.getDryRunSourceInputForm().setTxnIndex(selectedIndex);
+                    dialog.getDryRunSourceInputForm().disableTxnIndex();
+                }
+
+                boolean ok = dialog.showAndGet();
+                if(!ok) return;
+
+                source = dialog.getDryRunSource();
+                if(source != null)
+                    atomicTransaction.setDryRunSource(source);
+            }
+        };
+    }
+
     @Override
     protected @Nullable JComponent createCenterPanel() {
         return mainPanel;
@@ -401,5 +485,28 @@ public class AtomicTransferDialog extends DialogWrapper {
         txnFileListModel = new TxnListDataModel();
         txnList = new JBList();
         txnFileScrollPane = new JBScrollPane(txnList);
+    }
+
+    class RequestAction extends DialogWrapperAction {
+        private RequestMode reqMode;
+
+        protected RequestAction(String label, RequestMode reqMode) {
+            super(label);
+            this.reqMode = reqMode;
+        }
+
+        @Override
+        protected void doAction(ActionEvent e) {
+//            recordAction("DialogOkAction", EventQueue.getCurrentEvent());
+            List<ValidationInfo> infoList = doValidateAll();
+            if (!infoList.isEmpty()) {
+                ValidationInfo info = infoList.get(0);
+
+                startTrackingValidation();
+                if (infoList.stream().anyMatch(info1 -> !info1.okEnabled)) return;
+            }
+            requestMode = reqMode;
+            doOKAction();
+        }
     }
 }

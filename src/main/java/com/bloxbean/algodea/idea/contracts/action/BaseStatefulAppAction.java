@@ -9,6 +9,7 @@ import com.bloxbean.algodea.idea.contracts.ui.AppTxnParamEntryDialog;
 import com.bloxbean.algodea.idea.core.action.BaseTxnAction;
 import com.bloxbean.algodea.idea.nodeint.common.RequestMode;
 import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
+import com.bloxbean.algodea.idea.nodeint.model.DryRunContext;
 import com.bloxbean.algodea.idea.nodeint.model.Result;
 import com.bloxbean.algodea.idea.nodeint.model.TxnDetailsParameters;
 import com.bloxbean.algodea.idea.nodeint.service.LogListenerAdapter;
@@ -29,6 +30,8 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public abstract class  BaseStatefulAppAction extends BaseTxnAction {
@@ -67,6 +70,8 @@ public abstract class  BaseStatefulAppAction extends BaseTxnAction {
         console.clearAndshow();
 
         AppTxnParamEntryDialog dialog = new AppTxnParamEntryDialog(project, getApplicationTxnDescription());
+        dialog.enableDryRun();
+
         boolean ok = dialog.showAndGet();
 
         if(!ok) {
@@ -96,7 +101,7 @@ public abstract class  BaseStatefulAppAction extends BaseTxnAction {
             AppTxnBaseParamEntryForm appBaseEntryForm = dialog.getAppTxnBaseEntryForm();
             AppTxnDetailsEntryForm appTxnDetailsEntryForm = dialog.getAppTxnDetailsEntryForm();
 
-            Long appId = appBaseEntryForm.getAppId();
+            final Long appId = appBaseEntryForm.getAppId();
             Account fromAccount = appBaseEntryForm.getFromAccount();
             List<byte[]> appArgs = appTxnDetailsEntryForm.getArgsAsBytes();
 
@@ -120,6 +125,19 @@ public abstract class  BaseStatefulAppAction extends BaseTxnAction {
             txnDetailsParameters.setFlatFee(generalTxnDetailsParam.getFlatFee());
 
             RequestMode requestMode = dialog.getRequestMode();
+
+            if(RequestMode.DRY_RUN.equals(requestMode)) { //If dry run capture dryrun request context
+
+                List<Long> appIds = appId != null ? Arrays.asList(appId): Collections.EMPTY_LIST;
+                DryRunContext dryRunContext = captureDryRunContext(project, appIds);
+                if(dryRunContext != null) {
+                    sfService.setDryRunContext(dryRunContext);
+                } else {
+                    logListener.warn("Dry run was cancelled");
+                    return;
+                }
+            }
+
             Task.Backgroundable task = new Task.Backgroundable(project, getApplicationTxnDescription()) {
 
                 @Override

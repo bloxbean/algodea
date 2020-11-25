@@ -311,10 +311,10 @@ public class LogicSigSendTransactionDialog extends TxnDialogWrapper {
                 return;
             }
 
-            if(!StringUtil.isEmpty(buildFolder)) {
+            //if(!StringUtil.isEmpty(buildFolder)) {
                 senderLogSigTf.setText(file.getAbsolutePath());
                 loadLogicSigFile(file.getAbsolutePath());
-            }
+           // }
         });
     }
 }

@@ -104,6 +104,10 @@ public class UpdateStatefulAppAction extends BaseTxnAction {
             AlgoCacheService cacheService = AlgoCacheService.getInstance(project);
 
             UpdateAppDialog dialog = new UpdateAppDialog(project, cacheService.getContract());
+
+           //Disable dry run for update
+//            dialog.enableDryRun();
+
             boolean ok = dialog.showAndGet();
             if(!ok) {
                 IdeaUtil.showNotification(project, "UpdateApplication", "UpdateApplication operation was cancelled", NotificationType.WARNING, null);

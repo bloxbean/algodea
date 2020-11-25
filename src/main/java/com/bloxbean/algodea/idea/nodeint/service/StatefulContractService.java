@@ -29,17 +29,20 @@ import com.algorand.algosdk.logic.StateSchema;
 import com.algorand.algosdk.transaction.SignedTransaction;
 import com.algorand.algosdk.transaction.Transaction;
 import com.algorand.algosdk.v2.client.common.Response;
-import com.algorand.algosdk.v2.client.model.Application;
-import com.algorand.algosdk.v2.client.model.ApplicationLocalState;
-import com.algorand.algosdk.v2.client.model.PendingTransactionResponse;
-import com.algorand.algosdk.v2.client.model.TransactionParametersResponse;
+import com.algorand.algosdk.v2.client.model.*;
 import com.bloxbean.algodea.idea.nodeint.common.RequestMode;
+import com.bloxbean.algodea.idea.nodeint.exception.ApiCallException;
 import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
 import com.bloxbean.algodea.idea.nodeint.model.Result;
 import com.bloxbean.algodea.idea.nodeint.model.TxnDetailsParameters;
 import com.bloxbean.algodea.idea.util.JsonUtil;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.io.FileUtil;
+import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class StatefulContractService extends AlgoBaseService {
@@ -251,7 +254,7 @@ public class StatefulContractService extends AlgoBaseService {
         // get node suggested parameters
         Response<TransactionParametersResponse> transactionParametersResponse
                 = client.TransactionParams().execute(getHeaders()._1(), getHeaders()._2());
-        if(!transactionParametersResponse.isSuccessful()) {
+        if (!transactionParametersResponse.isSuccessful()) {
             printErrorMessage("Unable to get Transaction Params from the node", transactionParametersResponse);
             return null;
         }
@@ -269,7 +272,7 @@ public class StatefulContractService extends AlgoBaseService {
                 .clearStateProgram(clearProgramSource)
                 .globalStateSchema(new StateSchema(globalInts, globalBytes))
                 .localStateSchema(new StateSchema(localInts, localBytes));
-                //.build();
+        //.build();
 
         Transaction txn = populateBaseAppTransaction(transactionBuilder, null, creator, txnDetailsParameters);
 
@@ -287,8 +290,10 @@ public class StatefulContractService extends AlgoBaseService {
             }
         } else if (requestMode.equals(RequestMode.EXPORT_SIGNED)) {
             return Result.success(JsonUtil.getPrettyJson(signedTxn));
-        } else if(requestMode.equals(RequestMode.EXPORT_UNSIGNED)) {
+        } else if (requestMode.equals(RequestMode.EXPORT_UNSIGNED)) {
             return Result.success(JsonUtil.getPrettyJson(txn));
+        } else if (requestMode.equals(RequestMode.DRY_RUN)) {
+            return processDryRun(signedTxn);
         } else {
             return Result.error("Invalid request mode : " + requestMode);
         }
@@ -335,6 +340,25 @@ public class StatefulContractService extends AlgoBaseService {
         return appId;**/
     }
 
+    public List<Application> getApplication(List<Long> appIds) throws Exception {
+        if(appIds == null || appIds.size() == 0)
+            return Collections.EMPTY_LIST;
+
+        List<Application> applications = new ArrayList<>();
+        for(Long appId: appIds) {
+            Response<Application> acctResponse = client.GetApplicationByID(appId).execute(getHeaders()._1(), getHeaders()._2());
+            if (!acctResponse.isSuccessful()) {
+                printErrorMessage("Reading application info failed", acctResponse);
+                throw new ApiCallException("Application state not found for app Id: " + appId);
+            }
+
+            Application application = acctResponse.body();
+            applications.add(application);
+        }
+
+        return applications;
+    }
+
     private Result processContractTransaction(Account fromAccount, Transaction txn, SignedTransaction stxn, RequestMode requestMode) throws Exception {
         if (requestMode == null || requestMode.equals(RequestMode.TRANSACTION)) {
             return postApplicationTransaction(fromAccount, stxn);
@@ -342,8 +366,27 @@ public class StatefulContractService extends AlgoBaseService {
             return Result.success(JsonUtil.getPrettyJson(stxn));
         } else if(requestMode.equals(RequestMode.EXPORT_UNSIGNED)) {
             return Result.success(JsonUtil.getPrettyJson(txn));
-        } else {
+        } else if (requestMode.equals(RequestMode.DRY_RUN)) {
+            return processDryRun(stxn);
+        }  else {
             return Result.error("Invalid request mode : " + requestMode);
+        }
+    }
+
+    @NotNull
+    private Result processDryRun(SignedTransaction signTxn) throws Exception {
+        List<SignedTransaction> stxns = new ArrayList<>();
+        stxns.add(signTxn);
+
+        DryrunResponse dryrunResponse = postStatefulDryRunTransaction(stxns);
+        if(dryrunResponse == null) {
+            return Result.error("Dry run failed");
+        } else {
+            List<DryrunTxnResult> dryrunTxnResults = dryrunResponse.txns;
+            if(dryrunTxnResults == null || dryrunTxnResults.size() == 0)
+                return Result.error("Dry run failed");
+
+            return Result.success(JsonUtil.getPrettyJson(dryrunTxnResults.get(0)));
         }
     }
 }

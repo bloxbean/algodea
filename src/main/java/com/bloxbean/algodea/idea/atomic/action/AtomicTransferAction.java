@@ -1,8 +1,12 @@
 package com.bloxbean.algodea.idea.atomic.action;
 
+import com.algorand.algosdk.transaction.SignedTransaction;
 import com.bloxbean.algodea.idea.atomic.ui.AtomicTransferDialog;
 import com.bloxbean.algodea.idea.core.action.AlgoBaseAction;
+import com.bloxbean.algodea.idea.core.action.BaseTxnAction;
+import com.bloxbean.algodea.idea.nodeint.common.RequestMode;
 import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
+import com.bloxbean.algodea.idea.nodeint.model.DryRunContext;
 import com.bloxbean.algodea.idea.nodeint.model.Result;
 import com.bloxbean.algodea.idea.nodeint.service.LogListener;
 import com.bloxbean.algodea.idea.nodeint.service.LogListenerAdapter;
@@ -21,7 +25,10 @@ import com.intellij.openapi.progress.impl.BackgroundableProcessIndicator;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 
-public class AtomicTransferAction extends AlgoBaseAction {
+import java.util.ArrayList;
+import java.util.List;
+
+public class AtomicTransferAction extends BaseTxnAction {
     private final static Logger LOG = Logger.getInstance(AtomicTransferAction.class);
 
     @Override
@@ -50,6 +57,29 @@ public class AtomicTransferAction extends AlgoBaseAction {
             LogListener logListener = new LogListenerAdapter(console);
             TransactionService transactionService = new TransactionService(project, logListener);
 
+            RequestMode requestMode = dialog.getRequestMode();
+            List<SignedTransaction> signedTransactionList;
+            if(RequestMode.DRY_RUN.equals(requestMode)) {
+                signedTransactionList = dialog.getSignedTransactions();
+                List<DryRunContext.Source> dryRunSources = dialog.getDryContextSources();
+
+                List<Long> appIds = new ArrayList();
+
+                if(signedTransactionList != null && signedTransactionList.size() > 0) { //Try to guess appId from the transactions
+                    for(SignedTransaction stxn: signedTransactionList) {
+                        if(stxn.tx.applicationId != null) {
+                            appIds.add(stxn.tx.applicationId);
+                        }
+                    }
+                }
+
+                DryRunContext dryRunContext = captureDryRunContext(project, appIds,  !appIds.isEmpty(), true, false);
+                if(dryRunSources != null)
+                    dryRunContext.sources = dryRunSources;
+
+                transactionService.setDryRunContext(dryRunContext);
+            }
+
             Task.Backgroundable task = new Task.Backgroundable(project, getTxnCommand()) {
 
                 @Override
@@ -58,7 +88,11 @@ public class AtomicTransferAction extends AlgoBaseAction {
                     try {
                         Result result = null;
 
-                        result = transactionService.atomicTransfer(groupId, groupTxnBytes);
+                        if(requestMode == null || requestMode.equals(RequestMode.TRANSACTION)) {
+                            result = transactionService.atomicTransfer(groupId, groupTxnBytes);
+                        } else if(requestMode.equals(RequestMode.DRY_RUN)) {
+                            result = transactionService.atomicTransferDryRun(groupId, dialog.getSignedTransactions());
+                        }
 
                         if (result.isSuccessful()) {
                                 console.showInfoMessage("Atomic transfer completed successfully");
@@ -72,6 +106,7 @@ public class AtomicTransferAction extends AlgoBaseAction {
                         if (LOG.isDebugEnabled()) {
                             LOG.warn(exception);
                         }
+                        console.showErrorMessage("Error", exception);
                         console.showErrorMessage(String.format("%s failed", getTxnCommand()));
                         IdeaUtil.showNotification(project, getTitle(), String.format("%s failed, Reason: %s", getTxnCommand(), exception.getMessage()), NotificationType.ERROR, null);
                     }
