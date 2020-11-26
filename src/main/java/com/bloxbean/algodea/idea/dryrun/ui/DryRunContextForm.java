@@ -39,7 +39,10 @@ public class DryRunContextForm  {
 
     public void initializeData(Project project, List<Long> appIds) {
         if(appIds != null && appIds.size() > 0) {
-            String mergedAppIds = appIds.stream().map(l -> String.valueOf(l)).collect(Collectors.joining(","));
+            String mergedAppIds = appIds.stream()
+                    .filter(l -> l != null && l != 0)
+                    .map(l -> String.valueOf(l))
+                    .collect(Collectors.joining(","));
             appIdsTf.setText(String.valueOf(mergedAppIds));
         }
 
