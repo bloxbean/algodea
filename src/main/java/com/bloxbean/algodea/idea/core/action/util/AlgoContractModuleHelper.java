@@ -145,7 +145,6 @@ public class AlgoContractModuleHelper {
 
         return moduleOutFolder;
     }
-
     public static VirtualFile getDryRunOutputFolder(Module module) throws Exception{
         VirtualFile moduleOutFolder = null;
         VirtualFile moduleRoot = module.getModuleFile().getParent();
@@ -206,7 +205,7 @@ public class AlgoContractModuleHelper {
 
             List<VarParam> varParamsValues = compileVarTmplInputDialog.getParamsWithValues();
 
-            VirtualFile genSrcFolder = createGeneratedSourceFolder(moduleOutFolder.getParent());
+            VirtualFile genSrcFolder = getGeneratedSourceFolder(moduleOutFolder.getParent());
             if(genSrcFolder == null) {
                 console.showErrorMessage("Compilation failed. 'generated-src' folder could not be created");
                 return null;
@@ -238,7 +237,7 @@ public class AlgoContractModuleHelper {
         return mergedSource;
     }
 
-    private static VirtualFile createGeneratedSourceFolder(VirtualFile moduleOutFolder) {
+    public static VirtualFile getGeneratedSourceFolder(VirtualFile moduleOutFolder) {
         VirtualFile genFolder = moduleOutFolder.findChild(GENERATED_SRC);
         if(genFolder == null || !genFolder.exists()) {
             try {

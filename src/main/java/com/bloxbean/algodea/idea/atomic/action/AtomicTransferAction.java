@@ -2,7 +2,6 @@ package com.bloxbean.algodea.idea.atomic.action;
 
 import com.algorand.algosdk.transaction.SignedTransaction;
 import com.bloxbean.algodea.idea.atomic.ui.AtomicTransferDialog;
-import com.bloxbean.algodea.idea.core.action.AlgoBaseAction;
 import com.bloxbean.algodea.idea.core.action.BaseTxnAction;
 import com.bloxbean.algodea.idea.nodeint.common.RequestMode;
 import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
@@ -118,10 +117,9 @@ public class AtomicTransferAction extends BaseTxnAction {
             //deploymentTargetNotConfigured.printStackTrace();
             warnDeploymentTargetNotConfigured(project, getTitle());
         } catch (Exception ex) {
-            LOG.warn(ex);
-//            if (LOG.isDebugEnabled()) {
-//                LOG.error(ex);
-//            }
+            if (LOG.isDebugEnabled()) {
+                LOG.error(ex);
+            }
             console.showErrorMessage(ex.getMessage());
             IdeaUtil.showNotification(project, getTitle(), String.format("Atomic Transfer failed, reason: %s", ex.getMessage()), NotificationType.ERROR, null);
         }

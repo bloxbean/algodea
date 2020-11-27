@@ -13,4 +13,9 @@ public interface CompilationResultListener {
 
     public void onSuccessful(String sourceFile, String outputFile);
     public void onFailure(String sourceFile, Throwable t);
+
+    default public void error(String message, Throwable t) {
+        error(message + " : " + t.getMessage());
+    }
+
 }
