@@ -12,6 +12,8 @@
 
     <depends>com.intellij.modules.java</depends>
 
+<!--    <depends optional="true" config-file="python.xml">com.intellij.modules.python</depends>-->
+
     <project-components>
         <component>
             <implementation-class>com.bloxbean.algodea.idea.core.service.AlgoCacheService</implementation-class>
@@ -113,6 +115,12 @@
                 description="Compile TEAL file">
             <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl T" second-keystroke="C"/>
             <add-to-group group-id="com.bloxbean.algodea.idea.core.action.AlgoActionGroup"/>
+        </action>
+        <action id="com.bloxbean.algodea.idea.pyteal.action.PyTealCompileAction"
+                class="com.bloxbean.algodea.idea.pyteal.action.PyTealCompileAction"
+                text="Compile PyTeal">
+            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl T" second-keystroke="P"/>
         </action>
         <action id="com.bloxbean.algodea.idea.stateless.action.LogicSigSendTransactionAction_ProjectView" class="com.bloxbean.algodea.idea.stateless.action.LogicSigSendTransactionFileNodeAction"
                 text="Send Transaction (Logic Sig)"
@@ -293,7 +301,6 @@
                 description="Configure Algorand Server">
             <add-to-group group-id="com.bloxbean.algodea.idea.core.action.AlgoActionGroup" anchor="last"/>
         </action>
-
-    </actions>
+        </actions>
 
 </idea-plugin>
