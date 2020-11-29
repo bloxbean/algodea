@@ -30,6 +30,11 @@ public class AlgoModuleUtils {
         return ModuleUtil.getModuleDirPath(module);
     }
 
+    public static VirtualFile getFile(Project project, String filePath) {
+        return VfsUtil.findFileByIoFile(new File(project.getBasePath() + File.separator + filePath), true);
+    }
+
+    //Check relativePath for a source file in module src folder. If not in src folder, then check in generated-src folder
     public static String getRelativePathFromSourceRoot(Project project, VirtualFile srcFile) {
 
         Module[] modules = ModuleManager.getInstance(project).getModules();
@@ -44,31 +49,40 @@ public class AlgoModuleUtils {
                             return relPath;
                     }
                 }
-            }
-        }
 
-        return null;
-    }
-
-    public static VirtualFile getSourceVirtualFileByRelativePath(Project project, String relPath) {
-
-        Module[] modules = ModuleManager.getInstance(project).getModules();
-
-        if (modules != null) {
-            for (Module module : modules) {
-                VirtualFile[] roots = ModuleRootManager.getInstance(module).getSourceRoots();
-                if(roots != null) {
-                    for (VirtualFile root : roots) {
-                        VirtualFile vf = VfsUtil.findRelativeFile(relPath, root);
-                        if(vf != null)
-                            return vf;
-                    }
+                //Check if generated-src folder is there
+                VirtualFile genSrcFolder = AlgoContractModuleHelper.getGeneratedSourceFolder(project, module, false);
+                if(genSrcFolder != null && genSrcFolder.exists()) {
+                    String relPath = VfsUtil.getRelativePath(srcFile, genSrcFolder, File.separatorChar);
+                    if (relPath != null)
+                        return relPath;
                 }
             }
         }
 
         return null;
     }
+
+    //not used
+//    public static VirtualFile getSourceVirtualFileByRelativePath(Project project, String relPath) {
+//
+//        Module[] modules = ModuleManager.getInstance(project).getModules();
+//
+//        if (modules != null) {
+//            for (Module module : modules) {
+//                VirtualFile[] roots = ModuleRootManager.getInstance(module).getSourceRoots();
+//                if(roots != null) {
+//                    for (VirtualFile root : roots) {
+//                        VirtualFile vf = VfsUtil.findRelativeFile(relPath, root);
+//                        if(vf != null)
+//                            return vf;
+//                    }
+//                }
+//            }
+//        }
+//
+//        return null;
+//    }
 
     public static String getFirstSourceRootPath(Project project) {
         Collection<Module> modules = getAlgorandModules(project);
