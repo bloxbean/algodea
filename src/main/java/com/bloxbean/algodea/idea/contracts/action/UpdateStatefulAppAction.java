@@ -7,7 +7,6 @@ import com.bloxbean.algodea.idea.contracts.ui.AppTxnBaseParamEntryForm;
 import com.bloxbean.algodea.idea.contracts.ui.AppTxnDetailsEntryForm;
 import com.bloxbean.algodea.idea.contracts.ui.UpdateAppDialog;
 import com.bloxbean.algodea.idea.contracts.ui.UpdateAppEntryForm;
-import com.bloxbean.algodea.idea.core.action.AlgoBaseAction;
 import com.bloxbean.algodea.idea.core.action.BaseTxnAction;
 import com.bloxbean.algodea.idea.core.action.util.AlgoContractModuleHelper;
 import com.bloxbean.algodea.idea.core.service.AlgoCacheService;
@@ -174,8 +173,8 @@ public class UpdateStatefulAppAction extends BaseTxnAction {
 
             //Update latest approval program name & clear state program name //TODO
 
-            VirtualFile appProgVF = AlgoModuleUtils.getSourceVirtualFileByRelativePath(project, approvalProgramName);//VfsUtil.findRelativeFile(approvalProgramName, sourceRoot);//VfsUtil.findRelativeFile(sourceRoot, approvalProgramName);
-            VirtualFile clearProgVF = AlgoModuleUtils.getSourceVirtualFileByRelativePath(project, clearStateProgramName);//VfsUtil.findRelativeFile(clearStateProgramName, sourceRoot);
+            VirtualFile appProgVF = AlgoModuleUtils.getFile(project, approvalProgramName);//VfsUtil.findRelativeFile(approvalProgramName, sourceRoot);//VfsUtil.findRelativeFile(sourceRoot, approvalProgramName);
+            VirtualFile clearProgVF = AlgoModuleUtils.getFile(project, clearStateProgramName);//VfsUtil.findRelativeFile(clearStateProgramName, sourceRoot);
 
             if(appProgVF == null || !appProgVF.exists()) {
                 console.showErrorMessage(String.format("Approval Program doesn't exist: %s", appProgVF != null ? appProgVF.getCanonicalPath(): approvalProgramName));
@@ -197,13 +196,13 @@ public class UpdateStatefulAppAction extends BaseTxnAction {
                 relClearStatePath = clearProgVF.getName();
             //ends
 
-            VirtualFile moduleOutFolder = AlgoContractModuleHelper.getModuleOutputFolder(console, module);
+            VirtualFile moduleOutFolder = AlgoContractModuleHelper.getModuleOutputTokFolder(console, module);
 
             //Merge Approval Program if there is any variable template available
-            File mergedAppProgSource  = AlgoContractModuleHelper.generateMergeSourceWithVariables(project, console, moduleOutFolder, appProgVF, relAppProgPath);
+            File mergedAppProgSource  = AlgoContractModuleHelper.generateMergeSourceWithVariables(project, module, console, moduleOutFolder, appProgVF, relAppProgPath);
 
             //Merge Clear Program if there is any variable template available
-            File mergeClearProgSource  = AlgoContractModuleHelper.generateMergeSourceWithVariables(project, console, moduleOutFolder, clearProgVF, relClearStatePath);
+            File mergeClearProgSource  = AlgoContractModuleHelper.generateMergeSourceWithVariables(project, module, console, moduleOutFolder, clearProgVF, relClearStatePath);
 
             String appProgSource = null;
             String clearProgSource = null;

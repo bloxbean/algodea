@@ -1,5 +1,6 @@
 package com.bloxbean.algodea.idea.pyteal.action;
 
+import com.bloxbean.algodea.idea.compile.CompileException;
 import com.bloxbean.algodea.idea.compile.action.TEALCompileAction;
 import com.bloxbean.algodea.idea.compile.service.*;
 import com.bloxbean.algodea.idea.configuration.action.ConfigurationAction;
@@ -9,8 +10,10 @@ import com.bloxbean.algodea.idea.core.action.AlgoBaseAction;
 import com.bloxbean.algodea.idea.core.action.util.AlgoContractModuleHelper;
 import com.bloxbean.algodea.idea.core.exception.LocalSDKNotConfigured;
 import com.bloxbean.algodea.idea.nodeint.AlgoServerConfigurationHelper;
+import com.bloxbean.algodea.idea.pyteal.PyTealHelpMessagePrinter;
 import com.bloxbean.algodea.idea.toolwindow.AlgoConsole;
 import com.bloxbean.algodea.idea.util.AlgoModuleUtils;
+import com.bloxbean.algodea.idea.util.IOUtil;
 import com.bloxbean.algodea.idea.util.IdeaUtil;
 import com.intellij.execution.process.OSProcessHandler;
 import com.intellij.notification.NotificationType;
@@ -70,17 +73,19 @@ public class PyTealCompileAction extends AlgoBaseAction {
         if (module == null)
             return;
 
+        final AlgoConsole console = AlgoConsole.getConsole(project);
+        console.clearAndshow();
+
         Sdk projectSDK = ProjectRootManager.getInstance(project).getProjectSdk();
         if(projectSDK == null) {
             //TODO warning add/set python sdk
+            PyTealHelpMessagePrinter.pythonPluginNotInstalled(console);
             return;
         }
 
-        if(projectSDK.getSdkType().getName().startsWith("Python")) {
-            System.out.println(projectSDK.getSdkType().getName());
-            System.out.println("It's a python sdk");
-        } else {
+        if(!projectSDK.getSdkType().getName().startsWith("Python")) {
             //warning
+            PyTealHelpMessagePrinter.pythonPluginNotInstalled(console);
             return;
         }
 
@@ -88,9 +93,6 @@ public class PyTealCompileAction extends AlgoBaseAction {
             LOG.debug("Compile TEAL file");
 
         FileDocumentManager.getInstance().saveAllDocuments();
-
-        final AlgoConsole console = AlgoConsole.getConsole(project);
-        console.clearAndshow();
 
         AlgoLocalSDK localSDK = AlgoServerConfigurationHelper.getCompilerLocalSDK(project);
         NodeInfo remoteSDK = null;
@@ -113,18 +115,18 @@ public class PyTealCompileAction extends AlgoBaseAction {
 
 
         //module output folder
-        VirtualFile moduleOutFolder = AlgoContractModuleHelper.getModuleOutputFolder(console, module);
+        VirtualFile moduleOutFolder = AlgoContractModuleHelper.getModuleOutputTokFolder(console, module);
 
         if(StringUtil.isEmpty(relativeSourcePath))
             relativeSourcePath = psiFile.getVirtualFile().getName();
 
-        VirtualFile generatedSrcFolder = AlgoContractModuleHelper.getGeneratedSourceFolder(moduleOutFolder);
+        VirtualFile generatedSrcFolder = AlgoContractModuleHelper.getGeneratedSourceFolder(project, module, true);
         if(generatedSrcFolder == null) {
             //TODO error return
             return;
         }
 
-        relativeSourcePath = convertExtensionPyToTEAL(relativeSourcePath);
+        relativeSourcePath = IOUtil.convertExtensionPyToTEAL(relativeSourcePath);
 
         String generatedSourcePath = generatedSrcFolder.getCanonicalPath() + File.separator + relativeSourcePath;
 
@@ -135,7 +137,7 @@ public class PyTealCompileAction extends AlgoBaseAction {
                 outputFilePath = moduleOutFolder.getCanonicalPath() + File.separator + relativeSourcePath + ".tok";
             else
                 outputFilePath = moduleOutFolder.getCanonicalPath() + File.separator
-                        + convertExtensionPyToTEAL(sourceFile.getName()) + ".tok";
+                        + IOUtil.convertExtensionPyToTEAL(sourceFile.getName()) + ".tok";
         }
 
         //Delete previous generated file if any
@@ -191,7 +193,6 @@ public class PyTealCompileAction extends AlgoBaseAction {
             @Override
             public void onSuccessful(String sourceFile, String outputFile) {
                 console.showSuccessMessage("PyTeal file compiled successfully.");
-                console.showInfoMessage("TEAL file generated at " + outputFile);
 
                 if (folderToRefresh != null) {
                     folderToRefresh.refresh(false, false);
@@ -248,7 +249,7 @@ public class PyTealCompileAction extends AlgoBaseAction {
 
             @Override
             public void onSuccessful(String sourceFile, String outputFile) {
-                console.showSuccessMessage("TEAL file compiled successfully");
+                console.showSuccessMessage("TEAL file compiled successfully. " + (outputFile != null? outputFile: ""));
 
                 if (folderToRefresh != null) {
                     folderToRefresh.refresh(false, false);
@@ -272,17 +273,23 @@ public class PyTealCompileAction extends AlgoBaseAction {
             }
         };
 
-        Task.Backgroundable task = new Task.Backgroundable(project, "TEAL Compile") {
+        Task.Backgroundable task = new Task.Backgroundable(project, "PyTeal Compile") {
 
             @Override
             public void run(@NotNull ProgressIndicator indicator) {
                 //Py compile
                 PyTealCompileService pyTealCompileService = new PyTealCompileService(project);
-                String content = pyTealCompileService.compile(projectSDK.getHomePath(), sourcePath, generatedSourcePath,
-                        pyTealCompileListener);
+                String content = null;
+                try {
+                    content = pyTealCompileService.compile(projectSDK.getHomePath(), sourcePath, generatedSourcePath,
+                            pyTealCompileListener);
+                } catch (CompileException compileException) {
+                    return;
+                }
 
                 if(content == null || content.length() == 0) {
-                    pyTealCompileListener.error("PyTeal compilation failed. " + sourcePath);
+                    pyTealCompileListener.error("No TEAL content found in stdout. TEAL compilation was not done." + sourcePath);
+                    pyTealCompileListener.error(String.format("Please check %s folder to verify if the pyteal program has created any teal file.",  generatedSrcFolder));
                     return;
                 }
 
@@ -293,8 +300,10 @@ public class PyTealCompileAction extends AlgoBaseAction {
                     VirtualFile outputVf = VfsUtil.findFileByIoFile(new File(generatedSourcePath), true);
                     if(outputVf != null && outputVf.exists())
                         outputVf.refresh(true, true);
+
+                    console.showInfoMessage("TEAL file generated at " + generatedSourcePath);
                 } catch (IOException ioException) {
-                    compilationResultListener.error("error writing teal file : " + ioException.getMessage());
+                    compilationResultListener.error("Error writing teal file : " + ioException.getMessage());
                 }
 
                 CompileService compileService = null;
@@ -330,15 +339,5 @@ public class PyTealCompileAction extends AlgoBaseAction {
                 }
             });
         }
-    }
-
-    @NotNull
-    private String convertExtensionPyToTEAL(String filePath) {
-        if(filePath == null)
-            return null;
-        if(filePath.endsWith(".py") || filePath.endsWith(".PY")) {
-            filePath = filePath.substring(0, filePath.lastIndexOf(".")) + ".teal";
-        }
-        return filePath;
     }
 }

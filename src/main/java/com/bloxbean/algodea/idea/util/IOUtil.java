@@ -59,4 +59,13 @@ public class IOUtil {
             return file.substring(0, index);
         }
     }
+
+    public static String convertExtensionPyToTEAL(String filePath) {
+        if(filePath == null)
+            return null;
+        if(filePath.endsWith(".py") || filePath.endsWith(".PY")) {
+            filePath = filePath.substring(0, filePath.lastIndexOf(".")) + ".teal";
+        }
+        return filePath;
+    }
 }

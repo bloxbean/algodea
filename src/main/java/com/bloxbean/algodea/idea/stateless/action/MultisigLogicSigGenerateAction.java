@@ -16,7 +16,6 @@ import com.bloxbean.algodea.idea.language.psi.TEALFile;
 import com.bloxbean.algodea.idea.nodeint.AlgoServerConfigurationHelper;
 import com.bloxbean.algodea.idea.nodeint.model.LogicSigType;
 import com.bloxbean.algodea.idea.stateless.model.LogicSigParams;
-import com.bloxbean.algodea.idea.stateless.ui.ArgsInputForm;
 import com.bloxbean.algodea.idea.stateless.ui.MultiSigLogicSigCreateInputForm;
 import com.bloxbean.algodea.idea.stateless.ui.MultiSigLogicSigDialog;
 import com.bloxbean.algodea.idea.toolwindow.AlgoConsole;
@@ -123,14 +122,14 @@ public class MultisigLogicSigGenerateAction extends AnAction {
 
 
         //module output folder
-        VirtualFile moduleOutFolder = AlgoContractModuleHelper.getModuleOutputFolder(console, module);
+        VirtualFile moduleOutFolder = AlgoContractModuleHelper.getModuleOutputTokFolder(console, module);
         VirtualFile lsigOutFolder = AlgoContractModuleHelper.getModuleLSigOutputFolder(console, module);
 
         if(StringUtil.isEmpty(relativeSourcePath))
             relativeSourcePath = psiFile.getVirtualFile().getName();
 
 
-        File mergedSource = AlgoContractModuleHelper.generateMergeSourceWithVariables(project, console, moduleOutFolder, sourceFile, relativeSourcePath);
+        File mergedSource = AlgoContractModuleHelper.generateMergeSourceWithVariables(project, module, console, moduleOutFolder, sourceFile, relativeSourcePath);
 
 
         //Compilation configuration setup

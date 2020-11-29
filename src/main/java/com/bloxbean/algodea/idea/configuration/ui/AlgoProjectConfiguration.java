@@ -8,7 +8,6 @@ import com.bloxbean.algodea.idea.common.Tuple;
 import com.bloxbean.algodea.idea.configuration.model.NodeInfo;
 import com.bloxbean.algodea.idea.configuration.service.ConfiguraionHelperService;
 import com.bloxbean.algodea.idea.pkg.AlgoPkgJsonService;
-import com.bloxbean.algodea.idea.pkg.model.AlgoPackageJson;
 import com.bloxbean.algodea.idea.util.AlgoModuleUtils;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
@@ -18,8 +17,6 @@ import com.intellij.ui.components.JBRadioButton;
 import com.twelvemonkeys.lang.StringUtil;
 
 import javax.swing.*;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.util.List;
 
 public class AlgoProjectConfiguration {
@@ -147,6 +144,8 @@ public class AlgoProjectConfiguration {
         AlgoPkgJsonService pkgJsonService = AlgoPkgJsonService.getInstance(project);
         contractSettingsPanel.poulateData(state, pkgJsonService);
 
+        String projectFolder = project.getBasePath();
+
         String sourcePath = AlgoModuleUtils.getFirstSourceRootPath(project);//getFirstTEALSourceRootPath(project);
 
         if(sourcePath == null) {
@@ -154,7 +153,11 @@ public class AlgoProjectConfiguration {
         }
 
         if(!StringUtil.isEmpty(sourcePath)) {
-            contractSettingsPanel.setSourceRootPath(sourcePath);
+            contractSettingsPanel.setSourceFolder(sourcePath);
+        }
+
+        if(!StringUtil.isEmpty(projectFolder)) {
+            contractSettingsPanel.setProjectFolder(projectFolder);
         }
     }
 

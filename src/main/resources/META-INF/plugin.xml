@@ -77,6 +77,13 @@
         <internalFileTemplate name="_Algo.ApprovalProgram"/>
         <internalFileTemplate name="_Algo.ClearStateProgram"/>
 
+        <internalFileTemplate name="Algo.PyTeal.Empty"/>
+        <internalFileTemplate name="Algo.PyTeal.Basic"/>
+        <internalFileTemplate name="Algo.PyTeal.Atomic Swap"/>
+        <internalFileTemplate name="Algo.PyTeal.Periodic Payment"/>
+        <internalFileTemplate name="Algo.PyTeal.Split"/>
+        <internalFileTemplate name="Algo.PyTeal.Recurring Swap"/>
+
         <applicationService serviceImplementation="com.bloxbean.algodea.idea.configuration.service.NodeConfigState"/>
         <applicationService serviceImplementation="com.bloxbean.algodea.idea.configuration.service.AlgoLocalSDKState"/>
         <applicationService serviceImplementation="com.bloxbean.algodea.idea.assets.service.AssetCacheService"/>
@@ -86,6 +93,11 @@
         <action id="Algorand.NewTEALFile" class="com.bloxbean.algodea.idea.core.action.NewTEALFileAction"
                 text="TEAL File" description="Create new TEAL file">
             <add-to-group group-id="NewGroup" anchor="first" />
+        </action>
+
+        <action id="Algorand.NewPyTealFile" class="com.bloxbean.algodea.idea.pyteal.action.NewPyTealFileAction"
+                text="PyTeal File" description="Create new PyTeal file">
+            <add-to-group group-id="NewGroup" relative-to-action="Algorand.NewTEALFile" anchor="after" />
         </action>
 
         <action id="Algo.teal.editor_context.compile" class="com.bloxbean.algodea.idea.compile.action.TEALCompileAction" text="Compile TEAL"

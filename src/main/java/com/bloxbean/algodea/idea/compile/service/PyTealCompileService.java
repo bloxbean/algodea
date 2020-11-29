@@ -24,9 +24,15 @@ public class PyTealCompileService {
         this.cwd = project.getBasePath();
     }
 
-    public String compile(String python, String source, String destination, CompilationResultListener listener) {
+    public String compile(String python, String source, String destination, CompilationResultListener listener) throws CompileException {
         if(!StringUtil.isEmpty(destination)) {
             FileUtil.createParentDirs(new File(destination));
+        }
+
+        File generatedFolder = new File(destination).getParentFile();
+
+        if(generatedFolder != null && generatedFolder.exists()) {
+            this.cwd = generatedFolder.getAbsolutePath();
         }
 
         List<String> cmd = new ArrayList<>();
@@ -81,6 +87,10 @@ public class PyTealCompileService {
         });
 
         handler.waitFor();
+
+        if(handler.getExitCode() != 0) {
+            throw new CompileException("PyTeal file compilation failed");
+        }
 
         return output.toString();
     }

@@ -127,13 +127,13 @@ public class TEALCompileAction extends AnAction {
 
 
         //module output folder
-        VirtualFile moduleOutFolder = AlgoContractModuleHelper.getModuleOutputFolder(console, module);
+        VirtualFile moduleOutFolder = AlgoContractModuleHelper.getModuleOutputTokFolder(console, module);
 
         if(StringUtil.isEmpty(relativeSourcePath))
             relativeSourcePath = psiFile.getVirtualFile().getName();
 
 
-        File mergedSource = AlgoContractModuleHelper.generateMergeSourceWithVariables(project, console, moduleOutFolder, sourceFile, relativeSourcePath);
+        File mergedSource = AlgoContractModuleHelper.generateMergeSourceWithVariables(project, module, console, moduleOutFolder, sourceFile, relativeSourcePath);
 
 
         //Compilation configuration setup

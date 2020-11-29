@@ -32,7 +32,10 @@ import com.intellij.util.containers.ContainerUtil;
 import java.util.List;
 
 public class AlgoFileTemplateUtil {
+  public final static String PYTHON_EXT = "py";
+
   private final static String ALGORAND_TEMPLATE_PREFIX = "Algo.";
+  private final static String ALGORAND_PYTEAL_TEMPLATE_PREFIX = "Algo.PyTeal.";
 
   public static List<FileTemplate> getApplicableTemplates() {
     return getApplicableTemplates(new Condition<FileTemplate>() {
@@ -40,6 +43,16 @@ public class AlgoFileTemplateUtil {
       public boolean value(FileTemplate fileTemplate) {
         return TEALFileType.INSTANCE.getDefaultExtension().equals(fileTemplate.getExtension())
                 && fileTemplate.getName().startsWith(ALGORAND_TEMPLATE_PREFIX);
+      }
+    });
+  }
+
+  public static List<FileTemplate> getApplicablePyTealTemplates() {
+    return getApplicableTemplates(new Condition<FileTemplate>() {
+      @Override
+      public boolean value(FileTemplate fileTemplate) {
+        return PYTHON_EXT.equals(fileTemplate.getExtension())
+                && fileTemplate.getName().startsWith(ALGORAND_PYTEAL_TEMPLATE_PREFIX);
       }
     });
   }
@@ -52,7 +65,9 @@ public class AlgoFileTemplateUtil {
   }
 
   public static String getTemplateShortName(String templateName) {
-    if (templateName.startsWith(ALGORAND_TEMPLATE_PREFIX)) {
+    if (templateName.startsWith(ALGORAND_PYTEAL_TEMPLATE_PREFIX)) {
+      return templateName.substring(ALGORAND_PYTEAL_TEMPLATE_PREFIX.length());
+    }else if (templateName.startsWith(ALGORAND_TEMPLATE_PREFIX)) {
       return templateName.substring(ALGORAND_TEMPLATE_PREFIX.length());
     }
     return templateName;

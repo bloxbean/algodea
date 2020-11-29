@@ -103,8 +103,8 @@ public class AlgoModuleConfigurable extends FrameworkSupportInModuleConfigurable
                     packageJson = pkgJsonService.createPackageJson();
 
                 AlgoPackageJson.StatefulContract statefulContract = new AlgoPackageJson.StatefulContract();
-                statefulContract.setApprovalProgram(approvalProgramName);
-                statefulContract.setClearStateProgram(clearStateProgramName);
+                statefulContract.setApprovalProgram("src/main/teal/" + approvalProgramName);
+                statefulContract.setClearStateProgram("src/main/teal/" + clearStateProgramName);
                 statefulContract.setName(contractName);
 
                 packageJson.addStatefulContract(statefulContract);

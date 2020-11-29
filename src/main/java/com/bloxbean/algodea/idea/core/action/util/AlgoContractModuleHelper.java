@@ -76,7 +76,7 @@ public class AlgoContractModuleHelper {
         return moduleOutFolder;
     }
 
-    public static VirtualFile getModuleOutputFolder(AlgoConsole console, Module module) {
+    public static VirtualFile getModuleOutputTokFolder(AlgoConsole console, Module module) {
         VirtualFile moduleOutFolder = null;
         VirtualFile moduleRoot = module.getModuleFile().getParent();
 
@@ -169,7 +169,7 @@ public class AlgoContractModuleHelper {
         return moduleOutFolder;
     }
 
-    public static File generateMergeSourceWithVariables(Project project, AlgoConsole console, VirtualFile moduleOutFolder, VirtualFile sourceFile, String relativeDestinationFilePath) {
+    public static File generateMergeSourceWithVariables(Project project, Module module, AlgoConsole console, VirtualFile moduleOutFolder, VirtualFile sourceFile, String relativeDestinationFilePath) {
         File mergedSource = null;
         //Get list of VAR_TMPL_* if available in the source file
         List<VarParam> varParams = null;
@@ -205,7 +205,7 @@ public class AlgoContractModuleHelper {
 
             List<VarParam> varParamsValues = compileVarTmplInputDialog.getParamsWithValues();
 
-            VirtualFile genSrcFolder = getGeneratedSourceFolder(moduleOutFolder.getParent());
+            VirtualFile genSrcFolder = getGeneratedSourceFolder(project, module, true);
             if(genSrcFolder == null) {
                 console.showErrorMessage("Compilation failed. 'generated-src' folder could not be created");
                 return null;
@@ -237,21 +237,36 @@ public class AlgoContractModuleHelper {
         return mergedSource;
     }
 
-    public static VirtualFile getGeneratedSourceFolder(VirtualFile moduleOutFolder) {
-        VirtualFile genFolder = moduleOutFolder.findChild(GENERATED_SRC);
-        if(genFolder == null || !genFolder.exists()) {
-            try {
-                File genFile = new File(VfsUtil.virtualToIoFile(moduleOutFolder), GENERATED_SRC);
-                FileUtil.createDirectory(genFile);
-                genFolder = VfsUtil.findFileByIoFile(genFile, true);
-                        //moduleOutFolder.createChildDirectory(new Object(), GENERATED_SRC);
-            } catch (Exception e) {
-                if(LOG.isDebugEnabled()) {
-                    LOG.warn("Unable to create generated_src folder", e);
+    public static VirtualFile getGeneratedSourceFolder(Project project, Module module, boolean createIfDoesntExist) {
+        if(module == null && project == null)
+            return null;
+
+        VirtualFile rootFolder = null;
+
+        if(module.getModuleFile() != null)
+             rootFolder = module.getModuleFile().getParent();
+        else {
+            rootFolder = VfsUtil.findFileByIoFile(new File(project.getBasePath()), true);
+        }
+
+        VirtualFile genFolder = rootFolder.findChild(GENERATED_SRC);
+
+        if(createIfDoesntExist) { //If create
+            if (genFolder == null || !genFolder.exists()) {
+                try {
+                    File genFile = new File(VfsUtil.virtualToIoFile(rootFolder), GENERATED_SRC);
+                    FileUtil.createDirectory(genFile);
+                    genFolder = VfsUtil.findFileByIoFile(genFile, true);
+                    //moduleOutFolder.createChildDirectory(new Object(), GENERATED_SRC);
+                } catch (Exception e) {
+                    if (LOG.isDebugEnabled()) {
+                        LOG.warn("Unable to create generated_src folder", e);
+                    }
+                    return null;
                 }
-                return null;
             }
         }
+
         return  genFolder;
     }
 }

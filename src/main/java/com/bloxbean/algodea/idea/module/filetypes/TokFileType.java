@@ -59,7 +59,7 @@ public class TokFileType implements FileType {
 
     @Override
     public boolean isBinary() {
-        return true;
+        return false;
     }
 
     @Override

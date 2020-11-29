@@ -48,6 +48,7 @@ public class UpdateAppEntryForm {
     private JTextField appProgTf;
     private JTextField clrProgTf;
     private String sourceRootPath;
+    private String projectFolder;
     private List<AlgoPackageJson.StatefulContract> contracts;
 
     public UpdateAppEntryForm() {
@@ -55,6 +56,9 @@ public class UpdateAppEntryForm {
     }
 
     public void initializeData(Project project, String contractName) {
+        if(project != null)
+            projectFolder = project.getBasePath();
+
         sourceRootPath = AlgoModuleUtils.getFirstSourceRootPath(project);// AlgoModuleUtils.getFirstTEALSourceRootPath(project);
         if(sourceRootPath == null) {
             sourceRootPath = AlgoModuleUtils.getModuleDirPath(project);
@@ -153,9 +157,9 @@ public class UpdateAppEntryForm {
                 return;
             }
 
-            if (!com.twelvemonkeys.lang.StringUtil.isEmpty(sourceRootPath)) {
-                String relativePath = FileUtil.getRelativePath(new File(sourceRootPath), file);
-                if (!com.twelvemonkeys.lang.StringUtil.isEmpty(relativePath))
+            if (!StringUtil.isEmpty(projectFolder)) {
+                String relativePath = FileUtil.getRelativePath(new File(projectFolder), file);
+                if (!StringUtil.isEmpty(relativePath))
                     appProgTf.setText(relativePath);
                 else
                     appProgTf.setText(file.getAbsolutePath());
@@ -189,8 +193,8 @@ public class UpdateAppEntryForm {
                 return;
             }
 
-            if (!com.twelvemonkeys.lang.StringUtil.isEmpty(sourceRootPath)) {
-                String relativePath = FileUtil.getRelativePath(new File(sourceRootPath), file);
+            if (!com.twelvemonkeys.lang.StringUtil.isEmpty(projectFolder)) {
+                String relativePath = FileUtil.getRelativePath(new File(projectFolder), file);
                 if (!com.twelvemonkeys.lang.StringUtil.isEmpty(relativePath))
                     clrProgTf.setText(relativePath);
                 else

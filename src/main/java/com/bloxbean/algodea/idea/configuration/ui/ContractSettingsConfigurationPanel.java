@@ -1,10 +1,12 @@
 package com.bloxbean.algodea.idea.configuration.ui;
 
 import com.bloxbean.algodea.idea.configuration.service.AlgoProjectState;
+import com.bloxbean.algodea.idea.core.action.util.AlgoContractModuleHelper;
 import com.bloxbean.algodea.idea.module.AlgoModuleConstant;
 import com.bloxbean.algodea.idea.pkg.AlgoPkgJsonService;
 import com.bloxbean.algodea.idea.pkg.exception.PackageJsonException;
 import com.bloxbean.algodea.idea.pkg.model.AlgoPackageJson;
+import com.bloxbean.algodea.idea.util.IOUtil;
 import com.bloxbean.algodea.idea.util.IdeaUtil;
 import com.intellij.notification.NotificationType;
 import com.intellij.openapi.diagnostic.Logger;
@@ -13,6 +15,7 @@ import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.text.StringUtil;
 import org.apache.commons.lang.math.NumberUtils;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
@@ -35,10 +38,11 @@ public class ContractSettingsConfigurationPanel {
     private JTextField globalIntTf;
     private JTextField localByteslicesTf;
     private JTextField localIntsTf;
-    private String sourceRootPath;
     private boolean newContractAdd = false;
 
     private AlgoPkgJsonService algoPkgJsonService;
+    private String projectFolder;
+    private String sourceFolder;
 
     public void poulateData(AlgoProjectState.State state, AlgoPkgJsonService pkgJsonService) {
 
@@ -135,8 +139,12 @@ public class ContractSettingsConfigurationPanel {
         });
     }
 
-    public void setSourceRootPath(String sourceRootPath) {
-        this.sourceRootPath = sourceRootPath;
+    public void setProjectFolder(String projectFolder) {
+        this.projectFolder = projectFolder;
+    }
+
+    public void setSourceFolder(String sourceFolder) {
+        this.sourceFolder = sourceFolder;
     }
 
     public String getContractName() {
@@ -245,13 +253,14 @@ public class ContractSettingsConfigurationPanel {
         appProgTf = new JTextField();
         approvalProgramTf = new TextFieldWithBrowseButton(appProgTf, e -> {
             JFileChooser fc = new JFileChooser();
-            if(sourceRootPath != null)
-                fc.setCurrentDirectory(new File(sourceRootPath));
+            if(sourceFolder != null)
+                fc.setCurrentDirectory(new File(sourceFolder));
             fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
             fc.setFileFilter(new FileFilter() {
                 @Override
                 public boolean accept(File f) {
-                    if(f.getName().endsWith(".teal") || f.getName().endsWith(".TEAL"))
+                    if(f.getName().endsWith(".teal") || f.getName().endsWith(".TEAL")
+                            || f.getName().endsWith(".py") || f.getName().endsWith(".PY"))
                         return true;
                     else
                         return false;
@@ -269,8 +278,9 @@ public class ContractSettingsConfigurationPanel {
                 return;
             }
 
-            if(!StringUtil.isEmpty(sourceRootPath)) {
-                String relativePath = FileUtil.getRelativePath(new File(sourceRootPath), file);
+            if(!StringUtil.isEmpty(projectFolder)) {
+                String relativePath = getRelativePathForSelectedSource(file);
+
                 if(!StringUtil.isEmpty(relativePath))
                     appProgTf.setText(relativePath);
                 else
@@ -282,13 +292,14 @@ public class ContractSettingsConfigurationPanel {
         clrProgTf = new JTextField();
         clearProgramTf = new TextFieldWithBrowseButton(clrProgTf, e -> {
             JFileChooser fc = new JFileChooser();
-            if(sourceRootPath != null)
-                fc.setCurrentDirectory(new File(sourceRootPath));
+            if(sourceFolder != null)
+                fc.setCurrentDirectory(new File(sourceFolder));
             fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
             fc.setFileFilter(new FileFilter() {
                 @Override
                 public boolean accept(File f) {
-                    if(f.getName().endsWith(".teal") || f.getName().endsWith(".TEAL"))
+                    if(f.getName().endsWith(".teal") || f.getName().endsWith(".TEAL")
+                            || f.getName().endsWith(".py") || f.getName().endsWith(".PY"))
                         return true;
                     else
                         return false;
@@ -305,14 +316,31 @@ public class ContractSettingsConfigurationPanel {
                 return;
             }
 
-            if(!StringUtil.isEmpty(sourceRootPath)) {
-                String relativePath = FileUtil.getRelativePath(new File(sourceRootPath), file);
+            if(!StringUtil.isEmpty(projectFolder)) {
+                String relativePath = getRelativePathForSelectedSource(file);
+
                 if(!StringUtil.isEmpty(relativePath))
                     clrProgTf.setText(relativePath);
                 else
                     clrProgTf.setText(file.getAbsolutePath());
             }
         });
+    }
+
+    @Nullable
+    private String getRelativePathForSelectedSource(File selectedFile) {
+        String relativePath = null;
+
+        if(selectedFile.getName().endsWith(".py") || selectedFile.getName().endsWith(".PY")) { //If python, set generated-src folder.
+            String relativePathFromSrcRoot = FileUtil.getRelativePath(new File(sourceFolder), selectedFile);
+            relativePath = AlgoContractModuleHelper.GENERATED_SRC + "/" + relativePathFromSrcRoot;
+
+            relativePath = IOUtil.convertExtensionPyToTEAL(relativePath);
+        } else {
+            relativePath = FileUtil.getRelativePath(new File(projectFolder), selectedFile);
+        }
+
+        return relativePath;
     }
 
     public void updateDataToState(AlgoProjectState.State state, AlgoPkgJsonService algoPkgJsonService) {
