@@ -100,6 +100,11 @@
             <add-to-group group-id="NewGroup" relative-to-action="Algorand.NewTEALFile" anchor="after" />
         </action>
 
+        <action id="Algorand.NewStatefulContractConfiguration" class="com.bloxbean.algodea.idea.contracts.action.NewStatefulContractAction"
+                text="Stateful TEAL Configuration" description="Stateful TEAL Configuration">
+            <add-to-group group-id="NewGroup" relative-to-action="Algorand.NewPyTealFile" anchor="after" />
+        </action>
+
         <action id="Algo.teal.editor_context.compile" class="com.bloxbean.algodea.idea.compile.action.TEALCompileAction" text="Compile TEAL"
                 description="Compile TEAL file">
             <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl T" second-keystroke="C"/>

@@ -44,7 +44,7 @@ public class ContractSettingsConfigurationPanel {
     private String projectFolder;
     private String sourceFolder;
 
-    public void poulateData(AlgoProjectState.State state, AlgoPkgJsonService pkgJsonService) {
+    public void poulateData(AlgoPkgJsonService pkgJsonService) {
 
         //statefulCB.setSelected(state.isSupportStatefulContract());
         this.algoPkgJsonService = pkgJsonService;
@@ -108,35 +108,43 @@ public class ContractSettingsConfigurationPanel {
         newContractResetBtn.setEnabled(false);
 
         newContractBtn.addActionListener(evt -> {
-            newContractAdd = true;
-            newContractBtn.setEnabled(false);
-            newContractResetBtn.setEnabled(true);
-            contractNameCB.setEditable(true);
-
-            contractNameCB.insertItemAt("", 0);
-            contractNameCB.setSelectedIndex(0);
-
-            appProgTf.setText("");
-            clrProgTf.setText("");
-
-            globalByteslicesTf.setText("1");
-            globalIntTf.setText("1");
-            localByteslicesTf.setText("1");
-            localIntsTf.setText("1");
+            newContractButtonClicked();
         });
 
         newContractResetBtn.addActionListener(e -> {
-            newContractAdd = false;
-            newContractResetBtn.setEnabled(false);
-            newContractBtn.setEnabled(true);
-            contractNameCB.setEditable(false);
-
-            if(contractNameCB.getModel().getSize() > 0)
-                contractNameCB.removeItemAt(0);
-
-            if(contractNameCB.getModel().getSize() > 0)
-                contractNameCB.setSelectedIndex(0);
+            resetNewContractButtonClicked();
         });
+    }
+
+    public void resetNewContractButtonClicked() {
+        newContractAdd = false;
+        newContractResetBtn.setEnabled(false);
+        newContractBtn.setEnabled(true);
+        contractNameCB.setEditable(false);
+
+        if(contractNameCB.getModel().getSize() > 0)
+            contractNameCB.removeItemAt(0);
+
+        if(contractNameCB.getModel().getSize() > 0)
+            contractNameCB.setSelectedIndex(0);
+    }
+
+    public void newContractButtonClicked() {
+        newContractAdd = true;
+        newContractBtn.setEnabled(false);
+        newContractResetBtn.setEnabled(true);
+        contractNameCB.setEditable(true);
+
+        contractNameCB.insertItemAt("", 0);
+        contractNameCB.setSelectedIndex(0);
+
+        appProgTf.setText("");
+        clrProgTf.setText("");
+
+        globalByteslicesTf.setText("1");
+        globalIntTf.setText("1");
+        localByteslicesTf.setText("1");
+        localIntsTf.setText("1");
     }
 
     public void setProjectFolder(String projectFolder) {
@@ -268,7 +276,7 @@ public class ContractSettingsConfigurationPanel {
 
                 @Override
                 public String getDescription() {
-                    return "TEAL file";
+                    return "TEAL / PyTeal file";
                 }
             });
 
@@ -307,7 +315,7 @@ public class ContractSettingsConfigurationPanel {
 
                 @Override
                 public String getDescription() {
-                    return "TEAL file";
+                    return "TEAL / PyTeal file";
                 }
             });
             fc.showDialog(mainPanel, "Select");
@@ -343,7 +351,7 @@ public class ContractSettingsConfigurationPanel {
         return relativePath;
     }
 
-    public void updateDataToState(AlgoProjectState.State state, AlgoPkgJsonService algoPkgJsonService) {
+    public void updateDataToState(AlgoPkgJsonService algoPkgJsonService) {
         String name = getContractName();
         if(StringUtil.isEmpty(name)) return;
 

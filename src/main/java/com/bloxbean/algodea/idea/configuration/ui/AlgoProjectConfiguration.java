@@ -142,7 +142,7 @@ public class AlgoProjectConfiguration {
     private void populateContractSettingsPanel(Project project) {
         AlgoProjectState.State state = AlgoProjectState.getInstance(project).getState();
         AlgoPkgJsonService pkgJsonService = AlgoPkgJsonService.getInstance(project);
-        contractSettingsPanel.poulateData(state, pkgJsonService);
+        contractSettingsPanel.poulateData(pkgJsonService);
 
         String projectFolder = project.getBasePath();
 
@@ -355,7 +355,7 @@ public class AlgoProjectConfiguration {
         state.setDeploymentServerId(getDeployementNodeId());
 
         //Save Contract Settings panel
-        contractSettingsPanel.updateDataToState(state, algoPkgJsonService);
+        contractSettingsPanel.updateDataToState(algoPkgJsonService);
 
     }
 
