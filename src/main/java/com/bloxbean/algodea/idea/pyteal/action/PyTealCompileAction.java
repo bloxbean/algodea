@@ -46,7 +46,7 @@ import java.io.IOException;
 
 public class PyTealCompileAction extends AlgoBaseAction {
 
-    private final static Logger LOG = Logger.getInstance(TEALCompileAction.class);
+    private final static Logger LOG = Logger.getInstance(PyTealCompileAction.class);
 
     @Override
     public void update(@NotNull AnActionEvent e) {
