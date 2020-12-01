@@ -59,7 +59,7 @@ public class TEALDocumentationProvider extends AbstractDocumentationProvider  {
     @Override
     public PsiElement getCustomDocumentationElement(@NotNull Editor editor,
                                                     @NotNull PsiFile file,
-                                                    @Nullable PsiElement contextElement) {
+                                                    @Nullable PsiElement contextElement, int targetOffset) {
 
         return PsiUtil.findParent(contextElement, SEARCH_TYPES).orElse(null);
     }
