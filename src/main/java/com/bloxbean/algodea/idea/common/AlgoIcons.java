@@ -27,25 +27,25 @@ import com.intellij.openapi.util.IconLoader;
 import javax.swing.*;
 
 public class AlgoIcons {
-    public final static Icon ALGO_ICON = IconLoader.getIcon("/icons/algo16x16.png");
-    public final static Icon TEAL_FILE_ICON = IconLoader.getIcon("/icons/teal_file.png");
-    public final static Icon MODULE_ICON = IconLoader.getIcon("/icons/module.png");
-    public final static Icon OPCODE_ICON = IconLoader.getIcon("/icons/opcode.png");
-    public static final Icon FIELD_ICON = IconLoader.getIcon("/icons/field.png");;
-    public static final Icon LSIG_FILE_ICON = IconLoader.getIcon("/icons/lsig_file.png");
-    public static final Icon TOK_FILE_ICON = IconLoader.getIcon("/icons/tok_file.png");
-    public static final Icon ALGO_TX_ICON = IconLoader.getIcon("/icons/algo_tx.png");
+    public final static Icon ALGO_ICON = IconLoader.getIcon("/icons/algo16x16.png", AlgoIcons.class);
+    public final static Icon TEAL_FILE_ICON = IconLoader.getIcon("/icons/teal_file.png", AlgoIcons.class);
+    public final static Icon MODULE_ICON = IconLoader.getIcon("/icons/module.png", AlgoIcons.class);
+    public final static Icon OPCODE_ICON = IconLoader.getIcon("/icons/opcode.png", AlgoIcons.class);
+    public static final Icon FIELD_ICON = IconLoader.getIcon("/icons/field.png", AlgoIcons.class);;
+    public static final Icon LSIG_FILE_ICON = IconLoader.getIcon("/icons/lsig_file.png", AlgoIcons.class);
+    public static final Icon TOK_FILE_ICON = IconLoader.getIcon("/icons/tok_file.png", AlgoIcons.class);
+    public static final Icon ALGO_TX_ICON = IconLoader.getIcon("/icons/algo_tx.png", AlgoIcons.class);
 
-    public static final Icon LOGIC_SIG_ICON = IconLoader.getIcon("/icons/logicsig.png");
-    public static final Icon MLOGIC_SIG_ICON = IconLoader.getIcon("/icons/mlogicsig.png");
-    public static final Icon LOGIC_SIG_RUN_ICON = IconLoader.getIcon("/icons/logicsig_run.png");
+    public static final Icon LOGIC_SIG_ICON = IconLoader.getIcon("/icons/logicsig.png", AlgoIcons.class);
+    public static final Icon MLOGIC_SIG_ICON = IconLoader.getIcon("/icons/mlogicsig.png", AlgoIcons.class);
+    public static final Icon LOGIC_SIG_RUN_ICON = IconLoader.getIcon("/icons/logicsig_run.png", AlgoIcons.class);
 
     //AlgoExplorer icons
-    public static final Icon NODE = IconLoader.getIcon("/icons/node.png");
-    public static final Icon NODE_DEPLOY = IconLoader.getIcon("/icons/node_deploy.png");
-    public static final Icon NODE_COMPILE = IconLoader.getIcon("/icons/node_compile.png");
-    public static final Icon NODE_COMPILE_DEPLOY = IconLoader.getIcon("/icons/node_compile_deploy.png");
+    public static final Icon NODE = IconLoader.getIcon("/icons/node.png", AlgoIcons.class);
+    public static final Icon NODE_DEPLOY = IconLoader.getIcon("/icons/node_deploy.png", AlgoIcons.class);
+    public static final Icon NODE_COMPILE = IconLoader.getIcon("/icons/node_compile.png", AlgoIcons.class);
+    public static final Icon NODE_COMPILE_DEPLOY = IconLoader.getIcon("/icons/node_compile_deploy.png", AlgoIcons.class);
 
-    public static final Icon LOCALSDK = IconLoader.getIcon("/icons/localsdk.png");
-    public static final Icon LOCALSDK_COMPILE = IconLoader.getIcon("/icons/localsdk_compile.png");
+    public static final Icon LOCALSDK = IconLoader.getIcon("/icons/localsdk.png", AlgoIcons.class);
+    public static final Icon LOCALSDK_COMPILE = IconLoader.getIcon("/icons/localsdk_compile.png", AlgoIcons.class);
 }
