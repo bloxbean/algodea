@@ -22,6 +22,7 @@
 package com.bloxbean.algodea.idea.core.service;
 
 import com.intellij.openapi.components.PersistentStateComponent;
+import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
@@ -37,7 +38,7 @@ public class AlgoCacheService implements PersistentStateComponent<AlgoCacheServi
 
     public static AlgoCacheService getInstance(Project project) {
         if(project == null) return null;
-        return project.getComponent(AlgoCacheService.class);
+        return ServiceManager.getService(project, AlgoCacheService.class);
     }
 
     public static class State {

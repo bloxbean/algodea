@@ -189,7 +189,7 @@ public class AlgoContractModuleHelper {
             return null;
         }
 
-        AlgoCacheService algoCacheService = project.getComponent(AlgoCacheService.class);
+        AlgoCacheService algoCacheService = AlgoCacheService.getInstance(project);
         if(algoCacheService != null) { //Get cached var values
             Map<String, String> cacheVars = algoCacheService.getVarsFromCache(sourceFile.getName());
             if(cacheVars != null) {
