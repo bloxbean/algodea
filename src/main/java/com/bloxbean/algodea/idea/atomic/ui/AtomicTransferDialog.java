@@ -74,6 +74,9 @@ public class AtomicTransferDialog extends DialogWrapper {
     protected RequestMode requestMode = RequestMode.TRANSACTION;
     protected Action dryRunAction;
 
+    private Project project;
+    private Module module;
+
     public AtomicTransferDialog(@Nullable Project project, Module module) {
         super(project, true);
         dryRunAction = new RequestAction("Dry Run", RequestMode.DRY_RUN);
@@ -81,10 +84,13 @@ public class AtomicTransferDialog extends DialogWrapper {
         init();
         setTitle("Atomic Transfer");
 
+        this.project = project;
+        this.module = module;
+
         txnList.setModel(txnFileListModel);
 
         try {
-            buildFolder = AlgoContractModuleHelper.getBuildFolder(project);
+            buildFolder = AlgoContractModuleHelper.getBuildFolder(project, module);
 
             VirtualFile txnFileFolderVf = AlgoContractModuleHelper.getTxnOutputFolder(module);
             if(txnFileFolderVf != null)
@@ -95,14 +101,14 @@ public class AtomicTransferDialog extends DialogWrapper {
 
         }
         reset();
-        attachAddTxnBtnListener(project);
-        attachGroupBtnListener(project);
-        attachSignListener(project);
-        attachResetBtnListener(project);
-        attachTxnListPopupListener(project);
+        attachAddTxnBtnListener();
+        attachGroupBtnListener();
+        attachSignListener();
+        attachResetBtnListener();
+        attachTxnListPopupListener();
     }
 
-    private void attachAddTxnBtnListener(Project project) {
+    private void attachAddTxnBtnListener() {
         addTxnBtn.addActionListener(e -> {
             JFileChooser fc = new JFileChooser();
             if(txnFileFolder != null) {
@@ -144,13 +150,13 @@ public class AtomicTransferDialog extends DialogWrapper {
         });
     }
 
-    private void attachResetBtnListener(Project project) {
+    private void attachResetBtnListener() {
         resetButton.addActionListener(e -> {
             reset();
         });
     }
 
-    private void attachGroupBtnListener(Project project) {
+    private void attachGroupBtnListener() {
         groupBtn.addActionListener(e -> {
             List<AtomicTransaction> atomicTransactions = txnFileListModel.getAtomicTransactions();
             if(atomicTransactions == null || atomicTransactions.size() == 0)
@@ -172,14 +178,14 @@ public class AtomicTransferDialog extends DialogWrapper {
         });
     }
 
-    private void attachSignListener(@Nullable Project project) {
+    private void attachSignListener() {
         signButton.addActionListener(e -> {
             AtomicTransaction atomicTransaction = getSelectedTxn();
-            signTransaction(project, atomicTransaction);
+            signTransaction(atomicTransaction);
         });
     }
 
-    private void signTransaction(@Nullable Project project, AtomicTransaction atomicTransaction) {
+    private void signTransaction(AtomicTransaction atomicTransaction) {
         if (atomicTransaction == null) {
             Messages.showWarningDialog("Please select a transaction to sign", "Sign Transaction");
             return;
@@ -190,7 +196,7 @@ public class AtomicTransferDialog extends DialogWrapper {
         AccountService accountService = AccountService.getAccountService();
         AlgoAccount algoAccount = accountService.getAccountByAddress(address.toString());
 
-        SigningAccountInputDialog singingAccDialog = new SigningAccountInputDialog(project);
+        SigningAccountInputDialog singingAccDialog = new SigningAccountInputDialog(project, module);
         if(algoAccount != null) {
             singingAccDialog.getAccountEntryInputForm().setMnemonic(algoAccount.getMnemonic());
         }
@@ -355,53 +361,53 @@ public class AtomicTransferDialog extends DialogWrapper {
     }
 
     //Table row popup
-    private void attachTxnListPopupListener(Project project) {
+    private void attachTxnListPopupListener() {
         txnList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
-                tableRowPopupMenuHandler(project, e);
+                tableRowPopupMenuHandler(e);
             }
 
             @Override
             public void mousePressed(MouseEvent e) {
-                tableRowPopupMenuHandler(project, e);
+                tableRowPopupMenuHandler(e);
             }
         });
     }
 
-    private void tableRowPopupMenuHandler(Project project, MouseEvent e) {
+    private void tableRowPopupMenuHandler(MouseEvent e) {
         if (e.isPopupTrigger() && e.getComponent() instanceof JBList ) {
             AtomicTransaction atomicTransaction = getSelectedTxn();
             if(atomicTransaction == null)
                 return;
 
             int selectedIndex = txnList.getSelectedIndex();
-            ListPopup popup = createPopup(project, atomicTransaction, selectedIndex);
+            ListPopup popup = createPopup(atomicTransaction, selectedIndex);
             RelativePoint relativePoint = new RelativePoint(e.getComponent(), new Point(e.getX(), e.getY()));
             popup.show(relativePoint);
         }
     }
 
-    private ListPopup createPopup(Project project, AtomicTransaction atomicTransaction, int selectedIndex) {
+    private ListPopup createPopup(AtomicTransaction atomicTransaction, int selectedIndex) {
         final DefaultActionGroup group = new DefaultActionGroup();
 
         if(groupAssignmentDone()) {
-            group.add(signTxnAction(project, atomicTransaction));
+            group.add(signTxnAction(atomicTransaction));
         }
-        group.add(showTxnDetailsAction(project, atomicTransaction));
+        group.add(showTxnDetailsAction(atomicTransaction));
 
         if(!groupAssignmentDone()) {
             group.add(removeTxnFromListAction(atomicTransaction));
         }
 
-        group.add(captureDryRunSourceAction(project, atomicTransaction, selectedIndex));
+        group.add(captureDryRunSourceAction(atomicTransaction, selectedIndex));
 
         DataContext dataContext = DataManager.getInstance().getDataContext(txnList);
         return JBPopupFactory.getInstance().createActionGroupPopup("",
                 group, dataContext, JBPopupFactory.ActionSelectionAid.MNEMONICS, true);
     }
 
-    private AnAction showTxnDetailsAction(Project project, AtomicTransaction atomicTransaction) {
+    private AnAction showTxnDetailsAction(AtomicTransaction atomicTransaction) {
         return new AnAction("Show Details", "Show Details", AllIcons.General.InspectionsEye) {
             @Override
             public void actionPerformed(@NotNull AnActionEvent e) {
@@ -422,12 +428,12 @@ public class AtomicTransferDialog extends DialogWrapper {
         };
     }
 
-    private AnAction signTxnAction(Project project, AtomicTransaction atomicTransaction) {
+    private AnAction signTxnAction(AtomicTransaction atomicTransaction) {
         return new AnAction("Sign", "Sign", AllIcons.Actions.Edit) {
             @Override
             public void actionPerformed(@NotNull AnActionEvent e) {
                 if(atomicTransaction != null) {
-                    signTransaction(project, atomicTransaction);
+                    signTransaction(atomicTransaction);
                 }
             }
         };
@@ -443,7 +449,7 @@ public class AtomicTransferDialog extends DialogWrapper {
         };
     }
 
-    private AnAction captureDryRunSourceAction(Project project, AtomicTransaction atomicTransaction, int selectedIndex) {
+    private AnAction captureDryRunSourceAction(AtomicTransaction atomicTransaction, int selectedIndex) {
         return new AnAction("DryRun Source", "Configure DryRun Source", AlgoIcons.TEAL_FILE_ICON) {
             @Override
             public void actionPerformed(@NotNull AnActionEvent e) {

@@ -22,14 +22,16 @@
 package com.bloxbean.algodea.idea.core.action.util;
 
 import com.bloxbean.algodea.idea.compile.model.VarParam;
-import com.bloxbean.algodea.idea.compile.util.VarTmplUtil;
-import com.bloxbean.algodea.idea.toolwindow.AlgoConsole;
 import com.bloxbean.algodea.idea.compile.ui.CompileVarTmplInputDialog;
+import com.bloxbean.algodea.idea.compile.util.VarTmplUtil;
 import com.bloxbean.algodea.idea.core.service.AlgoCacheService;
+import com.bloxbean.algodea.idea.toolwindow.AlgoConsole;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.module.Module;
+import com.intellij.openapi.module.ModuleUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.io.FileUtil;
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 
@@ -49,18 +51,24 @@ public class AlgoContractModuleHelper {
     private static final String TXN_OUTPUT_FOLDER = "txns";
     private static final String DRY_RUN_OUTPUT_FOLDER = "dryrun";
 
-    public static String getBuildFolder(Project project) {
-        String basePath = project.getBasePath();
+    public static String getBuildFolder(Project project, Module module) {
+        String basePath;
+
+        if(module != null && !StringUtil.isEmpty(ModuleUtil.getModuleDirPath(module))) {
+            basePath = ModuleUtil.getModuleDirPath(module);
+        } else {
+            basePath = project.getBasePath();
+        }
         return basePath + File.separator + AlgoContractModuleHelper.BUILD_FOLDER;
     }
 
     public static VirtualFile getModuleBuildFolder(AlgoConsole console, Module module) {
         VirtualFile moduleOutFolder = null;
-        VirtualFile moduleRoot = module.getModuleFile().getParent();
+        String moduleDir = ModuleUtil.getModuleDirPath(module);
 
         try {
             File moduleOutFolderFile = new File(
-                    VfsUtil.virtualToIoFile(moduleRoot).getAbsolutePath() + File.separator
+                    moduleDir + File.separator
                             + BUILD_FOLDER);
 
             boolean created = FileUtil.createDirectory(moduleOutFolderFile);
@@ -78,11 +86,11 @@ public class AlgoContractModuleHelper {
 
     public static VirtualFile getModuleOutputTokFolder(AlgoConsole console, Module module) {
         VirtualFile moduleOutFolder = null;
-        VirtualFile moduleRoot = module.getModuleFile().getParent();
+        String moduleDir = ModuleUtil.getModuleDirPath(module);
 
         try {
             File moduleOutFolderFile = new File(
-                    VfsUtil.virtualToIoFile(moduleRoot).getAbsolutePath() + File.separator
+                    moduleDir + File.separator
                             + BUILD_FOLDER + File.separator + TEAL_BUILD_FOLDER);// + File.separator + module.getName());
 
             boolean created = FileUtil.createDirectory(moduleOutFolderFile);
@@ -101,11 +109,11 @@ public class AlgoContractModuleHelper {
 
     public static VirtualFile getModuleLSigOutputFolder(AlgoConsole console, Module module) {
         VirtualFile moduleOutFolder = null;
-        VirtualFile moduleRoot = module.getModuleFile().getParent();
+        String moduleDir = ModuleUtil.getModuleDirPath(module);
 
         try {
             File moduleOutFolderFile = new File(
-                    VfsUtil.virtualToIoFile(moduleRoot).getAbsolutePath() + File.separator
+                    moduleDir + File.separator
                             + BUILD_FOLDER + File.separator + LSIG_BUILD_FOLDER);// + File.separator + module.getName());
 
             boolean created = FileUtil.createDirectory(moduleOutFolderFile);
@@ -124,11 +132,11 @@ public class AlgoContractModuleHelper {
 
     public static VirtualFile getTxnOutputFolder(Module module) throws Exception{
         VirtualFile moduleOutFolder = null;
-        VirtualFile moduleRoot = module.getModuleFile().getParent();
+        String moduleDir = ModuleUtil.getModuleDirPath(module);
 
         try {
             File moduleOutFolderFile = new File(
-                    VfsUtil.virtualToIoFile(moduleRoot).getAbsolutePath() + File.separator
+                    moduleDir + File.separator
                             + BUILD_FOLDER + File.separator + TXN_OUTPUT_FOLDER);// + File.separator + module.getName());
 
             boolean created = FileUtil.createDirectory(moduleOutFolderFile);
@@ -147,11 +155,11 @@ public class AlgoContractModuleHelper {
     }
     public static VirtualFile getDryRunOutputFolder(Module module) throws Exception{
         VirtualFile moduleOutFolder = null;
-        VirtualFile moduleRoot = module.getModuleFile().getParent();
+        String moduleDir = ModuleUtil.getModuleDirPath(module);
 
         try {
             File moduleOutFolderFile = new File(
-                    VfsUtil.virtualToIoFile(moduleRoot).getAbsolutePath() + File.separator
+                    moduleDir + File.separator
                             + BUILD_FOLDER + File.separator + DRY_RUN_OUTPUT_FOLDER);// + File.separator + module.getName());
 
             boolean created = FileUtil.createDirectory(moduleOutFolderFile);
@@ -243,8 +251,9 @@ public class AlgoContractModuleHelper {
 
         VirtualFile rootFolder = null;
 
-        if(module.getModuleFile() != null)
-             rootFolder = module.getModuleFile().getParent();
+        String moduleDir = ModuleUtil.getModuleDirPath(module);
+        if(!StringUtil.isEmpty(moduleDir))
+            rootFolder = VfsUtil.findFileByIoFile(new File(moduleDir), true);
         else {
             rootFolder = VfsUtil.findFileByIoFile(new File(project.getBasePath()), true);
         }

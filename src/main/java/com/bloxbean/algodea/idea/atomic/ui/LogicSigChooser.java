@@ -8,10 +8,10 @@ import com.bloxbean.algodea.idea.util.StringUtility;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.ui.components.JBLabel;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
@@ -35,12 +35,12 @@ public class LogicSigChooser {
     public LogicSigChooser() {
     }
 
-    public void initialize(Project project) {
+    public void initialize(Project project, Module module) {
         //This is to align with account chooser label padding. Check accout chooser before changing this value
         logicSigLabel.setText(StringUtility.padLeft("Logic Sig File", 20));
         typeLabel.setText(StringUtility.padLeft("Type", 20));
 
-        buildFolder = AlgoContractModuleHelper.getBuildFolder(project);
+        buildFolder = AlgoContractModuleHelper.getBuildFolder(project, module);
     }
 
     public String getLsigPath() {

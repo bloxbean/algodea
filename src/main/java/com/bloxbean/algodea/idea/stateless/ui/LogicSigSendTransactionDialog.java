@@ -17,14 +17,12 @@ import com.bloxbean.algodea.idea.util.AlgoConversionUtil;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.openapi.ui.ValidationInfo;
-import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.ui.components.JBRadioButton;
-import org.apache.commons.logging.Log;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -56,16 +54,16 @@ public class LogicSigSendTransactionDialog extends TxnDialogWrapper {
     private String buildFolder;
     private String lsigPath;
 
-    public LogicSigSendTransactionDialog(Project project) {
-        this(project, null);
+    public LogicSigSendTransactionDialog(Project project, Module module) {
+        this(project, module,null);
     }
 
-    public LogicSigSendTransactionDialog(Project project, String lsigPath) {
+    public LogicSigSendTransactionDialog(Project project, Module module, String lsigPath) {
         super(project, true);
         init();
         setTitle("Stateless Smart Contract Transaction - Logic Sig");
 
-        buildFolder = AlgoContractModuleHelper.getBuildFolder(project);
+        buildFolder = AlgoContractModuleHelper.getBuildFolder(project, module);
         transactionDtlsEntryForm.initializeData(project);
         initializeData(project, lsigPath);
     }

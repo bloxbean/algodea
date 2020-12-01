@@ -95,9 +95,9 @@ public class LogicSigSendTransactionAction extends BaseTxnAction {
             }
 
             //Open dialog and get transaction inputs
-            dialog = new LogicSigSendTransactionDialog(project, lsigVfs.getCanonicalPath());
+            dialog = new LogicSigSendTransactionDialog(project, module, lsigVfs.getCanonicalPath());
         } else { //Opened from editor context menu
-            dialog = new LogicSigSendTransactionDialog(project);
+            dialog = new LogicSigSendTransactionDialog(project, module);
         }
         //Enable dry run button
         dialog.enableDryRun();

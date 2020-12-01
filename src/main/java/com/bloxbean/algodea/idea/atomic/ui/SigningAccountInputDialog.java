@@ -4,12 +4,10 @@ import com.algorand.algosdk.account.Account;
 import com.algorand.algosdk.crypto.LogicsigSignature;
 import com.bloxbean.algodea.idea.transaction.ui.AccountEntryInputForm;
 import com.bloxbean.algodea.idea.util.StringUtility;
+import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.ui.DialogWrapper;
-import com.intellij.ui.components.JBLabel;
-import com.intellij.ui.components.JBPanel;
-import com.intellij.ui.components.JBRadioButton;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -31,13 +29,13 @@ public class SigningAccountInputDialog extends DialogWrapper {
     private String ACCOUNT_TYPE = "Account";
     private String LSIG_TYPE = "Logic Sig file";
 
-    protected SigningAccountInputDialog(@Nullable Project project) {
+    protected SigningAccountInputDialog(@Nullable Project project, Module module) {
         super(project, true);
         init();
         setTitle("Signing Account");
         initializeComponents();
         accountEntryInputForm.initializeData(project);
-        logicSigChooser.initialize(project);
+        logicSigChooser.initialize(project, module);
 
         attachSigTypeListeners();
     }
