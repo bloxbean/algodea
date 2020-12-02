@@ -106,6 +106,13 @@
             <add-to-group group-id="EditorPopupMenu" anchor="last"/>
         </action>
 
+        <action id="Algo.teal.editor_context.pyteal_compile"
+                class="com.bloxbean.algodea.idea.pyteal.action.PyTealCompileAction"
+                text="Compile PyTeal">
+            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl T" second-keystroke="P"/>
+        </action>
+
         <group id="com.bloxbean.algodea.idea.core.action.AlgoActionGroup" class="com.bloxbean.algodea.idea.core.action.AlgoActionGroup"
                popup="true"
                text="Algorand" description="Algorand">
@@ -131,7 +138,7 @@
         <action id="com.bloxbean.algodea.idea.pyteal.action.PyTealCompileAction"
                 class="com.bloxbean.algodea.idea.pyteal.action.PyTealCompileAction"
                 text="Compile PyTeal">
-            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+            <add-to-group group-id="com.bloxbean.algodea.idea.core.action.AlgoActionGroup"/>
             <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl T" second-keystroke="P"/>
         </action>
         <action id="com.bloxbean.algodea.idea.stateless.action.LogicSigSendTransactionAction_ProjectView" class="com.bloxbean.algodea.idea.stateless.action.LogicSigSendTransactionFileNodeAction"
