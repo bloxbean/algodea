@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Used to read from result json file
  */
-@JsonIgnoreProperties
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class AccountCache {
     private List<AlgoAccount> accounts;
     private List<AlgoMultisigAccount> multisigAccounts;

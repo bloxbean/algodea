@@ -22,12 +22,16 @@
 
 package com.bloxbean.algodea.idea.language.opcode.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.intellij.openapi.util.text.StringUtil;
+
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
 import static com.bloxbean.algodea.idea.language.opcode.model.OpCodeConstants.*;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class OpCode {
     private String op;
     private String opcode;
@@ -40,6 +44,8 @@ public class OpCode {
     String additionalDesc;
     ParamType[] params;
     Cost[] costs;
+
+    String anchor;
 
     public OpCode() {
 
@@ -133,6 +139,14 @@ public class OpCode {
         this.costs = costs;
     }
 
+    public String getAnchor() {
+        return anchor;
+    }
+
+    public void setAnchor(String anchor) {
+        this.anchor = anchor;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -198,9 +212,14 @@ public class OpCode {
             sb.append("<br>");
             sb.append("<a href=")
                     .append(ALGO_DOC_BASE_URL)
-                    .append("#")
-                    .append(op)
-                    .append("\">")
+                    .append("#");
+
+            if (!StringUtil.isEmpty(anchor))
+                sb.append(anchor);
+            else
+                sb.append(op);
+
+            sb.append("\">")
                     .append("Official Doc")
                     .append("</a>");
 
