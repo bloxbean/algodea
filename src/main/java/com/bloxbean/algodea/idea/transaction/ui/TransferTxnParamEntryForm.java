@@ -26,6 +26,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -48,6 +49,8 @@ public class TransferTxnParamEntryForm {
     private JButton fetchButton;
     private JLabel unitLabel;
     private JTextField algoBalanceTf;
+    private JTextField closeReminderTo;
+    private JButton closeReminderAccountChooserBtn;
     private DefaultComboBoxModel assetIdComboBoxModel;
     private AlgoAccountService algoAccountService;
     private AlgoConsole console;
@@ -134,6 +137,9 @@ public class TransferTxnParamEntryForm {
                 } catch(Exception ex) {
                     console.showErrorMessage("Unable fetch balance", ex);
                 }
+
+                //enable close reminder
+                enableCloseReminderSection(true);
             }
         });
 
@@ -141,6 +147,9 @@ public class TransferTxnParamEntryForm {
             if(otherAssetsRadioButton.isSelected()) {
                 enableOtherAssetPanel(true);
                 setUnitLabel();
+
+                //disable close remninder to
+                enableCloseReminderSection(false);
             }
         });
 
@@ -153,6 +162,17 @@ public class TransferTxnParamEntryForm {
         });
 
         unitLabel.setText(ALGO);
+
+
+        closeReminderTo.setToolTipText("<html>When set, it indicates that the transaction is requesting that the Sender account<br/>" +
+                " should be closed, and all remaining funds,<br/>" +
+                " after the fee and amount are paid, be transferred to this address.</html>");
+        closeReminderAccountChooserBtn.addActionListener(e -> {
+            AlgoAccount algoAccount = AccountChooser.getSelectedAccount(project, true);
+            if(algoAccount != null) {
+                closeReminderTo.setText(algoAccount.getAddress());
+            }
+        });
     }
 
     private void setUnitLabel() {
@@ -210,6 +230,12 @@ public class TransferTxnParamEntryForm {
         assetIdComboBoxModel.removeAllElements();
     }
 
+    private void enableCloseReminderSection(boolean flag) {
+        closeReminderTo.setText("");
+        closeReminderTo.setEnabled(flag);
+        closeReminderAccountChooserBtn.setEnabled(flag);
+    }
+
     private void fetchAssetFortheAccount(Project project) {
         ProgressManager.getInstance().runProcessWithProgressSynchronously(new Runnable() {
             @Override
@@ -265,6 +291,12 @@ public class TransferTxnParamEntryForm {
             return new ValidationInfo("Invalid amount", amountTf);
         }
 
+        try {
+            getCloseReminderTo();
+        } catch (Exception e) {
+            return new ValidationInfo("Invalid Close Reminder To address", closeReminderTo);
+        }
+
         return null;
     }
 
@@ -290,6 +322,15 @@ public class TransferTxnParamEntryForm {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    public Address getCloseReminderTo() throws Exception {
+        String closeReminderToAdd = StringUtil.trim(closeReminderTo.getText());
+        if(StringUtil.isEmpty(closeReminderToAdd))
+            return null;
+
+        Address address = new Address(closeReminderToAdd);
+        return address;
     }
 
     public Tuple<BigDecimal, BigInteger> getAmount() {

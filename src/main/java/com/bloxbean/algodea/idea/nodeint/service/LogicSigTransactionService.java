@@ -24,7 +24,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LogicSigTransactionService extends TransactionService{
+public class LogicSigTransactionService extends TransactionService {
 
     public LogicSigTransactionService(Project project, LogListener logListener) throws DeploymentTargetNotConfigured {
         super(project, logListener);
@@ -70,7 +70,7 @@ public class LogicSigTransactionService extends TransactionService{
         logListener.info("From Contract Address     : " + fromAddress.toString());
 
         PaymentTransactionBuilder paymentTransactionBuilder = Transaction.PaymentTransactionBuilder();
-        Transaction txn = populatePaymentTransaction(paymentTransactionBuilder, fromAddress, receiver.toString(), amount.longValue(), txnDetailsParameters);
+        Transaction txn = populatePaymentTransaction(paymentTransactionBuilder, fromAddress, receiver.toString(), amount.longValue(), null, txnDetailsParameters);
 
         if (txn == null) {
             logListener.error("Transaction could not be built");
@@ -123,7 +123,7 @@ public class LogicSigTransactionService extends TransactionService{
         logListener.info("Starting Account Delegation transaction ...\n");
 
         PaymentTransactionBuilder paymentTransactionBuilder = Transaction.PaymentTransactionBuilder();
-        Transaction txn = populatePaymentTransaction(paymentTransactionBuilder, sender, receiver.toString(), amount.longValue(), txnDetailsParameters);
+        Transaction txn = populatePaymentTransaction(paymentTransactionBuilder, sender, receiver.toString(), amount.longValue(), null, txnDetailsParameters);
 
         if(txn == null) {
             logListener.error("Transaction could not be built");

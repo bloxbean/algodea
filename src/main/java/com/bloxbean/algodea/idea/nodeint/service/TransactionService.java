@@ -26,14 +26,14 @@ public class TransactionService extends AlgoBaseService {
         super(project, logListener);
     }
 
-    public Result transfer(Account sender, String receiver, Long amount, TxnDetailsParameters txnDetailsParameters, RequestMode requestMode) throws Exception {
+    public Result transfer(Account sender, String receiver, Long amount, Address closeReminderTo, TxnDetailsParameters txnDetailsParameters, RequestMode requestMode) throws Exception {
         if (sender == null) {
             logListener.error("Sender cannot be null");
             return Result.error();
         }
 
         PaymentTransactionBuilder paymentTransactionBuilder = Transaction.PaymentTransactionBuilder();
-        Transaction txn = populatePaymentTransaction(paymentTransactionBuilder, sender.getAddress(), receiver, amount, txnDetailsParameters);
+        Transaction txn = populatePaymentTransaction(paymentTransactionBuilder, sender.getAddress(), receiver, amount, closeReminderTo, txnDetailsParameters);
 
         if (txn == null) {
             logListener.error("Transaction could not be built");
@@ -85,7 +85,7 @@ public class TransactionService extends AlgoBaseService {
     }
 
     protected Transaction populatePaymentTransaction(PaymentTransactionBuilder paymentTransactionBuilder, Address fromAccount,
-                                                     String receiver, Long amount, TxnDetailsParameters txnDetailsParameters) throws Exception {
+                                                     String receiver, Long amount, Address closeReminderTo, TxnDetailsParameters txnDetailsParameters) throws Exception {
         if(fromAccount == null) {
             logListener.error("From account cannot be null");
             return null;
@@ -108,6 +108,9 @@ public class TransactionService extends AlgoBaseService {
         //TODO .. Let's check if the amount setting has to be here
         paymentTransactionBuilder.amount(amount)
                 .receiver(receiver);
+
+        if(closeReminderTo != null)
+            paymentTransactionBuilder.closeRemainderTo(closeReminderTo);
 
         populateBaseTransactionDetails(paymentTransactionBuilder, fromAccount, txnDetailsParameters);
 

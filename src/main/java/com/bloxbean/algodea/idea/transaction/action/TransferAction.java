@@ -71,6 +71,8 @@ public class TransferAction extends BaseTxnAction {
             }
             final String finalAssetName = assetName;
 
+            Address closeReminderTo = txnEntryForm.getCloseReminderTo();
+
             TransactionDtlsEntryForm transactionDtlsEntryForm = transferDialog.getTransactionDtlsEntryForm();
 
             TxnDetailsParameters txnDetailsParameters = transactionDtlsEntryForm.getTxnDetailsParameters();
@@ -102,7 +104,8 @@ public class TransferAction extends BaseTxnAction {
                         }
 
                         if (transferDialog.isAlgoTransfer()) {
-                            result = transactionService.transfer(fromAccount, toAddress.toString(), amountTuple._2().longValue(), txnDetailsParameters, requestMode);
+                            result = transactionService.transfer(fromAccount, toAddress.toString(), amountTuple._2().longValue(),
+                                    closeReminderTo, txnDetailsParameters, requestMode);
                         } else { //asset transfer
                             result = assetTransactionService.assetTransfer(fromAccount, toAddress.toString(), asset, amountTuple._2(), txnDetailsParameters, requestMode);
                         }
