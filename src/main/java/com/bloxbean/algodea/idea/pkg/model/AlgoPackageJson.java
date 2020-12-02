@@ -5,7 +5,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.intellij.openapi.util.text.StringUtil;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class AlgoPackageJson {
@@ -118,6 +121,10 @@ public class AlgoPackageJson {
         }
 
         public void setApprovalProgram(String approvalProgram) {
+            if(!StringUtil.isEmpty(approvalProgram)) {
+                approvalProgram = approvalProgram.replace('\\', '/');
+            }
+
             this.approvalProgram = approvalProgram;
         }
 
@@ -126,6 +133,10 @@ public class AlgoPackageJson {
         }
 
         public void setClearStateProgram(String clearStateProgram) {
+            if(!StringUtil.isEmpty(clearStateProgram)) {
+                clearStateProgram = clearStateProgram.replace('\\', '/');
+            }
+
             this.clearStateProgram = clearStateProgram;
         }
 
