@@ -5,6 +5,8 @@ import com.bloxbean.algodea.idea.configuration.model.NodeInfo;
 import com.bloxbean.algodea.idea.nodeint.service.LogListenerAdapter;
 import com.bloxbean.algodea.idea.nodeint.service.NetworkService;
 import com.bloxbean.algodea.idea.toolwindow.AlgoConsole;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.ValidationInfo;
@@ -57,39 +59,50 @@ public class RemoteNodeConfigDialog extends DialogWrapper{
             AlgoConsole algoConsole = AlgoConsole.getConsole(project);
             algoConsole.clearAndshow();
 
-            NetworkService networkService = new NetworkService(nodeInfo, new LogListenerAdapter(algoConsole));
-            try {
-                TransactionParametersResponse transactionParams = networkService.getNetworkInfo();
-                if(transactionParams != null) {
-                    String genesisHash = transactionParams.genesisHash();
-                    String genesisId = transactionParams.genesisId;
-
-                    if(!StringUtil.isEmpty(genesisHash)) {
-                        genesisHashTf.setText(genesisHash);
-                    }
-
-                    if(!StringUtil.isEmpty(genesisId)) {
-                        genesisIdTf.setText(genesisId);
-                    }
-
-                    connectionStatusLabel.setForeground(Color.black);
-                    connectionStatusLabel.setText("Successfully connected to the Algorand Node");
-                } else {
-                    algoConsole.showErrorMessage("Could not connect to the Algo node");
-
-                    genesisHashTf.setText("");
-                    genesisIdTf.setText("");
-                    connectionStatusLabel.setForeground(Color.red);
-                    connectionStatusLabel.setText("Unable to get response from the Algorand Node.");
+            ProgressManager.getInstance().runProcessWithProgressSynchronously(new Runnable() {
+                @Override
+                public void run() {
+                    ProgressIndicator progressIndicator = ProgressManager.getInstance().getProgressIndicator();
+                    connectionTest(nodeInfo, algoConsole);
+                    progressIndicator.setFraction(1.0);
                 }
-            } catch (Exception ex) {
+            } , "Connecting to Algorand Node to fetch network info...", true, project);
+        });
+    }
+
+    private void connectionTest(NodeInfo nodeInfo, AlgoConsole algoConsole) {
+        NetworkService networkService = new NetworkService(nodeInfo, new LogListenerAdapter(algoConsole));
+        try {
+            TransactionParametersResponse transactionParams = networkService.getNetworkInfo();
+            if(transactionParams != null) {
+                String genesisHash = transactionParams.genesisHash();
+                String genesisId = transactionParams.genesisId;
+
+                if(!StringUtil.isEmpty(genesisHash)) {
+                    genesisHashTf.setText(genesisHash);
+                }
+
+                if(!StringUtil.isEmpty(genesisId)) {
+                    genesisIdTf.setText(genesisId);
+                }
+
+                connectionStatusLabel.setForeground(Color.black);
+                connectionStatusLabel.setText("Successfully connected to Algorand Node");
+            } else {
+                algoConsole.showErrorMessage("Could not connect to Algorand node");
+
                 genesisHashTf.setText("");
                 genesisIdTf.setText("");
-                algoConsole.showErrorMessage("Connection test failed", ex);
                 connectionStatusLabel.setForeground(Color.red);
-                connectionStatusLabel.setText("Unable to connect to the Algorand node, Reason: " + ex.getMessage());
+                connectionStatusLabel.setText("Unable to get response from Algorand Node.");
             }
-        });
+        } catch (Exception ex) {
+            genesisHashTf.setText("");
+            genesisIdTf.setText("");
+            algoConsole.showErrorMessage("Connection test failed", ex);
+            connectionStatusLabel.setForeground(Color.red);
+            connectionStatusLabel.setText("Unable to connect to the Algorand node, Reason: " + ex.getMessage());
+        }
     }
 
     public String getServerName() {
