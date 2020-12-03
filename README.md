@@ -10,6 +10,10 @@ algoDEA - Algorand Plugin for Intellij
   - Algorand Smart Contract Project type
   - Code Completion, Syntax Highlighter and other editor level support for TEAL file
   - Create Stateless & Stateful Smart Contract
+  - Atomic Transfer
+  - PyTeal Support
+  - Dry Run support for stateful & stateless contract (Experimental)
+
   - Algorand Node support
       - Custom node
       - Purestake.io
