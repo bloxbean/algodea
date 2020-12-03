@@ -3,9 +3,6 @@
   - PyTeal Support
   - Dry Run support for stateful & stateless contract (Experimental)
   
-  **Known Issue:** Dry Run only works with the custom Algorand Node (local or remote). 
-  Currently it doesn't work with Purestake.io nodes. 
-  
 ### 0.1.0
   - Algorand Smart Contract Project type
   - Code Completion, Syntax Highlighter and other editor level support for TEAL file

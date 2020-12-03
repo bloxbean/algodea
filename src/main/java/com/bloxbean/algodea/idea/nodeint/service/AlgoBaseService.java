@@ -350,6 +350,8 @@ public class AlgoBaseService {
 //            stxns.add(stxn);
 //        }
         // source
+        Tuple<String[], String[]> headers = algoConnectionFactory.getHeadersForBinaryContent();
+
         if (sourceBytes != null && sourceBytes.size() > 0) {
             long i = 0;
             for(byte[] sourceByte: sourceBytes) {
@@ -367,7 +369,9 @@ public class AlgoBaseService {
         dr.sources = sources;
 //        dr.sources = sources;
 
-        dryrunResponse = client.TealDryrun().request(dr).execute(getHeaders()._1(), getHeaders()._2());
+        logListener.info(String.format("Connecting to network (%s) ...", client.getHost()));
+
+        dryrunResponse = client.TealDryrun().request(dr).execute(headers._1(), headers._2());
 
         if(!dryrunResponse.isSuccessful()) {
             printErrorMessage("Dry run failed", dryrunResponse);
@@ -394,6 +398,8 @@ public class AlgoBaseService {
     protected DryrunResponse postStatefulDryRunTransaction(List<SignedTransaction> stxns) throws Exception {
 
         List<DryrunSource> sources = new ArrayList<DryrunSource>();
+
+        Tuple<String[], String[]> headers = algoConnectionFactory.getHeadersForBinaryContent();
 
         // source
         if (dryRunContext != null && dryRunContext.sources != null && dryRunContext.sources.size() > 0) {
@@ -447,7 +453,8 @@ public class AlgoBaseService {
 
         Response<DryrunResponse> dryrunResponse;
 
-        dryrunResponse = client.TealDryrun().request(dr).execute(getHeaders()._1(), getHeaders()._2());
+        logListener.info(String.format("Connecting to network (%s) ...", client.getHost()));
+        dryrunResponse = client.TealDryrun().request(dr).execute(headers._1(), headers._2());
 
         if(!dryrunResponse.isSuccessful()) {
             printErrorMessage("Dry run failed", dryrunResponse);
