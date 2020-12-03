@@ -130,7 +130,9 @@ public class AccountService {
             Account account = new Account(mnemonic);
             return new AlgoAccount(account.getAddress().toString(), mnemonic);
         } catch (GeneralSecurityException e) {
-            LOG.warn("Account derivation failed from mnemonic");
+            if(LOG.isDebugEnabled()) {
+                LOG.warn("Account derivation failed from mnemonic");
+            }
             return null;
         }
     }
