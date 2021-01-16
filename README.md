@@ -64,3 +64,7 @@ Latest Version : [v0.2.0](https://github.com/bloxbean/algodea/releases/tag/v0.2.
 * $> ./gradlew clean build
 * $> Get the plugin zip file from build/distributions/algodea-{version}.zip 
 
+## Getting Started Video
+
+[![Getting Started with AlgoDEA](https://img.youtube.com/vi/sah1z0BinW0/0.jpg)](https://youtu.be/sah1z0BinW0)
+
