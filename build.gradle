@@ -23,11 +23,11 @@ buildscript {
 plugins {
     id 'java'
     id 'idea'
-    id 'org.jetbrains.intellij' version '0.4.26'
+    id 'org.jetbrains.intellij' version '0.6.5'
 }
 
 group 'com.bloxbean'
-version '0.2.0'
+version '0.3.0'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -42,7 +42,8 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 
-sourceSets.main.java.srcDirs 'src/main/gen'
+sourceSets.main.java.srcDirs('src/main/gen', 'src/main/idea')
+//sourceSets.main.java.srcDirs('src/main/gen')
 
 String changeLogAsHtml() {
     Parser parser = Parser.builder().build()
@@ -53,6 +54,7 @@ String changeLogAsHtml() {
 
 intellij {
     version '2020.2'
+//    type = 'PY'
     plugins = ['java']
 
     publishPlugin {

@@ -34,6 +34,7 @@ import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -54,17 +55,27 @@ public class AlgoContractModuleHelper {
     public static String getBuildFolder(Project project, Module module) {
         String basePath;
 
-        if(module != null && !StringUtil.isEmpty(ModuleUtil.getModuleDirPath(module))) {
-            basePath = ModuleUtil.getModuleDirPath(module);
+        if(module != null && !StringUtil.isEmpty(getTopLevelFolder(module))) {
+            basePath = getTopLevelFolder(module);
         } else {
             basePath = project.getBasePath();
         }
         return basePath + File.separator + AlgoContractModuleHelper.BUILD_FOLDER;
     }
 
+    @NotNull
+    private static String getTopLevelFolder(Module module) {
+        Project project = module.getProject();
+        if(project != null) {
+            return project.getBasePath();
+        } else {
+            return ModuleUtil.getModuleDirPath(module);
+        }
+    }
+
     public static VirtualFile getModuleBuildFolder(AlgoConsole console, Module module) {
         VirtualFile moduleOutFolder = null;
-        String moduleDir = ModuleUtil.getModuleDirPath(module);
+        String moduleDir = getTopLevelFolder(module);
 
         try {
             File moduleOutFolderFile = new File(
@@ -86,7 +97,7 @@ public class AlgoContractModuleHelper {
 
     public static VirtualFile getModuleOutputTokFolder(AlgoConsole console, Module module) {
         VirtualFile moduleOutFolder = null;
-        String moduleDir = ModuleUtil.getModuleDirPath(module);
+        String moduleDir = getTopLevelFolder(module);
 
         try {
             File moduleOutFolderFile = new File(
@@ -109,7 +120,7 @@ public class AlgoContractModuleHelper {
 
     public static VirtualFile getModuleLSigOutputFolder(AlgoConsole console, Module module) {
         VirtualFile moduleOutFolder = null;
-        String moduleDir = ModuleUtil.getModuleDirPath(module);
+        String moduleDir = getTopLevelFolder(module);
 
         try {
             File moduleOutFolderFile = new File(
@@ -132,7 +143,7 @@ public class AlgoContractModuleHelper {
 
     public static VirtualFile getTxnOutputFolder(Module module) throws Exception{
         VirtualFile moduleOutFolder = null;
-        String moduleDir = ModuleUtil.getModuleDirPath(module);
+        String moduleDir = getTopLevelFolder(module);
 
         try {
             File moduleOutFolderFile = new File(
@@ -155,7 +166,7 @@ public class AlgoContractModuleHelper {
     }
     public static VirtualFile getDryRunOutputFolder(Module module) throws Exception{
         VirtualFile moduleOutFolder = null;
-        String moduleDir = ModuleUtil.getModuleDirPath(module);
+        String moduleDir = getTopLevelFolder(module);
 
         try {
             File moduleOutFolderFile = new File(
@@ -251,7 +262,7 @@ public class AlgoContractModuleHelper {
 
         VirtualFile rootFolder = null;
 
-        String moduleDir = ModuleUtil.getModuleDirPath(module);
+        String moduleDir = getTopLevelFolder(module);
         if(!StringUtil.isEmpty(moduleDir))
             rootFolder = VfsUtil.findFileByIoFile(new File(moduleDir), true);
         else {

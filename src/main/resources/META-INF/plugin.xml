@@ -10,13 +10,10 @@
 
     <idea-version since-build="202"/>
 
-    <depends>com.intellij.modules.java</depends>
-
-<!--    <depends optional="true" config-file="python.xml">com.intellij.modules.python</depends>-->
+    <depends>com.intellij.modules.platform</depends>
+    <depends optional="true" config-file="java.xml">com.intellij.modules.java</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-<!--        <sdkType implementation="com.bloxbean.algorand.idea.module.sdk.AlgoSdkType"/>-->
-
         <fileType name="TEAL File" implementationClass="com.bloxbean.algodea.idea.language.TEALFileType"
                   fieldName="INSTANCE" language="TEAL" extensions="teal"/>
 
@@ -43,6 +40,13 @@
 <!--        <facetType implementation="com.bloxbean.algorand.idea.module.facet.AlgoFacetType"/>-->
         <framework.type implementation="com.bloxbean.algodea.idea.module.framework.AlgoStatefulFrameworkType"/>
         <projectStructureDetector implementation="com.bloxbean.algodea.idea.module.detector.AlgoProjectStructureDetector"/>
+
+        <!-- For IntelliJ IDEA -->
+        <moduleBuilder builderClass="com.bloxbean.algodea.idea.module.AlgorandModuleBuilder"/>
+
+        <!-- For other IDEs -->
+        <projectOpenProcessor implementation="com.bloxbean.algodea.idea.module.AlgoProjectOpenProcessor"/>
+        <directoryProjectGenerator implementation="com.bloxbean.algodea.idea.module.AlgoDirectoryProjectGenerator"/>
 
         <toolWindow id="Algorand"
                         anchor="bottom"
