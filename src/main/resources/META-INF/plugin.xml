@@ -45,8 +45,8 @@
         <moduleBuilder builderClass="com.bloxbean.algodea.idea.module.AlgorandModuleBuilder"/>
 
         <!-- For other IDEs -->
-        <projectOpenProcessor implementation="com.bloxbean.algodea.idea.module.AlgoProjectOpenProcessor"/>
-        <directoryProjectGenerator implementation="com.bloxbean.algodea.idea.module.AlgoDirectoryProjectGenerator"/>
+        <projectOpenProcessor implementation="com.bloxbean.algodea.idea.module.project.AlgoProjectOpenProcessor"/>
+        <directoryProjectGenerator implementation="com.bloxbean.algodea.idea.module.project.AlgoDirectoryProjectGenerator"/>
 
         <toolWindow id="Algorand"
                         anchor="bottom"

@@ -23,7 +23,7 @@ public class AlgoStatefulFrameworkType extends FrameworkTypeEx {
     @NotNull
     @Override
     public String getPresentableName() {
-        return "Stateful Contract";
+        return "Stateful Smart Contract";
     }
 
     @NotNull

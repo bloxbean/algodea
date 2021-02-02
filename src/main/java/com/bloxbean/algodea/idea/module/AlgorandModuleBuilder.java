@@ -74,12 +74,12 @@ public class AlgorandModuleBuilder extends ModuleBuilder implements ModuleBuilde
 
     @Override
     public String getDescription() {
-        return "Algorand Smart Contract";
+        return "Algorand";
     }
 
     @Override
     public String getPresentableName() {
-        return "Algorand Smart Contract";
+        return "Algorand";
     }
 
     @Override
@@ -96,31 +96,27 @@ public class AlgorandModuleBuilder extends ModuleBuilder implements ModuleBuilde
         VirtualFile[] roots = ModuleRootManager.getInstance(module).getSourceRoots();
         if (roots.length == 1) {
                 VirtualFile srcRoot = roots[0];
-                if (srcRoot.getName().equals("teal")) {
-                    VirtualFile main = srcRoot.getParent();
-                    if (main != null && "main".equals(main.getName())) {
-                        final VirtualFile src = main.getParent();
-                        if (src != null) {
+                if (srcRoot.getName().equals("src")) {
+                        final VirtualFile topFolder = srcRoot.getParent();
+                        if (topFolder != null) {
                         ApplicationManager.getApplication().runWriteAction(new Runnable() {
                             @Override
                             public void run() {
                                 try {
-                                    VirtualFile test = src.createChildDirectory(this, "test");
+                                    VirtualFile test = topFolder.createChildDirectory(this, "test");
                                     if (test != null) {
-                                        VirtualFile testSrc = test.createChildDirectory(this, "teal");
                                         ModifiableRootModel model = ModuleRootManager.getInstance(module).getModifiableModel();
-                                        ContentEntry entry = findContentEntry(model, testSrc);
+                                        ContentEntry entry = findContentEntry(model, test);
                                         if (entry != null) {
-                                            entry.addSourceFolder(testSrc, true);
+                                            entry.addSourceFolder(test, true);
                                             model.commit();
                                         }
                                     }
-                                } catch (IOException e) {//
+                                } catch (IOException e) {
                                 }
                             }
                         });
                     }
-                }
             }
         }
     }
@@ -179,7 +175,7 @@ public class AlgorandModuleBuilder extends ModuleBuilder implements ModuleBuilde
     public List<Pair<String, String>> getSourcePaths() throws ConfigurationException {
         if (mySourcePaths == null) {
             final List<Pair<String, String>> paths = new ArrayList<>();
-            @NonNls final String path = getContentEntryPath() + File.separator + "src" + File.separator + "main" + File.separator + "teal";
+            @NonNls final String path = getContentEntryPath() + File.separator + "src";
             new File(path).mkdirs();
             paths.add(Pair.create(path, ""));
             return paths;

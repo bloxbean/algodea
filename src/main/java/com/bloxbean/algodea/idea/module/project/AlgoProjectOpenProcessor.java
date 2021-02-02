@@ -1,5 +1,6 @@
-package com.bloxbean.algodea.idea.module;
+package com.bloxbean.algodea.idea.module.project;
 
+import com.bloxbean.algodea.idea.module.AlgoModuleConstant;
 import com.bloxbean.algodea.idea.util.IdeaUtil;
 import com.intellij.notification.NotificationType;
 import com.intellij.openapi.application.ApplicationManager;

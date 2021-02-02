@@ -1,12 +1,12 @@
-package com.bloxbean.algodea.idea.module;
+package com.bloxbean.algodea.idea.module.project;
 
 import com.bloxbean.algodea.idea.common.AlgoIcons;
+import com.bloxbean.algodea.idea.module.ProjectGeneratorUtil;
 import com.bloxbean.algodea.idea.pkg.AlgoPkgJsonService;
 import com.bloxbean.algodea.idea.util.IdeaUtil;
-import com.intellij.ide.util.projectWizard.EmptyWebProjectTemplate;
+import com.intellij.ide.util.projectWizard.WebProjectTemplate;
 import com.intellij.notification.NotificationType;
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
@@ -14,15 +14,17 @@ import com.intellij.openapi.roots.ContentEntry;
 import com.intellij.openapi.roots.ModifiableModelsProvider;
 import com.intellij.openapi.roots.ModifiableRootModel;
 import com.intellij.openapi.util.io.FileUtil;
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.platform.ProjectGeneratorPeer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.io.File;
 
-public class AlgoDirectoryProjectGenerator extends EmptyWebProjectTemplate {
+public class AlgoDirectoryProjectGenerator extends WebProjectTemplate<ProjectCreateSettings> {
     private static final Logger LOG = Logger.getInstance(AlgoDirectoryProjectGenerator.class);
 
     @Override
@@ -36,7 +38,7 @@ public class AlgoDirectoryProjectGenerator extends EmptyWebProjectTemplate {
     }
 
     @Override
-    public void generateProject(@NotNull Project project, @NotNull VirtualFile baseDir, @NotNull Object settings, @NotNull Module module) {
+    public void generateProject(@NotNull Project project, @NotNull VirtualFile baseDir, @NotNull ProjectCreateSettings settings, @NotNull Module module) {
 
         if(project == null) {
             IdeaUtil.showNotification(project,
@@ -68,6 +70,30 @@ public class AlgoDirectoryProjectGenerator extends EmptyWebProjectTemplate {
                         contentEntry.addSourceFolder(sourceRoot, false);
 
                         modifiableModel.commit();
+
+                        //Create algo-package.json
+                        try {
+                            AlgoPkgJsonService.getInstance(project).createPackageJson();
+                        } catch (Exception e) {
+                            IdeaUtil.showNotification(project,
+                                    "Project creation",
+                                    "algo-package.json could not be crated. Please create it " +
+                                            "manually and restart the IDE.", NotificationType.WARNING, null);
+                            if (LOG.isDebugEnabled()) {
+                                LOG.error("Unable to create algo-package.json", e);
+                                return;
+                            }
+                        }
+
+                        //Create stateful contracts
+                        if(settings instanceof ProjectCreateSettings) {
+                            ProjectCreateSettings projectCreateSettings = (ProjectCreateSettings) settings;
+                            if(!StringUtil.isEmpty(projectCreateSettings.contractName)) {
+                                ProjectGeneratorUtil.createStatefulContractFiles(project, sourceRoot, projectCreateSettings.contractName,
+                                        projectCreateSettings.approvalProgram, projectCreateSettings.clearStateProgram);
+                            }
+                        }
+
                     } catch (Exception e) {
                         IdeaUtil.showNotification(project,
                                 "Project creation",
@@ -75,26 +101,16 @@ public class AlgoDirectoryProjectGenerator extends EmptyWebProjectTemplate {
                                 NotificationType.WARNING, null);
                     }
                 });
-
-            //Create algo-package.json
-            WriteCommandAction.runWriteCommandAction(project, () -> {
-                try {
-                    AlgoPkgJsonService.getInstance(project).createPackageJson();
-                } catch (Exception e) {
-                    IdeaUtil.showNotification(project,
-                            "Project creation",
-                            "algo-package.json could not be crated. Please create it " +
-                                    "manually and restart the IDE.", NotificationType.WARNING, null);
-                    if (LOG.isDebugEnabled()) {
-                        LOG.error("Unable to create algo-package.json", e);
-                    }
-                }
-            });
         }
     }
 
     @Override
     public String getDescription() {
         return "Algorand";
+    }
+
+    @Override
+    public @NotNull ProjectGeneratorPeer<ProjectCreateSettings> createPeer() {
+        return new AlgoProjectGeneratorPeer();
     }
 }
