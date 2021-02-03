@@ -1,3 +1,6 @@
+### 0.3.1
+  - Support for other IntelliJ IDEs (PyCharm, GoLand, WebStorm)
+  - Fixes
 ### 0.3.0
   - Support for other IntelliJ IDEs (PyCharm, GoLand, WebStorm)
 ### 0.2.0
