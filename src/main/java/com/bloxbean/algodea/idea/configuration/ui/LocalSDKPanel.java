@@ -9,6 +9,8 @@ import com.twelvemonkeys.lang.StringUtil;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.io.File;
 
 public class LocalSDKPanel {
@@ -35,6 +37,13 @@ public class LocalSDKPanel {
         }
 
         homeTf.setToolTipText("<html>Folder where the \'goal\' binary is available. \n Example: AlgorandNode folder or AlgorandNode/bin folder</html>");
+
+        homeTf.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent e) {
+                checkGoalExecutable();
+            }
+        });
     }
 
     public JPanel getMainPanel() {
@@ -64,35 +73,40 @@ public class LocalSDKPanel {
             if (file == null) {
                 return;
             }
-            errorMsgLabel.setText(""); //reset error msg
-            versionTf.setText("");
 
             homeTf.setText(file.getAbsolutePath());
 
-            if(!new File(homeTf.getText() + File.separator + getGoalCommand()).exists()) {
-                versionTf.setText("");
-                printError("<html>\'goal\' was not found. Please make sure \'goal\' file is available under the selected folder.</html>");
-                return;
-            }
-
-            String version = null;
-            try {
-                version = AlgoSdkUtil.getVersionString(homeTf.getText());
-            } catch (Exception exception) {
-                versionTf.setText("");
-                printError(exception.getMessage());
-                return;
-            }
-            if(StringUtil.isEmpty(version)) {
-                versionTf.setText("");
-                //Invalid version
-                printError("<html>Invalid Algorand Binary folder. Version could not be determined. " +
-                        "<br/> Make sure \'goal\' is available under the selected folder</html>");
-                return;
-            } else {
-                versionTf.setText(version);
-            }
+            checkGoalExecutable();
         });
+    }
+
+    private void checkGoalExecutable() {
+        errorMsgLabel.setText(""); //reset error msg
+        versionTf.setText("");
+
+        if(!new File(homeTf.getText() + File.separator + getGoalCommand()).exists()) {
+            versionTf.setText("");
+            printError("<html>\'goal\' was not found. Please make sure \'goal\' file is available under the selected folder.</html>");
+            return;
+        }
+
+        String version = null;
+        try {
+            version = AlgoSdkUtil.getVersionString(homeTf.getText());
+        } catch (Exception exception) {
+            versionTf.setText("");
+            printError(exception.getMessage());
+            return;
+        }
+        if(StringUtil.isEmpty(version)) {
+            versionTf.setText("");
+            //Invalid version
+            printError("<html>Invalid Algorand Binary folder. Version could not be determined. " +
+                    "<br/> Make sure \'goal\' is available under the selected folder</html>");
+            return;
+        } else {
+            versionTf.setText(version);
+        }
     }
 
     private void printError(String msg) {
