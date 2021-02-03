@@ -123,7 +123,9 @@ public class StatefulContractPanel {
                 if(isFilenameValid(text) && text.endsWith(".teal")) {
                     errorMessageLabel.setText("");
                     input.setBorder(BorderFactory.createEmptyBorder());
-                    settingChangeListener.settingsChanged();
+
+                    if(settingChangeListener != null)
+                        settingChangeListener.settingsChanged();
                     return true;
                 } else {
                     input.setBorder(BorderFactory.createLineBorder(Color.RED));
@@ -150,7 +152,8 @@ public class StatefulContractPanel {
             String text = ((JTextField) input).getText();
             if(!StringUtil.isEmpty(text)) {
                 errorMessageLabel.setText("");
-                settingChangeListener.settingsChanged();
+                if(settingChangeListener != null)
+                    settingChangeListener.settingsChanged();
                 return true;
             } else {
                 errorMessageLabel.setText("Provide a name for the stateful contract");
