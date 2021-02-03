@@ -1,3 +1,5 @@
+### 0.3.0
+  - Support for other IntelliJ IDEs (PyCharm, GoLand, WebStorm)
 ### 0.2.0
   - Atomic Transfer
   - PyTeal Support
