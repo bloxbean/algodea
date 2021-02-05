@@ -42,7 +42,7 @@ Latest Version : [v0.2.0](https://github.com/bloxbean/algodea/releases/tag/v0.2.
       
 ## Supported IntelliJ version (2020.2 and above)
 
-The plugin has been tested in the following IDEs
+The plugin has been tested with the following IDEs
 
 - IntelliJ IDEA (Community/Ultimate/Educational)
 - PyCharm
