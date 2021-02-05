@@ -41,11 +41,17 @@ Latest Version : [v0.2.0](https://github.com/bloxbean/algodea/releases/tag/v0.2.
       - Algo, ASA
       
 ## Supported IntelliJ version (2020.2 and above)
-- IntelliJ IDEA Community
 
-- IntelliJ IDEA Ultimate
+The plugin has been tested in the following IDEs
 
-- IntelliJ IDEA Educational      
+- IntelliJ IDEA (Community/Ultimate/Educational)
+- PyCharm
+- GoLand
+- WebStorm
+- PhpStorm
+
+Known Issues:
+ - PyTeal compilation through pop-up menu only works in IntelliJ IDEA and PyCharm.
 
 ## Installation
 - algoDEA plugin is available on IntelliJ Marketplace as "AlgoDEA Algorand Integration". You can directly install it from IntelliJ IDE.
