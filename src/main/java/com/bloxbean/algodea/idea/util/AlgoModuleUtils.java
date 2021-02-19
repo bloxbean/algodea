@@ -13,8 +13,6 @@ import com.intellij.openapi.vfs.VirtualFile;
 import java.io.File;
 import java.util.Collection;
 
-import static com.bloxbean.algodea.idea.module.AlgoModuleConstant.TEAL_FOLDER;
-
 public class AlgoModuleUtils {
 
     public static Collection<Module> getAlgorandModules(Project project) {
@@ -85,65 +83,21 @@ public class AlgoModuleUtils {
 //    }
 
     public static String getFirstSourceRootPath(Project project) {
-        Collection<Module> modules = getAlgorandModules(project);
-        if(modules != null && modules.size() > 0)
-            return _getFirstTEALSourceRootPath(project);
-        else
-            return _getFirstSourceRootPath(project);
-    }
-
-    private static String _getFirstTEALSourceRootPath(Project project) {
-        Collection<Module> modules = getAlgorandModules(project);
-        if(modules == null || modules.size() == 0)
-            return null;
-
-        Module module = modules.iterator().next();
-        VirtualFile[] roots = ModuleRootManager.getInstance(module).getSourceRoots();
-        if(roots != null && roots.length > 0) {
-            for(VirtualFile root: roots) {
-                if(root != null && TEAL_FOLDER.equals(root.getName())) {
-                    return root.getPath();
-                }
-            }
-        }
-
-        return null;
+        return _getFirstSourceRootPath(project);
     }
 
     private static String _getFirstSourceRootPath(Project project) {
+        if(project == null)
+            return null;
+
         Module[] modules = ModuleManager.getInstance(project).getModules();
         if(modules == null || modules.length == 0)
-            return null;
+            return project.getBasePath();
 
         Module module = modules[0];
-        VirtualFile[] roots = ModuleRootManager.getInstance(module).getSourceRoots();
+        VirtualFile[] roots = ModuleRootManager.getInstance(module).getSourceRoots(false);
         if(roots != null && roots.length > 0) {
-            for(VirtualFile root: roots) {
-                if(root != null && TEAL_FOLDER.equals(root.getName())) { //Check if any of the source root with name "teal"
-                    return root.getPath();
-                }
-            }
-
             return roots[0].getPath();
-        }
-
-        return null;
-    }
-
-    //Not used now. //TODO .
-    private static VirtualFile _getFirstTEALSourceRoot(Project project) {
-        Collection<Module> modules = getAlgorandModules(project);
-        if(modules == null || modules.size() == 0)
-            return null;
-
-        Module module = modules.iterator().next();
-        VirtualFile[] roots = ModuleRootManager.getInstance(module).getSourceRoots();
-        if(roots != null && roots.length > 0) {
-            for(VirtualFile root: roots) {
-                if(root != null && TEAL_FOLDER.equals(root.getName())) {
-                    return root;
-                }
-            }
         }
 
         return null;
