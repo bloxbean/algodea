@@ -1,3 +1,7 @@
+### 0.3.2
+  - Support ASA in Logic Sig Send Transaction UI
+  - Opt-In Asset transaction using a Logic Sig 
+  - Fixes [#5]
 ### 0.3.1
   - Support for other IntelliJ IDEs (PyCharm, GoLand, WebStorm)
   - Fixes
@@ -26,4 +30,3 @@
       
   - Transfer 
       - Algo, ASA
- 
