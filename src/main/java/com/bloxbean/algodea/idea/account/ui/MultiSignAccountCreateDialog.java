@@ -90,7 +90,7 @@ public class MultiSignAccountCreateDialog extends DialogWrapper {
 
                 accountsCB.addItem(new AlgoAccount()); //Empty account
 
-                accounts.forEach(acc -> accountsCB.addItem(acc));
+                accounts.stream().filter(acc -> !StringUtil.isEmpty(acc.getMnemonic())).forEach(acc -> accountsCB.addItem(acc));
                 messageLabel.setText("");
             } catch(Exception e) {
                 messageLabel.setText("Account loading failed !!!");
