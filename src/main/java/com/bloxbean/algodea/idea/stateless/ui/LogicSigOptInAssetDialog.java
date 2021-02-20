@@ -2,69 +2,63 @@ package com.bloxbean.algodea.idea.stateless.ui;
 
 import com.algorand.algosdk.crypto.Address;
 import com.algorand.algosdk.crypto.LogicsigSignature;
+import com.algorand.algosdk.v2.client.model.Asset;
 import com.bloxbean.algodea.idea.account.model.AlgoAccount;
 import com.bloxbean.algodea.idea.account.model.AlgoMultisigAccount;
 import com.bloxbean.algodea.idea.account.service.AccountChooser;
-import com.bloxbean.algodea.idea.common.Tuple;
+import com.bloxbean.algodea.idea.assets.model.AssetMeta;
+import com.bloxbean.algodea.idea.assets.service.AssetCacheService;
 import com.bloxbean.algodea.idea.compile.model.LogicSigMetaData;
 import com.bloxbean.algodea.idea.core.action.ui.TxnDialogWrapper;
 import com.bloxbean.algodea.idea.core.action.util.AlgoContractModuleHelper;
 import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
-import com.bloxbean.algodea.idea.nodeint.model.AccountAsset;
 import com.bloxbean.algodea.idea.nodeint.model.LogicSigType;
 import com.bloxbean.algodea.idea.nodeint.service.AlgoAccountService;
+import com.bloxbean.algodea.idea.nodeint.service.AssetTransactionService;
 import com.bloxbean.algodea.idea.nodeint.service.LogListenerAdapter;
 import com.bloxbean.algodea.idea.nodeint.util.AlgoLogicsigUtil;
 import com.bloxbean.algodea.idea.nodeint.util.LogicSigUtil;
 import com.bloxbean.algodea.idea.toolwindow.AlgoConsole;
 import com.bloxbean.algodea.idea.transaction.ui.TransactionDtlsEntryForm;
-import com.bloxbean.algodea.idea.util.AlgoConversionUtil;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
+import com.intellij.openapi.progress.Task;
+import com.intellij.openapi.progress.impl.BackgroundableProcessIndicator;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.ui.components.JBRadioButton;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import java.io.File;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.List;
 
-import static com.bloxbean.algodea.idea.common.AlgoConstants.ALGO;
-
-public class LogicSigSendTransactionDialog extends TxnDialogWrapper {
-    private static final Logger LOG = Logger.getInstance(LogicSigSendTransactionDialog.class);
+public class LogicSigOptInAssetDialog extends TxnDialogWrapper {
+    private static final Logger LOG = Logger.getInstance(LogicSigOptInAssetDialog.class);
 
     private JPanel mainPanel;
     private JTabbedPane tabbedPane1;
     private TextFieldWithBrowseButton senderLogicSigTextFieldWithBrowse;
     private JTextField senderAccountTf;
-//    private JTextField senderMnemonicTf;
     private JButton senderAccountChooserBtn;
-    private JTextField receiverAccountTf;
-    private JButton receiverChooserBtn;
-    private JTextField amountTf;
     private JRadioButton contractAccountRadioButton;
     private JRadioButton accountDelegationRadioButton;
     private JLabel logicSigTypeLabel;
     private TransactionDtlsEntryForm transactionDtlsEntryForm;
     private JButton multiSigChooserBtn;
-    private JRadioButton algoTypeRB;
-    private JRadioButton asaTypeRB;
-    private JComboBox assetsCB;
-    private JLabel unitLabel;
-    private JButton fetchAssetsBtn;
-    private JButton receiverMultiSigBtn;
+    private JComboBox assetIdCB;
+    private JButton searchBtn;
+    private JTextField assetName;
     private JTextField senderLogSigTf;
 
     private ButtonGroup contractType;
@@ -73,26 +67,21 @@ public class LogicSigSendTransactionDialog extends TxnDialogWrapper {
     private DefaultComboBoxModel assetsComboBoxModel;
     private AlgoConsole console;
     private AlgoAccountService algoAccountService;
+    private DefaultComboBoxModel<Object> assetIdComboBoxModel;
 
-    public LogicSigSendTransactionDialog(Project project, Module module) throws DeploymentTargetNotConfigured {
+    public LogicSigOptInAssetDialog(Project project, Module module) throws DeploymentTargetNotConfigured {
         this(project, module,null);
     }
 
-    public LogicSigSendTransactionDialog(Project project, Module module, String lsigPath) throws DeploymentTargetNotConfigured {
+    public LogicSigOptInAssetDialog(Project project, Module module, String lsigPath) throws DeploymentTargetNotConfigured {
         super(project, true);
         init();
-        setTitle("Stateless Smart Contract Transaction - Logic Sig");
+        setTitle("Opt In Asset - Logic Sig");
 
         buildFolder = AlgoContractModuleHelper.getBuildFolder(project, module);
         transactionDtlsEntryForm.initializeData(project);
         initializeData(project, lsigPath);
-
-        //Asset selection panel
-        ButtonGroup assetTypeButtonGroup = new ButtonGroup();
-        assetTypeButtonGroup.add(algoTypeRB);
-        assetTypeButtonGroup.add(asaTypeRB);
-        algoTypeRB.setSelected(true);
-        enableOtherAssetPanel(false);
+        attachAssetIdSearchHandler(project);
     }
 
     private void initializeData(Project project, String lsigPath) throws DeploymentTargetNotConfigured {
@@ -141,49 +130,6 @@ public class LogicSigSendTransactionDialog extends TxnDialogWrapper {
             }
         });
 
-        receiverChooserBtn.addActionListener(e -> {
-            AlgoAccount algoAccount = AccountChooser.getSelectedAccount(project, true);
-            if(algoAccount != null) {
-                receiverAccountTf.setText(algoAccount.getAddress());
-            }
-        });
-
-        receiverMultiSigBtn.addActionListener(e -> {
-            AlgoMultisigAccount algoMultisigAccount = AccountChooser.getSelectedMultisigAccount(project, true);
-            if(algoMultisigAccount != null) {
-                receiverAccountTf.setText(algoMultisigAccount.getAddress());
-            }
-        });
-
-        fetchAssetsBtn.addActionListener(e -> {
-            fetchAssetFortheAccount(project);
-        });
-
-        algoTypeRB.addActionListener(e -> {
-            if(algoTypeRB.isSelected()) {
-                enableOtherAssetPanel(false);
-                setUnitLabel();
-
-                //enable close reminder
-                //TODO enableCloseReminderSection(true);
-            }
-        });
-
-        asaTypeRB.addActionListener(e -> {
-            if(asaTypeRB.isSelected()) {
-                enableOtherAssetPanel(true);
-                setUnitLabel();
-
-                //disable close remninder to
-                //TODO enableCloseReminderSection(false);
-            }
-        });
-
-        assetsCB.addActionListener(e -> {
-            setUnitLabel();
-        });
-
-        unitLabel.setText(ALGO);
     }
 
     private void loadLogicSigFile(String lsigPath) {
@@ -249,77 +195,135 @@ public class LogicSigSendTransactionDialog extends TxnDialogWrapper {
         }, ModalityState.any());
     }
 
-    private void enableOtherAssetPanel(boolean flag) {
-        assetsCB.setEnabled(flag);
-        fetchAssetsBtn.setEnabled(flag);
-    }
+    private void attachAssetIdSearchHandler(Project project) {
+        AlgoConsole algoConsole = AlgoConsole.getConsole(project);
+        algoConsole.clearAndshow();
 
-    private void setUnitLabel() {
-        if(isAlgoTransfer()) {
-            unitLabel.setText(ALGO);
-        } else {
-            AccountAsset accountAsset = (AccountAsset) assetsCB.getSelectedItem();
-            if (accountAsset == null)
+        AssetTransactionService assetTransactionService = null;
+        try {
+            assetTransactionService = new AssetTransactionService(project, new LogListenerAdapter(algoConsole));
+        } catch (DeploymentTargetNotConfigured deploymentTargetNotConfigured) {
+            //deploymentTargetNotConfigured.printStackTrace();
+            showErrorMessage("Algorand Node is not configured for deployment target", "Asset Search");
+            return;
+        }
+
+        AssetCacheService assetCacheService = AssetCacheService.getInstance();
+        List<AssetMeta> assets = null;
+        if(assetCacheService != null) {
+            if(!StringUtil.isEmpty(assetTransactionService.getNetworkGenesisHash()))
+                assets = assetCacheService.getAssets(assetTransactionService.getNetworkGenesisHash());
+
+            if(assets != null) {
+                assetIdCB.addItem(new AssetMeta("", ""));
+                for(AssetMeta asset: assets) {
+                    assetIdCB.addItem(asset);
+                }
+            }
+        }
+
+        final AssetTransactionService finalAssetTransactionService = assetTransactionService;
+        searchBtn.addActionListener(e -> {
+            //clearFieldsForModifyMode();
+            assetName.setText("");
+            Object selectedItem = assetIdCB.getSelectedItem();
+            if(selectedItem == null)
                 return;
 
-            if (!StringUtil.isEmpty(accountAsset.getAssetUnit()))
-                unitLabel.setText(accountAsset.getAssetUnit());
-        }
-    }
+            String assetId;
+            if(selectedItem instanceof AssetMeta) {
+                AssetMeta assetMeta = (AssetMeta) assetIdCB.getSelectedItem();//assetIdTf.getText();
+                assetId = assetMeta.getId();
+            } else {
+                assetId = String.valueOf(selectedItem);
+            }
 
-    public boolean isAlgoTransfer() {
-        return algoTypeRB.isSelected();
-    }
+            searchBtn.setEnabled(false);
+            setOKActionEnabled(false);
 
-    public AccountAsset getAsset() {
-        if(isAlgoTransfer())
-            return null;
-        AccountAsset accountAsset = (AccountAsset)assetsCB.getSelectedItem();
-        return accountAsset;
-    }
+            Long lassetId;
+            try {
+                lassetId = Long.parseLong(assetId);
+            } catch (NumberFormatException ex) {
+                Messages.showErrorDialog("Invalid asset id", "Asset Search");
+                searchBtn.setEnabled(true);
+                setOKActionEnabled(true);
+                return;
+            }
 
-    public Long getAssetId() {
-        if(isAlgoTransfer())
-            return null;
+            Task.Backgroundable task = new Task.Backgroundable(project, "Serach Asset") {
+                Asset asset;
 
-        AccountAsset accountAsset = (AccountAsset)assetsCB.getSelectedItem();
-        if(accountAsset == null)
-            return null;
-        else
-            return accountAsset.getAssetId();
-    }
+                @Override
+                public void run(@NotNull ProgressIndicator indicator) {
+                    try {
 
-    private void fetchAssetFortheAccount(Project project) {
-        ProgressManager.getInstance().runProcessWithProgressSynchronously(new Runnable() {
-            @Override
-            public void run() {
-                ProgressIndicator progressIndicator = ProgressManager.getInstance().getProgressIndicator();
-                progressIndicator.setIndeterminate(false);
+                        asset = finalAssetTransactionService.getAsset(lassetId);
 
-                try {
-                    assetsComboBoxModel.removeAllElements();
-
-                    Address senderAddress = getSenderAddress();
-
-                    List<AccountAsset> accountAssets = algoAccountService.getAccountAssets(senderAddress.toString());
-                    if (accountAssets == null || accountAssets.size() == 0)
-                        return;
-
-                    for (AccountAsset accountAsset : accountAssets) {
-                        assetsCB.addItem(accountAsset);
+                    } catch (Exception ex) {
+                        throw new RuntimeException(ex);
                     }
-
-                    if (assetsCB.getModel().getSize() > 0) {
-                        assetsCB.setSelectedIndex(0);
-                    }
-                } catch (Exception e) {
-                    console.showErrorMessage("Error getting asset information for the account", e);
-                } finally {
-                    progressIndicator.setFraction(1.0);
                 }
 
+                @Override
+                public void onThrowable(@NotNull Throwable error) {
+                    if(error != null && error.getCause() != null
+                            &&error.getCause() instanceof DeploymentTargetNotConfigured) {
+                        showErrorMessage("Algorand Node is not configured for deployment target", "Asset Search");
+                    } else {
+                        showErrorMessage(String.format("Error getting asset details for asset id: %s", assetId), "Fetching Asset details");
+                    }
+                }
+
+                @Override
+                public void onFinished() {
+                    ApplicationManager.getApplication().invokeLater(() -> {
+                        searchBtn.setEnabled(true);
+                        setOKActionEnabled(true);
+                    });
+                }
+
+                @Override
+                public void onSuccess() {
+                    if(asset != null) {
+                        ApplicationManager.getApplication().invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                assetName.setText(asset.params.name);
+                                //populateWithAssetInfo(asset, assetId);
+                            }
+                        });
+                    } else {
+                        showErrorMessage(String.format("Error getting asset details for asset id: %s", assetId), "Fetching Asset details");
+                    }
+                }
+
+                @Override
+                public void onCancel() {
+                    algoConsole.showWarningMessage("Asset search was cancelled");
+
+                }
+            };
+
+            BackgroundableProcessIndicator processIndicator = new BackgroundableProcessIndicator(task);
+            ProgressManager.getInstance().runProcessWithProgressAsynchronously(task,processIndicator);
+        });
+    }
+
+
+    public Long getAssetId() {
+        try {
+            Object selected = assetIdCB.getSelectedItem();
+            if (selected != null && selected instanceof AssetMeta) {
+                return Long.parseLong(((AssetMeta) selected).getId());
+            } else
+                return selected != null ? Long.parseLong(selected.toString()) : null;
+        } catch (Exception e) {
+            if(LOG.isDebugEnabled()) {
+                LOG.debug("Error getting asset id", e);
             }
-        }, "Fetching account assets from Algorand node ...", true, project);
+            return null;
+        }
     }
 
     public boolean isContractAccountType() {
@@ -341,46 +345,6 @@ public class LogicSigSendTransactionDialog extends TxnDialogWrapper {
             return null;
         }
     }
-
-    public Address getReceiverAddress() {
-        String acc = StringUtil.trim(receiverAccountTf.getText());
-        if(StringUtil.isEmpty(acc))
-            return null;
-
-        try {
-            Address address = new Address(acc);
-            return address;
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    public Tuple<BigDecimal, BigInteger> getAmount() {
-
-        try {
-            if(isAlgoTransfer()) {
-                BigDecimal amtInAlgo = new BigDecimal(amountTf.getText());
-                BigInteger microAlgo = AlgoConversionUtil.algoTomAlgo(amtInAlgo);
-
-                return new Tuple(amtInAlgo, microAlgo);
-            } else { //Asset transfer
-                AccountAsset accountAsset = getAsset();
-                BigDecimal assetAmount = new BigDecimal(amountTf.getText());
-
-                BigInteger mAmount = null;
-                if(accountAsset != null) {
-                    mAmount = AlgoConversionUtil.assetFromDecimal(assetAmount, accountAsset.getDecimals());
-                }
-                return new Tuple<>(assetAmount, mAmount);
-            }
-        } catch (Exception e) {
-            if(LOG.isDebugEnabled())
-                LOG.warn(e);
-
-            return null;
-        }
-    }
-
     public TransactionDtlsEntryForm getTransactionDtlsEntryForm() {
         return transactionDtlsEntryForm;
     }
@@ -395,16 +359,16 @@ public class LogicSigSendTransactionDialog extends TxnDialogWrapper {
             return new ValidationInfo("Please select a valid lsig fie", senderLogSigTf);
         }
 
-        if(getReceiverAddress() == null) {
-            return new ValidationInfo("Choose or enter a valid account", receiverAccountTf);
-        }
+//        if(getReceiverAddress() == null) {
+//            return new ValidationInfo("Choose or enter a valid account", receiverAccountTf);
+//        }
+//
+//        if(getAmount() == null) {
+//            return new ValidationInfo("Enter a valid amount", amountTf);
+//        }
 
-        if(getAmount() == null) {
-            return new ValidationInfo("Enter a valid amount", amountTf);
-        }
-
-        if(!isAlgoTransfer() && getAssetId() == null) {
-            return new ValidationInfo("Please select a valid asset", assetsCB);
+        if(getAssetId() == null) {
+            return new ValidationInfo("Please enter or select a valid Asset Id", assetIdCB);
         }
 
         return transactionDtlsEntryForm.doValidate();
@@ -415,6 +379,15 @@ public class LogicSigSendTransactionDialog extends TxnDialogWrapper {
         senderAccountTf.setEditable(flag);
         senderAccountChooserBtn.setEnabled(flag);
         multiSigChooserBtn.setEnabled(flag);
+    }
+
+    private void showErrorMessage(String message, String title) {
+        ApplicationManager.getApplication().invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                Messages.showErrorDialog(message, title);
+            }
+        }, ModalityState.any());
     }
 
     @Override
@@ -472,7 +445,8 @@ public class LogicSigSendTransactionDialog extends TxnDialogWrapper {
            // }
         });
 
-        assetsComboBoxModel = new DefaultComboBoxModel();
-        assetsCB = new ComboBox(assetsComboBoxModel);
+        assetIdComboBoxModel = new DefaultComboBoxModel<>();
+        assetIdCB = new ComboBox(assetIdComboBoxModel);
+        assetIdCB.setEditable(true);
     }
 }

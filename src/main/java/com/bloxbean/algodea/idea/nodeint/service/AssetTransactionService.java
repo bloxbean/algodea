@@ -2,12 +2,11 @@ package com.bloxbean.algodea.idea.nodeint.service;
 
 import com.algorand.algosdk.account.Account;
 import com.algorand.algosdk.builder.transaction.*;
+import com.algorand.algosdk.crypto.Address;
 import com.algorand.algosdk.transaction.SignedTransaction;
 import com.algorand.algosdk.transaction.Transaction;
 import com.algorand.algosdk.v2.client.common.Response;
-import com.algorand.algosdk.v2.client.model.Asset;
-import com.algorand.algosdk.v2.client.model.AssetResponse;
-import com.algorand.algosdk.v2.client.model.PendingTransactionResponse;
+import com.algorand.algosdk.v2.client.model.*;
 import com.bloxbean.algodea.idea.nodeint.common.RequestMode;
 import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
 import com.bloxbean.algodea.idea.nodeint.model.AccountAsset;
@@ -22,6 +21,8 @@ import com.intellij.openapi.util.text.StringUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AssetTransactionService extends AlgoBaseService {
 
@@ -286,6 +287,92 @@ public class AssetTransactionService extends AlgoBaseService {
         }
     }
 
+    public Result logicSigAssetTransfer(Address sender, String receiver, AccountAsset asset, BigInteger amount,
+                                        TxnDetailsParameters txnDetailsParameters, byte[] sourceBytes, RequestMode requestMode, TransactionSigner txnSigner) throws Exception {
+        if(sender == null) {
+            logListener.error("Sender cannot be null");
+            return Result.error();
+        }
+
+        if(StringUtil.isEmpty(receiver)) {
+            logListener.error("Receiver cannot be null");
+            return Result.error();
+        }
+
+        try {
+            logListener.info("From Address     : " + sender.toString());
+            logListener.info("Receiver Address : " + receiver);
+            logListener.info(String.format("Amount           : %s %s ( %d )\n",
+                    AlgoConversionUtil.assetToDecimal(amount, asset.getDecimals()), asset.getAssetUnit(), amount));
+        } catch (Exception e) {
+
+        }
+
+        AssetTransferTransactionBuilder builder = Transaction.AssetTransferTransactionBuilder();
+        builder  = (AssetTransferTransactionBuilder) populateBaseTransactionDetails(builder, sender , txnDetailsParameters);
+
+        builder.assetIndex(asset.getAssetId())
+                .assetAmount(amount)
+                .assetReceiver(receiver)
+                .sender(sender);
+
+        if (builder == null) {
+            logListener.error("Transaction could not be built");
+            return Result.error();
+        }
+
+        Transaction txn = builder.build();
+
+        if(txn == null) {
+            logListener.error("Transaction could not be built");
+            return Result.error();
+        }
+
+        SignedTransaction signedTransaction = signTransaction(txnSigner, txn);//sisignTransaction(sender, txn);
+
+        if (requestMode == null || requestMode.equals(RequestMode.TRANSACTION)) {
+            return postApplicationTransaction(null, signedTransaction); //TODO fromAccount is not used here. Let's remove this param in future
+        } else if (requestMode.equals(RequestMode.EXPORT_SIGNED)) {
+            return Result.success(JsonUtil.getPrettyJson(signedTransaction));
+        } else if(requestMode.equals(RequestMode.EXPORT_UNSIGNED)) {
+            return Result.success(JsonUtil.getPrettyJson(txn));
+        } else if (requestMode.equals(RequestMode.DRY_RUN)) {
+            return processDryRun(signedTransaction, sourceBytes);
+        } else {
+            return Result.error("Invalid request mode : " + requestMode);
+        }
+    }
+
+    public Result logicSigOptInAsset(Address sender, AssetTxnParameters finalAssetTxnPrameters, TxnDetailsParameters txnDetailsParameters,
+                                     byte[] sourceBytes, RequestMode requestMode, TransactionSigner txnSigner) throws Exception {
+        if(sender == null) {
+            logListener.error("Sender cannot be null");
+            return Result.error();
+        }
+
+        AssetAcceptTransactionBuilder builder = Transaction.AssetAcceptTransactionBuilder();
+
+        builder = (AssetAcceptTransactionBuilder) populateBaseTransactionDetails(builder, sender, txnDetailsParameters);
+
+        builder.assetIndex(finalAssetTxnPrameters.assetId)
+                .acceptingAccount(sender);
+
+        if (builder == null) {
+            logListener.error("Transaction could not be built");
+            return Result.error();
+        }
+
+        Transaction txn = builder.build();
+
+        SignedTransaction signTxn = signTransaction(txnSigner, txn);
+
+        if (requestMode.equals(RequestMode.DRY_RUN)) {
+            return processDryRun(signTxn, sourceBytes);
+        } else {
+            return processAssetTransaction(finalAssetTxnPrameters, requestMode, txn, signTxn);
+        }
+    }
+
     public Asset getAsset(Long assetId) throws Exception {
         if(assetId == null) {
             logListener.error("Asset id cannot be null");
@@ -383,6 +470,30 @@ public class AssetTransactionService extends AlgoBaseService {
             builder.clawback(assetTxnParameters.clawbackAddress);
         }
 
+    }
+
+    //Only for LogicSig Asset Transaction
+    @NotNull
+    private Result processDryRun(SignedTransaction signTxn, byte[] sourceBytes) throws Exception {
+        List<SignedTransaction> stxns = new ArrayList<>();
+        List<byte[]> sources = null;
+        stxns.add(signTxn);
+
+        if(sourceBytes != null) {
+            sources = new ArrayList<>();
+            sources.add(sourceBytes);
+        }
+
+        DryrunResponse dryrunResponse = postDryRunTransaction(stxns, sources);
+        if(dryrunResponse == null) {
+            return Result.error("Dry run failed");
+        } else {
+            List<DryrunTxnResult> dryrunTxnResults = dryrunResponse.txns;
+            if(dryrunTxnResults == null || dryrunTxnResults.size() == 0)
+                return Result.error("Dry run failed");
+
+            return Result.success(JsonUtil.getPrettyJson(dryrunTxnResults.get(0)));
+        }
     }
 
 }

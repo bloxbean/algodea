@@ -12,6 +12,8 @@ import com.algorand.algosdk.v2.client.model.DryrunTxnResult;
 import com.algorand.algosdk.v2.client.model.PendingTransactionResponse;
 import com.bloxbean.algodea.idea.nodeint.common.RequestMode;
 import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
+import com.bloxbean.algodea.idea.nodeint.model.AccountAsset;
+import com.bloxbean.algodea.idea.nodeint.model.AssetTxnParameters;
 import com.bloxbean.algodea.idea.nodeint.model.Result;
 import com.bloxbean.algodea.idea.nodeint.model.TxnDetailsParameters;
 import com.bloxbean.algodea.idea.util.JsonUtil;
@@ -26,11 +28,14 @@ import java.util.List;
 
 public class LogicSigTransactionService extends TransactionService {
 
+    private AssetTransactionService assetTransactionService;
+
     public LogicSigTransactionService(Project project, LogListener logListener) throws DeploymentTargetNotConfigured {
         super(project, logListener);
+        this.assetTransactionService = new AssetTransactionService(project, logListener);
     }
 
-    public Result logicSigTransaction(String lsigPath, Address sender, Address receiver, BigInteger amount, TxnDetailsParameters txnDetailsParameters, RequestMode requestMode)
+    public Result logicSigTransaction(String lsigPath, Address sender, Address receiver, AccountAsset asset, BigInteger amount, TxnDetailsParameters txnDetailsParameters, RequestMode requestMode)
             throws Exception {
 
         byte[] logicSigBytes = FileUtil.loadFileBytes(new File(lsigPath));
@@ -42,9 +47,62 @@ public class LogicSigTransactionService extends TransactionService {
 //        }
 
         if(sender == null) {
-            return contractAccountTransaction(logicSigBytes, receiver, amount, txnDetailsParameters, sourceBytes, requestMode);
+            if(asset == null) { //Algo
+                return contractAccountTransaction(logicSigBytes, receiver, amount, txnDetailsParameters, sourceBytes, requestMode);
+            } else { //Asset transfer
+                LogicsigSignature logicsigSignature = Encoder.decodeFromMsgPack(logicSigBytes, LogicsigSignature.class);
+                Address fromAddress = logicsigSignature.toAddress();
+
+                return assetTransactionService.logicSigAssetTransfer(fromAddress, receiver.toString(), asset, amount, txnDetailsParameters, sourceBytes, requestMode, new TransactionSigner() {
+                    @Override
+                    public SignedTransaction signTransaction(Transaction transaction) throws Exception {
+                        return Account.signLogicsigTransaction(logicsigSignature, transaction);
+                    }
+                });
+            }
         } else {
-            return accountDelegationTransaction(logicSigBytes, sender, receiver, amount, txnDetailsParameters, sourceBytes, requestMode);
+            if(asset == null) { //Algo
+                return accountDelegationTransaction(logicSigBytes, sender, receiver, amount, txnDetailsParameters, sourceBytes, requestMode);
+            } else { // Asset transfer
+                LogicsigSignature logicsigSignature = Encoder.decodeFromMsgPack(logicSigBytes, LogicsigSignature.class);
+
+                return assetTransactionService.logicSigAssetTransfer(sender, receiver.toString(), asset, amount, txnDetailsParameters, sourceBytes, requestMode, new TransactionSigner() {
+                    @Override
+                    public SignedTransaction signTransaction(Transaction transaction) throws Exception {
+                        return Account.signLogicsigTransaction(logicsigSignature, transaction);
+                    }
+                });
+            }
+        }
+
+    }
+
+    public Result logicSigOptInAssetTransaction(String lsigPath, Address sender, AssetTxnParameters assetTxnPrameters,
+                                                TxnDetailsParameters txnDetailsParameters, RequestMode requestMode) throws Exception {
+
+        byte[] logicSigBytes = FileUtil.loadFileBytes(new File(lsigPath));
+
+        byte[] sourceBytes = null;
+
+        if(sender == null) {
+                LogicsigSignature logicsigSignature = Encoder.decodeFromMsgPack(logicSigBytes, LogicsigSignature.class);
+                Address fromAddress = logicsigSignature.toAddress();
+
+                return assetTransactionService.logicSigOptInAsset(fromAddress, assetTxnPrameters, txnDetailsParameters, sourceBytes, requestMode, new TransactionSigner() {
+                    @Override
+                    public SignedTransaction signTransaction(Transaction transaction) throws Exception {
+                        return Account.signLogicsigTransaction(logicsigSignature, transaction);
+                    }
+                });
+        } else {
+                LogicsigSignature logicsigSignature = Encoder.decodeFromMsgPack(logicSigBytes, LogicsigSignature.class);
+
+                return assetTransactionService.logicSigOptInAsset(sender, assetTxnPrameters, txnDetailsParameters, sourceBytes, requestMode, new TransactionSigner() {
+                    @Override
+                    public SignedTransaction signTransaction(Transaction transaction) throws Exception {
+                        return Account.signLogicsigTransaction(logicsigSignature, transaction);
+                    }
+                });
         }
 
     }

@@ -17,6 +17,8 @@ public abstract class TxnDialogWrapper extends DialogWrapper {
     protected Action exportUnsignedAction;
     protected Action dryRunAction;
 
+    private boolean enableDryRun;
+
     protected TxnDialogWrapper(@Nullable Project project, boolean canBeParent) {
         super(project, canBeParent);
         exportSignedAction = new RequestAction("Export signed Tx", RequestMode.EXPORT_SIGNED);
@@ -54,16 +56,25 @@ public abstract class TxnDialogWrapper extends DialogWrapper {
         if(validationInfo == null) {
             exportUnsignedAction.setEnabled(true);
             exportSignedAction.setEnabled(true);
+
+            if(enableDryRun) {
+                dryRunAction.setEnabled(true);
+            }
             return null;
         } else {
             exportUnsignedAction.setEnabled(false);
             exportSignedAction.setEnabled(false);
+
+            if(enableDryRun) {
+                dryRunAction.setEnabled(false);
+            }
             return validationInfo;
         }
     }
 
     public void enableDryRun() {
-        dryRunAction.setEnabled(true);
+        enableDryRun = true;
+        dryRunAction.setEnabled(enableDryRun);
     }
 
     protected abstract ValidationInfo doTransactionInputValidation();

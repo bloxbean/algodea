@@ -2,21 +2,19 @@ package com.bloxbean.algodea.idea.stateless.action;
 
 import com.algorand.algosdk.crypto.Address;
 import com.bloxbean.algodea.idea.common.AlgoIcons;
-import com.bloxbean.algodea.idea.common.Tuple;
 import com.bloxbean.algodea.idea.core.action.BaseTxnAction;
 import com.bloxbean.algodea.idea.module.filetypes.LSigFileType;
 import com.bloxbean.algodea.idea.nodeint.common.RequestMode;
 import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
-import com.bloxbean.algodea.idea.nodeint.model.AccountAsset;
+import com.bloxbean.algodea.idea.nodeint.model.AssetTxnParameters;
 import com.bloxbean.algodea.idea.nodeint.model.Result;
 import com.bloxbean.algodea.idea.nodeint.model.TxnDetailsParameters;
 import com.bloxbean.algodea.idea.nodeint.service.LogListener;
 import com.bloxbean.algodea.idea.nodeint.service.LogListenerAdapter;
 import com.bloxbean.algodea.idea.nodeint.service.LogicSigTransactionService;
-import com.bloxbean.algodea.idea.stateless.ui.LogicSigSendTransactionDialog;
+import com.bloxbean.algodea.idea.stateless.ui.LogicSigOptInAssetDialog;
 import com.bloxbean.algodea.idea.toolwindow.AlgoConsole;
 import com.bloxbean.algodea.idea.transaction.ui.TransactionDtlsEntryForm;
-import com.bloxbean.algodea.idea.util.AlgoConversionUtil;
 import com.bloxbean.algodea.idea.util.IdeaUtil;
 import com.intellij.notification.NotificationType;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -35,13 +33,11 @@ import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 
-public class LogicSigSendTransactionAction extends BaseTxnAction {
-    private final static Logger LOG = Logger.getInstance(LogicSigSendTransactionAction.class);
+public class LogicSigOptInAssetTransactionAction extends BaseTxnAction {
+    private final static Logger LOG = Logger.getInstance(LogicSigOptInAssetTransactionAction.class);
 
-    public LogicSigSendTransactionAction() {
+    public LogicSigOptInAssetTransactionAction() {
         super(AlgoIcons.LOGIC_SIG_RUN_ICON);
     }
 
@@ -73,12 +69,8 @@ public class LogicSigSendTransactionAction extends BaseTxnAction {
         console.clearAndshow();
 
         VirtualFile lsigVfs = e.getDataContext().getData(CommonDataKeys.VIRTUAL_FILE);
-//        if(lsigVfs == null || !lsigVfs.exists()) {
-//            IdeaUtil.showNotification(project, "Stateless contract transaction", "Logic Sig file doesn't exist or not readable", NotificationType.ERROR, null);
-//            return;
-//        }
 
-        LogicSigSendTransactionDialog dialog = null;
+        LogicSigOptInAssetDialog dialog = null;
         if(lsigVfs != null
                 && LSigFileType.EXTENSION.equals(lsigVfs.getExtension())
                 && lsigVfs.exists()) {
@@ -94,14 +86,14 @@ public class LogicSigSendTransactionAction extends BaseTxnAction {
 
             //Open dialog and get transaction inputs
             try {
-                dialog = new LogicSigSendTransactionDialog(project, module, lsigVfs.getCanonicalPath());
+                dialog = new LogicSigOptInAssetDialog(project, module, lsigVfs.getCanonicalPath());
             } catch (DeploymentTargetNotConfigured deploymentTargetNotConfigured) {
                 warnDeploymentTargetNotConfigured(project, getTitle());
                 return;
             }
         } else { //Opened from editor context menu
             try {
-                dialog = new LogicSigSendTransactionDialog(project, module);
+                dialog = new LogicSigOptInAssetDialog(project, module);
             }catch (DeploymentTargetNotConfigured deploymentTargetNotConfigured) {
                 warnDeploymentTargetNotConfigured(project, getTitle());
                 return;
@@ -114,14 +106,14 @@ public class LogicSigSendTransactionAction extends BaseTxnAction {
 
         boolean ok = dialog.showAndGet();
         if(!ok) {
-            IdeaUtil.showNotification(project, "Logic Sig transaction",
-                    "Stateless contract transaction was cancelled", NotificationType.WARNING, null);
+            IdeaUtil.showNotification(project, "Logic Sig OptIn Asset",
+                    "Stateless contract OptIn Asset transaction was cancelled", NotificationType.WARNING, null);
             return;
         }
 
         String lsigPath = dialog.getLsigPath();
         if(StringUtil.isEmpty(lsigPath)) {
-            IdeaUtil.showNotification(project, "Logic Sig transaction",
+            IdeaUtil.showNotification(project, "Logic Sig OptIn Asset",
                     "Invalid path to Logic Sig file", NotificationType.WARNING, null);
             return;
         }
@@ -130,15 +122,10 @@ public class LogicSigSendTransactionAction extends BaseTxnAction {
         boolean isContractAccountTxnType = dialog.isContractAccountType();
         boolean isAccountDelegationTxnType = dialog.isAccountDelegationType();
 
-//        String lsigPath = lsigVfs.getCanonicalPath();
         Address senderAddress = null;
         if(isAccountDelegationTxnType) {
             senderAddress = dialog.getSenderAddress();
         }
-
-        Address receiverAddress = dialog.getReceiverAddress();
-
-        Tuple<BigDecimal, BigInteger> amounts = dialog.getAmount(); //Algo, mAlgo
 
         //txn detals params
         TxnDetailsParameters txnDetailsParameters = null;
@@ -151,14 +138,10 @@ public class LogicSigSendTransactionAction extends BaseTxnAction {
             return;
         }
 
-        final AccountAsset asset = dialog.getAsset();
-        String assetName = "Algo";
+        final Long assetId = dialog.getAssetId();
 
-        if (asset != null) {
-            assetName = asset.getAssetName();
-        }
-
-        boolean isAlgoTransfer = dialog.isAlgoTransfer();
+        AssetTxnParameters assetTxnParameters = new AssetTxnParameters();
+        assetTxnParameters.assetId = assetId;
 
         Address finalSenderAccount = senderAddress;
         TxnDetailsParameters finalTxnDetailsParams = txnDetailsParameters;
@@ -174,14 +157,8 @@ public class LogicSigSendTransactionAction extends BaseTxnAction {
                 public void run(@NotNull ProgressIndicator indicator) {
                     console.showInfoMessage(String.format("Starting %s ...\n", getTxnCommand()));
                     try {
-                        Result result = null;
 
-                        if(isAlgoTransfer) {
-                            result = transactionService.logicSigTransaction(lsigPath, finalSenderAccount, receiverAddress, null, amounts._2(), finalTxnDetailsParams, requestMode);
-                        } else {
-                            result = transactionService.logicSigTransaction(lsigPath, finalSenderAccount, receiverAddress, asset, amounts._2(), finalTxnDetailsParams, requestMode);
-                        }
-
+                        Result result = transactionService.logicSigOptInAssetTransaction(lsigPath, finalSenderAccount, assetTxnParameters, finalTxnDetailsParams, requestMode);
                         processResult(project, module, result, requestMode, logListener);
                     } catch (Exception exception) {
                         console.showErrorMessage(String.format("%s failed", getTxnCommand()), exception);
@@ -198,16 +175,16 @@ public class LogicSigSendTransactionAction extends BaseTxnAction {
                 LOG.error(ex);
             }
             console.showErrorMessage(ex.getMessage(), ex);
-            IdeaUtil.showNotification(project, getTitle(), String.format("Logic sig transaction failed, reason: %s", ex.getMessage()), NotificationType.ERROR, null);
+            IdeaUtil.showNotification(project, getTitle(), String.format("Logic sig OptIn Asset transaction failed, reason: %s", ex.getMessage()), NotificationType.ERROR, null);
         }
 
     }
 
     public String getTitle() {
-        return "Stateless Contract Transaction";
+        return "Opt-In Asset using Logic Sig";
     }
 
     public String getTxnCommand() {
-        return "Stateless Contract";
+        return "Opt-In Asset using Logic Sig";
     }
 }
