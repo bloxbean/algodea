@@ -246,9 +246,13 @@ public class TransferTxnParamEntryForm {
                 try {
                     assetIdComboBoxModel.removeAllElements();
 
-                    Account account = getFromAccount();
+                    Address fromAddress = getFromAddress();
+                    if(fromAddress == null) {
+                        console.showErrorMessage("Invalid From Account");
+                        return;
+                    }
 
-                    List<AccountAsset> accountAssets = algoAccountService.getAccountAssets(account.getAddress().toString());
+                    List<AccountAsset> accountAssets = algoAccountService.getAccountAssets(fromAddress.toString());
                     if (accountAssets == null || accountAssets.size() == 0)
                         return;
 
@@ -311,6 +315,21 @@ public class TransferTxnParamEntryForm {
             return account;
         } catch (Exception e) {
             return null;
+        }
+    }
+
+    //Only use for read-only account where mnemonic is empty
+    public Address getFromAddress() {
+        Account fromAccount = getFromAccount();
+        if(fromAccount != null) {
+            return fromAccount.getAddress();
+        } else {
+            String fromAddress = fromAccountTf.getText().trim();
+            try {
+                return new Address(fromAddress);
+            } catch (NoSuchAlgorithmException e) {
+                return null;
+            }
         }
     }
 

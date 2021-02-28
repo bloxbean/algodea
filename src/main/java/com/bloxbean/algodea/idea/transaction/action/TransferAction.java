@@ -55,7 +55,9 @@ public class TransferAction extends BaseTxnAction {
             }
 
             TransferTxnParamEntryForm txnEntryForm = transferDialog.getTransferTxnEntryForm();
-            Account fromAccount = txnEntryForm.getFromAccount();
+            Account signerAccount = txnEntryForm.getFromAccount();
+            Address fromAddress = txnEntryForm.getFromAddress();
+
             Address toAddress = txnEntryForm.getToAccount();
             Tuple<BigDecimal, BigInteger> amountTuple = txnEntryForm.getAmount();
             if (amountTuple == null) {
@@ -82,7 +84,6 @@ public class TransferAction extends BaseTxnAction {
             AssetTransactionService assetTransactionService = new AssetTransactionService(project, logListener);
 
             RequestMode requestMode = transferDialog.getRequestMode();
-
             Task.Backgroundable task = new Task.Backgroundable(project, getTxnCommand()) {
 
                 @Override
@@ -103,11 +104,11 @@ public class TransferAction extends BaseTxnAction {
 
                         }
 
-                        if (transferDialog.isAlgoTransfer()) {
-                            result = transactionService.transfer(fromAccount, toAddress.toString(), amountTuple._2().longValue(),
+                        if (transferDialog.isAlgoTransfer()) { //SignerAccount and fromAddress should be same
+                            result = transactionService.transfer(signerAccount, fromAddress, toAddress.toString(), amountTuple._2().longValue(),
                                     closeReminderTo, txnDetailsParameters, requestMode);
                         } else { //asset transfer
-                            result = assetTransactionService.assetTransfer(fromAccount, toAddress.toString(), asset, amountTuple._2(), txnDetailsParameters, requestMode);
+                            result = assetTransactionService.assetTransfer(signerAccount, fromAddress, toAddress.toString(), asset, amountTuple._2(), txnDetailsParameters, requestMode);
                         }
 
                         processResult(project, module, result, requestMode, logListener);

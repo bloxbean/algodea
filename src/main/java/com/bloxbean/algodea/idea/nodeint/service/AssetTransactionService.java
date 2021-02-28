@@ -233,10 +233,15 @@ public class AssetTransactionService extends AlgoBaseService {
         return processAssetTransaction(finalAssetTxnPrameters, requestMode, txn, signTxn);
     }
 
-    public Result assetTransfer(Account sender, String receiver, AccountAsset asset, BigInteger amount,
+    public Result assetTransfer(Account signer, Address sender, String receiver, AccountAsset asset, BigInteger amount,
                                 TxnDetailsParameters txnDetailsParameters, RequestMode requestMode) throws Exception {
-        if(sender == null) {
+        if(signer == null && sender == null) {
             logListener.error("Sender cannot be null");
+            return Result.error();
+        }
+
+        if(signer == null && !requestMode.equals(RequestMode.EXPORT_UNSIGNED)) {
+            logListener.error("Signing account cannot be null");
             return Result.error();
         }
 
@@ -246,7 +251,7 @@ public class AssetTransactionService extends AlgoBaseService {
         }
 
         try {
-            logListener.info("From Address     : " + sender.getAddress().toString());
+            logListener.info("From Address     : " + sender.toString());
             logListener.info("Receiver Address : " + receiver);
             logListener.info(String.format("Amount           : %s %s ( %d )\n",
                     AlgoConversionUtil.assetToDecimal(amount, asset.getDecimals()), asset.getAssetUnit(), amount));
@@ -255,12 +260,12 @@ public class AssetTransactionService extends AlgoBaseService {
         }
 
         AssetTransferTransactionBuilder builder = Transaction.AssetTransferTransactionBuilder();
-        builder  = (AssetTransferTransactionBuilder) populateBaseTransactionDetails(builder, sender.getAddress(), txnDetailsParameters);
+        builder  = (AssetTransferTransactionBuilder) populateBaseTransactionDetails(builder, sender, txnDetailsParameters);
 
         builder.assetIndex(asset.getAssetId())
                 .assetAmount(amount)
                 .assetReceiver(receiver)
-                .sender(sender.getAddress());
+                .sender(sender);
 
         if (builder == null) {
             logListener.error("Transaction could not be built");
@@ -274,11 +279,11 @@ public class AssetTransactionService extends AlgoBaseService {
             return Result.error();
         }
 
-        SignedTransaction signedTransaction = signTransaction(sender, txn);
-
         if (requestMode == null || requestMode.equals(RequestMode.TRANSACTION)) {
-            return postApplicationTransaction(sender, signedTransaction);
+            SignedTransaction signedTransaction = signTransaction(signer, txn);
+            return postApplicationTransaction(signer, signedTransaction);
         } else if (requestMode.equals(RequestMode.EXPORT_SIGNED)) {
+            SignedTransaction signedTransaction = signTransaction(signer, txn);
             return Result.success(JsonUtil.getPrettyJson(signedTransaction));
         } else if(requestMode.equals(RequestMode.EXPORT_UNSIGNED)) {
             return Result.success(JsonUtil.getPrettyJson(txn));

@@ -26,25 +26,30 @@ public class TransactionService extends AlgoBaseService {
         super(project, logListener);
     }
 
-    public Result transfer(Account sender, String receiver, Long amount, Address closeReminderTo, TxnDetailsParameters txnDetailsParameters, RequestMode requestMode) throws Exception {
-        if (sender == null) {
+    public Result transfer(Account signer, Address sender, String receiver, Long amount, Address closeReminderTo, TxnDetailsParameters txnDetailsParameters, RequestMode requestMode) throws Exception {
+        if (signer == null && sender == null) {
             logListener.error("Sender cannot be null");
             return Result.error();
         }
 
+        if(signer == null && !requestMode.equals(RequestMode.EXPORT_UNSIGNED)) {
+            logListener.error("Signing account cannot be null");
+            return Result.error();
+        }
+
         PaymentTransactionBuilder paymentTransactionBuilder = Transaction.PaymentTransactionBuilder();
-        Transaction txn = populatePaymentTransaction(paymentTransactionBuilder, sender.getAddress(), receiver, amount, closeReminderTo, txnDetailsParameters);
+        Transaction txn = populatePaymentTransaction(paymentTransactionBuilder, sender, receiver, amount, closeReminderTo, txnDetailsParameters);
 
         if (txn == null) {
             logListener.error("Transaction could not be built");
             return Result.error();
         }
 
-        SignedTransaction stxn = signTransaction(sender, txn);
-
         if (requestMode == null || requestMode.equals(RequestMode.TRANSACTION)) {
-            return postApplicationTransaction(sender, stxn);
+            SignedTransaction stxn = signTransaction(signer, txn);
+            return postApplicationTransaction(signer, stxn);
         } else if (requestMode.equals(RequestMode.EXPORT_SIGNED)) {
+            SignedTransaction stxn = signTransaction(signer, txn);
             return Result.success(JsonUtil.getPrettyJson(stxn));
         } else if(requestMode.equals(RequestMode.EXPORT_UNSIGNED)) {
             return Result.success(JsonUtil.getPrettyJson(txn));
