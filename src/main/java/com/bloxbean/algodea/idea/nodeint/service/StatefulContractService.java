@@ -37,10 +37,8 @@ import com.bloxbean.algodea.idea.nodeint.model.Result;
 import com.bloxbean.algodea.idea.nodeint.model.TxnDetailsParameters;
 import com.bloxbean.algodea.idea.util.JsonUtil;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.io.FileUtil;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -50,12 +48,17 @@ public class StatefulContractService extends AlgoBaseService {
         super(project, logListener);
     }
 
-    public Result<Long> createApp(String approvalProgram, String clearStateProgram, Account creator,
+    public Result<Long> createApp(String approvalProgram, String clearStateProgram, Account signer, Address sender,
                           int globalBytes, int globalInts, int localBytes, int localInts,
                           TxnDetailsParameters txnDetailsParameters, RequestMode requestMode) throws Exception {
-        if(creator == null) {
+        if(signer == null && sender == null) {
             logListener.error("Creator account cannot be null");
             return null;
+        }
+
+        if(signer == null && !requestMode.equals(RequestMode.EXPORT_UNSIGNED)) {
+            logListener.error("Creator account cannot be null. Please make sure the mnemonic is valid.");
+            return Result.error();
         }
 
         // compile programs
@@ -78,14 +81,20 @@ public class StatefulContractService extends AlgoBaseService {
             logListener.info("Clear State Program compiled successfully.");
         }
 
-        return _createApp(creator, new TEALProgram(approvalProgramBytes), new TEALProgram(clearProgramBytes),
+        return _createApp(signer, sender, new TEALProgram(approvalProgramBytes), new TEALProgram(clearProgramBytes),
                 globalInts, globalBytes, localInts, localBytes, txnDetailsParameters, requestMode);
     }
 
-    public Result updateApp(Long appId, Account fromAccount, String approvalProgram, String clearStateProgram
+    public Result updateApp(Long appId, Account signer, Address sender, String approvalProgram, String clearStateProgram
             , TxnDetailsParameters txnDetailsParameters, RequestMode requestMode) throws Exception {
-        if(fromAccount == null) {
+
+        if(signer == null && sender == null) {
             logListener.error("From account cannot be null");
+            return null;
+        }
+
+        if(signer == null && !requestMode.equals(RequestMode.EXPORT_UNSIGNED)) {
+            logListener.error("From account cannot be null. Please make sure the mnemonic is valid.");
             return Result.error();
         }
 
@@ -113,92 +122,111 @@ public class StatefulContractService extends AlgoBaseService {
         txnBuilder.approvalProgram(new TEALProgram(approvalProgramBytes));
         txnBuilder.clearStateProgram(new TEALProgram(clearProgramBytes));
 
-        Transaction txn = populateBaseAppTransaction( txnBuilder, appId, fromAccount, txnDetailsParameters);
+        Transaction txn = populateBaseAppTransaction( txnBuilder, appId, sender, txnDetailsParameters);
         if(txn == null) {
             logListener.error("Transaction could not be built");
             return Result.error();
         }
 
-        SignedTransaction stxn = signTransaction(fromAccount, txn);
+        SignedTransaction stxn = null;
 
-        return processContractTransaction(fromAccount, txn, stxn, requestMode);
+        if(signer != null) { //For all modes except EXPORT_TXN
+            stxn = signTransaction(signer, txn);
+        }
+
+        return processContractTransaction(signer, txn, stxn, requestMode);
     }
 
-    public Result optIn(Long appId, Account fromAccount, TxnDetailsParameters txnDetailsParameters, RequestMode requestMode)  throws Exception {
+    public Result optIn(Long appId, Account signer, Address sender, TxnDetailsParameters txnDetailsParameters, RequestMode requestMode)  throws Exception {
 
         ApplicationOptInTransactionBuilder txnBuilder = Transaction.ApplicationOptInTransactionBuilder();
 
-        Transaction txn = populateBaseAppTransaction( txnBuilder, appId, fromAccount, txnDetailsParameters);
+        Transaction txn = populateBaseAppTransaction( txnBuilder, appId, sender, txnDetailsParameters);
         if(txn == null) {
             logListener.error("Transaction could not be built");
             return Result.error();
         }
 
-        SignedTransaction stxn = signTransaction(fromAccount, txn);
+        SignedTransaction stxn = null;
+        if(signer != null) {
+            stxn = signTransaction(signer, txn);
+        }
 
-        return processContractTransaction(fromAccount, txn, stxn, requestMode);
+        return processContractTransaction(signer, txn, stxn, requestMode);
     }
 
-    public Result call(Long appId, Account fromAccount, TxnDetailsParameters txnDetailsParameters, RequestMode requestMode) throws Exception {
+    public Result call(Long appId, Account signer, Address sender, TxnDetailsParameters txnDetailsParameters, RequestMode requestMode) throws Exception {
         ApplicationCallTransactionBuilder txnBuilder = Transaction.ApplicationCallTransactionBuilder();
 
-        Transaction txn = populateBaseAppTransaction( txnBuilder, appId, fromAccount, txnDetailsParameters);
+        Transaction txn = populateBaseAppTransaction( txnBuilder, appId, sender, txnDetailsParameters);
         if(txn == null) {
             logListener.error("Transaction could not be built");
             return Result.error();
         }
 
-        SignedTransaction stxn = signTransaction(fromAccount, txn);
+        SignedTransaction stxn = null;
+        if(signer != null) {
+            stxn = signTransaction(signer, txn);
+        }
 
-        return processContractTransaction(fromAccount, txn, stxn, requestMode);
+        return processContractTransaction(signer, txn, stxn, requestMode);
     }
 
-    public Result closeOut(Long appId, Account fromAccount, TxnDetailsParameters txnDetailsParameters, RequestMode requestMode) throws Exception {
+    public Result closeOut(Long appId, Account signer, Address sender, TxnDetailsParameters txnDetailsParameters, RequestMode requestMode) throws Exception {
         ApplicationCloseTransactionBuilder txnBuilder = Transaction.ApplicationCloseTransactionBuilder();
 
-        Transaction txn = populateBaseAppTransaction( txnBuilder, appId, fromAccount, txnDetailsParameters);
+        Transaction txn = populateBaseAppTransaction( txnBuilder, appId, sender, txnDetailsParameters);
         if(txn == null) {
             logListener.error("Transaction could not be built");
             return Result.error();
         }
 
-        SignedTransaction stxn = signTransaction(fromAccount, txn);
+        SignedTransaction stxn = null;
+        if(signer != null) {
+            stxn = signTransaction(signer, txn);
+        }
 
-        return processContractTransaction(fromAccount, txn, stxn, requestMode);
+        return processContractTransaction(signer, txn, stxn, requestMode);
     }
 
-    public Result clear(Long appId, Account fromAccount, TxnDetailsParameters txnDetailsParameters, RequestMode requestMode) throws Exception {
+    public Result clear(Long appId, Account signer, Address sender, TxnDetailsParameters txnDetailsParameters, RequestMode requestMode) throws Exception {
         ApplicationClearTransactionBuilder txnBuilder = Transaction.ApplicationClearTransactionBuilder();
 
-        Transaction txn = populateBaseAppTransaction( txnBuilder, appId, fromAccount, txnDetailsParameters);
+        Transaction txn = populateBaseAppTransaction( txnBuilder, appId, sender, txnDetailsParameters);
         if(txn == null) {
             logListener.error("Transaction could not be built");
             return Result.error();
         }
 
-        SignedTransaction stxn = signTransaction(fromAccount, txn);
+        SignedTransaction stxn = null;
+        if(signer != null) {
+            stxn = signTransaction(signer, txn);
+        }
 
-        return processContractTransaction(fromAccount, txn, stxn, requestMode);
+        return processContractTransaction(signer, txn, stxn, requestMode);
     }
 
-    public Result delete(Long appId, Account fromAccount, TxnDetailsParameters txnDetailsParameters, RequestMode requestMode) throws Exception {
+    public Result delete(Long appId, Account signer, Address sender, TxnDetailsParameters txnDetailsParameters, RequestMode requestMode) throws Exception {
         ApplicationDeleteTransactionBuilder txnBuilder = Transaction.ApplicationDeleteTransactionBuilder();
 
-        Transaction txn = populateBaseAppTransaction( txnBuilder, appId, fromAccount, txnDetailsParameters);
+        Transaction txn = populateBaseAppTransaction( txnBuilder, appId, sender, txnDetailsParameters);
         if(txn == null) {
             logListener.error("Transaction could not be built");
             return Result.error();
         }
 
-        SignedTransaction stxn = signTransaction(fromAccount, txn);
+        SignedTransaction stxn = null;
+        if(signer != null) {
+            stxn = signTransaction(signer, txn);
+        }
 
-        return processContractTransaction(fromAccount, txn, stxn, requestMode);
+        return processContractTransaction(signer, txn, stxn, requestMode);
     }
 
-    public void readLocalState(Account account, Long appId) throws Exception {
+    public void readLocalState(Address account, Long appId) throws Exception {
         logListener.info("Fetching local state ...");
         Response<com.algorand.algosdk.v2.client.model.Account> acctResponse
-                = client.AccountInformation(account.getAddress()).execute(getHeaders()._1(), getHeaders()._2());
+                = client.AccountInformation(account).execute(getHeaders()._1(), getHeaders()._2());
         if(!acctResponse.isSuccessful()) {
             printErrorMessage("Reading local state failed", acctResponse);
             return;
@@ -243,12 +271,10 @@ public class StatefulContractService extends AlgoBaseService {
     }
 
 
-    private Result<Long> _createApp(Account creator, TEALProgram approvalProgramSource,
+    private Result<Long> _createApp(Account creator, Address sender, TEALProgram approvalProgramSource,
                           TEALProgram clearProgramSource, int globalInts, int globalBytes, int localInts, int localBytes,
                                     TxnDetailsParameters txnDetailsParameters, RequestMode requestMode)
             throws Exception {
-        // define sender as creator
-        Address sender = creator.getAddress();
 
         logListener.info("Getting node suggested transaction parameters ...");
         // get node suggested parameters
@@ -274,7 +300,12 @@ public class StatefulContractService extends AlgoBaseService {
                 .localStateSchema(new StateSchema(localInts, localBytes));
         //.build();
 
-        Transaction txn = populateBaseAppTransaction(transactionBuilder, null, creator, txnDetailsParameters);
+        Transaction txn = populateBaseAppTransaction(transactionBuilder, null, sender, txnDetailsParameters);
+
+        //If export unsigned, return txn
+        if (requestMode.equals(RequestMode.EXPORT_UNSIGNED)) {
+            return Result.success(JsonUtil.getPrettyJson(txn));
+        }
 
         // sign transaction
         SignedTransaction signedTxn = creator.signTransaction(txn);
@@ -290,8 +321,6 @@ public class StatefulContractService extends AlgoBaseService {
             }
         } else if (requestMode.equals(RequestMode.EXPORT_SIGNED)) {
             return Result.success(JsonUtil.getPrettyJson(signedTxn));
-        } else if (requestMode.equals(RequestMode.EXPORT_UNSIGNED)) {
-            return Result.success(JsonUtil.getPrettyJson(txn));
         } else if (requestMode.equals(RequestMode.DRY_RUN)) {
             return processDryRun(signedTxn);
         } else {

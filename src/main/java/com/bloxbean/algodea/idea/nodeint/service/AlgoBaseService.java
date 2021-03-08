@@ -246,8 +246,8 @@ public class AlgoBaseService {
         return pendingTransactionResponse.body();
     }
 
-    protected Transaction populateBaseAppTransaction(ApplicationBaseTransactionBuilder appTransactionBuilder, Long appId, Account fromAccount, TxnDetailsParameters txnDetailsParameters) throws Exception {
-        if(fromAccount == null) {
+    protected Transaction populateBaseAppTransaction(ApplicationBaseTransactionBuilder appTransactionBuilder, Long appId, Address sender, TxnDetailsParameters txnDetailsParameters) throws Exception {
+        if(sender == null) {
             logListener.error("From Account cannot be null");
             return null;
         }
@@ -256,9 +256,7 @@ public class AlgoBaseService {
             logListener.info("Application : " + appId);
         }
 
-        logListener.info("From Account : " + fromAccount.getAddress().toString());
-        // define sender
-        Address sender = fromAccount.getAddress();
+        logListener.info("From Account : " + sender.toString());
 
         if(appId != null && appId != 0) {
             appTransactionBuilder.applicationId(appId);

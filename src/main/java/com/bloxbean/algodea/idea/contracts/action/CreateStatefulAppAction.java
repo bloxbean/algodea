@@ -146,8 +146,10 @@ public class CreateStatefulAppAction extends BaseTxnAction {
             CreateAppEntryForm createForm = createDialog.getCreateForm();
             AppTxnDetailsEntryForm appTxnDetailsEntryForm = createDialog.getAppTxnDetailsEntryForm();
 
-            Account account = createForm.getAccount();
-            if (account == null) {
+            Account signerAccount = createForm.getAccount();
+            Address senderAddress = createForm.getAddress();
+            if (senderAddress == null ||
+                    (signerAccount == null && RequestMode.EXPORT_UNSIGNED != createDialog.getRequestMode())) {
                 console.showErrorMessage("Invalid or null creator account");
                 console.showErrorMessage("Create App Failed");
                 return;
@@ -185,7 +187,7 @@ public class CreateStatefulAppAction extends BaseTxnAction {
             //update cache
             if(!StringUtil.isEmpty(contractName))
                 cacheService.setLastContract(contractName);
-            cacheService.setSfCreatorAccount(account.getAddress().toString());
+            cacheService.setSfCreatorAccount(senderAddress.toString());
 
             VirtualFile appProgVF = AlgoModuleUtils.getFile(project, approvalProgramName);//VfsUtil.findRelativeFile(approvalProgramName, sourceRoot);//VfsUtil.findRelativeFile(sourceRoot, approvalProgramName);
             VirtualFile clearProgVF = AlgoModuleUtils.getFile(project, clearStateProgramName);//VfsUtil.findRelativeFile(clearStateProgramName, sourceRoot);
@@ -252,13 +254,14 @@ public class CreateStatefulAppAction extends BaseTxnAction {
                     console.showInfoMessage("Creating stateful smart contract ...");
                     Result<Long> result = null;
                     try {
-                        result = sfService.createApp(appProgText, clearProgText, account,
+                        result = sfService.createApp(appProgText, clearProgText, signerAccount, senderAddress,
                                 globalByteslices, globalInts, localByteslices, localInts,
                                 txnDetailsParameters, requestMode);
                     } catch (Exception exception) {
                         if(LOG.isDebugEnabled()) {
                             LOG.warn(exception);
                         }
+                        //console.showErrorMessage("Error creating the app", exception);
                     }
 
                     if(requestMode == null || requestMode.equals(RequestMode.TRANSACTION)) {

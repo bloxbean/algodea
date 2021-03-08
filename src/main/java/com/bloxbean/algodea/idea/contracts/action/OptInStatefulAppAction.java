@@ -8,8 +8,6 @@ import com.bloxbean.algodea.idea.nodeint.model.TxnDetailsParameters;
 import com.bloxbean.algodea.idea.nodeint.service.StatefulContractService;
 import com.intellij.icons.AllIcons;
 
-import java.util.List;
-
 public class OptInStatefulAppAction extends BaseStatefulAppAction {
 
     public OptInStatefulAppAction() {
@@ -32,8 +30,8 @@ public class OptInStatefulAppAction extends BaseStatefulAppAction {
     }
 
     @Override
-    public Result invokeTransaction(StatefulContractService sfService, Long appId, Account fromAccount,
+    public Result invokeTransaction(StatefulContractService sfService, Long appId, Account signer, Address sender,
                                     TxnDetailsParameters txnDetailsParameters, RequestMode requestMode) throws Exception {
-        return sfService.optIn(appId, fromAccount, txnDetailsParameters, requestMode);
+        return sfService.optIn(appId, signer, sender, txnDetailsParameters, requestMode);
     }
 }

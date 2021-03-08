@@ -1,13 +1,11 @@
 package com.bloxbean.algodea.idea.contracts.action;
 
-import com.algorand.algosdk.account.Account;
+import com.algorand.algosdk.crypto.Address;
 import com.bloxbean.algodea.idea.contracts.ui.AppReadDialog;
 import com.bloxbean.algodea.idea.contracts.ui.AppReadMainPanel;
 import com.bloxbean.algodea.idea.contracts.ui.AppTxnBaseParamEntryForm;
 import com.bloxbean.algodea.idea.core.action.AlgoBaseAction;
 import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
-import com.bloxbean.algodea.idea.nodeint.model.TxnDetailsParameters;
-import com.bloxbean.algodea.idea.nodeint.service.LogListener;
 import com.bloxbean.algodea.idea.nodeint.service.LogListenerAdapter;
 import com.bloxbean.algodea.idea.nodeint.service.StatefulContractService;
 import com.bloxbean.algodea.idea.toolwindow.AlgoConsole;
@@ -47,7 +45,7 @@ public class ReadStatefulAppAction extends AlgoBaseAction {
         AppReadMainPanel mainPanel = dialog.getAppReadMainPanel();
         AppTxnBaseParamEntryForm entryForm = dialog.getAppTxnBaseEntryForm();
         Long appId = entryForm.getAppId();
-        Account fromAccount = entryForm.getFromAccount();
+        Address fromAddress = entryForm.getFromAddress();
 
         boolean localState = mainPanel.isLocalState();
         boolean globalState = mainPanel.isGlobalState();
@@ -65,13 +63,13 @@ public class ReadStatefulAppAction extends AlgoBaseAction {
                 public void run(@NotNull ProgressIndicator indicator) {
                     try {
                         console.showInfoMessage("App Id      : " + appId);
-                        if(fromAccount != null) {
-                            console.showInfoMessage("Account     : " + fromAccount.getAddress().toString());
+                        if(fromAddress != null) {
+                            console.showInfoMessage("Account     : " + fromAddress.toString());
                         }
                         console.showInfoMessage("\n");
 
                         if(localState || bothState) {
-                            sfService.readLocalState(fromAccount, appId);
+                            sfService.readLocalState(fromAddress, appId);
                         }
                         if(globalState || bothState) {
                             sfService.readGlobalState(appId);

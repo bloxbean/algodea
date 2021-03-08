@@ -1,6 +1,7 @@
 package com.bloxbean.algodea.idea.contracts.ui;
 
 import com.algorand.algosdk.account.Account;
+import com.algorand.algosdk.crypto.Address;
 import com.bloxbean.algodea.idea.account.model.AlgoAccount;
 import com.bloxbean.algodea.idea.account.service.AccountChooser;
 import com.bloxbean.algodea.idea.configuration.service.AlgoProjectState;
@@ -15,6 +16,7 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 public class AppTxnBaseParamEntryForm {
@@ -151,6 +153,20 @@ public class AppTxnBaseParamEntryForm {
             return account;
         } catch (Exception e) {
             return null;
+        }
+    }
+
+    public Address getFromAddress() {
+        Account account = getFromAccount();
+        if(account != null) {
+            return account.getAddress();
+        } else {
+            String address = fromAccountTf.getText().trim();
+            try {
+                return new Address(address);
+            } catch (NoSuchAlgorithmException e) {
+                return null;
+            }
         }
     }
 

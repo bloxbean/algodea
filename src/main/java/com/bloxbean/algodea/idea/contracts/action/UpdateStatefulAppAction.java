@@ -124,9 +124,11 @@ public class UpdateStatefulAppAction extends BaseTxnAction {
                 return;
             }
 
-            Account account = appTxnBaseForm.getFromAccount();
-            if(account == null) {
-                console.showErrorMessage("Invalid or null from account");
+            Account signerAccount = appTxnBaseForm.getFromAccount();
+            Address senderAddress = appTxnBaseForm.getFromAddress();
+            if (senderAddress == null ||
+                    (signerAccount == null && RequestMode.EXPORT_UNSIGNED != dialog.getRequestMode())) {
+                console.showErrorMessage("Invalid or null from account.");
                 console.showErrorMessage("UpdateApplication Failed");
                 return;
             }
@@ -167,7 +169,7 @@ public class UpdateStatefulAppAction extends BaseTxnAction {
             txnDetailsParameters.setFlatFee(generalTxnDetailsParam.getFlatFee());
 
             //update cache.. For update from account, save it inside creator account for now.
-            cacheService.setSfCreatorAccount(account.getAddress().toString());
+            cacheService.setSfCreatorAccount(senderAddress.toString());
             if(!StringUtil.isEmpty(contractName))
                 cacheService.setLastContract(contractName);
 
@@ -238,7 +240,7 @@ public class UpdateStatefulAppAction extends BaseTxnAction {
                     Long appId = appTxnBaseForm.getAppId();
                     Result result = null;
                     try {
-                       result = sfService.updateApp(appId, account, appProgText, clearProgText, txnDetailsParameters, requestMode);
+                       result = sfService.updateApp(appId, signerAccount, senderAddress, appProgText, clearProgText, txnDetailsParameters, requestMode);
                     } catch (Exception exception) {
                         if(LOG.isDebugEnabled()) {
                             LOG.warn(exception);
@@ -256,7 +258,7 @@ public class UpdateStatefulAppAction extends BaseTxnAction {
                             cacheService.addAppId(genesisHash, contractName, String.valueOf(appId));
 
                             console.showInfoMessage("Stateful smart contract app updated with app Id : " + appId);
-                            IdeaUtil.showNotification(project, "Update App", String.format("%s App Created Successfully with appId: %s", contractName, appId), NotificationType.INFORMATION, null);
+                            IdeaUtil.showNotification(project, "Update App", String.format("%s App updated successfully with appId: %s", contractName, appId), NotificationType.INFORMATION, null);
                         } else {
                             console.showErrorMessage("Update App failed");
                             IdeaUtil.showNotification(project, "Update App", "Update App failed", NotificationType.ERROR, null);

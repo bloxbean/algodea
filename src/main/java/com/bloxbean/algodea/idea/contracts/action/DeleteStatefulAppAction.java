@@ -8,8 +8,6 @@ import com.bloxbean.algodea.idea.nodeint.model.TxnDetailsParameters;
 import com.bloxbean.algodea.idea.nodeint.service.StatefulContractService;
 import com.intellij.icons.AllIcons;
 
-import java.util.List;
-
 public class DeleteStatefulAppAction extends BaseStatefulAppAction {
 
     public DeleteStatefulAppAction() {
@@ -31,8 +29,8 @@ public class DeleteStatefulAppAction extends BaseStatefulAppAction {
     }
 
     @Override
-    public Result invokeTransaction(StatefulContractService sfService, Long appId, Account fromAccount,
+    public Result invokeTransaction(StatefulContractService sfService, Long appId, Account signer, Address sender,
                                     TxnDetailsParameters txnDetailsParameters, RequestMode requestMode) throws Exception {
-        return sfService.delete(appId, fromAccount, txnDetailsParameters, requestMode);
+        return sfService.delete(appId, signer, sender, txnDetailsParameters, requestMode);
     }
 }

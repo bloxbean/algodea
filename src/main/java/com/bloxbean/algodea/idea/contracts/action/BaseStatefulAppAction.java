@@ -53,7 +53,7 @@ public abstract class  BaseStatefulAppAction extends BaseTxnAction {
         return "Application - " + getTxnCommand();
     }
 
-    public abstract Result invokeTransaction(StatefulContractService statefulContractService, Long appId, Account fromAccount,
+    public abstract Result invokeTransaction(StatefulContractService statefulContractService, Long appId, Account signer, Address sender,
                                              TxnDetailsParameters txnDetailsParameters, RequestMode requestMode) throws Exception;
 
     @Override
@@ -102,7 +102,16 @@ public abstract class  BaseStatefulAppAction extends BaseTxnAction {
             AppTxnDetailsEntryForm appTxnDetailsEntryForm = dialog.getAppTxnDetailsEntryForm();
 
             final Long appId = appBaseEntryForm.getAppId();
-            Account fromAccount = appBaseEntryForm.getFromAccount();
+
+            Account signerAccount = appBaseEntryForm.getFromAccount();
+            Address senderAddress = appBaseEntryForm.getFromAddress();
+            if (senderAddress == null ||
+                    (signerAccount == null && RequestMode.EXPORT_UNSIGNED != dialog.getRequestMode())) {
+                console.showErrorMessage("Invalid or null from account.");
+                console.showErrorMessage(getTxnCommand() + " Failed");
+                return;
+            }
+
             List<byte[]> appArgs = appTxnDetailsEntryForm.getArgsAsBytes();
 
             List<Address> accounts = appTxnDetailsEntryForm.getAccounts();
@@ -144,9 +153,9 @@ public abstract class  BaseStatefulAppAction extends BaseTxnAction {
                 public void run(@NotNull ProgressIndicator indicator) {
                     console.showInfoMessage(String.format("Starting %s transaction ...", getTxnCommand()));
                     try {
-                        Result result = invokeTransaction(sfService, appId, fromAccount, txnDetailsParameters, requestMode);
+                        Result result = invokeTransaction(sfService, appId, signerAccount, senderAddress, txnDetailsParameters, requestMode);
 
-                        String fromAccountAddress = fromAccount != null ? fromAccount.getAddress().toString(): "";
+                        String fromAccountAddress = senderAddress != null ? senderAddress.toString(): "";
 
                         if(requestMode == null || requestMode.equals(RequestMode.TRANSACTION)) {
                             if (result.isSuccessful()) {

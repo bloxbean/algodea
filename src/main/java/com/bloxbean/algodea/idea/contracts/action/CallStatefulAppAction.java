@@ -1,6 +1,7 @@
 package com.bloxbean.algodea.idea.contracts.action;
 
 import com.algorand.algosdk.account.Account;
+import com.algorand.algosdk.crypto.Address;
 import com.bloxbean.algodea.idea.nodeint.common.RequestMode;
 import com.bloxbean.algodea.idea.nodeint.model.Result;
 import com.bloxbean.algodea.idea.nodeint.model.TxnDetailsParameters;
@@ -29,8 +30,8 @@ public class CallStatefulAppAction extends BaseStatefulAppAction {
     }
 
     @Override
-    public Result invokeTransaction(StatefulContractService sfService, Long appId, Account fromAccount,
+    public Result invokeTransaction(StatefulContractService sfService, Long appId, Account signer, Address sender,
                                     TxnDetailsParameters txnDetailsParameters, RequestMode requestMode) throws Exception {
-        return sfService.call(appId, fromAccount, txnDetailsParameters, requestMode);
+        return sfService.call(appId, signer, sender, txnDetailsParameters, requestMode);
     }
 }

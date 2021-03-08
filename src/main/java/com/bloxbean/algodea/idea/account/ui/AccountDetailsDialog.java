@@ -233,7 +233,7 @@ public class AccountDetailsDialog extends DialogWrapper {
                     try {
                         com.algorand.algosdk.account.Account account = new com.algorand.algosdk.account.Account(algoAccount.getMnemonic());
 
-                        Result result = statefulContractService.delete(appId, account, new TxnDetailsParameters(), RequestMode.TRANSACTION);
+                        Result result = statefulContractService.delete(appId, account, account.getAddress(), new TxnDetailsParameters(), RequestMode.TRANSACTION);
                         if (result != null && result.isSuccessful()) {
                             showMessage("Application deleted successfully, App Id: " + appId, "Application Delete", false);
                             createdAppsCB.removeItem(appId);
