@@ -30,11 +30,11 @@ public class AssetTransactionService extends AlgoBaseService {
         super(project, logListener);
     }
 
-    public Result<Long> createAsset(Account sender, AssetTxnParameters assetTxnParameters, TxnDetailsParameters txnDetailsParameters, RequestMode requestMode) throws Exception {
+    public Result<Long> createAsset(Account signer, Address sender, AssetTxnParameters assetTxnParameters, TxnDetailsParameters txnDetailsParameters, RequestMode requestMode) throws Exception {
         AssetCreateTransactionBuilder builder = Transaction.AssetCreateTransactionBuilder();
 
         populateAssetCreateTransaction(builder, assetTxnParameters);
-        builder = (AssetCreateTransactionBuilder) populateBaseTransactionDetails(builder, sender.getAddress(), txnDetailsParameters);
+        builder = (AssetCreateTransactionBuilder) populateBaseTransactionDetails(builder, sender, txnDetailsParameters);
 
         if (builder == null) {
             logListener.error("Transaction could not be built");
@@ -42,10 +42,12 @@ public class AssetTransactionService extends AlgoBaseService {
         }
 
         Transaction txn = builder.build();
-
-        SignedTransaction signTxn = signTransaction((transaction -> {
-            return sender.signTransaction(transaction);
-        }), txn);
+        SignedTransaction signTxn = null;
+        if(signer != null) {
+            signTxn = signTransaction((transaction -> {
+                return signer.signTransaction(transaction);
+            }), txn);
+        }
 
         if (requestMode == null || requestMode.equals(RequestMode.TRANSACTION)) {
             PendingTransactionResponse transactionResponse = postTransaction(signTxn);
@@ -69,7 +71,7 @@ public class AssetTransactionService extends AlgoBaseService {
         }
     }
 
-    public Result modifyAsset(Account sender, AssetTxnParameters finalAssetTxnPrameters, TxnDetailsParameters txnDetailsParameters, RequestMode requestMode) throws Exception {
+    public Result modifyAsset(Account signer, Address sender, AssetTxnParameters finalAssetTxnPrameters, TxnDetailsParameters txnDetailsParameters, RequestMode requestMode) throws Exception {
         AssetConfigureTransactionBuilder builder = Transaction.AssetConfigureTransactionBuilder();
 
         builder.strictEmptyAddressChecking(false);
@@ -79,7 +81,7 @@ public class AssetTransactionService extends AlgoBaseService {
                 .freeze(finalAssetTxnPrameters.freezeAddress)
                 .clawback(finalAssetTxnPrameters.clawbackAddress);
 
-        builder = (AssetConfigureTransactionBuilder) populateBaseTransactionDetails(builder, sender.getAddress(), txnDetailsParameters);
+        builder = (AssetConfigureTransactionBuilder) populateBaseTransactionDetails(builder, sender, txnDetailsParameters);
 
         if (builder == null) {
             logListener.error("Transaction could not be built");
@@ -88,25 +90,29 @@ public class AssetTransactionService extends AlgoBaseService {
 
         Transaction txn = builder.build();
 
-        SignedTransaction signTxn = signTransaction((transaction -> {
-            return sender.signTransaction(transaction);
-        }), txn);
+        SignedTransaction signTxn = null;
+        if(signer != null) {
+            signTxn = signTransaction((transaction -> {
+                return signer.signTransaction(transaction);
+            }), txn);
+        }
 
         return processAssetTransaction(finalAssetTxnPrameters, requestMode, txn, signTxn);
     }
 
-    public Result optInAsset(Account sender, AssetTxnParameters finalAssetTxnPrameters, TxnDetailsParameters txnDetailsParameters, RequestMode requestMode) throws Exception {
-        if(sender == null) {
-            logListener.error("Sender cannot be null");
+    public Result optInAsset(Account signer, Address sender, AssetTxnParameters finalAssetTxnPrameters, TxnDetailsParameters txnDetailsParameters, RequestMode requestMode) throws Exception {
+        if((signer == null && sender == null)
+            || (signer == null && !requestMode.equals(RequestMode.EXPORT_UNSIGNED))) {
+            logListener.error("Invalid sender or mnemonic phrase");
             return Result.error();
         }
 
         AssetAcceptTransactionBuilder builder = Transaction.AssetAcceptTransactionBuilder();
 
-        builder = (AssetAcceptTransactionBuilder) populateBaseTransactionDetails(builder, sender.getAddress(), txnDetailsParameters);
+        builder = (AssetAcceptTransactionBuilder) populateBaseTransactionDetails(builder, sender, txnDetailsParameters);
 
         builder.assetIndex(finalAssetTxnPrameters.assetId)
-                .acceptingAccount(sender.getAddress());
+                .acceptingAccount(sender);
 
         if (builder == null) {
             logListener.error("Transaction could not be built");
@@ -115,22 +121,26 @@ public class AssetTransactionService extends AlgoBaseService {
 
         Transaction txn = builder.build();
 
-        SignedTransaction signTxn = signTransaction((transaction -> {
-            return sender.signTransaction(transaction);
-        }), txn);
+        SignedTransaction signTxn = null;
+        if(signer != null) {
+            signTxn = signTransaction((transaction -> {
+                return signer.signTransaction(transaction);
+            }), txn);
+        }
 
         return processAssetTransaction(finalAssetTxnPrameters, requestMode, txn, signTxn);
     }
 
-    public Result freezeAsset(Account sender, AssetTxnParameters finalAssetTxnPrameters, TxnDetailsParameters txnDetailsParameters, RequestMode requestMode) throws Exception {
-        if(sender == null) {
-            logListener.error("Sender cannot be null");
+    public Result freezeAsset(Account signer, Address sender, AssetTxnParameters finalAssetTxnPrameters, TxnDetailsParameters txnDetailsParameters, RequestMode requestMode) throws Exception {
+        if((signer == null && sender == null)
+                || (signer == null && !requestMode.equals(RequestMode.EXPORT_UNSIGNED))) {
+            logListener.error("Invalid sender or mnemonic phrase");
             return Result.error();
         }
 
         AssetFreezeTransactionBuilder builder = Transaction.AssetFreezeTransactionBuilder();
 
-        builder = (AssetFreezeTransactionBuilder) populateBaseTransactionDetails(builder, sender.getAddress(), txnDetailsParameters);
+        builder = (AssetFreezeTransactionBuilder) populateBaseTransactionDetails(builder, sender, txnDetailsParameters);
 
         builder.assetIndex(finalAssetTxnPrameters.assetId)
                 .freezeTarget(finalAssetTxnPrameters.freezeTarget)
@@ -143,22 +153,26 @@ public class AssetTransactionService extends AlgoBaseService {
 
         Transaction txn = builder.build();
 
-        SignedTransaction signTxn = signTransaction((transaction -> {
-            return sender.signTransaction(transaction);
-        }), txn);
+        SignedTransaction signTxn = null;
+        if(signer != null) {
+            signTxn = signTransaction((transaction -> {
+                return signer.signTransaction(transaction);
+            }), txn);
+        }
 
         return processAssetTransaction(finalAssetTxnPrameters, requestMode, txn, signTxn);
     }
 
-    public Result unfreezeAsset(Account sender, AssetTxnParameters finalAssetTxnPrameters, TxnDetailsParameters txnDetailsParameters, RequestMode requestMode) throws Exception {
-        if(sender == null) {
-            logListener.error("Sender cannot be null");
+    public Result unfreezeAsset(Account signer, Address sender, AssetTxnParameters finalAssetTxnPrameters, TxnDetailsParameters txnDetailsParameters, RequestMode requestMode) throws Exception {
+        if((signer == null && sender == null)
+                || (signer == null && !requestMode.equals(RequestMode.EXPORT_UNSIGNED))) {
+            logListener.error("Invalid sender or mnemonic phrase");
             return Result.error();
         }
 
         AssetFreezeTransactionBuilder builder = Transaction.AssetFreezeTransactionBuilder();
 
-        builder = (AssetFreezeTransactionBuilder) populateBaseTransactionDetails(builder, sender.getAddress(), txnDetailsParameters);
+        builder = (AssetFreezeTransactionBuilder) populateBaseTransactionDetails(builder, sender, txnDetailsParameters);
 
         builder.assetIndex(finalAssetTxnPrameters.assetId)
                 .freezeTarget(finalAssetTxnPrameters.freezeTarget)
@@ -171,22 +185,26 @@ public class AssetTransactionService extends AlgoBaseService {
 
         Transaction txn = builder.build();
 
-        SignedTransaction signTxn = signTransaction((transaction -> {
-            return sender.signTransaction(transaction);
-        }), txn);
+        SignedTransaction signTxn = null;
+        if(signer != null) {
+            signTxn = signTransaction((transaction -> {
+                return signer.signTransaction(transaction);
+            }), txn);
+        }
 
         return processAssetTransaction(finalAssetTxnPrameters, requestMode, txn, signTxn);
     }
 
-    public Result revokeAsset(Account sender, AssetTxnParameters finalAssetTxnPrameters, TxnDetailsParameters txnDetailsParameters, RequestMode requestMode) throws Exception {
-        if(sender == null) {
-            logListener.error("Sender cannot be null");
+    public Result revokeAsset(Account signer, Address sender, AssetTxnParameters finalAssetTxnPrameters, TxnDetailsParameters txnDetailsParameters, RequestMode requestMode) throws Exception {
+        if((signer == null && sender == null)
+                || (signer == null && !requestMode.equals(RequestMode.EXPORT_UNSIGNED))) {
+            logListener.error("Invalid sender or mnemonic phrase");
             return Result.error();
         }
 
         AssetClawbackTransactionBuilder builder = Transaction.AssetClawbackTransactionBuilder();
 
-        builder = (AssetClawbackTransactionBuilder) populateBaseTransactionDetails(builder, sender.getAddress(), txnDetailsParameters);
+        builder = (AssetClawbackTransactionBuilder) populateBaseTransactionDetails(builder, sender, txnDetailsParameters);
 
         builder.assetIndex(finalAssetTxnPrameters.assetId)
                 .assetClawbackFrom(finalAssetTxnPrameters.revokeAddress)
@@ -200,22 +218,26 @@ public class AssetTransactionService extends AlgoBaseService {
 
         Transaction txn = builder.build();
 
-        SignedTransaction signTxn = signTransaction((transaction -> {
-            return sender.signTransaction(transaction);
-        }), txn);
+        SignedTransaction signTxn = null;
+        if(signer != null) {
+            signTxn = signTransaction((transaction -> {
+                return signer.signTransaction(transaction);
+            }), txn);
+        }
 
         return processAssetTransaction(finalAssetTxnPrameters, requestMode, txn, signTxn);
     }
 
-    public Result destroyAsset(Account sender, AssetTxnParameters finalAssetTxnPrameters, TxnDetailsParameters txnDetailsParameters, RequestMode requestMode) throws Exception {
-        if(sender == null) {
-            logListener.error("Sender cannot be null");
+    public Result destroyAsset(Account signer, Address sender, AssetTxnParameters finalAssetTxnPrameters, TxnDetailsParameters txnDetailsParameters, RequestMode requestMode) throws Exception {
+        if((signer == null && sender == null)
+                || (signer == null && !requestMode.equals(RequestMode.EXPORT_UNSIGNED))) {
+            logListener.error("Invalid sender or mnemonic phrase");
             return Result.error();
         }
 
         AssetDestroyTransactionBuilder builder = Transaction.AssetDestroyTransactionBuilder();
 
-        builder = (AssetDestroyTransactionBuilder) populateBaseTransactionDetails(builder, sender.getAddress(), txnDetailsParameters);
+        builder = (AssetDestroyTransactionBuilder) populateBaseTransactionDetails(builder, sender, txnDetailsParameters);
 
         builder.assetIndex(finalAssetTxnPrameters.assetId);
 
@@ -226,22 +248,21 @@ public class AssetTransactionService extends AlgoBaseService {
 
         Transaction txn = builder.build();
 
-        SignedTransaction signTxn = signTransaction((transaction -> {
-            return sender.signTransaction(transaction);
-        }), txn);
+        SignedTransaction signTxn = null;
+        if(signer != null) {
+            signTxn = signTransaction((transaction -> {
+                return signer.signTransaction(transaction);
+            }), txn);
+        }
 
         return processAssetTransaction(finalAssetTxnPrameters, requestMode, txn, signTxn);
     }
 
     public Result assetTransfer(Account signer, Address sender, String receiver, AccountAsset asset, BigInteger amount,
                                 TxnDetailsParameters txnDetailsParameters, RequestMode requestMode) throws Exception {
-        if(signer == null && sender == null) {
-            logListener.error("Sender cannot be null");
-            return Result.error();
-        }
-
-        if(signer == null && !requestMode.equals(RequestMode.EXPORT_UNSIGNED)) {
-            logListener.error("Signing account cannot be null");
+        if((signer == null && sender == null)
+                || (signer == null && !requestMode.equals(RequestMode.EXPORT_UNSIGNED))) {
+            logListener.error("Invalid sender or mnemonic phrase");
             return Result.error();
         }
 

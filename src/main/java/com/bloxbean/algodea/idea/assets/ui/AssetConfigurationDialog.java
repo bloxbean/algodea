@@ -345,7 +345,7 @@ public class AssetConfigurationDialog extends TxnDialogWrapper {
                 }
             }
         }
-        
+
         //If freeze or unfreeze action, set freeze address
         if(AssetActionType.FREEZE.equals(actionType) || AssetActionType.UNFREEZE.equals(actionType)) {
             if (!StringUtil.isEmpty(asset.params.freeze)) {
@@ -596,8 +596,12 @@ public class AssetConfigurationDialog extends TxnDialogWrapper {
         return transactionDtlsEntryForm;
     }
 
-    public Account getCreatorAddress() {
+    public Account getSignerAccount() {
         return senderAddressInputForm.getAccount();
+    }
+
+    public Address getSignerAddress() {
+        return senderAddressInputForm.getAddress();
     }
 
     public Address getManagerAddress() {

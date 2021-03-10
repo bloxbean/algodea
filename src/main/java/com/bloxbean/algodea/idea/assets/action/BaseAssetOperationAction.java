@@ -1,6 +1,7 @@
 package com.bloxbean.algodea.idea.assets.action;
 
 import com.algorand.algosdk.account.Account;
+import com.algorand.algosdk.crypto.Address;
 import com.bloxbean.algodea.idea.assets.ui.AssetConfigurationDialog;
 import com.bloxbean.algodea.idea.core.action.BaseTxnAction;
 import com.bloxbean.algodea.idea.nodeint.common.RequestMode;
@@ -60,10 +61,11 @@ public abstract class BaseAssetOperationAction extends BaseTxnAction {
             IdeaUtil.showNotification(project, getTitle(), "error getting asset modification parameters", NotificationType.ERROR, null);
         }
 
-        Account senderAccount = dialog.getCreatorAddress(); //creator here is manager
-
-        if(senderAccount == null) {
-            console.showErrorMessage("Sender account cannot be empty");
+        Account signerAccount = dialog.getSignerAccount(); //creator here is manager
+        Address senderAddress = dialog.getSignerAddress();
+        if (senderAddress == null ||
+                (signerAccount == null && RequestMode.EXPORT_UNSIGNED != dialog.getRequestMode())) {
+            console.showErrorMessage("Sender account cannot be empty or invalid mnemonic phrase.");
             IdeaUtil.showNotification(project, getTitle(), "Sender account cannot be empty", NotificationType.WARNING, null);
             return;
         }
@@ -84,7 +86,7 @@ public abstract class BaseAssetOperationAction extends BaseTxnAction {
                 public void run(@NotNull ProgressIndicator indicator) {
                     console.showInfoMessage(String.format("Starting %s ...\n", getTxnCommand()));
                     try {
-                        Result result = invokeAssetOperation(assetTransactionService, senderAccount, finalAssetTxnPrameters, txnDetailsParameters, requestMode);
+                        Result result = invokeAssetOperation(assetTransactionService, signerAccount, senderAddress, finalAssetTxnPrameters, txnDetailsParameters, requestMode);
 
                         if(requestMode.equals(RequestMode.TRANSACTION)) {
                             if (result.isSuccessful()) {
@@ -121,6 +123,6 @@ public abstract class BaseAssetOperationAction extends BaseTxnAction {
 
     protected abstract AssetActionType getActionType();
 
-    protected abstract Result invokeAssetOperation(AssetTransactionService assetTransactionService, Account sender, AssetTxnParameters finalAssetTxnPrameters, TxnDetailsParameters txnDetailsParameters, RequestMode requestMode) throws Exception;
+    protected abstract Result invokeAssetOperation(AssetTransactionService assetTransactionService, Account signer, Address sender, AssetTxnParameters finalAssetTxnPrameters, TxnDetailsParameters txnDetailsParameters, RequestMode requestMode) throws Exception;
 
 }

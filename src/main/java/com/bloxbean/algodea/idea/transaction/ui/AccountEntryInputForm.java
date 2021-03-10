@@ -1,6 +1,7 @@
 package com.bloxbean.algodea.idea.transaction.ui;
 
 import com.algorand.algosdk.account.Account;
+import com.algorand.algosdk.crypto.Address;
 import com.bloxbean.algodea.idea.account.model.AlgoAccount;
 import com.bloxbean.algodea.idea.account.model.AlgoMultisigAccount;
 import com.bloxbean.algodea.idea.account.service.AccountChooser;
@@ -13,6 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.security.NoSuchAlgorithmException;
 
 public class AccountEntryInputForm {
     private JPanel mainPanel;
@@ -131,6 +133,20 @@ public class AccountEntryInputForm {
             return account;
         } catch (Exception e) {
             return null;
+        }
+    }
+
+    public Address getAddress() {
+        Account account = getAccount();
+        if(account != null) {
+            return account.getAddress();
+        } else {
+            String address = accountTf.getText().trim();
+            try {
+                return new Address(address);
+            } catch (NoSuchAlgorithmException e) {
+                return null;
+            }
         }
     }
 

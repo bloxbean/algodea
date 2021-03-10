@@ -1,6 +1,7 @@
 package com.bloxbean.algodea.idea.assets.action;
 
 import com.algorand.algosdk.account.Account;
+import com.algorand.algosdk.crypto.Address;
 import com.bloxbean.algodea.idea.assets.service.AssetCacheService;
 import com.bloxbean.algodea.idea.assets.ui.AssetConfigurationDialog;
 import com.bloxbean.algodea.idea.core.action.BaseTxnAction;
@@ -62,10 +63,11 @@ public class AssetCreateAction extends BaseTxnAction {
             IdeaUtil.showNotification(project, getTitle(), "error getting asset creation parameters", NotificationType.ERROR, null);
         }
 
-        Account creatorAccount = dialog.getCreatorAddress();
-
-        if(creatorAccount == null) {
-            console.showErrorMessage("Creator account cannot be empty");
+        Account creatorAccount = dialog.getSignerAccount();
+        Address creatorAddress = dialog.getSignerAddress();
+        if (creatorAddress == null ||
+                (creatorAccount == null && RequestMode.EXPORT_UNSIGNED != dialog.getRequestMode())) {
+            console.showErrorMessage("Creator account cannot be empty or invalid mnemonic phrase.");
             IdeaUtil.showNotification(project, getTitle(), "Creator account cannot be empty", NotificationType.WARNING, null);
             return;
         }
@@ -86,7 +88,7 @@ public class AssetCreateAction extends BaseTxnAction {
                 public void run(@NotNull ProgressIndicator indicator) {
                     console.showInfoMessage(String.format("Starting %s ...\n", getTxnCommand()));
                     try {
-                        Result<Long> result = assetTransactionService.createAsset(creatorAccount, finalAssetTxnPrameters, txnDetailsParameters, requestMode);
+                        Result<Long> result = assetTransactionService.createAsset(creatorAccount, creatorAddress, finalAssetTxnPrameters, txnDetailsParameters, requestMode);
 
                         if(requestMode.equals(RequestMode.TRANSACTION)) {
                             if (result != null && result.getValue() != null) {
