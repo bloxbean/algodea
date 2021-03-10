@@ -1,3 +1,5 @@
+### 0.3.3
+  - Fixes : Enable "Export txn" for read-only accounts [#7, #8, #9]
 ### 0.3.2
   - Support ASA in Logic Sig Send Transaction UI
   - Opt-In Asset transaction using a Logic Sig 
