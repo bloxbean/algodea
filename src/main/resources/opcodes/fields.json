@@ -289,7 +289,45 @@
       "note": "The new frozen value, 0 or 1. LogicSigVersion >= 2."
     }
   ],
-  "type_enum_mapping": [
+  "oncomplete": [
+    {
+      "index": 0,
+      "name": "NoOp",
+      "type": "NoOp",
+      "desc": "NoOp"
+    },
+    {
+      "index": 1,
+      "name": "OptIn",
+      "type": "OptIn",
+      "desc": "OptIn"
+    },
+    {
+      "index": 2,
+      "name": "CloseOut",
+      "type": "CloseOut",
+      "desc": "CloseOut"
+    },
+    {
+      "index": 3,
+      "name": "ClearState",
+      "type": "ClearState",
+      "desc": "ClearState"
+    },
+    {
+      "index": 4,
+      "name": "UpdateApplication",
+      "type": "UpdateApplication",
+      "desc": "UpdateApplication"
+    },
+    {
+      "index": 5,
+      "name": "DeleteApplication",
+      "type": "DeleteApplication",
+      "desc": "DeleteApplication"
+    }
+  ],
+  "typeenum_constants": [
     {
       "index": 0,
       "name": "unknown",
@@ -298,37 +336,37 @@
     },
     {
       "index": 1,
-      "name": "pay",
+      "name": "Payment",
       "type": "pay",
       "desc": "Payment"
     },
     {
       "index": 2,
-      "name": "keyreg",
+      "name": "KeyRegistration",
       "type": "keyreg",
       "desc": "KeyRegistration"
     },
     {
       "index": 3,
-      "name": "acfg",
+      "name": "AssetConfig",
       "type": "acfg",
       "desc": "AssetConfig"
     },
     {
       "index": 4,
-      "name": "axfer",
+      "name": "AssetTransfer",
       "type": "axfer",
       "desc": "AssetTransfer"
     },
     {
       "index": 5,
-      "name": "afrz",
+      "name": "AssetFreeze",
       "type": "afrz",
       "desc": "AssetFreeze"
     },
     {
       "index": 6,
-      "name": "appl",
+      "name": "ApplicationCall",
       "type": "appl",
       "desc": "ApplicationCall"
     }

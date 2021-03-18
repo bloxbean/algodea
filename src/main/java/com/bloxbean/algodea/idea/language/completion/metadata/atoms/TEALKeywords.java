@@ -39,10 +39,11 @@ public final class TEALKeywords {
     public final static LookupElement PRAGMA_LINE = new TEALKeywordElement("#pragma version 2").getLookupElement();
 
     public final static String TXN_FIELDS = "txn_fields";
-    public final static String TYPE_ENUM_MAPPING = "type_enum_mapping";
+    public final static String TYPE_ENUM_MAPPING = "typeenum_constants";
     public final static String GLOBAL_FIELDS = "global_fields";
     public final static String ASSET_HOLDING_GET_FIELDS = "asset_holding_get_fields";
     public final static String ASSET_PARAMS_GET_FIELDS = "asset_params_get_fields";
+    public final static String ONCOMPLETE_CONSTANTS = "oncomplete";
 
 //    public static final Collection<String> LOADING_OPERATIONS = Sets.newHashSet(
 //            "intcblock", "intc", "intc_0", "intc_1", "intc_2", "intc_3", "bytecblock", "bytec", "bytec_0"
@@ -128,7 +129,7 @@ public final class TEALKeywords {
             .map(f -> new TEALFieldElement(f))
             .collect(Collectors.toList());
 
-    public static final List<LookupElement> TYPE_ENUM_MAPPING_ELEMENTS = TEALOpCodeFactory.getInstance()
+    public static final List<LookupElement> TYPEENUM_CONSTANT_ELEMENTS = TEALOpCodeFactory.getInstance()
             .getFields(TYPE_ENUM_MAPPING)
             .stream()
             .map(f -> new TEALFieldElement(f))
@@ -155,5 +156,13 @@ public final class TEALKeywords {
             .map(f -> new TEALFieldElement(f))
             .map(TEALFieldElement::getLookupElement)
             .collect(Collectors.toList());
+
+    public static final List<LookupElement> ONCOMPLETE_CONSTANT_ELEMENTS = TEALOpCodeFactory.getInstance()
+            .getFields(ONCOMPLETE_CONSTANTS)
+            .stream()
+            .map(f -> new TEALFieldElement(f))
+            .map(TEALFieldElement::getLookupElement)
+            .collect(Collectors.toList());
+
 
 }
