@@ -8,6 +8,7 @@ import com.bloxbean.algodea.idea.util.ByteUtil;
 import com.twelvemonkeys.lang.StringUtil;
 
 import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 
@@ -22,8 +23,7 @@ public class ArgTypeToByteConverter {
                 return value.getBytes(StandardCharsets.UTF_8);
             } else if (type == ArgType.Integer) {
                 try {
-                    int intVal = Integer.parseInt(value);
-                    return ByteUtil.intToBytes(intVal);
+                    return ByteUtil.bigIntegerToBytes(new BigInteger(value), 8);
                 } catch (NumberFormatException ex) {
                     throw new InvalidInputParamException("Invalid Argument value for integer type : " + value);
                 }
