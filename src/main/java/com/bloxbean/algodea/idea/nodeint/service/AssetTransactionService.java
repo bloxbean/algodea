@@ -313,7 +313,7 @@ public class AssetTransactionService extends AlgoBaseService {
         }
     }
 
-    public Result logicSigAssetTransfer(Address sender, String receiver, AccountAsset asset, BigInteger amount,
+    public Result logicSigAssetTransfer(Address sender, String receiver, AccountAsset asset, BigInteger amount, Address closeReminderTo,
                                         TxnDetailsParameters txnDetailsParameters, byte[] sourceBytes, RequestMode requestMode, TransactionSigner txnSigner) throws Exception {
         if(sender == null) {
             logListener.error("Sender cannot be null");
@@ -341,6 +341,9 @@ public class AssetTransactionService extends AlgoBaseService {
                 .assetAmount(amount)
                 .assetReceiver(receiver)
                 .sender(sender);
+
+        if(closeReminderTo != null)
+            builder.assetCloseTo(closeReminderTo);
 
         if (builder == null) {
             logListener.error("Transaction could not be built");

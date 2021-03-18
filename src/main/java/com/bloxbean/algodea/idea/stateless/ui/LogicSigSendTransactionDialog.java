@@ -65,6 +65,8 @@ public class LogicSigSendTransactionDialog extends TxnDialogWrapper {
     private JLabel unitLabel;
     private JButton fetchAssetsBtn;
     private JButton receiverMultiSigBtn;
+    private JTextField closeReminderTo;
+    private JButton closeReminderAccountChooserBtn;
     private JTextField senderLogSigTf;
 
     private ButtonGroup contractType;
@@ -184,6 +186,16 @@ public class LogicSigSendTransactionDialog extends TxnDialogWrapper {
         });
 
         unitLabel.setText(ALGO);
+
+        closeReminderTo.setToolTipText("<html>When set, it indicates that the transaction is requesting that the Sender account<br/>" +
+                " should be closed, and all remaining funds,<br/>" +
+                " after the fee and amount are paid, be transferred to this address.</html>");
+        closeReminderAccountChooserBtn.addActionListener(e -> {
+            AlgoAccount algoAccount = AccountChooser.getSelectedAccount(project, true);
+            if(algoAccount != null) {
+                closeReminderTo.setText(algoAccount.getAddress());
+            }
+        });
     }
 
     private void loadLogicSigFile(String lsigPath) {
@@ -381,6 +393,15 @@ public class LogicSigSendTransactionDialog extends TxnDialogWrapper {
         }
     }
 
+    public Address getCloseReminderTo() throws Exception {
+        String closeReminderToAdd = StringUtil.trim(closeReminderTo.getText());
+        if(StringUtil.isEmpty(closeReminderToAdd))
+            return null;
+
+        Address address = new Address(closeReminderToAdd);
+        return address;
+    }
+
     public TransactionDtlsEntryForm getTransactionDtlsEntryForm() {
         return transactionDtlsEntryForm;
     }
@@ -405,6 +426,12 @@ public class LogicSigSendTransactionDialog extends TxnDialogWrapper {
 
         if(!isAlgoTransfer() && getAssetId() == null) {
             return new ValidationInfo("Please select a valid asset", assetsCB);
+        }
+
+        try {
+            getCloseReminderTo();
+        } catch (Exception e) {
+            return new ValidationInfo("Invalid Close Reminder To address", closeReminderTo);
         }
 
         return transactionDtlsEntryForm.doValidate();
