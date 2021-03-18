@@ -36,14 +36,14 @@ FLOWCONTROL_OP=(err|return|pop|dup|dup2|bnz|bz|b)
 STATEACCESS_OP=(balance|app_opted_in|app_local_get|app_local_get_ex|app_global_get|app_global_get_ex|app_local_put|app_global_put|app_local_del|app_global_del|asset_holding_get|asset_params_get)
 TXN_LOADING_OP=(txn|gtxn|txna|gtxna)
 NAMED_INTEGER_CONSTANT=(NoOp|OptIn|CloseOut|ClearState|UpdateApplication|DeleteApplication)
-TYPENUM_CONSTANT=(unknown|pay|keyreg|acfg|axfer|afrz|appl)
+TYPENUM_CONSTANT=(unknown|pay|keyreg|acfg|axfer|afrz|appl|Unknown|Payment|KeyRegistration|AssetConfig|AssetTransfer|AssetFreeze|ApplicationCall)
 GLOBAL_FIELD=(MinTxnFee|MinBalance|MaxTxnLife|ZeroAddress|GroupSize|LogicSigVersion|Round|LatestTimestamp|CurrentApplicationID)
 ASSET_HOLDING_GET_FIELD=(AssetBalance|AssetFrozen)
 ASSET_PARAMS_GET_FIELD=(AssetTotal|AssetDecimals|AssetDefaultFrozen|AssetUnitName|AssetName|AssetURL|AssetMetadataHash|AssetManager|AssetReserve|AssetFreeze|AssetClawback)
 OCTAL=(0)[0-9]+
 HEX=(0x|0X)[a-fA-F0-9]*
 VAR_TMPL=(VAR_TMPL_)([a-zA-Z0-9_$.#@~?]+)
-ID=([a-zA-Z0-9_$.#@~?]+[a-zA-Z0-9_$.#@~?]*)
+ID=([a-zA-Z0-9_$.#@~?]+[a-zA-Z0-9_$.#@~?-]*)
 BASE32=([A-Z2-7]{8})*([A-Z2-7]{2}={6}|[A-Z2-7]{4}={4}|[A-Z2-7]{5}={3}|[A-Z2-7]{7}=)?
 BASE64=[-A-Za-z0-9+=]{1,50}|=[^=]|={3}
 

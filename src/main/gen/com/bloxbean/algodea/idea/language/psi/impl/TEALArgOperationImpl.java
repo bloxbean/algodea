@@ -21,6 +21,7 @@ public class TEALArgOperationImpl extends ASTWrapperPsiElement implements TEALAr
     visitor.visitArgOperation(this);
   }
 
+  @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof TEALVisitor) accept((TEALVisitor)visitor);
     else super.accept(visitor);

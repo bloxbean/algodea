@@ -21,6 +21,7 @@ public class TEALTxnaLoadingOperationImpl extends ASTWrapperPsiElement implement
     visitor.visitTxnaLoadingOperation(this);
   }
 
+  @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof TEALVisitor) accept((TEALVisitor)visitor);
     else super.accept(visitor);

@@ -21,6 +21,7 @@ public class TEALGtxnOpcodeImpl extends ASTWrapperPsiElement implements TEALGtxn
     visitor.visitGtxnOpcode(this);
   }
 
+  @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof TEALVisitor) accept((TEALVisitor)visitor);
     else super.accept(visitor);

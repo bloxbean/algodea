@@ -80,7 +80,7 @@
     NAMED_INTEGER_CONSTANT = 'regexp:(NoOp|OptIn|CloseOut|ClearState|UpdateApplication|DeleteApplication)'
 
     //TypeEnum constants
-    TYPENUM_CONSTANT = 'regexp:(unknown|pay|keyreg|acfg|axfer|afrz|appl)'
+    TYPENUM_CONSTANT = 'regexp:(unknown|pay|keyreg|acfg|axfer|afrz|appl|Unknown|Payment|KeyRegistration|AssetConfig|AssetTransfer|AssetFreeze|ApplicationCall)'
 
     //Global Fields
     GLOBAL_FIELD        = 'regexp:(MinTxnFee|MinBalance|MaxTxnLife|ZeroAddress|GroupSize|LogicSigVersion|Round|LatestTimestamp|CurrentApplicationID)'
@@ -173,7 +173,7 @@ LoadingOperation ::=  intcblockOperation
                                   | 'intc_1'
                                   | 'intc_2'
                                   | 'intc_3'
-                                  
+
                                   | bytecblockOperation
                                   | bytecOperation
                                   | 'bytec_0'

@@ -150,7 +150,6 @@ public class TEALParser implements PsiParser, LightPsiParser {
   //                                   | 'intc_1'
   //                                   | 'intc_2'
   //                                   | 'intc_3'
-  //                                   
   //                                   | bytecblockOperation
   //                                   | bytecOperation
   //                                   | 'bytec_0'
@@ -913,7 +912,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
     r = consumeTokens(b, 1, PRAGMA_KEYWORD, VERSION);
     p = r; // pin = 1
     r = r && pragma_version(b, l + 1);
-    exit_section_(b, l, m, r, p, statement_recover_parser_);
+    exit_section_(b, l, m, r, p, TEALParser::statement_recover);
     return r || p;
   }
 
@@ -1019,7 +1018,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
     if (!r) r = consumeToken(b, VAR_TMPL);
     if (!r) r = consumeToken(b, NL);
     if (!r) r = consumeToken(b, EOF);
-    exit_section_(b, l, m, r, false, statement_recover_parser_);
+    exit_section_(b, l, m, r, false, TEALParser::statement_recover);
     return r;
   }
 
@@ -1200,9 +1199,4 @@ public class TEALParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  static final Parser statement_recover_parser_ = new Parser() {
-    public boolean parse(PsiBuilder b, int l) {
-      return statement_recover(b, l + 1);
-    }
-  };
 }

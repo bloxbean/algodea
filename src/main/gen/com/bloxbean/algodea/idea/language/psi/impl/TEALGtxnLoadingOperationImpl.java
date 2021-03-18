@@ -21,6 +21,7 @@ public class TEALGtxnLoadingOperationImpl extends ASTWrapperPsiElement implement
     visitor.visitGtxnLoadingOperation(this);
   }
 
+  @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof TEALVisitor) accept((TEALVisitor)visitor);
     else super.accept(visitor);

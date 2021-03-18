@@ -21,6 +21,7 @@ public class TEALPseudoOpImpl extends ASTWrapperPsiElement implements TEALPseudo
     visitor.visitPseudoOp(this);
   }
 
+  @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof TEALVisitor) accept((TEALVisitor)visitor);
     else super.accept(visitor);

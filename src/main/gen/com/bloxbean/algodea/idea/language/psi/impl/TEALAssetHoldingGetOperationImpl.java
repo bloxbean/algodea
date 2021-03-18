@@ -21,6 +21,7 @@ public class TEALAssetHoldingGetOperationImpl extends ASTWrapperPsiElement imple
     visitor.visitAssetHoldingGetOperation(this);
   }
 
+  @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof TEALVisitor) accept((TEALVisitor)visitor);
     else super.accept(visitor);

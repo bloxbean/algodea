@@ -21,6 +21,7 @@ public class TEALIntcblockOperationImpl extends ASTWrapperPsiElement implements 
     visitor.visitIntcblockOperation(this);
   }
 
+  @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof TEALVisitor) accept((TEALVisitor)visitor);
     else super.accept(visitor);
