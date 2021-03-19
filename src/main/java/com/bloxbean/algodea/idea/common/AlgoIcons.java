@@ -31,7 +31,8 @@ public class AlgoIcons {
     public final static Icon TEAL_FILE_ICON = IconLoader.getIcon("/icons/teal_file.png", AlgoIcons.class);
     public final static Icon MODULE_ICON = IconLoader.getIcon("/icons/module.png", AlgoIcons.class);
     public final static Icon OPCODE_ICON = IconLoader.getIcon("/icons/opcode.png", AlgoIcons.class);
-    public static final Icon FIELD_ICON = IconLoader.getIcon("/icons/field.png", AlgoIcons.class);;
+    public static final Icon FIELD_ICON = IconLoader.getIcon("/icons/field.png", AlgoIcons.class);
+    public static final Icon NAMED_INT_CONSTANT_ICON = IconLoader.getIcon("/icons/constant.png  ", AlgoIcons.class);
     public static final Icon LSIG_FILE_ICON = IconLoader.getIcon("/icons/lsig_file.png", AlgoIcons.class);
     public static final Icon TOK_FILE_ICON = IconLoader.getIcon("/icons/tok_file.png", AlgoIcons.class);
     public static final Icon ALGO_TX_ICON = IconLoader.getIcon("/icons/algo_tx.png", AlgoIcons.class);

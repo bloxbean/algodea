@@ -28,6 +28,7 @@ import com.bloxbean.algodea.idea.language.opcode.model.Field;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.util.text.StringUtil;
 
 import java.net.URL;
 import java.util.*;
@@ -132,6 +133,15 @@ public class TEALOpCodeFactory {
         if(typeFields == null) return Collections.EMPTY_LIST;
         else
             return typeFields.values();
+    }
+
+    public Field getField(String type, String fieldText) {
+        if(StringUtil.isEmpty(fieldText)) return null;
+
+        Map<String, Field> typeFields = fields.get(type);
+        if(typeFields == null) return null;
+
+        return typeFields.get(fieldText);
     }
 
 }

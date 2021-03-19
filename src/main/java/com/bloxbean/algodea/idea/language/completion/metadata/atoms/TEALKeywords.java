@@ -22,6 +22,7 @@
 
 package com.bloxbean.algodea.idea.language.completion.metadata.atoms;
 
+import com.bloxbean.algodea.idea.language.completion.metadata.elements.TEALConstantElement;
 import com.bloxbean.algodea.idea.language.completion.metadata.elements.TEALFieldElement;
 import com.bloxbean.algodea.idea.language.completion.metadata.elements.TEALKeywordElement;
 import com.bloxbean.algodea.idea.language.opcode.TEALOpCodeFactory;
@@ -132,8 +133,8 @@ public final class TEALKeywords {
     public static final List<LookupElement> TYPEENUM_CONSTANT_ELEMENTS = TEALOpCodeFactory.getInstance()
             .getFields(TYPE_ENUM_MAPPING)
             .stream()
-            .map(f -> new TEALFieldElement(f))
-            .map(TEALFieldElement::getLookupElement)
+            .map(f -> new TEALConstantElement(f))
+            .map(TEALConstantElement::getLookupElement)
             .collect(Collectors.toList());
 
     public static final List<LookupElement> GLOBAL_FIELDS_ELEMENTS = TEALOpCodeFactory.getInstance()
@@ -160,8 +161,8 @@ public final class TEALKeywords {
     public static final List<LookupElement> ONCOMPLETE_CONSTANT_ELEMENTS = TEALOpCodeFactory.getInstance()
             .getFields(ONCOMPLETE_CONSTANTS)
             .stream()
-            .map(f -> new TEALFieldElement(f))
-            .map(TEALFieldElement::getLookupElement)
+            .map(f -> new TEALConstantElement(f))
+            .map(TEALConstantElement::getLookupElement)
             .collect(Collectors.toList());
 
 

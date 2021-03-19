@@ -50,6 +50,7 @@ public final class NamedIntegerConstantsCompletionProvider extends BaseCompletio
                                   @NotNull CompletionResultSet result) {
         result.addAllElements(TEALKeywords.ONCOMPLETE_CONSTANT_ELEMENTS);
         result.addAllElements(TEALKeywords.TYPEENUM_CONSTANT_ELEMENTS);
+
         result.stopHere();
     }
 }

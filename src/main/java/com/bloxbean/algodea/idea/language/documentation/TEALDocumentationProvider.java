@@ -23,6 +23,7 @@
 package com.bloxbean.algodea.idea.language.documentation;
 
 import com.bloxbean.algodea.idea.language.completion.metadata.atoms.TEALKeywords;
+import com.bloxbean.algodea.idea.language.opcode.model.Field;
 import com.bloxbean.algodea.idea.language.opcode.model.OpCode;
 import com.bloxbean.algodea.idea.language.opcode.TEALOpCodeFactory;
 import com.bloxbean.algodea.idea.language.psi.TEALTypes;
@@ -48,8 +49,20 @@ public class TEALDocumentationProvider extends AbstractDocumentationProvider  {
             TEALTypes.TXN_LOADING_OP,
             TEALTypes.FLOWCONTROL_OP,
             TEALTypes.STATEACCESS_OP,
-            TEALTypes.PSEUDO_OP
+            TEALTypes.PSEUDO_OP,
+            TEALTypes.NAMED_INTEGER_CONSTANT,
+            TEALTypes.TYPENUM_CONSTANT,
+            TEALTypes.GLOBAL_FIELD,
+            TEALTypes.TXN_FIELD_ARG,
+            TEALTypes.ASSET_PARAMS_GET_FIELD,
+            TEALTypes.ASSET_HOLDING_GET_FIELD
     );
+    public static final String ONCOMPLETE = "oncomplete";
+    public static final String TYPEENUM_CONSTANTS = "typeenum_constants";
+    public static final String GLOBAL_FIELDS = "global_fields";
+    public static final String TXN_FIELDS = "txn_fields";
+    public static final String ASSET_PARAMS_GET_FIELDS = "asset_params_get_fields";
+    public static final String ASSET_HOLDING_GET_FIELDS = "asset_holding_get_fields";
 
     static {
         SEARCH_TYPES.addAll(GENERAL_OPERATIONS_ELEMENTS);
@@ -73,9 +86,15 @@ public class TEALDocumentationProvider extends AbstractDocumentationProvider  {
     @Nullable
     @Override
     public String generateDoc(PsiElement element, @Nullable PsiElement originalElement) {
-        Optional<String> opcodeDocumentation = loadingOpcodeDocumentation(element);
-        if (opcodeDocumentation.isPresent()) {
-            return opcodeDocumentation.get();
+        Optional<String> documentation = loadingOpcodeDocumentation(element);
+        if (documentation.isPresent()) {
+            return documentation.get();
+        }
+
+        //Check if Named Integer Constant or TypeEnum Constant
+        documentation = loadFieldDocumentation(element);
+        if(documentation.isPresent()) {
+            return documentation.get();
         }
 
         return null;
@@ -102,6 +121,44 @@ public class TEALDocumentationProvider extends AbstractDocumentationProvider  {
 //            String value = element.getNode().getText();
 //            return TEALDocumentation.OPCODES.lookup(value);
 //        }
+        return Optional.empty();
+    }
+
+    private Optional<String> loadFieldDocumentation(PsiElement element) {
+        if(element == null) return Optional.empty();
+
+        if (TEALTypes.NAMED_INTEGER_CONSTANT.equals(element.getNode().getElementType())) {
+            String value = element.getNode().getText();
+            Field field = TEALOpCodeFactory.getInstance().getField(ONCOMPLETE, value);
+            if(field != null)
+                return field.formatHtml();
+        } else if(TEALTypes.TYPENUM_CONSTANT.equals(element.getNode().getElementType())) {
+            String value = element.getNode().getText();
+            Field field = TEALOpCodeFactory.getInstance().getField(TYPEENUM_CONSTANTS, value);
+            if(field != null)
+                return field.formatHtml();
+        } else if(TEALTypes.GLOBAL_FIELD.equals(element.getNode().getElementType())) {
+            String value = element.getNode().getText();
+            Field field = TEALOpCodeFactory.getInstance().getField(GLOBAL_FIELDS, value);
+            if(field != null)
+                return field.formatHtml();
+        } else if(TEALTypes.TXN_FIELD_ARG.equals(element.getNode().getElementType())) {
+            String value = element.getNode().getText();
+            Field field = TEALOpCodeFactory.getInstance().getField(TXN_FIELDS, value);
+            if(field != null)
+                return field.formatHtml();
+        } else if(TEALTypes.ASSET_PARAMS_GET_FIELD.equals(element.getNode().getElementType())) {
+            String value = element.getNode().getText();
+            Field field = TEALOpCodeFactory.getInstance().getField(ASSET_PARAMS_GET_FIELDS, value);
+            if(field != null)
+                return field.formatHtml();
+        } else if(TEALTypes.ASSET_HOLDING_GET_FIELD.equals(element.getNode().getElementType())) {
+            String value = element.getNode().getText();
+            Field field = TEALOpCodeFactory.getInstance().getField(ASSET_HOLDING_GET_FIELDS, value);
+            if(field != null)
+                return field.formatHtml();
+        }
+
         return Optional.empty();
     }
 

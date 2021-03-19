@@ -1,6 +1,7 @@
 package com.bloxbean.algodea.idea.language.opcode.model;
 
 import java.util.Objects;
+import java.util.Optional;
 
 public class Field {
     private int index;
@@ -80,4 +81,40 @@ public class Field {
                 ", desc='" + desc + '\'' +
                 '}';
     }
+
+    public Optional<String> formatHtml() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<ul>");
+
+        //createLiTag(sb, "Value", String.valueOf(index));
+
+        if(name != null) {
+            createLiTag(sb, "Name", name);
+        }
+
+        if(type != null && !type.isEmpty()) {
+            createLiTag(sb, "Type", type);
+        }
+
+        if(desc != null && !desc.isEmpty()) {
+            createLiTag(sb, null, desc);
+        }
+
+        if(note != null && !note.isEmpty()) {
+            createLiTag(sb, null, note);
+        }
+
+        return Optional.of(sb.toString());
+    }
+
+    private void createLiTag(StringBuilder sb, String key, String value) {
+        sb.append("<li>");
+        if(key != null) {
+            sb.append(key);
+            sb.append(": ");
+        }
+        sb.append(value);
+        sb.append("</li>");
+    }
+
 }

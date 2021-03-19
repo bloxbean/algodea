@@ -294,37 +294,37 @@
       "index": 0,
       "name": "NoOp",
       "type": "NoOp",
-      "desc": "NoOp"
+      "desc": "Only execute the ApprovalProgram associated with this application ID, with no additional effects."
     },
     {
       "index": 1,
       "name": "OptIn",
       "type": "OptIn",
-      "desc": "OptIn"
+      "desc": "Before executing the ApprovalProgram, allocate local state for this application into the sender's account data."
     },
     {
       "index": 2,
       "name": "CloseOut",
       "type": "CloseOut",
-      "desc": "CloseOut"
+      "desc": "After executing the ApprovalProgram, clear any local state for this application out of the sender's account data."
     },
     {
       "index": 3,
       "name": "ClearState",
       "type": "ClearState",
-      "desc": "ClearState"
+      "desc": "Don't execute the ApprovalProgram, and instead execute the ClearStateProgram (which may not reject this transaction). Additionally, clear any local state for this application out of the sender's account data as in CloseOutOC."
     },
     {
       "index": 4,
       "name": "UpdateApplication",
       "type": "UpdateApplication",
-      "desc": "UpdateApplication"
+      "desc": "After executing the ApprovalProgram, replace the ApprovalProgram and ClearStateProgram associated with this application ID with the programs specified in this transaction."
     },
     {
       "index": 5,
       "name": "DeleteApplication",
       "type": "DeleteApplication",
-      "desc": "DeleteApplication"
+      "desc": "After executing the ApprovalProgram, delete the application parameters from the account data of the application's creator."
     }
   ],
   "typeenum_constants": [
