@@ -259,7 +259,7 @@ public class AssetTransactionService extends AlgoBaseService {
     }
 
     public Result assetTransfer(Account signer, Address sender, String receiver, AccountAsset asset, BigInteger amount,
-                                TxnDetailsParameters txnDetailsParameters, RequestMode requestMode) throws Exception {
+                                Address closeReminderTo, TxnDetailsParameters txnDetailsParameters, RequestMode requestMode) throws Exception {
         if((signer == null && sender == null)
                 || (signer == null && !requestMode.equals(RequestMode.EXPORT_UNSIGNED))) {
             logListener.error("Invalid sender or mnemonic phrase");
@@ -287,6 +287,9 @@ public class AssetTransactionService extends AlgoBaseService {
                 .assetAmount(amount)
                 .assetReceiver(receiver)
                 .sender(sender);
+
+        if(closeReminderTo != null)
+            builder.assetCloseTo(closeReminderTo);
 
         if (builder == null) {
             logListener.error("Transaction could not be built");

@@ -137,9 +137,6 @@ public class TransferTxnParamEntryForm {
                 } catch(Exception ex) {
                     console.showErrorMessage("Unable fetch balance", ex);
                 }
-
-                //enable close reminder
-                enableCloseReminderSection(true);
             }
         });
 
@@ -147,9 +144,6 @@ public class TransferTxnParamEntryForm {
             if(otherAssetsRadioButton.isSelected()) {
                 enableOtherAssetPanel(true);
                 setUnitLabel();
-
-                //disable close remninder to
-                enableCloseReminderSection(false);
             }
         });
 
@@ -228,12 +222,6 @@ public class TransferTxnParamEntryForm {
             unitLabel.setText("");
         algoBalanceTf.setText("");
         assetIdComboBoxModel.removeAllElements();
-    }
-
-    private void enableCloseReminderSection(boolean flag) {
-        closeReminderTo.setText("");
-        closeReminderTo.setEnabled(flag);
-        closeReminderAccountChooserBtn.setEnabled(flag);
     }
 
     private void fetchAssetFortheAccount(Project project) {

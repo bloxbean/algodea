@@ -108,7 +108,7 @@ public class TransferAction extends BaseTxnAction {
                             result = transactionService.transfer(signerAccount, fromAddress, toAddress.toString(), amountTuple._2().longValue(),
                                     closeReminderTo, txnDetailsParameters, requestMode);
                         } else { //asset transfer
-                            result = assetTransactionService.assetTransfer(signerAccount, fromAddress, toAddress.toString(), asset, amountTuple._2(), txnDetailsParameters, requestMode);
+                            result = assetTransactionService.assetTransfer(signerAccount, fromAddress, toAddress.toString(), asset, amountTuple._2(), closeReminderTo, txnDetailsParameters, requestMode);
                         }
 
                         processResult(project, module, result, requestMode, logListener);
