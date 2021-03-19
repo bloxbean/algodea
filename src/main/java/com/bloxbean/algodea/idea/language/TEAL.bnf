@@ -273,7 +273,7 @@ StateAccessOperation ::=  'balance' | 'app_opted_in' | 'app_local_get'| 'app_loc
                             | assetParamsGetOperation
 
 assetHoldingGetOperation ::= assetHoldingGetOP (unsignedInteger | ASSET_HOLDING_GET_FIELD | VAR_TMPL) {pin=1}
-assetParamsGetOperation ::=  assetParamsGetOp (unsignedInteger | ASSET_PARAMS_GET_FIELD | VAR_TMPL) {pin=1}
+assetParamsGetOperation ::=  assetParamsGetOp (unsignedInteger | ASSET_PARAMS_GET_FIELD | 'AssetFreeze' | VAR_TMPL) {pin=1}
 assetHoldingGetOP    ::= 'asset_holding_get'
 assetParamsGetOp     ::= 'asset_params_get'
 

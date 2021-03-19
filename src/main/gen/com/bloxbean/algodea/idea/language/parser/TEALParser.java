@@ -408,7 +408,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // assetParamsGetOp (unsignedInteger | ASSET_PARAMS_GET_FIELD | VAR_TMPL)
+  // assetParamsGetOp (unsignedInteger | ASSET_PARAMS_GET_FIELD | 'AssetFreeze' | VAR_TMPL)
   public static boolean assetParamsGetOperation(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "assetParamsGetOperation")) return false;
     boolean r, p;
@@ -420,12 +420,13 @@ public class TEALParser implements PsiParser, LightPsiParser {
     return r || p;
   }
 
-  // unsignedInteger | ASSET_PARAMS_GET_FIELD | VAR_TMPL
+  // unsignedInteger | ASSET_PARAMS_GET_FIELD | 'AssetFreeze' | VAR_TMPL
   private static boolean assetParamsGetOperation_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "assetParamsGetOperation_1")) return false;
     boolean r;
     r = unsignedInteger(b, l + 1);
     if (!r) r = consumeToken(b, ASSET_PARAMS_GET_FIELD);
+    if (!r) r = consumeToken(b, "AssetFreeze");
     if (!r) r = consumeToken(b, VAR_TMPL);
     return r;
   }
