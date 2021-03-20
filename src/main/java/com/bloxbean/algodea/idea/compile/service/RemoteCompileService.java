@@ -1,6 +1,7 @@
 package com.bloxbean.algodea.idea.compile.service;
 
 import com.algorand.algosdk.util.Encoder;
+import com.bloxbean.algodea.idea.common.Tuple;
 import com.bloxbean.algodea.idea.compile.CompileException;
 import com.bloxbean.algodea.idea.configuration.model.NodeInfo;
 import com.bloxbean.algodea.idea.nodeint.service.AlgoBaseService;
@@ -63,7 +64,9 @@ public class RemoteCompileService extends BaseCompileService {
 
         byte[] bytes = code.getBytes(StandardCharsets.UTF_8);
 
-        String result = algoBaseService.compileProgram(bytes);
+        Tuple<String, String> compileResponse = algoBaseService.compileProgram(bytes);
+        String result = compileResponse._1();
+        String hash = compileResponse._2();
 
         if(result == null) {
             failed(compilationResultListener, source, "Compilation Failed", new CompileException("Compilation result is null"));
@@ -77,6 +80,7 @@ public class RemoteCompileService extends BaseCompileService {
                 failed(compilationResultListener, source, "Error writing output to : " + destination, e);
             }
             compilationResultListener.onSuccessful(source, destination);
+            compilationResultListener.onSuccessfulCompile(source, destination, hash);
         }
     }
 }

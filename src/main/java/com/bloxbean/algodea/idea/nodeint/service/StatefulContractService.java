@@ -63,7 +63,7 @@ public class StatefulContractService extends AlgoBaseService {
 
         // compile programs
         logListener.info("Compiling Approval Program ...");
-        String approvalProgramBytes = compileProgram(approvalProgram.getBytes("UTF-8"));
+        String approvalProgramBytes = compileProgram(approvalProgram.getBytes("UTF-8"))._1();
         if(approvalProgramBytes == null) {
             logListener.error("Approval Program compilation failed");
             return null;
@@ -72,7 +72,7 @@ public class StatefulContractService extends AlgoBaseService {
         }
 
         logListener.info("Compiling Clear State Program ...");
-        String clearProgramBytes = compileProgram(clearStateProgram.getBytes("UTF-8"));
+        String clearProgramBytes = compileProgram(clearStateProgram.getBytes("UTF-8"))._1();
 
         if(clearProgramBytes == null) {
             logListener.error("Clear State Program compilation failed");
@@ -100,7 +100,7 @@ public class StatefulContractService extends AlgoBaseService {
 
         // compile programs
         logListener.info("Compiling Approval Program ...");
-        String approvalProgramBytes = compileProgram(approvalProgram.getBytes("UTF-8"));
+        String approvalProgramBytes = compileProgram(approvalProgram.getBytes("UTF-8"))._1();
         if(approvalProgramBytes == null) {
             logListener.error("Approval Program compilation failed");
             return Result.error();
@@ -109,7 +109,7 @@ public class StatefulContractService extends AlgoBaseService {
         }
 
         logListener.info("Compiling Clear State Program ...");
-        String clearProgramBytes = compileProgram(clearStateProgram.getBytes("UTF-8"));
+        String clearProgramBytes = compileProgram(clearStateProgram.getBytes("UTF-8"))._1();
 
         if(clearProgramBytes == null) {
             logListener.error("Clear State Program compilation failed");

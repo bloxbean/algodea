@@ -162,6 +162,12 @@
             <!--            <add-to-group group-id="com.bloxbean.algodea.idea.core.action.AlgoActionGroup"/>-->
         </action>
         <!-- Stateless contract actions -->
+        <action id="com.bloxbean.algodea.idea.stateless.action.TEALSendTransactionAction" class="com.bloxbean.algodea.idea.stateless.action.TEALSendTransactionAction"
+                text="Send Transaction Using TEAL"
+                description="Send Transaction Using TEAL">
+            <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl T" second-keystroke="S"/>
+            <add-to-group group-id="AlgoActionGroup.StatelessContract"/>
+        </action>
         <action id="com.bloxbean.algodea.idea.stateless.action.LogicSigGenerateAction" class="com.bloxbean.algodea.idea.stateless.action.LogicSigGenerateAction"
                 text="Generate Logic Sig"
                 description="Generate Logic Signature">

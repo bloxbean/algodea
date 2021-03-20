@@ -53,6 +53,11 @@ public class ArgsInputForm {
     }
 
     public ValidationInfo doValidate() {
+        try {
+            getArgsAsBytes();
+        } catch (Exception e) {
+            return new ValidationInfo("Invalid argument. " + e.getMessage(), argTf);
+        }
         return null;
     }
 

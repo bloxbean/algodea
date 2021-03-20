@@ -40,6 +40,10 @@ public class LogicSigTransactionService extends TransactionService {
 
         byte[] logicSigBytes = FileUtil.loadFileBytes(new File(lsigPath));
 
+        return logicSigTransaction(logicSigBytes, sender, receiver, asset, amount, closeReminderTo, txnDetailsParameters, requestMode);
+    }
+
+    public Result logicSigTransaction(byte[] logicSigBytes, Address sender, Address receiver, AccountAsset asset, BigInteger amount, Address closeReminderTo, TxnDetailsParameters txnDetailsParameters, RequestMode requestMode) throws Exception {
         byte[] sourceBytes = null;
 
 //        if(RequestMode.DRY_RUN.equals(requestMode)) {
@@ -74,7 +78,6 @@ public class LogicSigTransactionService extends TransactionService {
                 });
             }
         }
-
     }
 
     public Result logicSigOptInAssetTransaction(String lsigPath, Address sender, AssetTxnParameters assetTxnPrameters,

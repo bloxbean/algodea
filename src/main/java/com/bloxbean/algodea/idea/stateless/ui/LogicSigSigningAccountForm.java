@@ -22,21 +22,28 @@ public class LogicSigSigningAccountForm {
     private JRadioButton accountDelegationRadioButton;
 
     private ButtonGroup statelessContractTypeBtnGrp;
+    private ChangeListener changeListener;
 
     protected LogicSigSigningAccountForm() {
+        changeListener = new ChangeListener(){};
+    }
 
+    protected LogicSigSigningAccountForm(ChangeListener changeListener) {
+        this.changeListener = changeListener;
     }
 
     public void initialize(Project project) {
         contractAccountRadioButton.addActionListener(e -> {
             if(contractAccountRadioButton.isSelected()) {
                 enableDisableSignerAccountFields(false);
+                changeListener.contractTypeSelected();
             }
         });
 
         accountDelegationRadioButton.addActionListener(e -> {
             if(accountDelegationRadioButton.isSelected()) {
                 enableDisableSignerAccountFields(true);
+                changeListener.delegationTypeSelect();
             }
         });
 
@@ -48,6 +55,7 @@ public class LogicSigSigningAccountForm {
             if(algoAccount != null) {
                 accountTf.setText(algoAccount.getAddress());
                 mnemonicTf.setText(algoAccount.getMnemonic());
+                changeListener.signerAddressChanged(algoAccount.getAddress());
             }
         });
 
@@ -63,6 +71,8 @@ public class LogicSigSigningAccountForm {
                 try {
                     Account account = new Account(mnemonic);
                     accountTf.setText(account.getAddress().toString());
+
+                    changeListener.signerAddressChanged(account.getAddress().toString());
                 } catch (Exception ex) {
                     accountTf.setText("");
                 }
@@ -121,5 +131,11 @@ public class LogicSigSigningAccountForm {
 
         statelessContractTypeBtnGrp.add(contractAccountRadioButton);
         statelessContractTypeBtnGrp.add(accountDelegationRadioButton);
+    }
+
+    public interface ChangeListener {
+        default public void signerAddressChanged(String address){};
+        default public void contractTypeSelected(){};
+        default public void delegationTypeSelect(){};
     }
 }

@@ -36,8 +36,8 @@ import com.bloxbean.algodea.idea.common.Tuple;
 import com.bloxbean.algodea.idea.configuration.model.NodeInfo;
 import com.bloxbean.algodea.idea.nodeint.AlgoConnectionFactory;
 import com.bloxbean.algodea.idea.nodeint.AlgoServerConfigurationHelper;
-import com.bloxbean.algodea.idea.nodeint.model.DryRunContext;
 import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
+import com.bloxbean.algodea.idea.nodeint.model.DryRunContext;
 import com.bloxbean.algodea.idea.nodeint.model.Result;
 import com.bloxbean.algodea.idea.nodeint.model.TxnDetailsParameters;
 import com.bloxbean.algodea.idea.nodeint.util.NetworkHelper;
@@ -128,7 +128,7 @@ public class AlgoBaseService {
         }
     }
 
-    public String compileProgram(byte[] programSource) {
+    public Tuple<String, String> compileProgram(byte[] programSource) {
         Response<CompileResponse> compileResponse = null;
         try {
             compileResponse = client.TealCompile().source(programSource).execute(getHeaders()._1(), getHeaders()._2());
@@ -140,11 +140,11 @@ public class AlgoBaseService {
 
         if(!compileResponse.isSuccessful()) {
             printErrorMessage("Compilation failed", compileResponse);
-            return null;
+            return new Tuple<String, String>(null, null);
         } else {
             logListener.info("Compiled Data : " + compileResponse.body().result);
             logListener.info("Hash          : " + compileResponse.body().hash);
-            return compileResponse.body().result;
+            return new Tuple<>(compileResponse.body().result, compileResponse.body().hash);
         }
     }
 
