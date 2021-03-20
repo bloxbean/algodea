@@ -69,12 +69,14 @@ public class TEALSendTransactionAction extends BaseTxnAction {
     public void update(@NotNull AnActionEvent e) {
         super.update(e);
 
-        if (isAlgoProject(e)) {
-            e.getPresentation().setEnabledAndVisible(true);
-        } else {
-            e.getPresentation().setEnabledAndVisible(false);
-        }
+        PsiFile file = e.getDataContext().getData(CommonDataKeys.PSI_FILE);
 
+        if (file != null && file instanceof TEALFile) {
+            e.getPresentation().setEnabled(true);
+        } else {
+            e.getPresentation().setVisible(false);
+            e.getPresentation().setEnabled(false);
+        }
     }
 
     @Override
