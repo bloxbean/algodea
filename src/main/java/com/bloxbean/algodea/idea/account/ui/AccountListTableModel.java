@@ -24,6 +24,7 @@ package com.bloxbean.algodea.idea.account.ui;
 
 import com.bloxbean.algodea.idea.account.model.AlgoAccount;
 import com.bloxbean.algodea.idea.util.AlgoConversionUtil;
+import com.intellij.openapi.util.text.StringUtil;
 
 import javax.swing.table.AbstractTableModel;
 import java.math.BigInteger;
@@ -74,9 +75,12 @@ public class AccountListTableModel extends AbstractTableModel {
             return null;
 
         AlgoAccount account = accounts.get(rowIndex);
-        if(columnIndex == 0)
-            return account.getName();
-        else if(columnIndex == 1)
+        if(columnIndex == 0) {
+            if(!StringUtil.isEmpty(account.getMnemonic()))
+                return account.getName();
+            else
+                return account.getName() + " (wo)";
+        } else if(columnIndex == 1)
             return account.getAddress();
         else if(columnIndex == 2) {
             Long balance = account.getBalance();
