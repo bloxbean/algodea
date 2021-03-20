@@ -333,6 +333,15 @@
                       <text value="..."/>
                     </properties>
                   </component>
+                  <component id="ef05f" class="javax.swing.JButton" binding="closeReminderMultiSigBtn">
+                    <constraints>
+                      <grid row="22" column="10" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                      <forms/>
+                    </constraints>
+                    <properties>
+                      <text value="Multi-Sig"/>
+                    </properties>
+                  </component>
                 </children>
               </grid>
             </children>

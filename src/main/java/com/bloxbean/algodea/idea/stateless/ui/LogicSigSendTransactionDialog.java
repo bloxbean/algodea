@@ -67,6 +67,7 @@ public class LogicSigSendTransactionDialog extends TxnDialogWrapper {
     private JButton receiverMultiSigBtn;
     private JTextField closeReminderTo;
     private JButton closeReminderAccountChooserBtn;
+    private JButton closeReminderMultiSigBtn;
     private JTextField senderLogSigTf;
 
     private ButtonGroup contractType;
@@ -194,6 +195,13 @@ public class LogicSigSendTransactionDialog extends TxnDialogWrapper {
             AlgoAccount algoAccount = AccountChooser.getSelectedAccount(project, true);
             if(algoAccount != null) {
                 closeReminderTo.setText(algoAccount.getAddress());
+            }
+        });
+
+        closeReminderMultiSigBtn.addActionListener(e -> {
+            AlgoMultisigAccount algoMultisigAccount = AccountChooser.getSelectedMultisigAccount(project, true);
+            if(algoMultisigAccount != null) {
+                closeReminderTo.setText(algoMultisigAccount.getAddress());
             }
         });
     }
