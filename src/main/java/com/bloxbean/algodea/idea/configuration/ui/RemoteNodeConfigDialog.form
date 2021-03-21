@@ -90,15 +90,6 @@
                   <text value="Algod API Endpoint *"/>
                 </properties>
               </component>
-              <component id="23e6c" class="javax.swing.JTextField" binding="nodeApiEndpoint">
-                <constraints>
-                  <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                    <preferred-size width="150" height="-1"/>
-                  </grid>
-                  <forms defaultalign-horz="false"/>
-                </constraints>
-                <properties/>
-              </component>
               <component id="2bfe3" class="javax.swing.JTextField" binding="apiKey">
                 <constraints>
                   <grid row="6" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
@@ -125,15 +116,6 @@
                 <properties>
                   <text value="Indexer API Endpoint"/>
                 </properties>
-              </component>
-              <component id="59ca8" class="javax.swing.JTextField" binding="indexerApiEndpoint">
-                <constraints>
-                  <grid row="8" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                    <preferred-size width="150" height="-1"/>
-                  </grid>
-                  <forms defaultalign-horz="false"/>
-                </constraints>
-                <properties/>
               </component>
               <component id="21c2f" class="javax.swing.JLabel">
                 <constraints>
@@ -240,6 +222,20 @@
                   <font size="10"/>
                   <text value="Example: http://localhost:4001 , https://testnet-algorand.api.purestake.io/ps2 ..."/>
                 </properties>
+              </component>
+              <component id="5f796" class="com.intellij.ui.TextFieldWithAutoCompletion" binding="nodeApiEndpoint" custom-create="true">
+                <constraints>
+                  <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+                  <forms/>
+                </constraints>
+                <properties/>
+              </component>
+              <component id="7288a" class="com.intellij.ui.TextFieldWithAutoCompletion" binding="indexerApiEndpoint" custom-create="true">
+                <constraints>
+                  <grid row="8" column="2" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+                  <forms/>
+                </constraints>
+                <properties/>
               </component>
             </children>
           </grid>

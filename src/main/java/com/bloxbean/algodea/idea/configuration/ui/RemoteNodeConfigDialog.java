@@ -11,23 +11,30 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.openapi.util.text.StringUtil;
+import com.intellij.ui.TextFieldWithAutoCompletion;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class RemoteNodeConfigDialog extends DialogWrapper{
     private JPanel contentPane;
     private JTextField serverName;
-    private JTextField nodeApiEndpoint;
     private JTextField apiKey;
-    private JTextField indexerApiEndpoint;
+    private TextFieldWithAutoCompletion indexerApiEndpoint;
     private JButton fetchNetworkInfoBtn;
     private JLabel connectionStatusLabel;
     private JTextField genesisHashTf;
     private JTextField genesisIdTf;
     private JLabel fetchNetworkInfoHelpLabel;
     private JCheckBox ignoreConnectionCheckCB;
+    private TextFieldWithAutoCompletion nodeApiEndpoint;
+
+    private Project project;
 
     public RemoteNodeConfigDialog(Project project) {
         this(project, null);
@@ -35,8 +42,10 @@ public class RemoteNodeConfigDialog extends DialogWrapper{
 
     public RemoteNodeConfigDialog(Project project, NodeInfo existingNodeInfo) {
         super(project);
+        this.project = project;
         init();
         setTitle("Algorand Node Configuration");
+
 
         fetchNetworkInfoHelpLabel.setText("<html>Please click on  \"Fetch Network Info\" to fetch the genesis details of " +
                 "the network <br/> and test the connection.</html/>");
@@ -181,5 +190,31 @@ public class RemoteNodeConfigDialog extends DialogWrapper{
 
     public JPanel getMainPanel() {
         return contentPane;
+    }
+
+    private void createUIComponents() {
+        // TODO: place custom component creation code here
+        Collection<String> availableNodeOptions = new ArrayList<String>();
+        availableNodeOptions.add("");
+        availableNodeOptions.add("https://localhost:4001");
+        availableNodeOptions.add("https://testnet-algorand.api.purestake.io/ps2");
+        availableNodeOptions.add("https://api.testnet.algoexplorer.io");
+        nodeApiEndpoint =  TextFieldWithAutoCompletion.create(project, availableNodeOptions, true, "" );
+
+        nodeApiEndpoint.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent e) {
+                super.focusLost(e);
+                if(nodeApiEndpoint != null && nodeApiEndpoint.getText().contains("algoexplorer.io")
+                        && StringUtil.isEmpty(apiKey.getText())) {
+                    apiKey.setText("algoexplorer-dummykey");
+                }
+            }
+        });
+
+        Collection<String> availableIndexerEndpoints = new ArrayList<String>();
+        availableIndexerEndpoints.add("");
+        availableIndexerEndpoints.add("https://testnet-algorand.api.purestake.io/idx2");
+        indexerApiEndpoint = TextFieldWithAutoCompletion.create(project, availableIndexerEndpoints, true, "" );
     }
 }
