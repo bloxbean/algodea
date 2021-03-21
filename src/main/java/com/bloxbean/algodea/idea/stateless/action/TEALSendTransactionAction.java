@@ -264,6 +264,7 @@ public class TEALSendTransactionAction extends BaseTxnAction {
                 @Override
                 public void run(@NotNull ProgressIndicator indicator) {
                     try {
+                        console.showInfoMessage("TEAL compilation starting. Please wait...");
                         CompileService compileService = null;
                         if (remoteCompilerSDK != null) {
                             compileService = new RemoteCompileService(project, remoteCompilerSDK);
