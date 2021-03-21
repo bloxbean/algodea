@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 
 @State(name="algorand-assets-cache", reloadable = true, storages = @com.intellij.openapi.components.Storage("algorand-assets-cache.xml"))
 public class AssetCacheService implements PersistentStateComponent<AssetCacheService.State> {
-    private static int MAX_ASSETS_TO_STORE = 10;
+    private static int MAX_ASSETS_TO_STORE = 25;
 
     public static AssetCacheService getInstance() {
         return ServiceManager.getService(AssetCacheService.class);

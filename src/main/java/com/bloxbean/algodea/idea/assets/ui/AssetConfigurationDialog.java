@@ -198,6 +198,7 @@ public class AssetConfigurationDialog extends TxnDialogWrapper {
             showErrorMessage("Algorand Node is not configured for deployment target", "Asset Search");
             return;
         }
+        AssetTransactionService finalAssetTxnService = assetTransactionService;
 
         AssetCacheService assetCacheService = AssetCacheService.getInstance();
         List<AssetMeta> assets = null;
@@ -280,6 +281,14 @@ public class AssetConfigurationDialog extends TxnDialogWrapper {
                             @Override
                             public void run() {
                                 populateWithAssetInfo(asset, assetId);
+
+                                try { //Update cache if assetId is not available in the cache
+                                    String assetName = assetCacheService.getAssetNameForAssetId(assetId);
+                                    if (StringUtil.isEmpty(assetName)) {//asset doesn't exist in the cache add it
+                                        assetCacheService.addAssetId(finalAssetTxnService.getNetworkGenesisHash(),
+                                                asset.params.name, String.valueOf(asset.index));
+                                    }
+                                } catch (Exception e) {}
                             }
                         });
                     } else {
