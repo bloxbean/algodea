@@ -62,7 +62,7 @@ public class TEALSendTransactionDialog extends TxnDialogWrapper implements Logic
     public TEALSendTransactionDialog(Project project, Module module, String contractHash) throws DeploymentTargetNotConfigured {
         super(project, true);
         init();
-        setTitle("Stateless Smart Contract Transaction - Logic Sig");
+        setTitle("Stateless Smart Contract Transaction - Using TEAL file");
 
         this.contractHash = contractHash;
         transactionDtlsEntryForm.initializeData(project);
