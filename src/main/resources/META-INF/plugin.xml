@@ -161,6 +161,18 @@
             <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl T" second-keystroke="W"/>
             <!--            <add-to-group group-id="com.bloxbean.algodea.idea.core.action.AlgoActionGroup"/>-->
         </action>
+        <action id="com.bloxbean.algodea.idea.stateless.action.TEALSendTransactionFileNodeAction" class="com.bloxbean.algodea.idea.stateless.action.TEALSendTransactionFileNodeAction"
+                text="Send Transaction (TEAL File)"
+                popup="true"
+                description="Send Transaction Using TEAL">
+            <add-to-group group-id="ProjectViewPopupMenu" relative-to-action="com.bloxbean.algodea.idea.core.action.AlgoActionGroup"  anchor="before"/>
+        </action>
+        <action id="com.bloxbean.algodea.idea.stateless.action.TEALOptInTransactionFileNodeAction" class="com.bloxbean.algodea.idea.stateless.action.TEALOptInTransactionFileNodeAction"
+                text="Opt-In Asset (TEAL File)"
+                popup="true"
+                description="Opt-In Asset Using TEAL">
+            <add-to-group group-id="ProjectViewPopupMenu" relative-to-action="com.bloxbean.algodea.idea.core.action.AlgoActionGroup"  anchor="before"/>
+        </action>
         <!-- Stateless contract actions -->
         <action id="com.bloxbean.algodea.idea.stateless.action.TEALSendTransactionAction" class="com.bloxbean.algodea.idea.stateless.action.TEALSendTransactionAction"
                 text="Send Transaction (TEAL File)"
@@ -174,6 +186,10 @@
             <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl T" second-keystroke="O"/>
             <add-to-group group-id="AlgoActionGroup.StatelessContract"/>
         </action>
+        <action class="com.intellij.openapi.actionSystem.Separator">
+            <add-to-group group-id="AlgoActionGroup.StatelessContract"/>
+        </action>
+
         <action id="com.bloxbean.algodea.idea.stateless.action.LogicSigGenerateAction" class="com.bloxbean.algodea.idea.stateless.action.LogicSigGenerateAction"
                 text="Generate Logic Sig"
                 description="Generate Logic Signature">

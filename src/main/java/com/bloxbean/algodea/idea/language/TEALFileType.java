@@ -31,6 +31,7 @@ import javax.swing.*;
 
 public class TEALFileType extends LanguageFileType {
     public static final TEALFileType INSTANCE = new TEALFileType();
+    public static final String EXTENSION = "teal";
 
     private TEALFileType() {
         super(TEALLanguage.INSTANCE);
