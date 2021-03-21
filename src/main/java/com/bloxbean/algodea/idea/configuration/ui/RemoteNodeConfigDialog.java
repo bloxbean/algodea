@@ -144,7 +144,8 @@ public class RemoteNodeConfigDialog extends DialogWrapper{
             return new ValidationInfo("Invalid Node api endpoint", nodeApiEndpoint);
         }
 
-        if(StringUtil.isEmpty(apiKey.getText())) {
+        if(StringUtil.isEmpty(apiKey.getText()) &&
+                (!StringUtil.isEmpty(nodeApiEndpoint.getText()) && !nodeApiEndpoint.getText().contains("algoexplorer.io"))) { //Not required for algoexplorer
             return new ValidationInfo("Api key cannot be empty", apiKey);
         }
 
