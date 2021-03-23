@@ -29,7 +29,7 @@ public class SigningAccountInputDialog extends DialogWrapper {
     private String ACCOUNT_TYPE = "Account";
     private String LSIG_TYPE = "Logic Sig file";
 
-    protected SigningAccountInputDialog(@Nullable Project project, Module module) {
+    public SigningAccountInputDialog(@Nullable Project project, Module module) {
         super(project, true);
         init();
         setTitle("Signing Account");
@@ -53,7 +53,6 @@ public class SigningAccountInputDialog extends DialogWrapper {
             @Override
             public void itemStateChanged(ItemEvent e) {
                 CardLayout cardLayout = (CardLayout)cardPanel.getLayout();
-//
                 cardLayout.show(cardPanel, (String)e.getItem());
             }
         });
@@ -102,6 +101,7 @@ public class SigningAccountInputDialog extends DialogWrapper {
         accountEntryInputForm.setMnemonic("Mnemonic");
         accountEntryInputForm.setEnableMnemonic(true);
         accountEntryInputForm.setEnableMultiSig(false);
+        accountEntryInputForm.disableSenderAddressFields();
 
         logicSigChooser = new LogicSigChooser();
 

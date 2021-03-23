@@ -173,6 +173,15 @@
                 description="Opt-In Asset Using TEAL">
             <add-to-group group-id="ProjectViewPopupMenu" relative-to-action="com.bloxbean.algodea.idea.core.action.AlgoActionGroup"  anchor="before"/>
         </action>
+
+        <action id="com.bloxbean.algodea.idea.atomic.action.SingleTxnExecutionAction" class="com.bloxbean.algodea.idea.atomic.action.SingleTxnExecutionAction"
+                text="Execute Transaction"
+                popup="true"
+                description="Execute Algorand Transaction">
+            <add-to-group group-id="ProjectViewPopupMenu" relative-to-action="com.bloxbean.algodea.idea.core.action.AlgoActionGroup"  anchor="before"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl T" second-keystroke="E"/>
+        </action>
+
         <!-- Stateless contract actions -->
         <action id="com.bloxbean.algodea.idea.stateless.action.TEALSendTransactionAction" class="com.bloxbean.algodea.idea.stateless.action.TEALSendTransactionAction"
                 text="Send Transaction (TEAL File)"

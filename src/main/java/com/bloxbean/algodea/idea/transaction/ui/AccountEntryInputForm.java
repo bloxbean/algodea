@@ -158,6 +158,12 @@ public class AccountEntryInputForm {
         enableMultiSig = flag;
     }
 
+    public void disableSenderAddressFields() {
+        senderAddressTf.setEnabled(false);
+        senderAddressChooser.setEnabled(false);
+        senderAddressMultiSigChooser.setEnabled(false);
+    }
+
     public Account getSignerAccount() {
         String mnemonic = mnemonicTf.getText().trim();
         try {

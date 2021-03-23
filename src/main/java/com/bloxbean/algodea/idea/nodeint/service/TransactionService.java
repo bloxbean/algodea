@@ -5,6 +5,7 @@ import com.algorand.algosdk.builder.transaction.PaymentTransactionBuilder;
 import com.algorand.algosdk.crypto.Address;
 import com.algorand.algosdk.transaction.SignedTransaction;
 import com.algorand.algosdk.transaction.Transaction;
+import com.algorand.algosdk.util.Encoder;
 import com.algorand.algosdk.v2.client.model.DryrunResponse;
 import com.algorand.algosdk.v2.client.model.DryrunTxnResult;
 import com.bloxbean.algodea.idea.nodeint.common.RequestMode;
@@ -87,6 +88,16 @@ public class TransactionService extends AlgoBaseService {
 
             return Result.success(JsonUtil.getPrettyJson(dryrunTxnResults.get(0)));
         }
+    }
+
+    public Result postSignedTransaction(SignedTransaction signedTransaction) throws Exception{
+        if(signedTransaction == null)
+            return Result.error("SignedTransaction cannot be null");
+
+        byte[] encodedTxBytes = Encoder.encodeToMsgPack(signedTransaction);
+        Result result = postRawTransaction(encodedTxBytes);
+
+        return result;
     }
 
     protected Transaction populatePaymentTransaction(PaymentTransactionBuilder paymentTransactionBuilder, Address fromAccount,
