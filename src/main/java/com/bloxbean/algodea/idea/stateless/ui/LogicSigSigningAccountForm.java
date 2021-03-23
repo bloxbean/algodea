@@ -1,7 +1,9 @@
 package com.bloxbean.algodea.idea.stateless.ui;
 
 import com.algorand.algosdk.account.Account;
+import com.algorand.algosdk.crypto.Address;
 import com.bloxbean.algodea.idea.account.model.AlgoAccount;
+import com.bloxbean.algodea.idea.account.model.AlgoMultisigAccount;
 import com.bloxbean.algodea.idea.account.service.AccountChooser;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ValidationInfo;
@@ -20,6 +22,9 @@ public class LogicSigSigningAccountForm {
     private JTextField mnemonicTf;
     private JRadioButton contractAccountRadioButton;
     private JRadioButton accountDelegationRadioButton;
+    private JTextField senderAddressTf;
+    private JButton senderChooser;
+    private JButton multiSigSenderChooser;
 
     private ButtonGroup statelessContractTypeBtnGrp;
     private ChangeListener changeListener;
@@ -55,6 +60,7 @@ public class LogicSigSigningAccountForm {
             if(algoAccount != null) {
                 accountTf.setText(algoAccount.getAddress());
                 mnemonicTf.setText(algoAccount.getMnemonic());
+                senderAddressTf.setText(algoAccount.getAddress());
                 changeListener.signerAddressChanged(algoAccount.getAddress());
             }
         });
@@ -71,11 +77,28 @@ public class LogicSigSigningAccountForm {
                 try {
                     Account account = new Account(mnemonic);
                     accountTf.setText(account.getAddress().toString());
-
+                    senderAddressTf.setText(account.getAddress().toString());
                     changeListener.signerAddressChanged(account.getAddress().toString());
                 } catch (Exception ex) {
                     accountTf.setText("");
+                    senderAddressTf.setText("");
                 }
+            }
+        });
+
+        senderChooser.addActionListener(e -> {
+            AlgoAccount algoAccount = AccountChooser.getSelectedAccount(project, true);
+            if(algoAccount != null) {
+                senderAddressTf.setText(algoAccount.getAddress());
+                changeListener.signerAddressChanged(algoAccount.getAddress());
+            }
+        });
+
+        multiSigSenderChooser.addActionListener(e -> {
+            AlgoMultisigAccount multisigAccount = AccountChooser.getSelectedMultisigAccount(project, true);
+            if(multisigAccount != null) {
+                senderAddressTf.setText(multisigAccount.getAddress());
+                changeListener.signerAddressChanged(multisigAccount.getAddress());
             }
         });
 
@@ -83,9 +106,14 @@ public class LogicSigSigningAccountForm {
 
     private void enableDisableSignerAccountFields(boolean flag) {
         accountTf.setText("");
+        mnemonicTf.setText("");
+        senderAddressTf.setText("");
         accountTf.setEnabled(flag);
         accountChooserBtn.setEnabled(flag);
         mnemonicTf.setEnabled(flag);
+        senderAddressTf.setEditable(flag);
+        senderChooser.setEnabled(flag);
+        multiSigSenderChooser.setEnabled(flag);
     }
 
     public @Nullable ValidationInfo doValidate() {
@@ -95,6 +123,13 @@ public class LogicSigSigningAccountForm {
                 return new ValidationInfo("Please select a valid account or enter valid mnemonic", accountTf);
             } else {
                 accountTf.setToolTipText("");
+            }
+
+            if (StringUtil.isEmpty(senderAddressTf.getText())) {
+                senderAddressTf.setToolTipText("Please select a valid sender address");
+                return new ValidationInfo("Please select a valid sender address", senderAddressTf);
+            } else {
+                senderAddressTf.setToolTipText("");
             }
         }
 
@@ -109,6 +144,20 @@ public class LogicSigSigningAccountForm {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    public Address getSenderAddress() {
+        String address = senderAddressTf.getText().trim();
+        try {
+            Address sender = new Address(address);
+            return sender;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public void setSenderAddress(String address) {
+        senderAddressTf.setText(address);
     }
 
     public boolean isContractAccountType() {

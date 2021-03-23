@@ -35,7 +35,6 @@ public class TEALOptInAssetDialog extends TxnDialogWrapper implements LogicSigSi
 
     private JPanel mainPanel;
     private JTabbedPane tabbedPane1;
-    private JTextField senderAddressTf;
     private TransactionDtlsEntryForm transactionDtlsEntryForm;
     private JComboBox assetIdCB;
     private JButton searchBtn;
@@ -68,7 +67,7 @@ public class TEALOptInAssetDialog extends TxnDialogWrapper implements LogicSigSi
         argInputForm.initializeData(project);
 
         if(!StringUtil.isEmpty(contractHash)) //Default mode is contract type
-            senderAddressTf.setText(contractHash);
+            logicSigSigningAccountForm.setSenderAddress(contractHash);
 
         try {
             algoAccountService = new AlgoAccountService(project, new LogListenerAdapter(console));
@@ -211,30 +210,22 @@ public class TEALOptInAssetDialog extends TxnDialogWrapper implements LogicSigSi
     //Change Listener methods
     @Override
     public void contractTypeSelected() {
-        senderAddressTf.setText(contractHash);
+        logicSigSigningAccountForm.setSenderAddress(contractHash);
     }
 
     @Override
     public void delegationTypeSelect() {
-        senderAddressTf.setText("");
+        logicSigSigningAccountForm.setSenderAddress("");
     }
 
     @Override
     public void signerAddressChanged(String address) {
-        senderAddressTf.setText(address);
+        //No need to handle as it's already handled in LogicSigSigningAccountForm
     }
     //Change Listener methods end
 
     public Address getSenderAddress() {
-        String sender = StringUtil.trim(senderAddressTf.getText());
-        if(StringUtil.isEmpty(sender))
-            return null;
-
-        try {
-            return new Address(sender);
-        } catch (Exception e) {
-            return null;
-        }
+        return logicSigSigningAccountForm.getSenderAddress();
     }
     public TransactionDtlsEntryForm getTransactionDtlsEntryForm() {
         return transactionDtlsEntryForm;

@@ -55,7 +55,7 @@ public class TransferAssetsDialog extends DialogWrapper  {
         assetChooserDialog.setAssetIdLable(StringUtility.padLeft("Asset Idd", 30));
 
         senderAccountEntryInputForm = new AccountEntryInputForm(true, false);
-        senderAccountEntryInputForm.setAccountLabel(StringUtility.padLeft("Sender Address", 30));
+        senderAccountEntryInputForm.setSigningAccountLabel(StringUtility.padLeft("Sender Address", 30));
 
         receiverAccountPanel = new ManagedAccountEntryInputForm(true, true);
         receiverAccountPanel.setAccountLabel(StringUtility.padLeft("Receiver Address", 30));

@@ -146,8 +146,8 @@ public class CreateStatefulAppAction extends BaseTxnAction {
             CreateAppEntryForm createForm = createDialog.getCreateForm();
             AppTxnDetailsEntryForm appTxnDetailsEntryForm = createDialog.getAppTxnDetailsEntryForm();
 
-            Account signerAccount = createForm.getAccount();
-            Address senderAddress = createForm.getAddress();
+            Account signerAccount = createForm.getSignerAccount();
+            Address senderAddress = createForm.getSenderAddress();
             if (senderAddress == null ||
                     (signerAccount == null && RequestMode.EXPORT_UNSIGNED != createDialog.getRequestMode())) {
                 console.showErrorMessage("Invalid or null creator account");

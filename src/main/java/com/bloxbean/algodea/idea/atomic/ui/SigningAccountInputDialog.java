@@ -77,7 +77,7 @@ public class SigningAccountInputDialog extends DialogWrapper {
 
     public Account getAccount() {
         if(isAccountType()) {
-            return accountEntryInputForm.getAccount();
+            return accountEntryInputForm.getSignerAccount();
         } else {
             return null;
         }
@@ -98,7 +98,7 @@ public class SigningAccountInputDialog extends DialogWrapper {
     private void createUIComponents() {
         // TODO: place custom component creation code here
         accountEntryInputForm = new AccountEntryInputForm(true, false);
-        accountEntryInputForm.setAccountLabel("Account");
+        accountEntryInputForm.setSigningAccountLabel("Account");
         accountEntryInputForm.setMnemonic("Mnemonic");
         accountEntryInputForm.setEnableMnemonic(true);
         accountEntryInputForm.setEnableMultiSig(false);

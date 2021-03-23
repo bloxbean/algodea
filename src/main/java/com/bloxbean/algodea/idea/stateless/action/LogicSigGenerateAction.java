@@ -1,6 +1,7 @@
 package com.bloxbean.algodea.idea.stateless.action;
 
 import com.algorand.algosdk.account.Account;
+import com.algorand.algosdk.crypto.Address;
 import com.bloxbean.algodea.idea.common.AlgoIcons;
 import com.bloxbean.algodea.idea.compile.service.CompilationResultListener;
 import com.bloxbean.algodea.idea.compile.service.CompileService;
@@ -250,7 +251,8 @@ public class LogicSigGenerateAction extends AnAction {
         }
 
         LogicSigSigningAccountForm accountForm = dialog.getLogicSigSignAccountForm();
-        Account account = accountForm.getAccount();
+        Account signer = accountForm.getAccount();
+        Address sender = accountForm.getSenderAddress();
 
         List<byte[]> args = null;
         try {
@@ -263,7 +265,7 @@ public class LogicSigGenerateAction extends AnAction {
         }
 
         LogicSigParams logicSigParams = new LogicSigParams();
-        logicSigParams.addSigningAccount(account); //Single account
+        logicSigParams.addSigningAccount(signer); //Single account
         if(args != null) {
             logicSigParams.setArgs(args);
         }

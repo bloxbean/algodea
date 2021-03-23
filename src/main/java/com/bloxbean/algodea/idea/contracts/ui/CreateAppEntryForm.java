@@ -24,6 +24,7 @@ package com.bloxbean.algodea.idea.contracts.ui;
 import com.algorand.algosdk.account.Account;
 import com.algorand.algosdk.crypto.Address;
 import com.bloxbean.algodea.idea.account.model.AlgoAccount;
+import com.bloxbean.algodea.idea.account.model.AlgoMultisigAccount;
 import com.bloxbean.algodea.idea.account.service.AccountChooser;
 import com.bloxbean.algodea.idea.pkg.AlgoPkgJsonService;
 import com.bloxbean.algodea.idea.pkg.exception.PackageJsonException;
@@ -44,7 +45,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
 import java.util.List;
 
@@ -52,16 +52,19 @@ public class CreateAppEntryForm {
     private final static Logger LOG = Logger.getInstance(CreateAppEntryForm.class);
 
     private JPanel mainPanel;
-    private JTextField accountTf;
+    private JTextField signerAccountTf;
     private JTextField approvalProgramTf;
     private JTextField clearStateProgramTf;
     private JTextField globalByteslicesTf;
     private JTextField globalIntTf;
     private JTextField localByteslicesTf;
     private JTextField localIntsTf;
-    private JButton accountChooser;
+    private JButton signerAccountChooser;
     private JTextField mnemonicTf;
     private JComboBox contractCB;
+    private JTextField senderAddressTf;
+    private JButton senderChooser;
+    private JButton senderMultiSigChooser;
     private List<AlgoPackageJson.StatefulContract> contracts;
     private AlgoPkgJsonService pkgJsonService;
     AlgoPackageJson.StatefulContract selectedContract;
@@ -71,7 +74,8 @@ public class CreateAppEntryForm {
 
     public void initializeData(Project project, AlgoAccount creatorAccount, String contractName) {
         if(creatorAccount != null) {
-            accountTf.setText(creatorAccount.getAddress().toString());
+            signerAccountTf.setText(creatorAccount.getAddress().toString());
+            senderAddressTf.setText(creatorAccount.getAddress().toString());
 
             ApplicationManager.getApplication().invokeLater(new Runnable() {
                 @Override
@@ -81,13 +85,14 @@ public class CreateAppEntryForm {
             }, ModalityState.any());
         }
 
-        accountChooser.addActionListener(new ActionListener() {
+        signerAccountChooser.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 AlgoAccount algoAccount = AccountChooser.getSelectedAccount(project, true);
                 if(algoAccount != null) {
-                    accountTf.setText(algoAccount.getAddress());
+                    signerAccountTf.setText(algoAccount.getAddress());
                     mnemonicTf.setText(algoAccount.getMnemonic());
+                    senderAddressTf.setText(algoAccount.getAddress());
                 }
             }
         });
@@ -103,9 +108,31 @@ public class CreateAppEntryForm {
                 String mnemonic = mnemonicTf.getText();
                 try {
                     Account account = new Account(mnemonic);
-                    accountTf.setText(account.getAddress().toString());
+                    signerAccountTf.setText(account.getAddress().toString());
+                    senderAddressTf.setText(account.getAddress().toString());
                 } catch (Exception ex) {
-                    accountTf.setText("");
+                    signerAccountTf.setText("");
+                    senderAddressTf.setText("");
+                }
+            }
+        });
+
+        senderChooser.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                AlgoAccount algoAccount = AccountChooser.getSelectedAccount(project, true);
+                if(algoAccount != null) {
+                    senderAddressTf.setText(algoAccount.getAddress());
+                }
+            }
+        });
+
+        senderMultiSigChooser.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                AlgoMultisigAccount algoMultisigAccount = AccountChooser.getSelectedMultisigAccount(project, true);
+                if(algoMultisigAccount != null) {
+                    senderAddressTf.setText(algoMultisigAccount.getAddress());
                 }
             }
         });
@@ -179,7 +206,7 @@ public class CreateAppEntryForm {
         return Integer.parseInt(localIntsTf.getText());
     }
 
-    public Account getAccount() {
+    public Account getSignerAccount() {
         String mnemonic = mnemonicTf.getText().trim();
         try {
             Account account = new Account(mnemonic);
@@ -189,17 +216,12 @@ public class CreateAppEntryForm {
         }
     }
 
-    public Address getAddress() {
-        Account account = getAccount();
-        if(account != null) {
-            return account.getAddress();
-        } else {
-            String address = accountTf.getText().trim();
-            try {
-                return new Address(address);
-            } catch (NoSuchAlgorithmException e) {
-                return null;
-            }
+    public Address getSenderAddress() {
+        String address = senderAddressTf.getText().trim();
+        try {
+            return new Address(address);
+        } catch (Exception e) {
+            return null;
         }
     }
 
@@ -225,8 +247,12 @@ public class CreateAppEntryForm {
             return new ValidationInfo("Invalid Local Ints. Integer value expected.", localIntsTf);
         }
 
-        if(StringUtil.isEmpty(accountTf.getText())) {
-            return new ValidationInfo("Please select a valid creator account or enter valid mnemonic", accountTf);
+        if(StringUtil.isEmpty(signerAccountTf.getText())) {
+            return new ValidationInfo("Please select a valid signer account or enter valid mnemonic", signerAccountTf);
+        }
+
+        if(StringUtil.isEmpty(senderAddressTf.getText())) {
+            return new ValidationInfo("Please select a valid sender address", senderAddressTf);
         }
 
         return null;

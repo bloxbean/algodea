@@ -55,7 +55,7 @@ public class TransferAction extends BaseTxnAction {
             }
 
             TransferTxnParamEntryForm txnEntryForm = transferDialog.getTransferTxnEntryForm();
-            Account signerAccount = txnEntryForm.getFromAccount();
+            Account signerAccount = txnEntryForm.getSigningAccount();
             Address fromAddress = txnEntryForm.getFromAddress();
 
             Address toAddress = txnEntryForm.getToAccount();

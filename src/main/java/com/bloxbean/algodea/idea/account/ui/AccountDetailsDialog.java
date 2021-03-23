@@ -46,6 +46,7 @@ public class AccountDetailsDialog extends DialogWrapper {
     private JComboBox assetsCB;
     private JPanel mainPanel;
     private JComboBox createdAssetsCB;
+    private JTextField authAddrTf;
     private AlgoAccount algoAccount;
 
     private AccountService accountService;
@@ -118,6 +119,10 @@ public class AccountDetailsDialog extends DialogWrapper {
 
                         if (account == null)
                             return;
+
+                        if(account.authAddr != null) {
+                            authAddrTf.setText(account.authAddr());
+                        }
 
                         Long balance = account.amount;
                         if (balance != null) {

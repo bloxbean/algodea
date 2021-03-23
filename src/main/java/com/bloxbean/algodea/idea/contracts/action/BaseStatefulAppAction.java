@@ -81,7 +81,7 @@ public abstract class  BaseStatefulAppAction extends BaseTxnAction {
 
         if(LOG.isDebugEnabled()) {
             LOG.debug("*****  App Id: " + dialog.getAppTxnBaseEntryForm().getAppId());
-            LOG.debug("****** From Account: " + dialog.getAppTxnBaseEntryForm().getFromAccount());
+            LOG.debug("****** From Account: " + dialog.getAppTxnBaseEntryForm().getSignerAccount());
             LOG.debug("******* Args : " + dialog.getAppTxnDetailsEntryForm().getArgs());
         }
 
@@ -103,8 +103,8 @@ public abstract class  BaseStatefulAppAction extends BaseTxnAction {
 
             final Long appId = appBaseEntryForm.getAppId();
 
-            Account signerAccount = appBaseEntryForm.getFromAccount();
-            Address senderAddress = appBaseEntryForm.getFromAddress();
+            Account signerAccount = appBaseEntryForm.getSignerAccount();
+            Address senderAddress = appBaseEntryForm.getSenderAddress();
             if (senderAddress == null ||
                     (signerAccount == null && RequestMode.EXPORT_UNSIGNED != dialog.getRequestMode())) {
                 console.showErrorMessage("Invalid or null from account.");

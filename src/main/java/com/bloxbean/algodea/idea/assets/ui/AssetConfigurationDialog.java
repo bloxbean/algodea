@@ -29,7 +29,6 @@ import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.progress.impl.BackgroundableProcessIndicator;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
-import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.openapi.util.text.StringUtil;
@@ -134,7 +133,8 @@ public class AssetConfigurationDialog extends TxnDialogWrapper {
     }
 
     private void initializeModify(Project project) {
-        senderAddressInputForm.setAccountLabel("Txn Sender (Manager) "); //Sender here is manager
+        senderAddressInputForm.setSigningAccountLabel("Signer"); //Sender here is manager
+        senderAddressInputForm.setSenderAddressLabel("Sender (Manager)");
         _initialize(project);
 
         disableFieldsForModifyMode();
@@ -144,7 +144,8 @@ public class AssetConfigurationDialog extends TxnDialogWrapper {
 
     private void initializeViewMode(Project project) {
         if (AssetActionType.OPT_IN.equals(actionType)) {
-            senderAddressInputForm.setAccountLabel("Txn Sender (OptIn account)"); //Sender here is manager
+            senderAddressInputForm.setSigningAccountLabel("Signer (OptIn Acc)");
+            senderAddressInputForm.setSenderAddressLabel("Sender (OptIn Acc)");
             setOKButtonText("Opt In");
         }
         if (AssetActionType.FREEZE.equals(actionType) || AssetActionType.UNFREEZE.equals(actionType)) {
@@ -159,7 +160,8 @@ public class AssetConfigurationDialog extends TxnDialogWrapper {
                 setOKButtonText("UnFreeze");
             }
 
-            senderAddressInputForm.setAccountLabel("Txn Sender (Freeze Address) ");
+            senderAddressInputForm.setSigningAccountLabel("Signer (Freeze Address) ");
+            senderAddressInputForm.setSenderAddressLabel("Sender (Freeze Address)");
 
         } else if (AssetActionType.REVOKE.equals(actionType)) {
             revokeAddressInputForm.initializeData(project);
@@ -172,13 +174,16 @@ public class AssetConfigurationDialog extends TxnDialogWrapper {
             receiverAddressInputForm.setAccountLabel("Receiver Address *");
             revokeAmountLabel.setText(StringUtility.padLeft("Asset Amount *", 22));
 
-            senderAddressInputForm.setAccountLabel("Txn Sender (Clawback Address) ");
+            senderAddressInputForm.setSigningAccountLabel("Signer (Clawback Address) ");
+            senderAddressInputForm.setSenderAddressLabel("Sender (Clawback Address)");
             setOKButtonText("Revoke");
         } else if (AssetActionType.DESTROY.equals(actionType)) {
-            senderAddressInputForm.setAccountLabel("Txn Sender (Manager)");
+            senderAddressInputForm.setSigningAccountLabel("Signer (Manager)");
+            senderAddressInputForm.setSenderAddressLabel("Sender (Manager)");
             setOKButtonText("Destory");
         } else {
-            senderAddressInputForm.setAccountLabel("Txn Sender "); //Sender here is manager
+            senderAddressInputForm.setSigningAccountLabel("Signer"); //Sender here is manager
+            senderAddressInputForm.setSenderAddressLabel("Sender");
         }
 
         _initialize(project);
@@ -606,11 +611,11 @@ public class AssetConfigurationDialog extends TxnDialogWrapper {
     }
 
     public Account getSignerAccount() {
-        return senderAddressInputForm.getAccount();
+        return senderAddressInputForm.getSignerAccount();
     }
 
-    public Address getSignerAddress() {
-        return senderAddressInputForm.getAddress();
+    public Address getSenderAddress() {
+        return senderAddressInputForm.getSenderAddress();
     }
 
     public Address getManagerAddress() {
@@ -704,7 +709,8 @@ public class AssetConfigurationDialog extends TxnDialogWrapper {
     private void createUIComponents() {
         // TODO: place custom component creation code here
         senderAddressInputForm = new AccountEntryInputForm(true, false);
-        senderAddressInputForm.setAccountLabel("Creator Address ");
+        senderAddressInputForm.setSigningAccountLabel("Signer");
+        senderAddressInputForm.setSenderAddressLabel("Creator");
 
         managerAddressInputForm = new ManagedAccountEntryInputForm(false, false);
         managerAddressInputForm.setAccountLabel("Manager Address");

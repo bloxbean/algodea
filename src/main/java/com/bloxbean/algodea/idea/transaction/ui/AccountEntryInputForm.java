@@ -14,17 +14,20 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.security.NoSuchAlgorithmException;
 
 public class AccountEntryInputForm {
     private JPanel mainPanel;
-    private JTextField accountTf;
-    private JButton accountChooserBtn;
-    private JButton multisigAccChooserBtn;
+    private JTextField signerAccountTf;
+    private JButton signerAccountChooserBtn;
+    private JButton multisigSignerAccChooserBtn;
     private JTextField mnemonicTf;
     private JLabel accountLabel;
     private JLabel menmonicLabel;
     private JLabel orLabel;
+    private JTextField senderAddressTf;
+    private JButton senderAddressChooser;
+    private JButton senderAddressMultiSigChooser;
+    private JLabel senderAddressLabel;
 
     private boolean enableMnemonic = true;
     private boolean enableMultiSig = true;
@@ -49,27 +52,29 @@ public class AccountEntryInputForm {
         }
 
         if(!enableMultiSig) {
-            multisigAccChooserBtn.setEnabled(false);
-            multisigAccChooserBtn.setVisible(false);
+            multisigSignerAccChooserBtn.setEnabled(false);
+            multisigSignerAccChooserBtn.setVisible(false);
         }
 
         attachedListeners(project);
     }
 
     private void attachedListeners(Project project) {
-        accountChooserBtn.addActionListener(e -> {
+        signerAccountChooserBtn.addActionListener(e -> {
             AlgoAccount algoAccount = AccountChooser.getSelectedAccount(project, true);
             if (algoAccount != null) {
-                accountTf.setText(algoAccount.getAddress());
+                signerAccountTf.setText(algoAccount.getAddress());
                 mnemonicTf.setText(algoAccount.getMnemonic());
+                senderAddressTf.setText(algoAccount.getAddress());
             }
         });
 
         if(enableMultiSig) {
-            multisigAccChooserBtn.addActionListener(e -> {
+            multisigSignerAccChooserBtn.addActionListener(e -> {
                 AlgoMultisigAccount algoMultisigAccount = AccountChooser.getSelectedMultisigAccount(project, true);
                 if (algoMultisigAccount != null) {
-                    accountTf.setText(algoMultisigAccount.getAddress());
+                    signerAccountTf.setText(algoMultisigAccount.getAddress());
+                    senderAddressTf.setText(algoMultisigAccount.getAddress());
                 }
             });
         }
@@ -86,36 +91,63 @@ public class AccountEntryInputForm {
                     String mnemonic = mnemonicTf.getText();
                     try {
                         Account account = new Account(mnemonic);
-                        accountTf.setText(account.getAddress().toString());
+                        signerAccountTf.setText(account.getAddress().toString());
+                        senderAddressTf.setText(account.getAddress().toString());
                     } catch (Exception ex) {
-                        accountTf.setText("");
+                        signerAccountTf.setText("");
+                        senderAddressTf.setText("");
                     }
                 }
             });
         }
+
+        senderAddressChooser.addActionListener(e -> {
+            AlgoAccount algoAccount = AccountChooser.getSelectedAccount(project, true);
+            if (algoAccount != null) {
+                senderAddressTf.setText(algoAccount.getAddress());
+            }
+        });
+
+        senderAddressMultiSigChooser.addActionListener(e -> {
+            AlgoMultisigAccount algoMultisigAccount = AccountChooser.getSelectedMultisigAccount(project, true);
+            if (algoMultisigAccount != null) {
+                senderAddressTf.setText(algoMultisigAccount.getAddress());
+            }
+        });
     }
 
     public @Nullable ValidationInfo doValidate() {
 
         if(isMandatory) {
-            if (StringUtil.isEmpty(accountTf.getText())) {
-                accountTf.setToolTipText("Please select a valid account or enter valid mnemonic");
-                return new ValidationInfo("Please select a valid account or enter valid mnemonic", accountTf);
+            if (StringUtil.isEmpty(signerAccountTf.getText())) {
+                signerAccountTf.setToolTipText("Please select a valid account or enter valid mnemonic");
+                return new ValidationInfo("Please select a valid account or enter valid mnemonic", signerAccountTf);
             } else {
-                accountTf.setToolTipText("");
+                signerAccountTf.setToolTipText("");
+            }
+
+            if (StringUtil.isEmpty(senderAddressTf.getText())) {
+                senderAddressTf.setToolTipText("Please select a valid sender address");
+                return new ValidationInfo("Please select a valid sender address", senderAddressTf);
+            } else {
+                senderAddressTf.setToolTipText("");
             }
         }
 
         return null;
     }
 
-    public void setAccountLabel(String label) {
+    public void setSigningAccountLabel(String label) {
         accountLabel.setToolTipText(label);
         accountLabel.setText(StringUtility.padLeft(label, 20));
     }
 
     public void setMenmonicLabel(String label) {
-        mnemonicTf.setText(StringUtility.padLeft(label, 20));
+        menmonicLabel.setText(StringUtility.padLeft(label, 20));
+    }
+
+    public void setSenderAddressLabel(String label) {
+        senderAddressLabel.setText(StringUtility.padLeft(label, 20));
     }
 
     public void setEnableMnemonic(boolean flag) {
@@ -126,7 +158,7 @@ public class AccountEntryInputForm {
         enableMultiSig = flag;
     }
 
-    public Account getAccount() {
+    public Account getSignerAccount() {
         String mnemonic = mnemonicTf.getText().trim();
         try {
             Account account = new Account(mnemonic);
@@ -136,17 +168,12 @@ public class AccountEntryInputForm {
         }
     }
 
-    public Address getAddress() {
-        Account account = getAccount();
-        if(account != null) {
-            return account.getAddress();
-        } else {
-            String address = accountTf.getText().trim();
-            try {
-                return new Address(address);
-            } catch (NoSuchAlgorithmException e) {
-                return null;
-            }
+    public Address getSenderAddress() {
+        String address = senderAddressTf.getText().trim();
+        try {
+            return new Address(address);
+        } catch (Exception e) {
+            return null;
         }
     }
 
@@ -157,8 +184,10 @@ public class AccountEntryInputForm {
         mnemonicTf.setText(mnemonic);
         try {
             Account account = new Account(mnemonic);
-            if(account != null)
-                accountTf.setText(account.getAddress().toString());
+            if(account != null) {
+                signerAccountTf.setText(account.getAddress().toString());
+                senderAddressTf.setText(account.getAddress().toString());
+            }
         } catch (Exception e) {
 
         }

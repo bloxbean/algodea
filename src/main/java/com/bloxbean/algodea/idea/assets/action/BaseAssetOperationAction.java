@@ -62,7 +62,7 @@ public abstract class BaseAssetOperationAction extends BaseTxnAction {
         }
 
         Account signerAccount = dialog.getSignerAccount(); //creator here is manager
-        Address senderAddress = dialog.getSignerAddress();
+        Address senderAddress = dialog.getSenderAddress();
         if (senderAddress == null ||
                 (signerAccount == null && RequestMode.EXPORT_UNSIGNED != dialog.getRequestMode())) {
             console.showErrorMessage("Sender account cannot be empty or invalid mnemonic phrase.");

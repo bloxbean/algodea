@@ -3,6 +3,7 @@ package com.bloxbean.algodea.idea.contracts.ui;
 import com.algorand.algosdk.account.Account;
 import com.algorand.algosdk.crypto.Address;
 import com.bloxbean.algodea.idea.account.model.AlgoAccount;
+import com.bloxbean.algodea.idea.account.model.AlgoMultisigAccount;
 import com.bloxbean.algodea.idea.account.service.AccountChooser;
 import com.bloxbean.algodea.idea.configuration.service.AlgoProjectState;
 import com.bloxbean.algodea.idea.configuration.service.NodeConfigState;
@@ -16,23 +17,26 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 public class AppTxnBaseParamEntryForm {
-    private JTextField fromAccountTf;
-    private JButton fromAccChooserBtn;
+    private JTextField signerAccountTf;
+    private JButton signerAccChooserBtn;
     private JPanel mainPanel;
     private JComboBox appIdCB;
-    private JTextField fromAccMnemonicTf;
+    private JTextField signerAccMnemonicTf;
     private JCheckBox useLastDeployedAppCB;
     private JLabel contractNameLabel;
+    private JTextField senderAddressTf;
+    private JButton senderAccountChooser;
+    private JButton senderMultiSigChooser;
 
     DefaultComboBoxModel<String> appIdComboBoxModel;
 
     Project project;
     private boolean mandatoryAccount = true;
     private boolean mandatoryAppId = true;
+    private boolean disableSignerFields = false;
 
     public AppTxnBaseParamEntryForm() {
 
@@ -67,15 +71,16 @@ public class AppTxnBaseParamEntryForm {
             }
         }
 
-        fromAccChooserBtn.addActionListener(e -> {
+        signerAccChooserBtn.addActionListener(e -> {
                 AlgoAccount algoAccount = AccountChooser.getSelectedAccount(project, true);
                 if(algoAccount != null) {
-                    fromAccountTf.setText(algoAccount.getAddress());
-                    fromAccMnemonicTf.setText(algoAccount.getMnemonic());
+                    signerAccountTf.setText(algoAccount.getAddress());
+                    signerAccMnemonicTf.setText(algoAccount.getMnemonic());
+                    senderAddressTf.setText(algoAccount.getAddress());
                 }
         });
 
-        fromAccMnemonicTf.addFocusListener(new FocusListener() {
+        signerAccMnemonicTf.addFocusListener(new FocusListener() {
             @Override
             public void focusGained(FocusEvent e) {
 
@@ -83,13 +88,29 @@ public class AppTxnBaseParamEntryForm {
 
             @Override
             public void focusLost(FocusEvent e) {
-                String mnemonic = fromAccMnemonicTf.getText();
+                String mnemonic = signerAccMnemonicTf.getText();
                 try {
                     Account account = new Account(mnemonic);
-                    fromAccountTf.setText(account.getAddress().toString());
+                    signerAccountTf.setText(account.getAddress().toString());
+                    senderAddressTf.setText(account.getAddress().toString());
                 } catch (Exception ex) {
-                    fromAccountTf.setText("");
+                    signerAccountTf.setText("");
+                    senderAddressTf.setText("");
                 }
+            }
+        });
+
+        senderAccountChooser.addActionListener(e -> {
+            AlgoAccount algoAccount = AccountChooser.getSelectedAccount(project, true);
+            if(algoAccount != null) {
+                senderAddressTf.setText(algoAccount.getAddress());
+            }
+        });
+
+        senderMultiSigChooser.addActionListener(e -> {
+            AlgoMultisigAccount multisigAccount = AccountChooser.getSelectedMultisigAccount(project, true);
+            if(multisigAccount != null) {
+                senderAddressTf.setText(multisigAccount.getAddress());
             }
         });
 
@@ -126,8 +147,12 @@ public class AppTxnBaseParamEntryForm {
             return new ValidationInfo("Please select or provide a valid App Id", appIdCB);
         }
 
-        if(StringUtil.isEmpty(fromAccountTf.getText()) && mandatoryAccount) {
-            return new ValidationInfo("Please select a valid from account or enter valid mnemonic", fromAccountTf);
+        if(StringUtil.isEmpty(signerAccountTf.getText()) && mandatoryAccount && !disableSignerFields) {
+            return new ValidationInfo("Please select a valid from account or enter valid mnemonic", signerAccountTf);
+        }
+
+        if(StringUtil.isEmpty(senderAddressTf.getText()) && mandatoryAccount) {
+            return new ValidationInfo("Please select a valid sender address", senderAddressTf);
         }
 
         return null;
@@ -146,8 +171,8 @@ public class AppTxnBaseParamEntryForm {
         }
     }
 
-    public Account getFromAccount() {
-        String mnemonic = fromAccMnemonicTf.getText().trim();
+    public Account getSignerAccount() {
+        String mnemonic = signerAccMnemonicTf.getText().trim();
         try {
             Account account = new Account(mnemonic);
             return account;
@@ -156,17 +181,12 @@ public class AppTxnBaseParamEntryForm {
         }
     }
 
-    public Address getFromAddress() {
-        Account account = getFromAccount();
-        if(account != null) {
-            return account.getAddress();
-        } else {
-            String address = fromAccountTf.getText().trim();
-            try {
-                return new Address(address);
-            } catch (NoSuchAlgorithmException e) {
-                return null;
-            }
+    public Address getSenderAddress() {
+        String address = senderAddressTf.getText().trim();
+        try {
+            return new Address(address);
+        } catch (Exception e) {
+            return null;
         }
     }
 
@@ -182,5 +202,12 @@ public class AppTxnBaseParamEntryForm {
         // TODO: place custom component creation code here
         appIdComboBoxModel = new DefaultComboBoxModel<>();
         appIdCB = new ComboBox(appIdComboBoxModel);
+    }
+
+    public void disbleSignerFields() {
+        disableSignerFields = true;
+        signerAccountTf.setEnabled(false);
+        signerAccChooserBtn.setEnabled(false);
+        signerAccMnemonicTf.setEnabled(false);
     }
 }

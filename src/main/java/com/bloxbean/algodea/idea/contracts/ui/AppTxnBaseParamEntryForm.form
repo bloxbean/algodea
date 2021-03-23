@@ -7,7 +7,7 @@
     </constraints>
     <properties>
       <minimumSize width="-1" height="-1"/>
-      <preferredSize width="300" height="200"/>
+      <preferredSize width="300" height="220"/>
     </properties>
     <border type="none"/>
     <children>
@@ -23,9 +23,13 @@
         <rowspec value="center:max(d;4px):noGrow"/>
         <rowspec value="top:3dlu:noGrow"/>
         <rowspec value="center:max(d;4px):noGrow"/>
+        <rowspec value="top:3dlu:noGrow"/>
+        <rowspec value="center:max(d;4px):noGrow"/>
         <colspec value="fill:d:noGrow"/>
         <colspec value="left:4dlu:noGrow"/>
         <colspec value="fill:d:grow"/>
+        <colspec value="left:4dlu:noGrow"/>
+        <colspec value="fill:max(d;4px):noGrow"/>
         <colspec value="left:4dlu:noGrow"/>
         <colspec value="fill:max(d;4px):noGrow"/>
         <colspec value="left:4dlu:noGrow"/>
@@ -58,12 +62,12 @@
             </constraints>
             <properties>
               <alignmentX value="0.5"/>
-              <text value="From Account*       "/>
+              <text value="Signer Account*    "/>
             </properties>
           </component>
-          <component id="db274" class="javax.swing.JTextField" binding="fromAccountTf">
+          <component id="db274" class="javax.swing.JTextField" binding="signerAccountTf">
             <constraints>
-              <grid row="6" column="2" row-span="1" col-span="9" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+              <grid row="6" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                 <preferred-size width="150" height="-1"/>
               </grid>
               <forms defaultalign-horz="false"/>
@@ -81,22 +85,13 @@
               <text value=" "/>
             </properties>
           </component>
-          <component id="8d262" class="javax.swing.JButton" binding="fromAccChooserBtn">
-            <constraints>
-              <grid row="6" column="12" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-              <forms/>
-            </constraints>
-            <properties>
-              <text value="..."/>
-            </properties>
-          </component>
           <component id="7d7dc" class="javax.swing.JLabel">
             <constraints>
               <grid row="10" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
               <forms/>
             </constraints>
             <properties>
-              <text value="&lt;html&gt;From Account&lt;br/&gt;Mnemonic&lt;/html&gt;"/>
+              <text value="&lt;html&gt;Signer Account&lt;br/&gt;Mnemonic&lt;/html&gt;"/>
             </properties>
           </component>
           <grid id="2b4ca" layout-manager="GridLayoutManager" row-count="1" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
@@ -145,7 +140,7 @@
               <text value=" "/>
             </properties>
           </component>
-          <component id="9967d" class="javax.swing.JPasswordField" binding="fromAccMnemonicTf">
+          <component id="9967d" class="javax.swing.JPasswordField" binding="signerAccMnemonicTf">
             <constraints>
               <grid row="10" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                 <preferred-size width="150" height="-1"/>
@@ -153,6 +148,51 @@
               <forms defaultalign-horz="false"/>
             </constraints>
             <properties/>
+          </component>
+          <component id="ff4f1" class="javax.swing.JLabel">
+            <constraints>
+              <grid row="12" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <forms/>
+            </constraints>
+            <properties>
+              <text value="Sender Address*"/>
+            </properties>
+          </component>
+          <component id="7fa81" class="javax.swing.JTextField" binding="senderAddressTf">
+            <constraints>
+              <grid row="12" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="150" height="-1"/>
+              </grid>
+              <forms defaultalign-horz="false"/>
+            </constraints>
+            <properties/>
+          </component>
+          <component id="e2e36" class="javax.swing.JButton" binding="senderMultiSigChooser">
+            <constraints>
+              <grid row="12" column="8" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <forms/>
+            </constraints>
+            <properties>
+              <text value="Multi-Sig"/>
+            </properties>
+          </component>
+          <component id="8d262" class="javax.swing.JButton" binding="signerAccChooserBtn">
+            <constraints>
+              <grid row="6" column="6" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <forms/>
+            </constraints>
+            <properties>
+              <text value="..."/>
+            </properties>
+          </component>
+          <component id="b86fa" class="javax.swing.JButton" binding="senderAccountChooser">
+            <constraints>
+              <grid row="12" column="6" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <forms/>
+            </constraints>
+            <properties>
+              <text value="..."/>
+            </properties>
           </component>
         </children>
       </grid>

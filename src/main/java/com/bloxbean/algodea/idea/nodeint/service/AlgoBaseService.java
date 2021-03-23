@@ -336,6 +336,10 @@ public class AlgoBaseService {
             transactionBuilder.lastValid(txnDetailsParameters.getLastValid());
         }
 
+        if(txnDetailsParameters.getRekey() != null) {
+            transactionBuilder.rekey(txnDetailsParameters.getRekey());
+        }
+
         return transactionBuilder;
     }
 

@@ -45,7 +45,7 @@ public class ReadStatefulAppAction extends AlgoBaseAction {
         AppReadMainPanel mainPanel = dialog.getAppReadMainPanel();
         AppTxnBaseParamEntryForm entryForm = dialog.getAppTxnBaseEntryForm();
         Long appId = entryForm.getAppId();
-        Address fromAddress = entryForm.getFromAddress();
+        Address fromAddress = entryForm.getSenderAddress();
 
         boolean localState = mainPanel.isLocalState();
         boolean globalState = mainPanel.isGlobalState();

@@ -22,6 +22,7 @@ import com.intellij.openapi.util.text.StringUtil;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.math.BigDecimal;
@@ -35,14 +36,14 @@ import static com.bloxbean.algodea.idea.common.AlgoConstants.ALGO;
 public class TransferTxnParamEntryForm {
     private final static Logger LOG = Logger.getInstance(TransactionDtlsEntryForm.class);
 
-    private JTextField fromAccountTf;
-    private JButton fromAccChooserBtn;
+    private JTextField signingAccountTf;
+    private JButton signingAccChooserBtn;
     private JPanel mainPanel;
-    private JTextField fromAccMnemonicTf;
+    private JTextField signingAccMnemonicTf;
     private JTextField toAccountTf;
     private JButton toAccChooserBtn;
     private JTextField amountTf;
-    private JButton multiSigBtn;
+    private JButton toAccMultiSigBtn;
     private JRadioButton algoRadioButton;
     private JRadioButton otherAssetsRadioButton;
     private JComboBox assetIdCB;
@@ -51,6 +52,9 @@ public class TransferTxnParamEntryForm {
     private JTextField algoBalanceTf;
     private JTextField closeReminderTo;
     private JButton closeReminderAccountChooserBtn;
+    private JTextField fromAddressTf;
+    private JButton fromAddressChooser;
+    private JButton fromAddressMultiSigChooser;
     private DefaultComboBoxModel assetIdComboBoxModel;
     private AlgoAccountService algoAccountService;
     private AlgoConsole console;
@@ -71,11 +75,13 @@ public class TransferTxnParamEntryForm {
             throw deploymentTargetNotConfigured;
         }
 
-        fromAccChooserBtn.addActionListener(e -> {
+        signingAccChooserBtn.addActionListener(e -> {
                 AlgoAccount algoAccount = AccountChooser.getSelectedAccount(project, true);
                 if(algoAccount != null) {
-                    fromAccountTf.setText(algoAccount.getAddress());
-                    fromAccMnemonicTf.setText(algoAccount.getMnemonic());
+                    signingAccountTf.setText(algoAccount.getAddress());
+                    signingAccMnemonicTf.setText(algoAccount.getMnemonic());
+
+                    fromAddressTf.setText(algoAccount.getAddress());
 
                     clearAssetRelatedData();
                     //Set Algo balance
@@ -83,7 +89,7 @@ public class TransferTxnParamEntryForm {
                 }
         });
 
-        fromAccMnemonicTf.addFocusListener(new FocusListener() {
+        signingAccMnemonicTf.addFocusListener(new FocusListener() {
             @Override
             public void focusGained(FocusEvent e) {
 
@@ -91,26 +97,56 @@ public class TransferTxnParamEntryForm {
 
             @Override
             public void focusLost(FocusEvent e) {
-                String mnemonic = fromAccMnemonicTf.getText();
+                String mnemonic = signingAccMnemonicTf.getText();
                 try {
                     Account account = new Account(mnemonic);
-                    String oldFromAcc = fromAccountTf.getText();
+                    String oldFromAcc = signingAccountTf.getText();
 
-                    fromAccountTf.setText(account.getAddress().toString());
+                    signingAccountTf.setText(account.getAddress().toString());
+                    fromAddressTf.setText(account.getAddress().toString());
 
-                    if(oldFromAcc != null && !oldFromAcc.equals(fromAccountTf.getText())) {
+                    if(oldFromAcc != null && !oldFromAcc.equals(signingAccountTf.getText())) {
                         clearAssetRelatedData();
 
                         setAlgoBalanceForFromAccount(project, account.getAddress().toString());
                     }
 
                 } catch (Exception ex) {
-                    fromAccountTf.setText("");
+                    signingAccountTf.setText("");
+                    fromAddressTf.setText("");
                     clearAssetRelatedData();
                 }
             }
         });
 
+        //TODO
+        fromAddressTf.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent e) {
+                clearAssetRelatedData();
+                setAlgoBalanceForFromAccount(project, fromAddressTf.getText());
+            }
+        });
+
+        fromAddressChooser.addActionListener(e -> {
+            AlgoAccount algoAccount = AccountChooser.getSelectedAccount(project, true);
+            if(algoAccount != null) {
+                fromAddressTf.setText(algoAccount.getAddress());
+                clearAssetRelatedData();
+                //Set Algo balance
+                setAlgoBalanceForFromAccount(project, algoAccount.getAddress().toString());
+            }
+        });
+
+        fromAddressMultiSigChooser.addActionListener(e -> {
+            AlgoMultisigAccount algoMultisigAccount = AccountChooser.getSelectedMultisigAccount(project, true);
+            if(algoMultisigAccount != null) {
+                fromAddressTf.setText(algoMultisigAccount.getAddress());
+                clearAssetRelatedData();
+                //Set Algo balance
+                setAlgoBalanceForFromAccount(project, algoMultisigAccount.getAddress().toString());
+            }
+        });
 
         toAccChooserBtn.addActionListener(e -> {
             AlgoAccount algoAccount = AccountChooser.getSelectedAccount(project, true);
@@ -119,7 +155,7 @@ public class TransferTxnParamEntryForm {
             }
         });
 
-        multiSigBtn.addActionListener(e -> {
+        toAccMultiSigBtn.addActionListener(e -> {
             AlgoMultisigAccount algoMultiSigAccount = AccountChooser.getSelectedMultisigAccount(project, true);
             if(algoMultiSigAccount != null) {
                 toAccountTf.setText(algoMultiSigAccount.getAddress());
@@ -132,7 +168,7 @@ public class TransferTxnParamEntryForm {
                setUnitLabel();
 
                 try {
-                    Address fromAccount = new Address(StringUtil.trim(fromAccountTf.getText()));
+                    Address fromAccount = new Address(StringUtil.trim(signingAccountTf.getText()));
                     //getAvailableAlgoBalance(project, fromAccount.toString(), (l) -> algoBalanceLabel.setText(String.valueOf(l)));
                 } catch(Exception ex) {
                     console.showErrorMessage("Unable fetch balance", ex);
@@ -263,8 +299,8 @@ public class TransferTxnParamEntryForm {
 
     public @Nullable ValidationInfo doValidate() {
 
-        if(StringUtil.isEmpty(fromAccountTf.getText())) {
-            return new ValidationInfo("Please select a valid from account or enter valid mnemonic", fromAccountTf);
+        if(StringUtil.isEmpty(signingAccountTf.getText())) {
+            return new ValidationInfo("Please select a valid from account or enter valid mnemonic", signingAccountTf);
         }
 
         if(!isAlgoTransfer()) {
@@ -273,8 +309,12 @@ public class TransferTxnParamEntryForm {
             }
         }
 
+        if(getFromAddress() == null) {
+            return new ValidationInfo("Please enter a valid sender address", fromAddressTf);
+        }
+
         if(getToAccount() == null) {
-            return new ValidationInfo("Please select a valid to account", toAccountTf);
+            return new ValidationInfo("Please select a valid receiver address", toAccountTf);
         }
 
         try {
@@ -296,8 +336,8 @@ public class TransferTxnParamEntryForm {
         return mainPanel;
     }
 
-    public Account getFromAccount() {
-        String mnemonic = fromAccMnemonicTf.getText().trim();
+    public Account getSigningAccount() {
+        String mnemonic = signingAccMnemonicTf.getText().trim();
         try {
             Account account = new Account(mnemonic);
             return account;
@@ -308,16 +348,11 @@ public class TransferTxnParamEntryForm {
 
     //Only use for read-only account where mnemonic is empty
     public Address getFromAddress() {
-        Account fromAccount = getFromAccount();
-        if(fromAccount != null) {
-            return fromAccount.getAddress();
-        } else {
-            String fromAddress = fromAccountTf.getText().trim();
-            try {
-                return new Address(fromAddress);
-            } catch (NoSuchAlgorithmException e) {
-                return null;
-            }
+        String fromAddress = fromAddressTf.getText().trim();
+        try {
+            return new Address(fromAddress);
+        } catch (Exception e) {
+            return null;
         }
     }
 

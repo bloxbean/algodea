@@ -64,7 +64,7 @@ public class AssetCreateAction extends BaseTxnAction {
         }
 
         Account creatorAccount = dialog.getSignerAccount();
-        Address creatorAddress = dialog.getSignerAddress();
+        Address creatorAddress = dialog.getSenderAddress();
         if (creatorAddress == null ||
                 (creatorAccount == null && RequestMode.EXPORT_UNSIGNED != dialog.getRequestMode())) {
             console.showErrorMessage("Creator account cannot be empty or invalid mnemonic phrase.");

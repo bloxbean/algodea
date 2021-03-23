@@ -50,10 +50,8 @@ public class TEALSendTransactionDialog extends TxnDialogWrapper implements Logic
     private JButton closeReminderAccountChooserBtn;
     private LogicSigSigningAccountForm logicSigSigningAccountForm;
     private ArgsInputForm argInputForm;
-    private JTextField senderAccountTf;
     private JButton closeReminderToMultiSigChooserBtn;
 
-//    private String lsigPath;
     private DefaultComboBoxModel assetsComboBoxModel;
     private AlgoConsole console;
     private AlgoAccountService algoAccountService;
@@ -84,7 +82,7 @@ public class TEALSendTransactionDialog extends TxnDialogWrapper implements Logic
         argInputForm.initializeData(project);
 
         if(!StringUtil.isEmpty(contractHash)) //Default mode is contract type
-            senderAccountTf.setText(contractHash);
+            logicSigSigningAccountForm.setSenderAddress(contractHash);
 
         try {
             algoAccountService = new AlgoAccountService(project, new LogListenerAdapter(console));
@@ -151,17 +149,17 @@ public class TEALSendTransactionDialog extends TxnDialogWrapper implements Logic
     //Change Listener methods
     @Override
     public void contractTypeSelected() {
-        senderAccountTf.setText(contractHash);
+        logicSigSigningAccountForm.setSenderAddress(contractHash);
     }
 
     @Override
     public void delegationTypeSelect() {
-        senderAccountTf.setText("");
+        logicSigSigningAccountForm.setSenderAddress("");
     }
 
     @Override
     public void signerAddressChanged(String address) {
-        senderAccountTf.setText(address);
+        //Already handled in logicSigSigningAccountForm
     }
     //Change Listener methods end
 
@@ -239,15 +237,7 @@ public class TEALSendTransactionDialog extends TxnDialogWrapper implements Logic
     }
 
     public Address getSenderAddress() {
-        String sender = StringUtil.trim(senderAccountTf.getText());
-        if(StringUtil.isEmpty(sender))
-            return null;
-
-        try {
-            return new Address(sender);
-        } catch (Exception e) {
-            return null;
-        }
+        return logicSigSigningAccountForm.getSenderAddress();
     }
 
     public Address getReceiverAddress() {

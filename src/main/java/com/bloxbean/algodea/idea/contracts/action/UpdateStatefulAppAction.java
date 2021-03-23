@@ -124,8 +124,8 @@ public class UpdateStatefulAppAction extends BaseTxnAction {
                 return;
             }
 
-            Account signerAccount = appTxnBaseForm.getFromAccount();
-            Address senderAddress = appTxnBaseForm.getFromAddress();
+            Account signerAccount = appTxnBaseForm.getSignerAccount();
+            Address senderAddress = appTxnBaseForm.getSenderAddress();
             if (senderAddress == null ||
                     (signerAccount == null && RequestMode.EXPORT_UNSIGNED != dialog.getRequestMode())) {
                 console.showErrorMessage("Invalid or null from account.");

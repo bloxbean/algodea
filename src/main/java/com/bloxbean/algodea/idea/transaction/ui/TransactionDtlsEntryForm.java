@@ -1,6 +1,10 @@
 package com.bloxbean.algodea.idea.transaction.ui;
 
+import com.algorand.algosdk.crypto.Address;
 import com.algorand.algosdk.v2.client.model.TransactionParametersResponse;
+import com.bloxbean.algodea.idea.account.model.AlgoAccount;
+import com.bloxbean.algodea.idea.account.model.AlgoMultisigAccount;
+import com.bloxbean.algodea.idea.account.service.AccountChooser;
 import com.bloxbean.algodea.idea.nodeint.model.ArgType;
 import com.bloxbean.algodea.idea.nodeint.model.Lease;
 import com.bloxbean.algodea.idea.nodeint.model.Note;
@@ -36,6 +40,9 @@ public class TransactionDtlsEntryForm {
     private JTextField firstValidTf;
     private JTextField lastValidTf;
     private JButton fetchSuggedParamsBtn;
+    private JTextField rekeyToTf;
+    private JButton rekeyAccountChooser;
+    private JButton rekeyMultiSigAccountChooser;
 
     DefaultComboBoxModel<ArgType> noteTypeDefaultComboBoxModel;
     DefaultComboBoxModel<ArgType> leaseTypeDefaultComboBoxModel;
@@ -80,6 +87,20 @@ public class TransactionDtlsEntryForm {
                     }
                 }
             }, "Fetching suggested params ...", true, project);
+        });
+
+        rekeyAccountChooser.addActionListener(e -> {
+            AlgoAccount algoAccount = AccountChooser.getSelectedAccount(project, true);
+            if (algoAccount != null) {
+                rekeyToTf.setText(algoAccount.getAddress());
+            }
+        });
+
+        rekeyMultiSigAccountChooser.addActionListener(e -> {
+            AlgoMultisigAccount algoMultisigAccount = AccountChooser.getSelectedMultisigAccount(project, true);
+            if (algoMultisigAccount != null) {
+                rekeyToTf.setText(algoMultisigAccount.getAddress());
+            }
         });
     }
 
@@ -165,6 +186,17 @@ public class TransactionDtlsEntryForm {
         }
     }
 
+    private Address getReKeyToAddress() {
+        if(StringUtil.isEmpty(rekeyToTf.getText()))
+            return null;
+
+        try {
+            return new Address(StringUtil.trim(rekeyToTf.getText()));
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     public TxnDetailsParameters getTxnDetailsParameters() throws Exception {
         TxnDetailsParameters txnDetailsParameters = new TxnDetailsParameters();
         txnDetailsParameters.setNote(getNoteBytes());
@@ -173,6 +205,7 @@ public class TransactionDtlsEntryForm {
         txnDetailsParameters.setFlatFee(getFlatFee());
         txnDetailsParameters.setFirstValid(getFirstValid());
         txnDetailsParameters.setLastValid(getLastValid());
+        txnDetailsParameters.setRekey(getReKeyToAddress());
 
         return txnDetailsParameters;
     }
@@ -244,6 +277,12 @@ public class TransactionDtlsEntryForm {
             }
         } catch (Exception e) {
             return new ValidationInfo("Invalid value for last valid round", lastValidTf);
+        }
+
+        try {
+            getReKeyToAddress();
+        } catch (Exception e) {
+            return new ValidationInfo("Invalid Rekey To address", rekeyToTf);
         }
 
         return null;

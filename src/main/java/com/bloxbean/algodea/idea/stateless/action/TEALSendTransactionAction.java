@@ -292,6 +292,7 @@ public class TEALSendTransactionAction extends BaseTxnAction {
 
             LogicSigSigningAccountForm accountForm = dialog.getLogicSigSignAccountForm();
             Account account = accountForm.getAccount();
+            senderAddress = accountForm.getSenderAddress();
 
             List<byte[]> args = null;
             try {
@@ -321,7 +322,7 @@ public class TEALSendTransactionAction extends BaseTxnAction {
                     console.showErrorMessage("Invalid signing account");
                     return;
                 }
-                senderAddress = logicSigParams.getSigningAccounts().get(0).getAddress();
+                //TODO senderAddress = logicSigParams.getSigningAccounts().get(0).getAddress();
             }
 
             receiverAddress = dialog.getReceiverAddress();

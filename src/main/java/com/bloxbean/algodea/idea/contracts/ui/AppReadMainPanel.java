@@ -25,6 +25,7 @@ public class AppReadMainPanel {
 
     protected @Nullable ValidationInfo doValidate() {
         if(isLocalState() || isBoth()) {
+            appTxnBaseEntryForm.disbleSignerFields();
             appTxnBaseEntryForm.setMandatoryAccountCheck(true);
         } else if(isGlobalState()) {
             appTxnBaseEntryForm.setMandatoryAccountCheck(false);
