@@ -1,8 +1,9 @@
-### 0.4.0-beta1
+### 0.4.0-beta2
   - Rekey support [#19]
   - Sign and submit exported transaction file [#20]
   - Payment and Opt-In transaction using Stateless TEAL file [#17, #18]
   - Support for Algoexplorer api endpoint
+  - UX enhancements [#20]  
   - Fixes : [#10, #11, #12, #13, #14]
 ### 0.3.3
   - Fixes : Enable "Export txn" for read-only accounts [#7, #8, #9]
