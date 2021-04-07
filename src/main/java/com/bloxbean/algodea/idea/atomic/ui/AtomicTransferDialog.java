@@ -11,9 +11,11 @@ import com.bloxbean.algodea.idea.account.service.AccountService;
 import com.bloxbean.algodea.idea.atomic.model.AtomicTransaction;
 import com.bloxbean.algodea.idea.common.AlgoConstants;
 import com.bloxbean.algodea.idea.common.AlgoIcons;
+import com.bloxbean.algodea.idea.configuration.action.ConfigurationAction;
 import com.bloxbean.algodea.idea.core.action.util.AlgoContractModuleHelper;
 import com.bloxbean.algodea.idea.dryrun.ui.DryRunContextEntryDialog;
 import com.bloxbean.algodea.idea.nodeint.common.RequestMode;
+import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
 import com.bloxbean.algodea.idea.nodeint.model.DryRunContext;
 import com.bloxbean.algodea.idea.nodeint.service.AtomicTransactionService;
 import com.bloxbean.algodea.idea.util.IdeaUtil;
@@ -181,11 +183,16 @@ public class AtomicTransferDialog extends DialogWrapper {
     private void attachSignListener() {
         signButton.addActionListener(e -> {
             AtomicTransaction atomicTransaction = getSelectedTxn();
-            signTransaction(atomicTransaction);
+            try {
+                signTransaction(atomicTransaction);
+            } catch (DeploymentTargetNotConfigured ex) {
+                IdeaUtil.showNotification(project, "Sign Transaction", "Algorand Node for deployment node is not configured. Click here to configure.",
+                        NotificationType.ERROR, ConfigurationAction.ACTION_ID);
+            }
         });
     }
 
-    private void signTransaction(AtomicTransaction atomicTransaction) {
+    private void signTransaction(AtomicTransaction atomicTransaction) throws DeploymentTargetNotConfigured {
         if (atomicTransaction == null) {
             Messages.showWarningDialog("Please select a transaction to sign", "Sign Transaction");
             return;
@@ -198,7 +205,7 @@ public class AtomicTransferDialog extends DialogWrapper {
 
         SigningAccountInputDialog singingAccDialog = new SigningAccountInputDialog(project, module);
         if(algoAccount != null) {
-            singingAccDialog.getAccountEntryInputForm().setMnemonic(algoAccount.getMnemonic());
+            singingAccDialog.getAccountEntryInputForm().setSenderAddress(project, algoAccount);
         }
 
         boolean ok = singingAccDialog.showAndGet();
@@ -433,7 +440,15 @@ public class AtomicTransferDialog extends DialogWrapper {
             @Override
             public void actionPerformed(@NotNull AnActionEvent e) {
                 if(atomicTransaction != null) {
-                    signTransaction(atomicTransaction);
+                    try {
+                        signTransaction(atomicTransaction);
+                    } catch (DeploymentTargetNotConfigured ex) {
+                        if(LOG.isDebugEnabled()) {
+                            LOG.error("Error in signing process", ex);
+                        }
+                        IdeaUtil.showNotification(project, "Sign Transaction", "Algorand Node for deployment node is not configured. Click here to configure.",
+                                NotificationType.ERROR, ConfigurationAction.ACTION_ID);
+                    }
                 }
             }
         };

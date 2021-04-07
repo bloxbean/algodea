@@ -2,6 +2,7 @@ package com.bloxbean.algodea.idea.atomic.ui;
 
 import com.algorand.algosdk.account.Account;
 import com.algorand.algosdk.crypto.LogicsigSignature;
+import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
 import com.bloxbean.algodea.idea.transaction.ui.AccountEntryInputForm;
 import com.bloxbean.algodea.idea.util.StringUtility;
 import com.intellij.openapi.module.Module;
@@ -29,7 +30,7 @@ public class SigningAccountInputDialog extends DialogWrapper {
     private String ACCOUNT_TYPE = "Account";
     private String LSIG_TYPE = "Logic Sig file";
 
-    public SigningAccountInputDialog(@Nullable Project project, Module module) {
+    public SigningAccountInputDialog(@Nullable Project project, Module module) throws DeploymentTargetNotConfigured {
         super(project, true);
         init();
         setTitle("Signing Account");
@@ -97,8 +98,6 @@ public class SigningAccountInputDialog extends DialogWrapper {
     private void createUIComponents() {
         // TODO: place custom component creation code here
         accountEntryInputForm = new AccountEntryInputForm(true, false);
-        accountEntryInputForm.setSigningAccountLabel("Account");
-        accountEntryInputForm.setMnemonic("Mnemonic");
         accountEntryInputForm.setEnableMnemonic(true);
         accountEntryInputForm.setEnableMultiSig(false);
         accountEntryInputForm.disableSenderAddressFields();

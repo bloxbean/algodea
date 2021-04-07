@@ -9,6 +9,7 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.Messages;
 
 public class IdeaUtil {
     public final static String PLUGIN_ID = "com.bloxbean.algorand";
@@ -68,5 +69,13 @@ public class IdeaUtil {
 
     public static void invokeLater(Runnable runnable, ModalityState state) {
         ApplicationManager.getApplication().invokeLater(runnable, state);
+    }
+
+    public static void authorizedAddressNotFoundWarning() {
+        //TODO alert
+        ApplicationManager.getApplication().invokeLater(() -> {
+            Messages.showWarningDialog("Authorized Account is not found in the local wallet. <br/>Please provide a valid Authorized Mnemonic " +
+                    "because Sender Address is rekeyed to AuthAddr", "Authorized Account Not Found");
+        });
     }
 }

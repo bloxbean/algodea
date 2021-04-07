@@ -14,6 +14,7 @@ import com.bloxbean.algodea.idea.core.action.util.AlgoContractModuleHelper;
 import com.bloxbean.algodea.idea.core.exception.LocalSDKNotConfigured;
 import com.bloxbean.algodea.idea.language.psi.TEALFile;
 import com.bloxbean.algodea.idea.nodeint.AlgoServerConfigurationHelper;
+import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
 import com.bloxbean.algodea.idea.nodeint.model.LogicSigType;
 import com.bloxbean.algodea.idea.stateless.model.LogicSigParams;
 import com.bloxbean.algodea.idea.stateless.ui.LogicSigSignParamDialog;
@@ -243,7 +244,15 @@ public class LogicSigGenerateAction extends AnAction {
             }
         };
 
-        LogicSigSignParamDialog dialog = new LogicSigSignParamDialog(project);
+        LogicSigSignParamDialog dialog = null;
+        try {
+            dialog = new LogicSigSignParamDialog(project);
+        } catch (DeploymentTargetNotConfigured deploymentTargetNotConfigured) {
+            //TODO
+            IdeaUtil.showNotification(project, "Logic-sig generation failed", "Algorand Node for deployment node is not configured. Click here to configure.",
+                    NotificationType.ERROR, ConfigurationAction.ACTION_ID);
+            return;
+        }
 
         boolean ok = dialog.showAndGet();
         if(!ok) {

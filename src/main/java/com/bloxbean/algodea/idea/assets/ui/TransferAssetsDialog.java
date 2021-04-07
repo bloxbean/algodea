@@ -1,6 +1,7 @@
 package com.bloxbean.algodea.idea.assets.ui;
 
 import com.bloxbean.algodea.idea.assets.model.AssetMeta;
+import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
 import com.bloxbean.algodea.idea.transaction.ui.AccountEntryInputForm;
 import com.bloxbean.algodea.idea.transaction.ui.ManagedAccountEntryInputForm;
 import com.bloxbean.algodea.idea.transaction.ui.TransactionDtlsEntryForm;
@@ -24,7 +25,7 @@ public class TransferAssetsDialog extends DialogWrapper  {
     private JPanel mainPanel;
     private JLabel unitNameLabel;
 
-    public TransferAssetsDialog(@Nullable Project project) {
+    public TransferAssetsDialog(@Nullable Project project) throws DeploymentTargetNotConfigured {
         super(project, true);
         init();
         setTitle("Asset Transfer");
@@ -34,7 +35,7 @@ public class TransferAssetsDialog extends DialogWrapper  {
         initialize(project);
     }
 
-    public void initialize(Project project) {
+    public void initialize(Project project) throws DeploymentTargetNotConfigured {
 
         senderAccountEntryInputForm.initializeData(project);
         receiverAccountPanel.initializeData(project);

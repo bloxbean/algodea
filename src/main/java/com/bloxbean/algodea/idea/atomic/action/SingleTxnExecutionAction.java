@@ -170,14 +170,14 @@ public class SingleTxnExecutionAction extends BaseTxnAction {
         }
     }
 
-    private SignedTransaction signTransaction(Project project, Module module, Transaction txn) {
+    private SignedTransaction signTransaction(Project project, Module module, Transaction txn) throws DeploymentTargetNotConfigured {
         Address address = txn.sender;
         AccountService accountService = AccountService.getAccountService();
         AlgoAccount algoAccount = accountService.getAccountByAddress(address.toString());
 
         SigningAccountInputDialog singingAccDialog = new SigningAccountInputDialog(project, module);
         if(algoAccount != null) {
-            singingAccDialog.getAccountEntryInputForm().setMnemonic(algoAccount.getMnemonic());
+            singingAccDialog.getAccountEntryInputForm().setSenderAddress(project, algoAccount);
         }
 
         boolean ok1 = singingAccDialog.showAndGet();

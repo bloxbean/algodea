@@ -45,7 +45,13 @@ public abstract class BaseAssetOperationAction extends BaseTxnAction {
         AlgoConsole console = AlgoConsole.getConsole(project);
         console.clearAndshow();
 
-        AssetConfigurationDialog dialog = new AssetConfigurationDialog(project, getActionType(), getTitle());
+        AssetConfigurationDialog dialog = null;
+        try {
+            dialog = new AssetConfigurationDialog(project, getActionType(), getTitle());
+        } catch (DeploymentTargetNotConfigured deploymentTargetNotConfigured) {
+            warnDeploymentTargetNotConfigured(project, getTitle());
+            return;
+        }
         boolean ok = dialog.showAndGet();
 
         if(!ok) {

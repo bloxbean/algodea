@@ -1,5 +1,6 @@
 package com.bloxbean.algodea.idea.contracts.ui;
 
+import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
 import com.bloxbean.algodea.idea.transaction.ui.TransactionDtlsEntryForm;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ValidationInfo;
@@ -15,11 +16,11 @@ public class UpdateAppMainPanel {
     private AppTxnDetailsEntryForm appTxnDetailsEntryForm;
     private TransactionDtlsEntryForm txnDetailsEntryForm;
 
-    public UpdateAppMainPanel(Project project, String contract) {
+    public UpdateAppMainPanel(Project project, String contract) throws DeploymentTargetNotConfigured {
         initialize(project, contract);
     }
 
-    private void initialize(Project project, String contract) {
+    private void initialize(Project project, String contract) throws DeploymentTargetNotConfigured {
         appTxnBaseForm.initializeData(project);
         updateAppEntryForm.initializeData(project, contract );
         appTxnDetailsEntryForm.initializeData(project);

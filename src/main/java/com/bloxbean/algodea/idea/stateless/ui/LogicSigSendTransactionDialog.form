@@ -3,17 +3,18 @@
   <grid id="27dc6" binding="mainPanel" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="0" left="0" bottom="0" right="0"/>
     <constraints>
-      <xy x="20" y="20" width="850" height="550"/>
+      <xy x="20" y="20" width="850" height="650"/>
     </constraints>
     <properties>
-      <minimumSize width="850" height="400"/>
+      <minimumSize width="850" height="650"/>
+      <preferredSize width="648" height="586"/>
     </properties>
     <border type="none"/>
     <children>
       <tabbedpane id="c5866" binding="tabbedPane1" default-binding="true">
         <constraints>
           <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
-            <preferred-size width="200" height="200"/>
+            <preferred-size width="600" height="500"/>
           </grid>
         </constraints>
         <properties/>
@@ -24,17 +25,16 @@
             <constraints>
               <tabbedpane title="Logic Sig"/>
             </constraints>
-            <properties/>
+            <properties>
+              <minimumSize width="644" height="300"/>
+              <preferredSize width="644" height="300"/>
+            </properties>
             <border type="none"/>
             <children>
               <grid id="b2623" layout-manager="FormLayout">
                 <rowspec value="center:max(d;4px):noGrow"/>
                 <rowspec value="top:3dlu:noGrow"/>
                 <rowspec value="center:d:noGrow"/>
-                <rowspec value="top:3dlu:noGrow"/>
-                <rowspec value="center:max(d;4px):noGrow"/>
-                <rowspec value="top:3dlu:noGrow"/>
-                <rowspec value="center:max(d;4px):noGrow"/>
                 <rowspec value="top:3dlu:noGrow"/>
                 <rowspec value="center:max(d;4px):noGrow"/>
                 <rowspec value="top:3dlu:noGrow"/>
@@ -142,7 +142,7 @@
                   </component>
                   <component id="52915" class="javax.swing.JLabel">
                     <constraints>
-                      <grid row="20" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                      <grid row="18" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                       <forms/>
                     </constraints>
                     <properties>
@@ -228,34 +228,16 @@
                       <text value="Asset Type"/>
                     </properties>
                   </component>
-                  <component id="e0d17" class="javax.swing.JRadioButton" binding="algoTypeRB">
-                    <constraints>
-                      <grid row="14" column="2" row-span="1" col-span="5" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                      <forms/>
-                    </constraints>
-                    <properties>
-                      <text value="Algo"/>
-                    </properties>
-                  </component>
-                  <component id="1353b" class="javax.swing.JRadioButton" binding="asaTypeRB">
-                    <constraints>
-                      <grid row="16" column="2" row-span="1" col-span="5" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                      <forms/>
-                    </constraints>
-                    <properties>
-                      <text value="Algorand Standard Asset"/>
-                    </properties>
-                  </component>
                   <component id="7c728" class="javax.swing.JComboBox" binding="assetsCB" custom-create="true">
                     <constraints>
-                      <grid row="18" column="2" row-span="1" col-span="5" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                      <grid row="16" column="2" row-span="1" col-span="5" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                       <forms/>
                     </constraints>
                     <properties/>
                   </component>
                   <component id="93e44" class="javax.swing.JButton" binding="fetchAssetsBtn">
                     <constraints>
-                      <grid row="18" column="8" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                      <grid row="16" column="8" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                       <forms/>
                     </constraints>
                     <properties>
@@ -267,8 +249,10 @@
                     <colspec value="fill:d:noGrow"/>
                     <colspec value="left:4dlu:noGrow"/>
                     <colspec value="fill:max(d;4px):noGrow"/>
+                    <colspec value="left:4dlu:noGrow"/>
+                    <colspec value="fill:max(d;4px):noGrow"/>
                     <constraints>
-                      <grid row="20" column="2" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                      <grid row="18" column="2" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                       <forms defaultalign-vert="false"/>
                     </constraints>
                     <properties/>
@@ -288,12 +272,19 @@
                       </component>
                       <component id="b0a66" class="javax.swing.JLabel" binding="unitLabel">
                         <constraints>
-                          <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                          <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                           <forms/>
                         </constraints>
                         <properties>
                           <text value=""/>
                         </properties>
+                      </component>
+                      <component id="4a4d4" class="javax.swing.JComboBox" binding="algoUnitCB" custom-create="true">
+                        <constraints>
+                          <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                          <forms/>
+                        </constraints>
+                        <properties/>
                       </component>
                     </children>
                   </grid>
@@ -306,52 +297,60 @@
                       <text value="Multi-Sig"/>
                     </properties>
                   </component>
-                  <component id="75c82" class="javax.swing.JLabel">
+                  <grid id="5dd78" layout-manager="FormLayout">
+                    <rowspec value="center:d:grow"/>
+                    <colspec value="fill:d:noGrow"/>
+                    <colspec value="left:4dlu:noGrow"/>
+                    <colspec value="fill:max(d;4px):noGrow"/>
                     <constraints>
-                      <grid row="22" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                      <forms/>
-                    </constraints>
-                    <properties>
-                      <text value="Close Reminder To"/>
-                    </properties>
-                  </component>
-                  <component id="c3c00" class="javax.swing.JTextField" binding="closeReminderTo">
-                    <constraints>
-                      <grid row="22" column="2" row-span="1" col-span="4" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                        <preferred-size width="150" height="-1"/>
-                      </grid>
-                      <forms defaultalign-horz="false"/>
+                      <grid row="14" column="2" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                      <forms defaultalign-vert="false"/>
                     </constraints>
                     <properties/>
-                  </component>
-                  <component id="4085e" class="javax.swing.JButton" binding="closeReminderAccountChooserBtn">
+                    <border type="none"/>
+                    <children>
+                      <component id="e0d17" class="javax.swing.JRadioButton" binding="algoTypeRB">
+                        <constraints>
+                          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                          <forms/>
+                        </constraints>
+                        <properties>
+                          <text value="Algo"/>
+                        </properties>
+                      </component>
+                      <component id="1353b" class="javax.swing.JRadioButton" binding="asaTypeRB">
+                        <constraints>
+                          <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                          <forms/>
+                        </constraints>
+                        <properties>
+                          <text value="Algorand Standard Asset"/>
+                        </properties>
+                      </component>
+                    </children>
+                  </grid>
+                  <component id="61534" class="javax.swing.JLabel">
                     <constraints>
-                      <grid row="22" column="8" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                      <grid row="16" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                       <forms/>
                     </constraints>
                     <properties>
-                      <text value="..."/>
-                    </properties>
-                  </component>
-                  <component id="ef05f" class="javax.swing.JButton" binding="closeReminderMultiSigBtn">
-                    <constraints>
-                      <grid row="22" column="10" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-                      <forms/>
-                    </constraints>
-                    <properties>
-                      <text value="Multi-Sig"/>
+                      <text value="Select ASA"/>
                     </properties>
                   </component>
                 </children>
               </grid>
             </children>
           </grid>
-          <grid id="d0ba1" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+          <grid id="d0ba1" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
             <margin top="0" left="0" bottom="0" right="0"/>
             <constraints>
-              <tabbedpane title="Txn Details"/>
+              <tabbedpane title="Txn Options"/>
             </constraints>
-            <properties/>
+            <properties>
+              <minimumSize width="554" height="500"/>
+              <preferredSize width="554" height="500"/>
+            </properties>
             <border type="none"/>
             <children>
               <nested-form id="56e7a" form-file="com/bloxbean/algodea/idea/transaction/ui/TransactionDtlsEntryForm.form" binding="transactionDtlsEntryForm" custom-create="true">
@@ -359,11 +358,6 @@
                   <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                 </constraints>
               </nested-form>
-              <vspacer id="d4d96">
-                <constraints>
-                  <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
-                </constraints>
-              </vspacer>
             </children>
           </grid>
         </children>

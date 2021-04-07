@@ -35,7 +35,13 @@ public class ReadStatefulAppAction extends AlgoBaseAction {
         if(project == null)
             return;
 
-        AppReadDialog dialog = new AppReadDialog(project, true);
+        AppReadDialog dialog = null;
+        try {
+            dialog = new AppReadDialog(project, true);
+        } catch (DeploymentTargetNotConfigured deploymentTargetNotConfigured) {
+            warnDeploymentTargetNotConfigured(project, "Application - Read");
+            return;
+        }
         boolean ok = dialog.showAndGet();
 
         if(!ok) {

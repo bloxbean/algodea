@@ -13,6 +13,7 @@ public class TxnDetailsParameters {
     private BigInteger flatFee;
     private BigInteger firstValid;
     private BigInteger lastValid;
+    private Address closeRemainderTo;
     private Address rekey;
 
     private List<Address> accounts;
@@ -73,6 +74,14 @@ public class TxnDetailsParameters {
 
     public void setLastValid(BigInteger lastValid) {
         this.lastValid = lastValid;
+    }
+
+    public Address getCloseRemainderTo() {
+        return closeRemainderTo;
+    }
+
+    public void setCloseRemainderTo(Address closeRemainderTo) {
+        this.closeRemainderTo = closeRemainderTo;
     }
 
     public Address getRekey() {

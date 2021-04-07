@@ -47,7 +47,13 @@ public class AssetCreateAction extends BaseTxnAction {
         AlgoConsole console = AlgoConsole.getConsole(project);
         console.clearAndshow();
 
-        AssetConfigurationDialog dialog = new AssetConfigurationDialog(project);
+        AssetConfigurationDialog dialog = null;
+        try {
+            dialog = new AssetConfigurationDialog(project);
+        } catch (DeploymentTargetNotConfigured deploymentTargetNotConfigured) {
+            warnDeploymentTargetNotConfigured(project, getTitle());
+            return;
+        }
         boolean ok = dialog.showAndGet();
 
         if(!ok) {

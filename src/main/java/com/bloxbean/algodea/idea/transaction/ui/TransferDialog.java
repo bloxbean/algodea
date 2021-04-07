@@ -19,7 +19,7 @@ public class TransferDialog extends TxnDialogWrapper {
         transferTxnForm.initializeData(project);
         transactionDtlsEntryForm.initializeData(project);
         init();
-        setTitle("Transfer Algo");
+        setTitle("Transfer");
     }
 
     public TransferTxnParamEntryForm getTransferTxnEntryForm() {

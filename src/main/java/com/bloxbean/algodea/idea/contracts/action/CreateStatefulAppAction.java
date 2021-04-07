@@ -59,9 +59,9 @@ import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.progress.impl.BackgroundableProcessIndicator;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.io.FileUtil;
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.twelvemonkeys.lang.StringUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -146,7 +146,7 @@ public class CreateStatefulAppAction extends BaseTxnAction {
             CreateAppEntryForm createForm = createDialog.getCreateForm();
             AppTxnDetailsEntryForm appTxnDetailsEntryForm = createDialog.getAppTxnDetailsEntryForm();
 
-            Account signerAccount = createForm.getSignerAccount();
+            Account signerAccount = createForm.getAuthorizedAccount();
             Address senderAddress = createForm.getSenderAddress();
             if (senderAddress == null ||
                     (signerAccount == null && RequestMode.EXPORT_UNSIGNED != createDialog.getRequestMode())) {

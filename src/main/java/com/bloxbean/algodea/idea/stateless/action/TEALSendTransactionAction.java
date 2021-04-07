@@ -176,7 +176,6 @@ public class TEALSendTransactionAction extends BaseTxnAction {
         private Address senderAddress;
         private Address receiverAddress;
         private Tuple<BigDecimal, BigInteger> amounts;
-        private Address closeReminderTo;
         private TxnDetailsParameters txnDetailsParams;
         private RequestMode requestMode;
         private AccountAsset asset;
@@ -243,7 +242,7 @@ public class TEALSendTransactionAction extends BaseTxnAction {
             console.showSuccessMessage("Logic sig generation was successful");
             System.out.println(logicSig);
 
-            sendLogicSigTransaction(logicSig, isAlgoTransfer, senderAddress, receiverAddress, amounts, closeReminderTo, txnDetailsParams, requestMode, asset, module);
+            sendLogicSigTransaction(logicSig, isAlgoTransfer, senderAddress, receiverAddress, amounts, txnDetailsParams, requestMode, asset, module);
         }
 
         @Override
@@ -292,7 +291,9 @@ public class TEALSendTransactionAction extends BaseTxnAction {
 
             LogicSigSigningAccountForm accountForm = dialog.getLogicSigSignAccountForm();
             Account account = accountForm.getAccount();
-            senderAddress = accountForm.getSenderAddress();
+
+            if(dialog.getLogicSigSignAccountForm().isAccountDelegationType()) //Set senderAddress only for account delegation type.
+                senderAddress = accountForm.getSenderAddress();
 
             List<byte[]> args = null;
             try {
@@ -327,11 +328,6 @@ public class TEALSendTransactionAction extends BaseTxnAction {
 
             receiverAddress = dialog.getReceiverAddress();
             amounts = dialog.getAmount(); //Algo, mAlgo
-
-            try {
-                closeReminderTo = dialog.getCloseReminderTo();
-            } catch (Exception ex) {
-            }
 
             try {
                 txnDetailsParams = dialog.getTransactionDtlsEntryForm().getTxnDetailsParameters();
@@ -369,7 +365,7 @@ public class TEALSendTransactionAction extends BaseTxnAction {
             ProgressManager.getInstance().runProcessWithProgressAsynchronously(task, new BackgroundableProcessIndicator(task));
         }
 
-        private void sendLogicSigTransaction(byte[] logicSig, boolean isAlgoTransfer, Address finalSenderAccount, Address receiverAddress, Tuple<BigDecimal, BigInteger> amounts, Address finalCloseReminderTo, TxnDetailsParameters finalTxnDetailsParams, RequestMode requestMode, AccountAsset asset, Module module) {
+        private void sendLogicSigTransaction(byte[] logicSig, boolean isAlgoTransfer, Address finalSenderAccount, Address receiverAddress, Tuple<BigDecimal, BigInteger> amounts, TxnDetailsParameters finalTxnDetailsParams, RequestMode requestMode, AccountAsset asset, Module module) {
             ProgressManager.getInstance().getProgressIndicator().setText("Sending Logic-sig transaction...");
             try {
                 LogListener logListener = new LogListenerAdapter(console);
@@ -379,9 +375,9 @@ public class TEALSendTransactionAction extends BaseTxnAction {
                 try {
                     Result result = null;
                     if (isAlgoTransfer) {
-                        result = transactionService.logicSigTransaction(logicSig, finalSenderAccount, receiverAddress, null, amounts._2(), finalCloseReminderTo, finalTxnDetailsParams, requestMode);
+                        result = transactionService.logicSigTransaction(logicSig, finalSenderAccount, receiverAddress, null, amounts._2(), finalTxnDetailsParams, requestMode);
                     } else {
-                        result = transactionService.logicSigTransaction(logicSig, finalSenderAccount, receiverAddress, asset, amounts._2(), finalCloseReminderTo, finalTxnDetailsParams, requestMode);
+                        result = transactionService.logicSigTransaction(logicSig, finalSenderAccount, receiverAddress, asset, amounts._2(), finalTxnDetailsParams, requestMode);
                     }
 
                     processResult(project, module, result, requestMode, logListener);

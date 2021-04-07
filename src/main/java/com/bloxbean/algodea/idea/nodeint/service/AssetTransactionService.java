@@ -259,7 +259,7 @@ public class AssetTransactionService extends AlgoBaseService {
     }
 
     public Result assetTransfer(Account signer, Address sender, String receiver, AccountAsset asset, BigInteger amount,
-                                Address closeReminderTo, TxnDetailsParameters txnDetailsParameters, RequestMode requestMode) throws Exception {
+                                TxnDetailsParameters txnDetailsParameters, RequestMode requestMode) throws Exception {
         if((signer == null && sender == null)
                 || (signer == null && !requestMode.equals(RequestMode.EXPORT_UNSIGNED))) {
             logListener.error("Invalid sender or mnemonic phrase");
@@ -288,8 +288,8 @@ public class AssetTransactionService extends AlgoBaseService {
                 .assetReceiver(receiver)
                 .sender(sender);
 
-        if(closeReminderTo != null)
-            builder.assetCloseTo(closeReminderTo);
+        if(txnDetailsParameters.getCloseRemainderTo() != null)
+            builder.assetCloseTo(txnDetailsParameters.getCloseRemainderTo());
 
         if (builder == null) {
             logListener.error("Transaction could not be built");
@@ -316,7 +316,7 @@ public class AssetTransactionService extends AlgoBaseService {
         }
     }
 
-    public Result logicSigAssetTransfer(Address sender, String receiver, AccountAsset asset, BigInteger amount, Address closeReminderTo,
+    public Result logicSigAssetTransfer(Address sender, String receiver, AccountAsset asset, BigInteger amount,
                                         TxnDetailsParameters txnDetailsParameters, byte[] sourceBytes, RequestMode requestMode, TransactionSigner txnSigner) throws Exception {
         if(sender == null) {
             logListener.error("Sender cannot be null");
@@ -345,8 +345,8 @@ public class AssetTransactionService extends AlgoBaseService {
                 .assetReceiver(receiver)
                 .sender(sender);
 
-        if(closeReminderTo != null)
-            builder.assetCloseTo(closeReminderTo);
+        if(txnDetailsParameters.getCloseRemainderTo() != null)
+            builder.assetCloseTo(txnDetailsParameters.getCloseRemainderTo());
 
         if (builder == null) {
             logListener.error("Transaction could not be built");

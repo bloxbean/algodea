@@ -35,15 +35,15 @@ public class LogicSigTransactionService extends TransactionService {
         this.assetTransactionService = new AssetTransactionService(project, logListener);
     }
 
-    public Result logicSigTransaction(String lsigPath, Address sender, Address receiver, AccountAsset asset, BigInteger amount, Address closeReminderTo, TxnDetailsParameters txnDetailsParameters, RequestMode requestMode)
+    public Result logicSigTransaction(String lsigPath, Address sender, Address receiver, AccountAsset asset, BigInteger amount, TxnDetailsParameters txnDetailsParameters, RequestMode requestMode)
             throws Exception {
 
         byte[] logicSigBytes = FileUtil.loadFileBytes(new File(lsigPath));
 
-        return logicSigTransaction(logicSigBytes, sender, receiver, asset, amount, closeReminderTo, txnDetailsParameters, requestMode);
+        return logicSigTransaction(logicSigBytes, sender, receiver, asset, amount, txnDetailsParameters, requestMode);
     }
 
-    public Result logicSigTransaction(byte[] logicSigBytes, Address sender, Address receiver, AccountAsset asset, BigInteger amount, Address closeReminderTo, TxnDetailsParameters txnDetailsParameters, RequestMode requestMode) throws Exception {
+    public Result logicSigTransaction(byte[] logicSigBytes, Address sender, Address receiver, AccountAsset asset, BigInteger amount, TxnDetailsParameters txnDetailsParameters, RequestMode requestMode) throws Exception {
         byte[] sourceBytes = null;
 
 //        if(RequestMode.DRY_RUN.equals(requestMode)) {
@@ -52,12 +52,12 @@ public class LogicSigTransactionService extends TransactionService {
 
         if(sender == null) {
             if(asset == null) { //Algo
-                return contractAccountTransaction(logicSigBytes, receiver, amount, closeReminderTo, txnDetailsParameters, sourceBytes, requestMode);
+                return contractAccountTransaction(logicSigBytes, receiver, amount, txnDetailsParameters, sourceBytes, requestMode);
             } else { //Asset transfer
                 LogicsigSignature logicsigSignature = Encoder.decodeFromMsgPack(logicSigBytes, LogicsigSignature.class);
                 Address fromAddress = logicsigSignature.toAddress();
 
-                return assetTransactionService.logicSigAssetTransfer(fromAddress, receiver.toString(), asset, amount, closeReminderTo, txnDetailsParameters, sourceBytes, requestMode, new TransactionSigner() {
+                return assetTransactionService.logicSigAssetTransfer(fromAddress, receiver.toString(), asset, amount, txnDetailsParameters, sourceBytes, requestMode, new TransactionSigner() {
                     @Override
                     public SignedTransaction signTransaction(Transaction transaction) throws Exception {
                         return Account.signLogicsigTransaction(logicsigSignature, transaction);
@@ -66,11 +66,11 @@ public class LogicSigTransactionService extends TransactionService {
             }
         } else {
             if(asset == null) { //Algo
-                return accountDelegationTransaction(logicSigBytes, sender, receiver, amount, closeReminderTo, txnDetailsParameters, sourceBytes, requestMode);
+                return accountDelegationTransaction(logicSigBytes, sender, receiver, amount, txnDetailsParameters, sourceBytes, requestMode);
             } else { // Asset transfer
                 LogicsigSignature logicsigSignature = Encoder.decodeFromMsgPack(logicSigBytes, LogicsigSignature.class);
 
-                return assetTransactionService.logicSigAssetTransfer(sender, receiver.toString(), asset, amount, closeReminderTo, txnDetailsParameters, sourceBytes, requestMode, new TransactionSigner() {
+                return assetTransactionService.logicSigAssetTransfer(sender, receiver.toString(), asset, amount, txnDetailsParameters, sourceBytes, requestMode, new TransactionSigner() {
                     @Override
                     public SignedTransaction signTransaction(Transaction transaction) throws Exception {
                         return Account.signLogicsigTransaction(logicsigSignature, transaction);
@@ -114,7 +114,7 @@ public class LogicSigTransactionService extends TransactionService {
         }
     }
 
-    public Result contractAccountTransaction(byte[] logicSigBytes, Address receiver, BigInteger amount, Address closeReminderTo,
+    public Result contractAccountTransaction(byte[] logicSigBytes, Address receiver, BigInteger amount,
                                              TxnDetailsParameters txnDetailsParameters, byte[] sourceBytes, RequestMode requestMode) throws Exception {
 
         if (receiver == null) {
@@ -135,7 +135,7 @@ public class LogicSigTransactionService extends TransactionService {
         logListener.info("From Contract Address     : " + fromAddress.toString());
 
         PaymentTransactionBuilder paymentTransactionBuilder = Transaction.PaymentTransactionBuilder();
-        Transaction txn = populatePaymentTransaction(paymentTransactionBuilder, fromAddress, receiver.toString(), amount.longValue(), closeReminderTo, txnDetailsParameters);
+        Transaction txn = populatePaymentTransaction(paymentTransactionBuilder, fromAddress, receiver.toString(), amount.longValue(), txnDetailsParameters);
 
         if (txn == null) {
             logListener.error("Transaction could not be built");
@@ -166,7 +166,7 @@ public class LogicSigTransactionService extends TransactionService {
 
     }
 
-    public Result accountDelegationTransaction(byte[] logicSigBytes, Address sender, Address receiver, BigInteger amount, Address closeReminderTo,
+    public Result accountDelegationTransaction(byte[] logicSigBytes, Address sender, Address receiver, BigInteger amount,
                                                 TxnDetailsParameters txnDetailsParameters, byte[] sourceBytes, RequestMode requestMode) throws Exception {
         if(sender == null) {
             logListener.error("Sender address cannot be empty");
@@ -188,7 +188,7 @@ public class LogicSigTransactionService extends TransactionService {
         logListener.info("Starting Account Delegation transaction ...\n");
 
         PaymentTransactionBuilder paymentTransactionBuilder = Transaction.PaymentTransactionBuilder();
-        Transaction txn = populatePaymentTransaction(paymentTransactionBuilder, sender, receiver.toString(), amount.longValue(), closeReminderTo, txnDetailsParameters);
+        Transaction txn = populatePaymentTransaction(paymentTransactionBuilder, sender, receiver.toString(), amount.longValue(), txnDetailsParameters);
 
         if(txn == null) {
             logListener.error("Transaction could not be built");

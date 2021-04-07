@@ -69,7 +69,13 @@ public abstract class  BaseStatefulAppAction extends BaseTxnAction {
         AlgoConsole console = AlgoConsole.getConsole(project);
         console.clearAndshow();
 
-        AppTxnParamEntryDialog dialog = new AppTxnParamEntryDialog(project, getApplicationTxnDescription());
+        AppTxnParamEntryDialog dialog = null;
+        try {
+            dialog = new AppTxnParamEntryDialog(project, getApplicationTxnDescription());
+        } catch (DeploymentTargetNotConfigured deploymentTargetNotConfigured) {
+            warnDeploymentTargetNotConfigured(project, getTitle());
+            return;
+        }
         dialog.enableDryRun();
 
         boolean ok = dialog.showAndGet();
@@ -81,7 +87,7 @@ public abstract class  BaseStatefulAppAction extends BaseTxnAction {
 
         if(LOG.isDebugEnabled()) {
             LOG.debug("*****  App Id: " + dialog.getAppTxnBaseEntryForm().getAppId());
-            LOG.debug("****** From Account: " + dialog.getAppTxnBaseEntryForm().getSignerAccount());
+            LOG.debug("****** From Account: " + dialog.getAppTxnBaseEntryForm().getAuthorizedAccount());
             LOG.debug("******* Args : " + dialog.getAppTxnDetailsEntryForm().getArgs());
         }
 
@@ -103,7 +109,7 @@ public abstract class  BaseStatefulAppAction extends BaseTxnAction {
 
             final Long appId = appBaseEntryForm.getAppId();
 
-            Account signerAccount = appBaseEntryForm.getSignerAccount();
+            Account signerAccount = appBaseEntryForm.getAuthorizedAccount();
             Address senderAddress = appBaseEntryForm.getSenderAddress();
             if (senderAddress == null ||
                     (signerAccount == null && RequestMode.EXPORT_UNSIGNED != dialog.getRequestMode())) {

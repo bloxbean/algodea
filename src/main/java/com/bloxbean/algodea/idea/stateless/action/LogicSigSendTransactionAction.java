@@ -140,11 +140,6 @@ public class LogicSigSendTransactionAction extends BaseTxnAction {
 
         Tuple<BigDecimal, BigInteger> amounts = dialog.getAmount(); //Algo, mAlgo
 
-        Address closeReminderTo = null;
-        try {
-            closeReminderTo = dialog.getCloseReminderTo();
-        } catch (Exception ex) {}
-
         //txn detals params
         TxnDetailsParameters txnDetailsParameters = null;
         try {
@@ -166,7 +161,6 @@ public class LogicSigSendTransactionAction extends BaseTxnAction {
         boolean isAlgoTransfer = dialog.isAlgoTransfer();
 
         Address finalSenderAccount = senderAddress;
-        Address finalCloseReminderTo = closeReminderTo;
         TxnDetailsParameters finalTxnDetailsParams = txnDetailsParameters;
 
         RequestMode requestMode = dialog.getRequestMode();
@@ -183,9 +177,9 @@ public class LogicSigSendTransactionAction extends BaseTxnAction {
                         Result result = null;
 
                         if(isAlgoTransfer) {
-                            result = transactionService.logicSigTransaction(lsigPath, finalSenderAccount, receiverAddress, null, amounts._2(), finalCloseReminderTo, finalTxnDetailsParams, requestMode);
+                            result = transactionService.logicSigTransaction(lsigPath, finalSenderAccount, receiverAddress, null, amounts._2(), finalTxnDetailsParams, requestMode);
                         } else {
-                            result = transactionService.logicSigTransaction(lsigPath, finalSenderAccount, receiverAddress, asset, amounts._2(), finalCloseReminderTo, finalTxnDetailsParams, requestMode);
+                            result = transactionService.logicSigTransaction(lsigPath, finalSenderAccount, receiverAddress, asset, amounts._2(), finalTxnDetailsParams, requestMode);
                         }
 
                         processResult(project, module, result, requestMode, logListener);

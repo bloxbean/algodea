@@ -1,5 +1,6 @@
 package com.bloxbean.algodea.idea.contracts.ui;
 
+import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.ui.components.JBRadioButton;
@@ -15,11 +16,11 @@ public class AppReadMainPanel {
     private JPanel mainPanel;
     private ButtonGroup buttonGroup;
 
-    public AppReadMainPanel(Project project) {
+    public AppReadMainPanel(Project project) throws DeploymentTargetNotConfigured {
         initialize(project);
     }
 
-    public void initialize(Project project) {
+    public void initialize(Project project) throws DeploymentTargetNotConfigured {
         appTxnBaseEntryForm.initializeData(project);
     }
 

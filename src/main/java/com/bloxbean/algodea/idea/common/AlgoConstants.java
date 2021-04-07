@@ -2,6 +2,7 @@ package com.bloxbean.algodea.idea.common;
 
 public class AlgoConstants {
     public final static String ALGO = "Algo";
+    public final static String MICRO_ALGO = "microAlgo";
     public final static String SDK_TYPE_ID = "Algorand";
     public final static String ALGODEA_FOLDER = ".algodea";
 

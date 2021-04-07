@@ -124,7 +124,7 @@ public class UpdateStatefulAppAction extends BaseTxnAction {
                 return;
             }
 
-            Account signerAccount = appTxnBaseForm.getSignerAccount();
+            Account signerAccount = appTxnBaseForm.getAuthorizedAccount();
             Address senderAddress = appTxnBaseForm.getSenderAddress();
             if (senderAddress == null ||
                     (signerAccount == null && RequestMode.EXPORT_UNSIGNED != dialog.getRequestMode())) {

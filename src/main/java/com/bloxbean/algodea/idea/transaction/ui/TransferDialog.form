@@ -3,10 +3,11 @@
   <grid id="27dc6" binding="mainPanel" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="0" left="0" bottom="0" right="0"/>
     <constraints>
-      <xy x="20" y="20" width="950" height="600"/>
+      <xy x="20" y="20" width="950" height="657"/>
     </constraints>
     <properties>
-      <minimumSize width="950" height="500"/>
+      <minimumSize width="950" height="650"/>
+      <preferredSize width="608" height="650"/>
     </properties>
     <border type="none"/>
     <children>
@@ -20,9 +21,9 @@
         <border type="none"/>
         <children>
           <grid id="baf19" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-            <margin top="0" left="0" bottom="0" right="0"/>
+            <margin top="5" left="0" bottom="0" right="0"/>
             <constraints>
-              <tabbedpane title="Transfer Details"/>
+              <tabbedpane title="Txn Requirements"/>
             </constraints>
             <properties/>
             <border type="none"/>
@@ -35,11 +36,14 @@
             </children>
           </grid>
           <grid id="45026" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-            <margin top="0" left="0" bottom="0" right="0"/>
+            <margin top="5" left="0" bottom="0" right="0"/>
             <constraints>
-              <tabbedpane title="Txn Details"/>
+              <tabbedpane title="Txn Options"/>
             </constraints>
-            <properties/>
+            <properties>
+              <minimumSize width="519" height="350"/>
+              <preferredSize width="519" height="350"/>
+            </properties>
             <border type="none"/>
             <children>
               <nested-form id="40eda" form-file="com/bloxbean/algodea/idea/transaction/ui/TransactionDtlsEntryForm.form" binding="transactionDtlsEntryForm" custom-create="true">

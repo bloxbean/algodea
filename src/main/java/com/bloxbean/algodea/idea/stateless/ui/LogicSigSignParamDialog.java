@@ -1,5 +1,6 @@
 package com.bloxbean.algodea.idea.stateless.ui;
 
+import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.ValidationInfo;
@@ -13,14 +14,14 @@ public class LogicSigSignParamDialog extends DialogWrapper {
     private LogicSigSigningAccountForm logicSigSignAccForm;
     private ArgsInputForm argsInputForm;
 
-    public LogicSigSignParamDialog(@Nullable Project project) {
+    public LogicSigSignParamDialog(@Nullable Project project) throws DeploymentTargetNotConfigured {
         super(project, true);
         initializeData(project);
         init();
         setTitle("Create Logic Sig");
     }
 
-    public void initializeData(Project project) {
+    public void initializeData(Project project) throws DeploymentTargetNotConfigured {
         logicSigSignAccForm.initialize(project);
         argsInputForm.initializeData(project);
     }

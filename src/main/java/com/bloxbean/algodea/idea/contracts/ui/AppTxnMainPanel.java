@@ -1,14 +1,12 @@
 package com.bloxbean.algodea.idea.contracts.ui;
 
+import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
 import com.bloxbean.algodea.idea.transaction.ui.TransactionDtlsEntryForm;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ValidationInfo;
-import org.apache.xerces.impl.dv.ValidatedInfo;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public class AppTxnMainPanel {
     private JPanel mainPanel;
@@ -17,7 +15,7 @@ public class AppTxnMainPanel {
     private AppTxnDetailsEntryForm appTxnDetailsEntryForm;
     private TransactionDtlsEntryForm txnDtlEntryForm;
 
-    public AppTxnMainPanel(Project project) {
+    public AppTxnMainPanel(Project project) throws DeploymentTargetNotConfigured {
         initialize(project);
     }
 
@@ -58,7 +56,7 @@ public class AppTxnMainPanel {
     }
 
 
-    private void initialize(Project project) {
+    private void initialize(Project project) throws DeploymentTargetNotConfigured {
         appTxnBaseEntryForm.initializeData(project);
         appTxnDetailsEntryForm.initializeData(project);
         txnDtlEntryForm.initializeData(project);

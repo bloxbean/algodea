@@ -5,6 +5,7 @@ import com.algorand.algosdk.crypto.LogicsigSignature;
 import com.bloxbean.algodea.idea.account.model.AlgoAccount;
 import com.bloxbean.algodea.idea.account.model.AlgoMultisigAccount;
 import com.bloxbean.algodea.idea.account.service.AccountChooser;
+import com.bloxbean.algodea.idea.common.AlgoConstants;
 import com.bloxbean.algodea.idea.common.Tuple;
 import com.bloxbean.algodea.idea.compile.model.LogicSigMetaData;
 import com.bloxbean.algodea.idea.core.action.ui.TxnDialogWrapper;
@@ -40,7 +41,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
 
-import static com.bloxbean.algodea.idea.common.AlgoConstants.ALGO;
+import static com.bloxbean.algodea.idea.common.AlgoConstants.MICRO_ALGO;
 
 public class LogicSigSendTransactionDialog extends TxnDialogWrapper {
     private static final Logger LOG = Logger.getInstance(LogicSigSendTransactionDialog.class);
@@ -65,9 +66,7 @@ public class LogicSigSendTransactionDialog extends TxnDialogWrapper {
     private JLabel unitLabel;
     private JButton fetchAssetsBtn;
     private JButton receiverMultiSigBtn;
-    private JTextField closeReminderTo;
-    private JButton closeReminderAccountChooserBtn;
-    private JButton closeReminderMultiSigBtn;
+    private JComboBox algoUnitCB;
     private JTextField senderLogSigTf;
 
     private ButtonGroup contractType;
@@ -167,8 +166,8 @@ public class LogicSigSendTransactionDialog extends TxnDialogWrapper {
                 enableOtherAssetPanel(false);
                 setUnitLabel();
 
-                //enable close reminder
-                //TODO enableCloseReminderSection(true);
+                algoUnitCB.setVisible(true);
+                unitLabel.setVisible(false);
             }
         });
 
@@ -177,8 +176,8 @@ public class LogicSigSendTransactionDialog extends TxnDialogWrapper {
                 enableOtherAssetPanel(true);
                 setUnitLabel();
 
-                //disable close remninder to
-                //TODO enableCloseReminderSection(false);
+                algoUnitCB.setVisible(false);
+                unitLabel.setVisible(true);
             }
         });
 
@@ -186,24 +185,7 @@ public class LogicSigSendTransactionDialog extends TxnDialogWrapper {
             setUnitLabel();
         });
 
-        unitLabel.setText(ALGO);
-
-        closeReminderTo.setToolTipText("<html>When set, it indicates that the transaction is requesting that the Sender account<br/>" +
-                " should be closed, and all remaining funds,<br/>" +
-                " after the fee and amount are paid, be transferred to this address.</html>");
-        closeReminderAccountChooserBtn.addActionListener(e -> {
-            AlgoAccount algoAccount = AccountChooser.getSelectedAccount(project, true);
-            if(algoAccount != null) {
-                closeReminderTo.setText(algoAccount.getAddress());
-            }
-        });
-
-        closeReminderMultiSigBtn.addActionListener(e -> {
-            AlgoMultisigAccount algoMultisigAccount = AccountChooser.getSelectedMultisigAccount(project, true);
-            if(algoMultisigAccount != null) {
-                closeReminderTo.setText(algoMultisigAccount.getAddress());
-            }
-        });
+//        unitLabel.setText(ALGO);
     }
 
     private void loadLogicSigFile(String lsigPath) {
@@ -276,7 +258,7 @@ public class LogicSigSendTransactionDialog extends TxnDialogWrapper {
 
     private void setUnitLabel() {
         if(isAlgoTransfer()) {
-            unitLabel.setText(ALGO);
+            unitLabel.setText("");
         } else {
             AccountAsset accountAsset = (AccountAsset) assetsCB.getSelectedItem();
             if (accountAsset == null)
@@ -379,10 +361,18 @@ public class LogicSigSendTransactionDialog extends TxnDialogWrapper {
 
         try {
             if(isAlgoTransfer()) {
-                BigDecimal amtInAlgo = new BigDecimal(amountTf.getText());
-                BigInteger microAlgo = AlgoConversionUtil.algoTomAlgo(amtInAlgo);
+                if(algoUnitCB.getSelectedItem() != null
+                        && algoUnitCB.getSelectedItem().equals(MICRO_ALGO)) {
+                    BigInteger amtInmAlgo = new BigInteger(amountTf.getText());
+                    BigDecimal amtInAlgo = AlgoConversionUtil.mAlgoToAlgo(amtInmAlgo);
 
-                return new Tuple(amtInAlgo, microAlgo);
+                    return new Tuple(amtInAlgo, amtInmAlgo);
+                } else {
+                    BigDecimal amtInAlgo = new BigDecimal(amountTf.getText());
+                    BigInteger microAlgo = AlgoConversionUtil.algoTomAlgo(amtInAlgo);
+
+                    return new Tuple(amtInAlgo, microAlgo);
+                }
             } else { //Asset transfer
                 AccountAsset accountAsset = getAsset();
                 BigDecimal assetAmount = new BigDecimal(amountTf.getText());
@@ -399,15 +389,6 @@ public class LogicSigSendTransactionDialog extends TxnDialogWrapper {
 
             return null;
         }
-    }
-
-    public Address getCloseReminderTo() throws Exception {
-        String closeReminderToAdd = StringUtil.trim(closeReminderTo.getText());
-        if(StringUtil.isEmpty(closeReminderToAdd))
-            return null;
-
-        Address address = new Address(closeReminderToAdd);
-        return address;
     }
 
     public TransactionDtlsEntryForm getTransactionDtlsEntryForm() {
@@ -434,12 +415,6 @@ public class LogicSigSendTransactionDialog extends TxnDialogWrapper {
 
         if(!isAlgoTransfer() && getAssetId() == null) {
             return new ValidationInfo("Please select a valid asset", assetsCB);
-        }
-
-        try {
-            getCloseReminderTo();
-        } catch (Exception e) {
-            return new ValidationInfo("Invalid Close Reminder To address", closeReminderTo);
         }
 
         return transactionDtlsEntryForm.doValidate();
@@ -509,5 +484,10 @@ public class LogicSigSendTransactionDialog extends TxnDialogWrapper {
 
         assetsComboBoxModel = new DefaultComboBoxModel();
         assetsCB = new ComboBox(assetsComboBoxModel);
+
+        DefaultComboBoxModel<String> algoUnitCBM
+                = new DefaultComboBoxModel<>(new String[] {AlgoConstants.ALGO, AlgoConstants.MICRO_ALGO});
+        algoUnitCB = new ComboBox(algoUnitCBM);
+        algoUnitCB.setSelectedIndex(0);
     }
 }

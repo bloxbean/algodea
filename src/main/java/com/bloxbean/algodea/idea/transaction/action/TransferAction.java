@@ -73,8 +73,6 @@ public class TransferAction extends BaseTxnAction {
             }
             final String finalAssetName = assetName;
 
-            Address closeReminderTo = txnEntryForm.getCloseReminderTo();
-
             TransactionDtlsEntryForm transactionDtlsEntryForm = transferDialog.getTransactionDtlsEntryForm();
 
             TxnDetailsParameters txnDetailsParameters = transactionDtlsEntryForm.getTxnDetailsParameters();
@@ -106,9 +104,9 @@ public class TransferAction extends BaseTxnAction {
 
                         if (transferDialog.isAlgoTransfer()) { //SignerAccount and fromAddress should be same
                             result = transactionService.transfer(signerAccount, fromAddress, toAddress.toString(), amountTuple._2().longValue(),
-                                    closeReminderTo, txnDetailsParameters, requestMode);
+                                     txnDetailsParameters, requestMode);
                         } else { //asset transfer
-                            result = assetTransactionService.assetTransfer(signerAccount, fromAddress, toAddress.toString(), asset, amountTuple._2(), closeReminderTo, txnDetailsParameters, requestMode);
+                            result = assetTransactionService.assetTransfer(signerAccount, fromAddress, toAddress.toString(), asset, amountTuple._2(), txnDetailsParameters, requestMode);
                         }
 
                         processResult(project, module, result, requestMode, logListener);
@@ -146,7 +144,7 @@ public class TransferAction extends BaseTxnAction {
             if (LOG.isDebugEnabled()) {
                 LOG.error(ex);
             }
-            console.showErrorMessage(ex.getMessage());
+            console.showErrorMessage(ex.getMessage(), ex);
             IdeaUtil.showNotification(project, getTitle(), String.format("Transfer transaction failed, reason: %s", ex.getMessage()), NotificationType.ERROR, null);
         }
     }

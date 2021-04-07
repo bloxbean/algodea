@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="com.bloxbean.algodea.idea.transaction.ui.AccountEntryInputForm">
   <grid id="27dc6" binding="mainPanel" layout-manager="FormLayout">
+    <rowspec value="center:max(d;4px):noGrow"/>
+    <rowspec value="top:3dlu:noGrow"/>
     <rowspec value="center:d:noGrow"/>
-    <rowspec value="top:3dlu:noGrow"/>
-    <rowspec value="center:max(d;4px):noGrow"/>
-    <rowspec value="top:3dlu:noGrow"/>
-    <rowspec value="center:max(d;4px):noGrow"/>
     <rowspec value="top:3dlu:noGrow"/>
     <rowspec value="center:max(d;4px):noGrow"/>
     <colspec value="fill:d:noGrow"/>
@@ -16,32 +14,32 @@
     <colspec value="left:4dlu:noGrow"/>
     <colspec value="fill:max(d;4px):noGrow"/>
     <constraints>
-      <xy x="20" y="20" width="500" height="121"/>
+      <xy x="20" y="20" width="782" height="105"/>
     </constraints>
     <properties/>
     <border type="none"/>
     <children>
       <component id="12160" class="javax.swing.JLabel" binding="accountLabel">
         <constraints>
-          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
           <forms/>
         </constraints>
         <properties>
-          <text value="Signer"/>
+          <text value="Authorized Address"/>
         </properties>
       </component>
-      <component id="21f49" class="javax.swing.JTextField" binding="signerAccountTf">
+      <component id="21f49" class="javax.swing.JTextField" binding="authAddressTf">
         <constraints>
-          <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+          <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
             <preferred-size width="150" height="-1"/>
           </grid>
           <forms defaultalign-horz="false"/>
         </constraints>
         <properties/>
       </component>
-      <component id="500a6" class="javax.swing.JButton" binding="signerAccountChooserBtn">
+      <component id="500a6" class="javax.swing.JButton" binding="authAccountChooserBtn">
         <constraints>
-          <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="2" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
           <forms/>
         </constraints>
         <properties>
@@ -50,9 +48,9 @@
           <text value="..."/>
         </properties>
       </component>
-      <component id="a167e" class="javax.swing.JButton" binding="multisigSignerAccChooserBtn">
+      <component id="a167e" class="javax.swing.JButton" binding="authMultisigSignerAccChooserBtn">
         <constraints>
-          <grid row="0" column="6" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="2" column="6" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
           <forms/>
         </constraints>
         <properties>
@@ -61,25 +59,16 @@
           <text value="--"/>
         </properties>
       </component>
-      <component id="1a4ad" class="javax.swing.JLabel" binding="orLabel">
-        <constraints>
-          <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
-          <forms defaultalign-horz="false"/>
-        </constraints>
-        <properties>
-          <text value="OR"/>
-        </properties>
-      </component>
       <component id="a0b71" class="javax.swing.JLabel" binding="menmonicLabel">
         <constraints>
           <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
           <forms/>
         </constraints>
         <properties>
-          <text value="Mnemonic"/>
+          <text value="Authorized Mnemonic "/>
         </properties>
       </component>
-      <component id="41680" class="javax.swing.JPasswordField" binding="mnemonicTf">
+      <component id="41680" class="javax.swing.JPasswordField" binding="authMnemonicTf">
         <constraints>
           <grid row="4" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
             <preferred-size width="150" height="-1"/>
@@ -90,7 +79,7 @@
       </component>
       <component id="fcc29" class="javax.swing.JLabel" binding="senderAddressLabel">
         <constraints>
-          <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
           <forms/>
         </constraints>
         <properties>
@@ -99,7 +88,7 @@
       </component>
       <component id="c390e" class="javax.swing.JTextField" binding="senderAddressTf">
         <constraints>
-          <grid row="6" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+          <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
             <preferred-size width="150" height="-1"/>
           </grid>
           <forms defaultalign-horz="false"/>
@@ -108,7 +97,7 @@
       </component>
       <component id="2ba25" class="javax.swing.JButton" binding="senderAddressChooser">
         <constraints>
-          <grid row="6" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
           <forms/>
         </constraints>
         <properties>
@@ -117,7 +106,7 @@
       </component>
       <component id="136" class="javax.swing.JButton" binding="senderAddressMultiSigChooser">
         <constraints>
-          <grid row="6" column="6" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="0" column="6" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
           <forms/>
         </constraints>
         <properties>

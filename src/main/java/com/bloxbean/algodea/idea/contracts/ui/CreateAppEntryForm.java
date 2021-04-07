@@ -26,14 +26,20 @@ import com.algorand.algosdk.crypto.Address;
 import com.bloxbean.algodea.idea.account.model.AlgoAccount;
 import com.bloxbean.algodea.idea.account.model.AlgoMultisigAccount;
 import com.bloxbean.algodea.idea.account.service.AccountChooser;
+import com.bloxbean.algodea.idea.account.service.AccountService;
+import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
+import com.bloxbean.algodea.idea.nodeint.service.AlgoAccountService;
+import com.bloxbean.algodea.idea.nodeint.service.LogListenerAdapter;
 import com.bloxbean.algodea.idea.pkg.AlgoPkgJsonService;
 import com.bloxbean.algodea.idea.pkg.exception.PackageJsonException;
 import com.bloxbean.algodea.idea.pkg.model.AlgoPackageJson;
+import com.bloxbean.algodea.idea.toolwindow.AlgoConsole;
 import com.bloxbean.algodea.idea.util.IdeaUtil;
 import com.intellij.notification.NotificationType;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.openapi.util.text.StringUtil;
@@ -41,78 +47,90 @@ import org.apache.commons.lang.math.NumberUtils;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
+import java.awt.event.*;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class CreateAppEntryForm {
     private final static Logger LOG = Logger.getInstance(CreateAppEntryForm.class);
 
     private JPanel mainPanel;
-    private JTextField signerAccountTf;
+    private JTextField authAccountTf;
     private JTextField approvalProgramTf;
     private JTextField clearStateProgramTf;
     private JTextField globalByteslicesTf;
     private JTextField globalIntTf;
     private JTextField localByteslicesTf;
     private JTextField localIntsTf;
-    private JButton signerAccountChooser;
-    private JTextField mnemonicTf;
+    private JButton authAccountChooser;
+    private JTextField authMnemonicTf;
     private JComboBox contractCB;
     private JTextField senderAddressTf;
     private JButton senderChooser;
     private JButton senderMultiSigChooser;
     private List<AlgoPackageJson.StatefulContract> contracts;
     private AlgoPkgJsonService pkgJsonService;
-    AlgoPackageJson.StatefulContract selectedContract;
+    private AlgoPackageJson.StatefulContract selectedContract;
+
+    private AlgoConsole console;
+    private AlgoAccountService algoAccountService;
 
     public CreateAppEntryForm() {
     }
 
-    public void initializeData(Project project, AlgoAccount creatorAccount, String contractName) {
+    public void initializeData(Project project, AlgoAccount creatorAccount, String contractName) throws DeploymentTargetNotConfigured {
+        console = AlgoConsole.getConsole(project);
+        try {
+            algoAccountService = new AlgoAccountService(project, new LogListenerAdapter(console));
+        } catch (DeploymentTargetNotConfigured deploymentTargetNotConfigured) {
+            throw deploymentTargetNotConfigured;
+        }
+
         if(creatorAccount != null) {
-            signerAccountTf.setText(creatorAccount.getAddress().toString());
+            authAccountTf.setText(creatorAccount.getAddress().toString());
             senderAddressTf.setText(creatorAccount.getAddress().toString());
 
             ApplicationManager.getApplication().invokeLater(new Runnable() {
                 @Override
                 public void run() {
-                    mnemonicTf.setText(creatorAccount.getMnemonic());
+                    authMnemonicTf.setText(creatorAccount.getMnemonic());
                 }
             }, ModalityState.any());
         }
 
-        signerAccountChooser.addActionListener(new ActionListener() {
+        authAccountChooser.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 AlgoAccount algoAccount = AccountChooser.getSelectedAccount(project, true);
                 if(algoAccount != null) {
-                    signerAccountTf.setText(algoAccount.getAddress());
-                    mnemonicTf.setText(algoAccount.getMnemonic());
-                    senderAddressTf.setText(algoAccount.getAddress());
+                    authAccountTf.setText(algoAccount.getAddress());
+                    authMnemonicTf.setText(algoAccount.getMnemonic());
                 }
             }
         });
 
-        mnemonicTf.addFocusListener(new FocusListener() {
+        authMnemonicTf.addFocusListener(new FocusListener() {
+            String oldMnemonic;
             @Override
             public void focusGained(FocusEvent e) {
-
+                oldMnemonic = authMnemonicTf.getText();
             }
 
             @Override
             public void focusLost(FocusEvent e) {
-                String mnemonic = mnemonicTf.getText();
+                if(oldMnemonic != null && oldMnemonic.equals(authMnemonicTf.getText())) {
+                    oldMnemonic = null;
+                    return;
+                }
+                oldMnemonic = null; //reset old mnemonic
+
+                String mnemonic = authMnemonicTf.getText();
                 try {
                     Account account = new Account(mnemonic);
-                    signerAccountTf.setText(account.getAddress().toString());
-                    senderAddressTf.setText(account.getAddress().toString());
+                    authAccountTf.setText(account.getAddress().toString());
                 } catch (Exception ex) {
-                    signerAccountTf.setText("");
-                    senderAddressTf.setText("");
+                    authAccountTf.setText("");
                 }
             }
         });
@@ -123,6 +141,10 @@ public class CreateAppEntryForm {
                 AlgoAccount algoAccount = AccountChooser.getSelectedAccount(project, true);
                 if(algoAccount != null) {
                     senderAddressTf.setText(algoAccount.getAddress());
+                    authAccountTf.setText("");
+                    authMnemonicTf.setText("");
+
+                    setAuthAddress(project, algoAccount);
                 }
             }
         });
@@ -133,6 +155,42 @@ public class CreateAppEntryForm {
                 AlgoMultisigAccount algoMultisigAccount = AccountChooser.getSelectedMultisigAccount(project, true);
                 if(algoMultisigAccount != null) {
                     senderAddressTf.setText(algoMultisigAccount.getAddress());
+                    authAccountTf.setText("");
+                    authMnemonicTf.setText("");
+
+                    setAuthAddressForMultiSigSender(project, algoMultisigAccount);
+                }
+            }
+        });
+
+        //TODO
+        senderAddressTf.addFocusListener(new FocusAdapter() {
+            String oldSender;
+            @Override
+            public void focusGained(FocusEvent e) {
+                oldSender = senderAddressTf.getText();
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                if(oldSender != null && oldSender.equals(senderAddressTf.getText())) {
+                    oldSender = null;
+                    return;
+                }
+                oldSender = null;
+                authAccountTf.setText("");
+                authMnemonicTf.setText("");
+
+                try {
+                    Address address = new Address(senderAddressTf.getText());
+                    AlgoAccount algoAccount = AccountService.getAccountService().getAccountByAddress(address.toString());
+                    if(algoAccount == null) {
+                        algoAccount = new AlgoAccount(address.toString());
+                    }
+
+                    setAuthAddress(project, algoAccount);
+                } catch (Exception ex) {
+
                 }
             }
         });
@@ -178,6 +236,66 @@ public class CreateAppEntryForm {
         }
     }
 
+    private void setAuthAddress(Project project, AlgoAccount sender) {
+        getAuthAddress(project, sender.getAddress(), (accountAuthAddr) -> {
+            if(!StringUtil.isEmpty(accountAuthAddr)) { //auth-addr found
+                AccountService accountService = AccountService.getAccountService();
+                AlgoAccount algoAccount = accountService.getAccountByAddress(accountAuthAddr);
+                if (algoAccount != null && !StringUtil.isEmpty(algoAccount.getMnemonic())) {
+                    authAccountTf.setText(algoAccount.getAddress());
+                    authMnemonicTf.setText(algoAccount.getMnemonic());
+                } else {
+                    //TODO alert
+                    authAccountTf.setText(accountAuthAddr);
+                    IdeaUtil.authorizedAddressNotFoundWarning();
+                }
+            } else { //No auth-addr
+                if(!StringUtil.isEmpty(sender.getMnemonic())) {
+                    authAccountTf.setText(sender.getAddress());
+                    authMnemonicTf.setText(sender.getMnemonic());
+                }
+            }
+        });
+    }
+
+    private void setAuthAddressForMultiSigSender(Project project, AlgoMultisigAccount sender) {
+        getAuthAddress(project, sender.getAddress(), (accountAuthAddr) -> {
+            if(!StringUtil.isEmpty(accountAuthAddr)) {
+                AccountService accountService = AccountService.getAccountService();
+                AlgoAccount algoAccount = accountService.getAccountByAddress(accountAuthAddr);
+                if (algoAccount != null) {
+                    authAccountTf.setText(algoAccount.getAddress());
+                    authMnemonicTf.setText(algoAccount.getMnemonic());
+                } else {
+                    //TODO alert
+                }
+            }
+
+        });
+    }
+
+    private void getAuthAddress(Project project, String address, Consumer<String> authAddressCheck) {
+        if(algoAccountService == null || StringUtil.isEmpty(address))
+            return;
+
+        ProgressManager.getInstance().runProcessWithProgressSynchronously(new Runnable() {
+
+            @Override
+            public void run() {
+                try {
+                    com.algorand.algosdk.v2.client.model.Account account = algoAccountService.getAccount(address);
+                    authAddressCheck.accept(account.authAddr());
+                } catch (Exception e) {
+                    if(LOG.isDebugEnabled())
+                        LOG.warn(e);
+                } finally {
+
+                }
+            }
+        }, "Fetching Authorized Address ...", true, project);
+    }
+
+
     public String getContractName() {
         return (String)contractCB.getSelectedItem();
     }
@@ -206,8 +324,8 @@ public class CreateAppEntryForm {
         return Integer.parseInt(localIntsTf.getText());
     }
 
-    public Account getSignerAccount() {
-        String mnemonic = mnemonicTf.getText().trim();
+    public Account getAuthorizedAccount() {
+        String mnemonic = authMnemonicTf.getText().trim();
         try {
             Account account = new Account(mnemonic);
             return account;
@@ -247,8 +365,8 @@ public class CreateAppEntryForm {
             return new ValidationInfo("Invalid Local Ints. Integer value expected.", localIntsTf);
         }
 
-        if(StringUtil.isEmpty(signerAccountTf.getText())) {
-            return new ValidationInfo("Please select a valid signer account or enter valid mnemonic", signerAccountTf);
+        if(StringUtil.isEmpty(authAccountTf.getText())) {
+            return new ValidationInfo("Please select a valid signer account or enter valid mnemonic", authAccountTf);
         }
 
         if(StringUtil.isEmpty(senderAddressTf.getText())) {
@@ -302,7 +420,7 @@ public class CreateAppEntryForm {
 
     private void createUIComponents() {
         // TODO: place custom component creation code here
-        mnemonicTf = new JTextField();
+        authMnemonicTf = new JTextField();
     }
 
 }

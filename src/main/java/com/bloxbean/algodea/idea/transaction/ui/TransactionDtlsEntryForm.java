@@ -27,7 +27,7 @@ import java.math.BigInteger;
 public class TransactionDtlsEntryForm {
     private final static Logger LOG = Logger.getInstance(TransactionDtlsEntryForm.class);
 
-    private JPanel mainPanel;
+    private JPanel txOptions;
     private JTextField noteTf;
     private JComboBox noteTypeCB;
     private JTextField leaseTf;
@@ -39,10 +39,15 @@ public class TransactionDtlsEntryForm {
     private JLabel firstValidLastValidLabel;
     private JTextField firstValidTf;
     private JTextField lastValidTf;
-    private JButton fetchSuggedParamsBtn;
+    private JButton fetchDefaultParamsBtn;
     private JTextField rekeyToTf;
     private JButton rekeyAccountChooser;
     private JButton rekeyMultiSigAccountChooser;
+    private JPanel mainPanel;
+    private JTextField closeRemainderToTf;
+    private JButton closeRemainderToAccountChooser;
+    private JButton closeRemainderToMultiSigChooser;
+    private JLabel networkParamHelpLabel;
 
     DefaultComboBoxModel<ArgType> noteTypeDefaultComboBoxModel;
     DefaultComboBoxModel<ArgType> leaseTypeDefaultComboBoxModel;
@@ -50,9 +55,14 @@ public class TransactionDtlsEntryForm {
     Project project;
 
     public TransactionDtlsEntryForm() {
+        networkParamHelpLabel.setText("<html>The network parameters will be populated by default if left blank. Click \"Fetch Defaults\"" +
+                " and modify the values as needed.</html>");
         feePerByteHelpLabel.setText("<html>Set the fee per bytes value. This value is multiplied by the estimated <br/>size of the transaction  to reach a final transaction fee, or 1000, whichever is higher.</html>");
         flatFeeHelpLabel.setText("<html>Set the flatFee. This value will be used for the transaction fee,<br/> or 1000, whichever is higher.</html>");
-        firstValidLastValidLabel.setText("<html>The first valid and last valid round will be automatically <br/>set if not specified.</html>");
+
+        closeRemainderToTf.setToolTipText("<html>When set, it indicates that the transaction is requesting that the Sender account<br/>" +
+                " should be closed, and all remaining funds,<br/>" +
+                " after the fee and amount are paid, be transferred to this address.</html>");
 
         attachListeners();
     }
@@ -62,7 +72,7 @@ public class TransactionDtlsEntryForm {
     }
 
     private void attachListeners() {
-        fetchSuggedParamsBtn.addActionListener(e -> {
+        fetchDefaultParamsBtn.addActionListener(e -> {
             ProgressManager.getInstance().runProcessWithProgressSynchronously(new Runnable() {
                 @Override
                 public void run() {
@@ -87,6 +97,20 @@ public class TransactionDtlsEntryForm {
                     }
                 }
             }, "Fetching suggested params ...", true, project);
+        });
+
+        closeRemainderToAccountChooser.addActionListener(e -> {
+            AlgoAccount algoAccount = AccountChooser.getSelectedAccount(project, true);
+            if (algoAccount != null) {
+                closeRemainderToTf.setText(algoAccount.getAddress());
+            }
+        });
+
+        closeRemainderToMultiSigChooser.addActionListener(e -> {
+            AlgoMultisigAccount algoMultisigAccount = AccountChooser.getSelectedMultisigAccount(project, true);
+            if (algoMultisigAccount != null) {
+                closeRemainderToTf.setText(algoMultisigAccount.getAddress());
+            }
         });
 
         rekeyAccountChooser.addActionListener(e -> {
@@ -186,15 +210,19 @@ public class TransactionDtlsEntryForm {
         }
     }
 
-    private Address getReKeyToAddress() {
+    private Address getCloseRemainderToAddress() throws Exception {
+        if(StringUtil.isEmpty(closeRemainderToTf.getText()))
+            return null;
+
+        return new Address(StringUtil.trim(closeRemainderToTf.getText()));
+
+    }
+
+    private Address getReKeyToAddress() throws Exception {
         if(StringUtil.isEmpty(rekeyToTf.getText()))
             return null;
 
-        try {
-            return new Address(StringUtil.trim(rekeyToTf.getText()));
-        } catch (Exception e) {
-            return null;
-        }
+        return new Address(StringUtil.trim(rekeyToTf.getText()));
     }
 
     public TxnDetailsParameters getTxnDetailsParameters() throws Exception {
@@ -205,6 +233,7 @@ public class TransactionDtlsEntryForm {
         txnDetailsParameters.setFlatFee(getFlatFee());
         txnDetailsParameters.setFirstValid(getFirstValid());
         txnDetailsParameters.setLastValid(getLastValid());
+        txnDetailsParameters.setCloseRemainderTo(getCloseRemainderToAddress());
         txnDetailsParameters.setRekey(getReKeyToAddress());
 
         return txnDetailsParameters;
@@ -212,7 +241,7 @@ public class TransactionDtlsEntryForm {
 
 
     public JPanel getMainPanel() {
-        return mainPanel;
+        return txOptions;
     }
 
     private void createUIComponents() {
@@ -277,6 +306,12 @@ public class TransactionDtlsEntryForm {
             }
         } catch (Exception e) {
             return new ValidationInfo("Invalid value for last valid round", lastValidTf);
+        }
+
+        try {
+            getCloseRemainderToAddress();
+        } catch (Exception e) {
+            return new ValidationInfo("Invalid Close Remainder To address", closeRemainderToTf);
         }
 
         try {

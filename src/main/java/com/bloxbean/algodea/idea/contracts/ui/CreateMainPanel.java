@@ -1,14 +1,13 @@
 package com.bloxbean.algodea.idea.contracts.ui;
 
 import com.bloxbean.algodea.idea.account.model.AlgoAccount;
+import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
 import com.bloxbean.algodea.idea.transaction.ui.TransactionDtlsEntryForm;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ValidationInfo;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public class CreateMainPanel {
     private JTabbedPane tabbedPane1;
@@ -17,11 +16,11 @@ public class CreateMainPanel {
     private AppTxnDetailsEntryForm appTxnDetailsEntryForm;
     private TransactionDtlsEntryForm txnDtlEntryForm;
 
-    public CreateMainPanel(Project project, AlgoAccount creatorAccount, String contractName) {
+    public CreateMainPanel(Project project, AlgoAccount creatorAccount, String contractName) throws DeploymentTargetNotConfigured {
         initialize(project, creatorAccount, contractName);
     }
 
-    private void initialize(Project project, AlgoAccount creatorAccount, String contractName) {
+    private void initialize(Project project, AlgoAccount creatorAccount, String contractName) throws DeploymentTargetNotConfigured {
         createAppEntryForm.initializeData(project, creatorAccount, contractName);
         appTxnDetailsEntryForm.initializeData(project);
         txnDtlEntryForm.initializeData(project);

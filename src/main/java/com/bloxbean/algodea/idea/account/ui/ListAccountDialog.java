@@ -33,7 +33,10 @@ import com.bloxbean.algodea.idea.util.IdeaUtil;
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.DataManager;
 import com.intellij.notification.NotificationType;
-import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.DataContext;
+import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.progress.ProgressIndicator;
@@ -50,7 +53,6 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
@@ -58,7 +60,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 public class ListAccountDialog extends DialogWrapper {
@@ -197,8 +198,32 @@ public class ListAccountDialog extends DialogWrapper {
             public void mousePressed(MouseEvent e) {
                 tableRowPopupMenuHandler(e);
             }
+
+            public void mouseClicked(MouseEvent me) {
+                if (me.getClickCount() == 2) {     // to detect doble click events
+                    handleDoubleClickEvents();
+                }
+            }
         });
 
+    }
+
+    private void handleDoubleClickEvents() {
+        int rowindex = accListTable.getSelectedRow();
+        if (rowindex < 0)
+            return;
+
+        int column = accListTable.getSelectedColumn(); // select a column
+        if(column == 0)
+            System.out.println("COl 1 selected");
+        AlgoAccount account = tableModel.getAccounts().get(rowindex);
+        if(account == null)
+            return;
+        if(column == 0) {
+            showAccountDetails(account);
+        } else if(column == 1) {
+            copyAddress(account);
+        }
     }
 
     private void tableRowPopupMenuHandler(MouseEvent e) {
@@ -239,15 +264,19 @@ public class ListAccountDialog extends DialogWrapper {
         return new AnAction("Show Details", "Show Details", AllIcons.General.InspectionsEye) {
             @Override
             public void actionPerformed(@NotNull AnActionEvent e) {
-                AccountDetailsDialog dialog = new AccountDetailsDialog(project, account);
-                boolean ok = dialog.showAndGet();
-
-                if(dialog.getAccountInfoUpdated()) {
-                    //Update table.
-                    poulateAccounts();
-                }
+                showAccountDetails(account);
             }
         };
+    }
+
+    private void showAccountDetails(AlgoAccount account) {
+        AccountDetailsDialog dialog = new AccountDetailsDialog(project, account);
+        boolean ok = dialog.showAndGet();
+
+        if(dialog.getAccountInfoUpdated()) {
+            //Update table.
+            poulateAccounts();
+        }
     }
 
     @NotNull
@@ -279,12 +308,16 @@ public class ListAccountDialog extends DialogWrapper {
             @Override
             public void actionPerformed(@NotNull AnActionEvent e) {
                 AlgoAccount algoAccount = getSelectAccount();
-                StringSelection stringSelection = new StringSelection(algoAccount.getAddress().toString());
-                Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-                clipboard.setContents(stringSelection, null);
-                Messages.showInfoMessage("Address copied to the clipboard", "Copy Address");
+                copyAddress(algoAccount);
             }
         };
+    }
+
+    private void copyAddress(AlgoAccount algoAccount) {
+        StringSelection stringSelection = new StringSelection(algoAccount.getAddress().toString());
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        clipboard.setContents(stringSelection, null);
+        Messages.showInfoMessage("Address copied to the clipboard", "Copy Address");
     }
 
     private AnAction createCopyMnemonicAction(AlgoAccount account) {
@@ -313,40 +346,56 @@ public class ListAccountDialog extends DialogWrapper {
                 ProgressManager.getInstance().runProcessWithProgressSynchronously(new Runnable() {
                     @Override
                     public void run() {
-                        ProgressIndicator progressIndicator = ProgressManager.getInstance().getProgressIndicator();
-                        float counter = 0;
-                        AlgoAccountService accountService = null;
+                        ProgressIndicator progressIndicator = null;
                         try {
-                             accountService = new AlgoAccountService(project, new LogListenerAdapter(console));
-                        } catch (DeploymentTargetNotConfigured deploymentTargetNotConfigured) {
-                            IdeaUtil.showNotification(project, "Algorand Configuration",
-                                    "Algorand deployment node is not configured.", NotificationType.ERROR, ConfigurationAction.ACTION_ID);
-                        }
-                        if(accountService == null)
-                            return;
+                            progressIndicator = ProgressManager.getInstance().getProgressIndicator();
+                            progressIndicator.setIndeterminate(false);
 
-                        for (AlgoAccount account : tableModel.getAccounts()) {
-                            //TODO fetch balance
+                            float counter = 0;
+                            AlgoAccountService accountService = null;
                             try {
-                                Long balance = accountService.getBalance(account.getAddress());
-
-                                progressIndicator.setFraction(counter++ / tableModel.getAccounts().size());
-                                if(progressIndicator.isCanceled()) {
-                                    break;
-                                }
-
-                                if (balance != null) {
-                                    account.setBalance(balance);
-                                }
-                                tableModel.fireTableRowsUpdated((int)counter - 1, (int)counter-1);
-                            } catch (Exception e) {
-                                console.showErrorMessage("Error getting balance for account : " + account.getAddress());
-                                console.showErrorMessage(e.getMessage());
+                                accountService = new AlgoAccountService(project, new LogListenerAdapter(console));
+                            } catch (DeploymentTargetNotConfigured deploymentTargetNotConfigured) {
+                                IdeaUtil.showNotification(project, "Algorand Configuration",
+                                        "Algorand deployment node is not configured.", NotificationType.ERROR, ConfigurationAction.ACTION_ID);
                             }
+                            if (accountService == null)
+                                return;
+
+                            int totalCount = tableModel.getAccounts().size();
+                            for (AlgoAccount account : tableModel.getAccounts()) {
+                                //TODO fetch balance
+                                try {
+                                    Long balance = accountService.getBalance(account.getAddress());
+
+                                    progressIndicator.setFraction(counter++ / totalCount);
+                                    if (progressIndicator.isCanceled()) {
+                                        break;
+                                    }
+
+                                    if (balance != null) {
+                                        account.setBalance(balance);
+                                    }
+                                    tableModel.fireTableRowsUpdated((int) counter - 1, (int) counter - 1);
+                                } catch (Exception e) {
+                                    console.showErrorMessage("Error getting balance for account : " + account.getAddress());
+                                    console.showErrorMessage(e.getMessage());
+                                }
 //                           //TO BigInteger balance = accountListFetcher.getBalance(account, isRemote);
+                            }
+                            progressIndicator.setFraction(1.0);
+                            tableModel.fireTableDataChanged();
+                        } catch (Exception e) {
+                            console.showErrorMessage("Error fetching balance", e);
+                        } finally {
+                            if(progressIndicator != null) {
+                                try {
+                                    progressIndicator.setFraction(1.0);
+                                } catch (Exception e) {
+
+                                }
+                            }
                         }
-                        progressIndicator.setFraction(1.0);
-                        tableModel.fireTableDataChanged();
                     }
                 }, "Fetching balance from remote kernel ...", true, project);
 

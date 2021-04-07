@@ -4,6 +4,7 @@ import com.algorand.algosdk.crypto.Address;
 import com.bloxbean.algodea.idea.account.model.AlgoAccount;
 import com.bloxbean.algodea.idea.account.model.AlgoMultisigAccount;
 import com.bloxbean.algodea.idea.account.service.AccountChooser;
+import com.bloxbean.algodea.idea.common.AlgoConstants;
 import com.bloxbean.algodea.idea.common.Tuple;
 import com.bloxbean.algodea.idea.core.action.ui.TxnDialogWrapper;
 import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
@@ -29,6 +30,7 @@ import java.math.BigInteger;
 import java.util.List;
 
 import static com.bloxbean.algodea.idea.common.AlgoConstants.ALGO;
+import static com.bloxbean.algodea.idea.common.AlgoConstants.MICRO_ALGO;
 
 public class TEALSendTransactionDialog extends TxnDialogWrapper implements LogicSigSigningAccountForm.ChangeListener {
     private static final Logger LOG = Logger.getInstance(TEALSendTransactionDialog.class);
@@ -46,11 +48,11 @@ public class TEALSendTransactionDialog extends TxnDialogWrapper implements Logic
     private JLabel unitLabel;
     private JButton fetchAssetsBtn;
     private JButton receiverMultiSigBtn;
-    private JTextField closeReminderTo;
-    private JButton closeReminderAccountChooserBtn;
     private LogicSigSigningAccountForm logicSigSigningAccountForm;
     private ArgsInputForm argInputForm;
-    private JButton closeReminderToMultiSigChooserBtn;
+    private JTextField algoBalanceTf;
+    private JComboBox algoUnitCB;
+
 
     private DefaultComboBoxModel assetsComboBoxModel;
     private AlgoConsole console;
@@ -72,6 +74,7 @@ public class TEALSendTransactionDialog extends TxnDialogWrapper implements Logic
         assetTypeButtonGroup.add(asaTypeRB);
         algoTypeRB.setSelected(true);
         enableOtherAssetPanel(false);
+        unitLabel.setVisible(false);
     }
 
     private void initializeData(Project project) throws DeploymentTargetNotConfigured {
@@ -112,6 +115,8 @@ public class TEALSendTransactionDialog extends TxnDialogWrapper implements Logic
             if(algoTypeRB.isSelected()) {
                 enableOtherAssetPanel(false);
                 setUnitLabel();
+                algoUnitCB.setVisible(true);
+                unitLabel.setVisible(false);
             }
         });
 
@@ -119,6 +124,8 @@ public class TEALSendTransactionDialog extends TxnDialogWrapper implements Logic
             if(asaTypeRB.isSelected()) {
                 enableOtherAssetPanel(true);
                 setUnitLabel();
+                algoUnitCB.setVisible(false);
+                unitLabel.setVisible(true);
             }
         });
 
@@ -126,24 +133,7 @@ public class TEALSendTransactionDialog extends TxnDialogWrapper implements Logic
             setUnitLabel();
         });
 
-        unitLabel.setText(ALGO);
-
-        closeReminderTo.setToolTipText("<html>When set, it indicates that the transaction is requesting that the Sender account<br/>" +
-                " should be closed, and all remaining funds,<br/>" +
-                " after the fee and amount are paid, be transferred to this address.</html>");
-        closeReminderAccountChooserBtn.addActionListener(e -> {
-            AlgoAccount algoAccount = AccountChooser.getSelectedAccount(project, true);
-            if(algoAccount != null) {
-                closeReminderTo.setText(algoAccount.getAddress());
-            }
-        });
-
-        closeReminderToMultiSigChooserBtn.addActionListener(e -> {
-            AlgoMultisigAccount algoMultisigAccount = AccountChooser.getSelectedMultisigAccount(project, true);
-            if(algoMultisigAccount != null) {
-                closeReminderTo.setText(algoMultisigAccount.getAddress());
-            }
-        });
+        //unitLabel.setText(ALGO);
     }
 
     //Change Listener methods
@@ -161,6 +151,15 @@ public class TEALSendTransactionDialog extends TxnDialogWrapper implements Logic
     public void signerAddressChanged(String address) {
         //Already handled in logicSigSigningAccountForm
     }
+
+    @Override
+    public void balanceUpdated(String balance) {
+        if(balance == null)
+            algoBalanceTf.setText("");
+        else
+            algoBalanceTf.setText(balance);
+    }
+
     //Change Listener methods end
 
     private void enableOtherAssetPanel(boolean flag) {
@@ -170,7 +169,7 @@ public class TEALSendTransactionDialog extends TxnDialogWrapper implements Logic
 
     private void setUnitLabel() {
         if(isAlgoTransfer()) {
-            unitLabel.setText(ALGO);
+            unitLabel.setText("");
         } else {
             AccountAsset accountAsset = (AccountAsset) assetsCB.getSelectedItem();
             if (accountAsset == null)
@@ -257,10 +256,18 @@ public class TEALSendTransactionDialog extends TxnDialogWrapper implements Logic
 
         try {
             if(isAlgoTransfer()) {
-                BigDecimal amtInAlgo = new BigDecimal(amountTf.getText());
-                BigInteger microAlgo = AlgoConversionUtil.algoTomAlgo(amtInAlgo);
+                if(algoUnitCB.getSelectedItem() != null
+                        && algoUnitCB.getSelectedItem().equals(MICRO_ALGO)) {
+                    BigInteger amtInmAlgo = new BigInteger(amountTf.getText());
+                    BigDecimal amtInAlgo = AlgoConversionUtil.mAlgoToAlgo(amtInmAlgo);
 
-                return new Tuple(amtInAlgo, microAlgo);
+                    return new Tuple(amtInAlgo, amtInmAlgo);
+                } else {
+                    BigDecimal amtInAlgo = new BigDecimal(amountTf.getText());
+                    BigInteger microAlgo = AlgoConversionUtil.algoTomAlgo(amtInAlgo);
+
+                    return new Tuple(amtInAlgo, microAlgo);
+                }
             } else { //Asset transfer
                 AccountAsset accountAsset = getAsset();
                 BigDecimal assetAmount = new BigDecimal(amountTf.getText());
@@ -277,15 +284,6 @@ public class TEALSendTransactionDialog extends TxnDialogWrapper implements Logic
 
             return null;
         }
-    }
-
-    public Address getCloseReminderTo() throws Exception {
-        String closeReminderToAdd = StringUtil.trim(closeReminderTo.getText());
-        if(StringUtil.isEmpty(closeReminderToAdd))
-            return null;
-
-        Address address = new Address(closeReminderToAdd);
-        return address;
     }
 
     public TransactionDtlsEntryForm getTransactionDtlsEntryForm() {
@@ -314,12 +312,6 @@ public class TEALSendTransactionDialog extends TxnDialogWrapper implements Logic
             return new ValidationInfo("Please select a valid asset", assetsCB);
         }
 
-        try {
-            getCloseReminderTo();
-        } catch (Exception e) {
-            return new ValidationInfo("Invalid Close Reminder To address", closeReminderTo);
-        }
-
         return transactionDtlsEntryForm.doValidate();
     }
 
@@ -334,6 +326,11 @@ public class TEALSendTransactionDialog extends TxnDialogWrapper implements Logic
         transactionDtlsEntryForm = new TransactionDtlsEntryForm();
         assetsComboBoxModel = new DefaultComboBoxModel();
         assetsCB = new ComboBox(assetsComboBoxModel);
+
+        DefaultComboBoxModel<String> algoUnitCBM
+                = new DefaultComboBoxModel<>(new String[] {AlgoConstants.ALGO, AlgoConstants.MICRO_ALGO});
+        algoUnitCB = new ComboBox(algoUnitCBM);
+        algoUnitCB.setSelectedIndex(0);
     }
 
     public LogicSigSigningAccountForm getLogicSigSignAccountForm() {

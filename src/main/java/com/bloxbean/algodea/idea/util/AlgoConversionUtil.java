@@ -12,6 +12,10 @@ public class AlgoConversionUtil {
         return assetFromDecimal(amount, ALGO_DECIMAL);
     }
 
+    public static BigDecimal mAlgoToAlgo(BigInteger amount) {
+        return assetToDecimal(amount, ALGO_DECIMAL);
+    }
+
     public static String mAlgoToAlgoFormatted(BigInteger mAlgoAmt) {
         BigDecimal amtInAlgo = assetToDecimal(mAlgoAmt, ALGO_DECIMAL); //1 Algo = 1000000
         return formatBigDecimal(amtInAlgo, ALGO_DECIMAL);

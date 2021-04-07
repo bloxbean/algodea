@@ -2,6 +2,7 @@ package com.bloxbean.algodea.idea.contracts.ui;
 
 import com.bloxbean.algodea.idea.account.model.AlgoAccount;
 import com.bloxbean.algodea.idea.core.action.ui.TxnDialogWrapper;
+import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
 import com.bloxbean.algodea.idea.transaction.ui.TransactionDtlsEntryForm;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.project.Project;
@@ -15,7 +16,7 @@ public class CreateAppDialog extends TxnDialogWrapper {
     private CreateMainPanel createMainPanel;
 
     public CreateAppDialog(Project project,
-                              AlgoAccount creatorAccount, String contractName) {
+                              AlgoAccount creatorAccount, String contractName) throws DeploymentTargetNotConfigured {
         super(project);
         createMainPanel = new CreateMainPanel(project, creatorAccount, contractName);
         init();

@@ -79,13 +79,15 @@ public class AssetConfigurationDialog extends TxnDialogWrapper {
     private AssetActionType actionType;
 
     private DefaultComboBoxModel<AssetMeta> assetIdComboBoxModel;
+    private Project project;
 
-    public AssetConfigurationDialog(@Nullable Project project) {
+    public AssetConfigurationDialog(@Nullable Project project) throws DeploymentTargetNotConfigured {
         this(project, AssetActionType.CREATE, "Asset Create");
     }
 
-    public AssetConfigurationDialog(@Nullable Project project, AssetActionType actionType, String title) {
+    public AssetConfigurationDialog(@Nullable Project project, AssetActionType actionType, String title) throws DeploymentTargetNotConfigured {
         super(project, true);
+        this.project = project;
         init();
         setTitle(title);
 
@@ -119,7 +121,7 @@ public class AssetConfigurationDialog extends TxnDialogWrapper {
                 " If empty, clawback is not permitted.</html>");
     }
 
-    private void initializeData(Project project) {
+    private void initializeData(Project project) throws DeploymentTargetNotConfigured {
         //disable assetId and search fields
         assetIdLabel.setVisible(false);
         assetIdPanel.setVisible(false);
@@ -132,8 +134,8 @@ public class AssetConfigurationDialog extends TxnDialogWrapper {
         _initialize(project);
     }
 
-    private void initializeModify(Project project) {
-        senderAddressInputForm.setSigningAccountLabel("Signer"); //Sender here is manager
+    private void initializeModify(Project project) throws DeploymentTargetNotConfigured {
+        senderAddressInputForm.setSigningAccountLabel("Authorized Address"); //Sender here is manager
         senderAddressInputForm.setSenderAddressLabel("Sender (Manager)");
         _initialize(project);
 
@@ -142,9 +144,9 @@ public class AssetConfigurationDialog extends TxnDialogWrapper {
         attachAssetIdSearchHandler(project);
     }
 
-    private void initializeViewMode(Project project) {
+    private void initializeViewMode(Project project) throws DeploymentTargetNotConfigured {
         if (AssetActionType.OPT_IN.equals(actionType)) {
-            senderAddressInputForm.setSigningAccountLabel("Signer (OptIn Acc)");
+            senderAddressInputForm.setSigningAccountLabel("Authorized Address");
             senderAddressInputForm.setSenderAddressLabel("Sender (OptIn Acc)");
             setOKButtonText("Opt In");
         }
@@ -160,7 +162,7 @@ public class AssetConfigurationDialog extends TxnDialogWrapper {
                 setOKButtonText("UnFreeze");
             }
 
-            senderAddressInputForm.setSigningAccountLabel("Signer (Freeze Address) ");
+            senderAddressInputForm.setSigningAccountLabel("Authorized Address");
             senderAddressInputForm.setSenderAddressLabel("Sender (Freeze Address)");
 
         } else if (AssetActionType.REVOKE.equals(actionType)) {
@@ -174,15 +176,15 @@ public class AssetConfigurationDialog extends TxnDialogWrapper {
             receiverAddressInputForm.setAccountLabel("Receiver Address *");
             revokeAmountLabel.setText(StringUtility.padLeft("Asset Amount *", 22));
 
-            senderAddressInputForm.setSigningAccountLabel("Signer (Clawback Address) ");
+            senderAddressInputForm.setSigningAccountLabel("Authorized Address");
             senderAddressInputForm.setSenderAddressLabel("Sender (Clawback Address)");
             setOKButtonText("Revoke");
         } else if (AssetActionType.DESTROY.equals(actionType)) {
-            senderAddressInputForm.setSigningAccountLabel("Signer (Manager)");
+            senderAddressInputForm.setSigningAccountLabel("Authorized Address");
             senderAddressInputForm.setSenderAddressLabel("Sender (Manager)");
             setOKButtonText("Destory");
         } else {
-            senderAddressInputForm.setSigningAccountLabel("Signer"); //Sender here is manager
+            senderAddressInputForm.setSigningAccountLabel("Authorized Address"); //Sender here is manager
             senderAddressInputForm.setSenderAddressLabel("Sender");
         }
 
@@ -355,7 +357,7 @@ public class AssetConfigurationDialog extends TxnDialogWrapper {
                 AccountService accountService = AccountService.getAccountService();
                 AlgoAccount managerAcc = accountService.getAccountByAddress(asset.params.manager);
                 if (managerAcc != null) {
-                    senderAddressInputForm.setMnemonic(managerAcc.getMnemonic());
+                    senderAddressInputForm.setSenderAddress(project, managerAcc);
                 }
             }
         }
@@ -366,7 +368,8 @@ public class AssetConfigurationDialog extends TxnDialogWrapper {
                 AccountService accountService = AccountService.getAccountService();
                 AlgoAccount freezeAcc = accountService.getAccountByAddress(asset.params.freeze);
                 if (freezeAcc != null) {
-                    senderAddressInputForm.setMnemonic(freezeAcc.getMnemonic());
+                    senderAddressInputForm.setSenderAddress(project, freezeAcc);
+//                    senderAddressInputForm.setMnemonic(freezeAcc.getMnemonic());
                 }
             }
         }
@@ -377,7 +380,8 @@ public class AssetConfigurationDialog extends TxnDialogWrapper {
                 AccountService accountService = AccountService.getAccountService();
                 AlgoAccount clawbackAdd = accountService.getAccountByAddress(asset.params.clawback);
                 if (clawbackAdd != null) {
-                    senderAddressInputForm.setMnemonic(clawbackAdd.getMnemonic());
+                    senderAddressInputForm.setSenderAddress(project, clawbackAdd);
+//                    senderAddressInputForm.setMnemonic(clawbackAdd.getMnemonic());
                 }
             }
 
@@ -391,7 +395,8 @@ public class AssetConfigurationDialog extends TxnDialogWrapper {
                 AccountService accountService = AccountService.getAccountService();
                 AlgoAccount managerAddress = accountService.getAccountByAddress(asset.params.manager);
                 if (managerAddress != null) {
-                    senderAddressInputForm.setMnemonic(managerAddress.getMnemonic());
+                    senderAddressInputForm.setSenderAddress(project, managerAddress);
+//                    senderAddressInputForm.setMnemonic(managerAddress.getMnemonic());
                 }
             }
         }
@@ -445,9 +450,11 @@ public class AssetConfigurationDialog extends TxnDialogWrapper {
         freezeAddressInputForm.setAccount("");
         reserveAddressInputForm.setAccount("");
         clawbackAddressInputForm.setAccount("");
+
+        senderAddressInputForm.clearFields();
     }
 
-    private void _initialize(Project project) {
+    private void _initialize(Project project) throws DeploymentTargetNotConfigured {
         decimalsTf.setText("0");
         metadataHashTf.setToolTipText("0 or 32 bytes");
 
@@ -709,7 +716,7 @@ public class AssetConfigurationDialog extends TxnDialogWrapper {
     private void createUIComponents() {
         // TODO: place custom component creation code here
         senderAddressInputForm = new AccountEntryInputForm(true, false);
-        senderAddressInputForm.setSigningAccountLabel("Signer");
+        senderAddressInputForm.setSigningAccountLabel("Authorized Address");
         senderAddressInputForm.setSenderAddressLabel("Creator");
 
         managerAddressInputForm = new ManagedAccountEntryInputForm(false, false);
