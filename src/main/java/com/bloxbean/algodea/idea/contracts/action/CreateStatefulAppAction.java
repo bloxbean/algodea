@@ -171,18 +171,11 @@ public class CreateStatefulAppAction extends BaseTxnAction {
 
             TransactionDtlsEntryForm txnDetailsEntryForm = createDialog.getTxnDetailsEntryForm();
             TxnDetailsParameters generalTxnDetailsParams = txnDetailsEntryForm.getTxnDetailsParameters();
+            generalTxnDetailsParams.setAppArgs(appArgs);
+            generalTxnDetailsParams.setAccounts(accounts);
+            generalTxnDetailsParams.setForeignApps(foreignApps);
+            generalTxnDetailsParams.setForeignAssets(foreignAssets);
 
-            TxnDetailsParameters txnDetailsParameters = new TxnDetailsParameters();
-            txnDetailsParameters.setAppArgs(appArgs);
-            txnDetailsParameters.setAccounts(accounts);
-            txnDetailsParameters.setForeignApps(foreignApps);
-            txnDetailsParameters.setForeignAssets(foreignAssets);
-
-            //general txn parameters
-            txnDetailsParameters.setNote(generalTxnDetailsParams.getNote());
-            txnDetailsParameters.setLease(generalTxnDetailsParams.getLease());
-            txnDetailsParameters.setFee(generalTxnDetailsParams.getFee());
-            txnDetailsParameters.setFlatFee(generalTxnDetailsParams.getFlatFee());
 
             //update cache
             if(!StringUtil.isEmpty(contractName))
@@ -256,7 +249,7 @@ public class CreateStatefulAppAction extends BaseTxnAction {
                     try {
                         result = sfService.createApp(appProgText, clearProgText, signerAccount, senderAddress,
                                 globalByteslices, globalInts, localByteslices, localInts,
-                                txnDetailsParameters, requestMode);
+                                generalTxnDetailsParams, requestMode);
                     } catch (Exception exception) {
                         if(LOG.isDebugEnabled()) {
                             LOG.warn(exception);

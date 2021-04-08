@@ -1,5 +1,6 @@
 package com.bloxbean.algodea.idea.account.ui;
 
+import com.algorand.algosdk.crypto.Address;
 import com.algorand.algosdk.v2.client.model.Account;
 import com.algorand.algosdk.v2.client.model.Application;
 import com.algorand.algosdk.v2.client.model.Asset;
@@ -236,9 +237,20 @@ public class AccountDetailsDialog extends DialogWrapper {
                 @Override
                 public void run() {
                     try {
-                        com.algorand.algosdk.account.Account account = new com.algorand.algosdk.account.Account(algoAccount.getMnemonic());
+                        Address senderAddress = new Address(algoAccount.getAddress());
+                        com.algorand.algosdk.account.Account authAccount = null;
 
-                        Result result = statefulContractService.delete(appId, account, account.getAddress(), new TxnDetailsParameters(), RequestMode.TRANSACTION);
+                        String authAddress = authAddrTf.getText();
+                        if(!StringUtil.isEmpty(authAddress)) {
+                            AlgoAccount authAlgoAccount = accountService.getAccountByAddress(authAddress);
+                            if(authAlgoAccount != null) {
+                                authAccount = new com.algorand.algosdk.account.Account(authAlgoAccount.getMnemonic());
+                            }
+                        } else {
+                            authAccount = new com.algorand.algosdk.account.Account(algoAccount.getMnemonic());
+                        }
+
+                        Result result = statefulContractService.delete(appId, authAccount, senderAddress, new TxnDetailsParameters(), RequestMode.TRANSACTION);
                         if (result != null && result.isSuccessful()) {
                             showMessage("Application deleted successfully, App Id: " + appId, "Application Delete", false);
                             createdAppsCB.removeItem(appId);

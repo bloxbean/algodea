@@ -87,16 +87,17 @@ public class CreateAppEntryForm {
             throw deploymentTargetNotConfigured;
         }
 
+        creatorAccount = null;//TODO For now, let's not use cache due to authAddr dependency
         if(creatorAccount != null) {
-            authAccountTf.setText(creatorAccount.getAddress().toString());
             senderAddressTf.setText(creatorAccount.getAddress().toString());
 
-            ApplicationManager.getApplication().invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    authMnemonicTf.setText(creatorAccount.getMnemonic());
-                }
-            }, ModalityState.any());
+            //TODO - Uncomment when caching is enabled
+//            ApplicationManager.getApplication().invokeLater(new Runnable() {
+//                @Override
+//                public void run() {
+//                    //setAuthAddress(project, creatorAccount);
+//                }
+//            }, ModalityState.any());
         }
 
         authAccountChooser.addActionListener(new ActionListener() {
@@ -349,6 +350,22 @@ public class CreateAppEntryForm {
 
     protected @Nullable ValidationInfo doValidate() {
 
+        if(StringUtil.isEmpty(senderAddressTf.getText())) {
+            return new ValidationInfo("Please select a valid sender address", senderAddressTf);
+        }
+
+        if(StringUtil.isEmpty(authAccountTf.getText())) {
+            return new ValidationInfo("Please select a valid Authorized account or enter valid mnemonic", authAccountTf);
+        }
+
+        //If auth account is set , auth mnemonic should be set
+        if(!StringUtil.isEmpty(authAccountTf.getText())
+                && StringUtil.isEmpty(authMnemonicTf.getText())) {
+            return new ValidationInfo("Please provide a valid mnemonic for the Authorized Address.",
+                    authMnemonicTf);
+        }
+
+
         if(!NumberUtils.isNumber(globalByteslicesTf.getText())) {
             return new ValidationInfo("Invalid Global Byteslices. Integer value expected.", globalByteslicesTf);
         }
@@ -363,14 +380,6 @@ public class CreateAppEntryForm {
 
         if(!NumberUtils.isNumber(localIntsTf.getText())) {
             return new ValidationInfo("Invalid Local Ints. Integer value expected.", localIntsTf);
-        }
-
-        if(StringUtil.isEmpty(authAccountTf.getText())) {
-            return new ValidationInfo("Please select a valid signer account or enter valid mnemonic", authAccountTf);
-        }
-
-        if(StringUtil.isEmpty(senderAddressTf.getText())) {
-            return new ValidationInfo("Please select a valid sender address", senderAddressTf);
         }
 
         return null;

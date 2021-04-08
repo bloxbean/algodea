@@ -91,6 +91,7 @@ public class AssetConfigurationDialog extends TxnDialogWrapper {
         init();
         setTitle(title);
 
+        transactionDtlsEntryForm.initializeData(project);
 //        if(AssetActionType.MODIFY.equals(actionType)) {
 //            this.modifyMode = true;
 //        }

@@ -126,18 +126,10 @@ public abstract class  BaseStatefulAppAction extends BaseTxnAction {
 
             TransactionDtlsEntryForm txnDetailsEntryForm = dialog.getTxnDetailsEntryForm();
             TxnDetailsParameters generalTxnDetailsParam = txnDetailsEntryForm.getTxnDetailsParameters();
-
-            TxnDetailsParameters txnDetailsParameters = new TxnDetailsParameters();
-            txnDetailsParameters.setAppArgs(appArgs);
-            txnDetailsParameters.setAccounts(accounts);
-            txnDetailsParameters.setForeignApps(foreignApps);
-            txnDetailsParameters.setForeignAssets(foreignAssets);
-
-            //general txn parameters
-            txnDetailsParameters.setNote(generalTxnDetailsParam.getNote());
-            txnDetailsParameters.setLease(generalTxnDetailsParam.getLease());
-            txnDetailsParameters.setFee(generalTxnDetailsParam.getFee());
-            txnDetailsParameters.setFlatFee(generalTxnDetailsParam.getFlatFee());
+            generalTxnDetailsParam.setAppArgs(appArgs);
+            generalTxnDetailsParam.setAccounts(accounts);
+            generalTxnDetailsParam.setForeignApps(foreignApps);
+            generalTxnDetailsParam.setForeignAssets(foreignAssets);
 
             RequestMode requestMode = dialog.getRequestMode();
 
@@ -159,7 +151,7 @@ public abstract class  BaseStatefulAppAction extends BaseTxnAction {
                 public void run(@NotNull ProgressIndicator indicator) {
                     console.showInfoMessage(String.format("Starting %s transaction ...", getTxnCommand()));
                     try {
-                        Result result = invokeTransaction(sfService, appId, signerAccount, senderAddress, txnDetailsParameters, requestMode);
+                        Result result = invokeTransaction(sfService, appId, signerAccount, senderAddress, generalTxnDetailsParam, requestMode);
 
                         String fromAccountAddress = senderAddress != null ? senderAddress.toString(): "";
 

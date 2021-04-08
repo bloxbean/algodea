@@ -22,16 +22,24 @@ public class AppReadMainPanel {
 
     public void initialize(Project project) throws DeploymentTargetNotConfigured {
         appTxnBaseEntryForm.initializeData(project);
+
+        appTxnBaseEntryForm.disbleSignerFields();
+        localStateRadioButton.addActionListener(e -> {
+            if(localStateRadioButton.isSelected()) {
+                appTxnBaseEntryForm.setMandatoryAccountCheck(true);
+            }
+        });
+
+        globalStateRadioButton.addActionListener( e -> {
+            appTxnBaseEntryForm.setMandatoryAccountCheck(false);
+        });
+
+        bothRadioButton.addActionListener(e -> {
+            appTxnBaseEntryForm.setMandatoryAccountCheck(true);
+        });
     }
 
     protected @Nullable ValidationInfo doValidate() {
-        if(isLocalState() || isBoth()) {
-            appTxnBaseEntryForm.disbleSignerFields();
-            appTxnBaseEntryForm.setMandatoryAccountCheck(true);
-        } else if(isGlobalState()) {
-            appTxnBaseEntryForm.setMandatoryAccountCheck(false);
-        }
-
         return appTxnBaseEntryForm.doValidate();
     }
 

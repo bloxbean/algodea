@@ -279,18 +279,18 @@ public class LogicSigSigningAccountForm {
         }
 
         if(isAccountDelegationType()) {
-            if (StringUtil.isEmpty(authAddressTf.getText())) {
-                authAddressTf.setToolTipText("Please select a valid Authorized Address or enter valid Authorized Mnemonic");
-                return new ValidationInfo("Please select a valid Authorized Address or enter valid Authorized Mnemonic", authAddressTf);
-            } else {
-                authAddressTf.setToolTipText("");
-            }
-
             if (StringUtil.isEmpty(senderAddressTf.getText())) {
                 senderAddressTf.setToolTipText("Please select a valid sender address");
                 return new ValidationInfo("Please select a valid sender address", senderAddressTf);
             } else {
                 senderAddressTf.setToolTipText("");
+            }
+
+            if (StringUtil.isEmpty(authAddressTf.getText())) {
+                authAddressTf.setToolTipText("Please select a valid Authorized Address or enter valid Authorized Mnemonic");
+                return new ValidationInfo("Please select a valid Authorized Address or enter valid Authorized Mnemonic", authAddressTf);
+            } else {
+                authAddressTf.setToolTipText("");
             }
         }
 

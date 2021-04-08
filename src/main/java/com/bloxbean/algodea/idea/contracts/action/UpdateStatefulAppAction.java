@@ -155,18 +155,10 @@ public class UpdateStatefulAppAction extends BaseTxnAction {
 
             TransactionDtlsEntryForm txnDetailsEntryForm = dialog.getTxnDetailsEntryForm();
             TxnDetailsParameters generalTxnDetailsParam = txnDetailsEntryForm.getTxnDetailsParameters();
-
-            TxnDetailsParameters txnDetailsParameters = new TxnDetailsParameters();
-            txnDetailsParameters.setAppArgs(appArgs);
-            txnDetailsParameters.setAccounts(accounts);
-            txnDetailsParameters.setForeignApps(foreignApps);
-            txnDetailsParameters.setForeignAssets(foreignAssets);
-
-            //general txn parameters
-            txnDetailsParameters.setNote(generalTxnDetailsParam.getNote());
-            txnDetailsParameters.setLease(generalTxnDetailsParam.getLease());
-            txnDetailsParameters.setFee(generalTxnDetailsParam.getFee());
-            txnDetailsParameters.setFlatFee(generalTxnDetailsParam.getFlatFee());
+            generalTxnDetailsParam.setAppArgs(appArgs);
+            generalTxnDetailsParam.setAccounts(accounts);
+            generalTxnDetailsParam.setForeignApps(foreignApps);
+            generalTxnDetailsParam.setForeignAssets(foreignAssets);
 
             //update cache.. For update from account, save it inside creator account for now.
             cacheService.setSfCreatorAccount(senderAddress.toString());
@@ -240,7 +232,7 @@ public class UpdateStatefulAppAction extends BaseTxnAction {
                     Long appId = appTxnBaseForm.getAppId();
                     Result result = null;
                     try {
-                       result = sfService.updateApp(appId, signerAccount, senderAddress, appProgText, clearProgText, txnDetailsParameters, requestMode);
+                       result = sfService.updateApp(appId, signerAccount, senderAddress, appProgText, clearProgText, generalTxnDetailsParam, requestMode);
                     } catch (Exception exception) {
                         if(LOG.isDebugEnabled()) {
                             LOG.warn(exception);

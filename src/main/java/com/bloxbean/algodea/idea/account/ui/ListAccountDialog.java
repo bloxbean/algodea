@@ -30,6 +30,7 @@ import com.bloxbean.algodea.idea.nodeint.service.AlgoAccountService;
 import com.bloxbean.algodea.idea.nodeint.service.LogListenerAdapter;
 import com.bloxbean.algodea.idea.toolwindow.AlgoConsole;
 import com.bloxbean.algodea.idea.util.IdeaUtil;
+import com.intellij.codeInsight.hints.presentation.MouseButton;
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.DataManager;
 import com.intellij.notification.NotificationType;
@@ -61,6 +62,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
+
+import static java.awt.event.MouseEvent.BUTTON1;
 
 public class ListAccountDialog extends DialogWrapper {
     private JPanel mainPanel;
@@ -191,16 +194,18 @@ public class ListAccountDialog extends DialogWrapper {
         accListTable.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
-                tableRowPopupMenuHandler(e);
+                if(e.getClickCount() == 1)
+                    tableRowPopupMenuHandler(e);
             }
 
             @Override
             public void mousePressed(MouseEvent e) {
-                tableRowPopupMenuHandler(e);
+                if(e.getClickCount() == 1)
+                    tableRowPopupMenuHandler(e);
             }
 
             public void mouseClicked(MouseEvent me) {
-                if (me.getClickCount() == 2) {     // to detect doble click events
+                if (me.getClickCount() == 2 && me.getButton() == BUTTON1) {     // to detect doble click events
                     handleDoubleClickEvents();
                 }
             }
@@ -214,8 +219,6 @@ public class ListAccountDialog extends DialogWrapper {
             return;
 
         int column = accListTable.getSelectedColumn(); // select a column
-        if(column == 0)
-            System.out.println("COl 1 selected");
         AlgoAccount account = tableModel.getAccounts().get(rowindex);
         if(account == null)
             return;

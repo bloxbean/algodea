@@ -21,6 +21,7 @@ import com.intellij.openapi.util.text.StringUtil;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.util.function.Consumer;
@@ -150,6 +151,37 @@ public class AccountEntryInputForm {
                 setAuthAddressForMultiSigSender(project, algoMultisigAccount);
             }
         });
+
+        senderAddressTf.addFocusListener(new FocusAdapter() {
+            String oldSender;
+            @Override
+            public void focusGained(FocusEvent e) {
+                oldSender = senderAddressTf.getText();
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                if(oldSender != null && oldSender.equals(senderAddressTf.getText())) {
+                    oldSender = null;
+                    return;
+                }
+                oldSender = null;
+
+                authAddressTf.setText("");
+                authMnemonicTf.setText("");
+                try {
+                    Address address = new Address(senderAddressTf.getText());
+                    AlgoAccount algoAccount = AccountService.getAccountService().getAccountByAddress(address.toString());
+                    if(algoAccount == null) {
+                        algoAccount = new AlgoAccount(address.toString());
+                    }
+
+                    setAuthAddress(project, algoAccount);
+                } catch (Exception ex) {
+                    console.showErrorMessage("Error getting auth addr", ex);
+                }
+            }
+        });
     }
 
     /***** Get Auth Address code start -- //TODO move to a common class later ****/
@@ -218,18 +250,25 @@ public class AccountEntryInputForm {
     public @Nullable ValidationInfo doValidate() {
 
         if(isMandatory) {
-            if (StringUtil.isEmpty(authAddressTf.getText())) {
-                authAddressTf.setToolTipText("Please select a valid account or enter valid mnemonic");
-                return new ValidationInfo("Please select a valid account or enter valid mnemonic", authAddressTf);
-            } else {
-                authAddressTf.setToolTipText("");
-            }
-
             if (StringUtil.isEmpty(senderAddressTf.getText())) {
                 senderAddressTf.setToolTipText("Please select a valid sender address");
                 return new ValidationInfo("Please select a valid sender address", senderAddressTf);
             } else {
                 senderAddressTf.setToolTipText("");
+            }
+
+            if (StringUtil.isEmpty(authAddressTf.getText())) {
+                authAddressTf.setToolTipText("Please select a valid Authorized Account or enter valid mnemonic");
+                return new ValidationInfo("Please select a valid Authorized Account or enter valid mnemonic", authAddressTf);
+            } else {
+                authAddressTf.setToolTipText("");
+            }
+
+            //If auth account is set , auth mnemonic should be set
+            if(!StringUtil.isEmpty(authAddressTf.getText())
+                    && StringUtil.isEmpty(authMnemonicTf.getText())) {
+                return new ValidationInfo("Please provide a valid mnemonic for the Authorized Address.",
+                        authMnemonicTf);
             }
         }
 

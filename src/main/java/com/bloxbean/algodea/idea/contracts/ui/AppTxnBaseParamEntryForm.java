@@ -210,6 +210,9 @@ public class AppTxnBaseParamEntryForm {
     /***** Get Auth Address code start ****/
 
     private void setAuthAddress(Project project, AlgoAccount sender) {
+        if(disableSignerFields) //If signer field is disabled, no need to set auth fields (used from ReadState action)
+            return;
+
         getAuthAddress(project, sender.getAddress(), (accountAuthAddr) -> {
             if(!StringUtil.isEmpty(accountAuthAddr)) { //auth-addr found
                 AccountService accountService = AccountService.getAccountService();
@@ -276,12 +279,21 @@ public class AppTxnBaseParamEntryForm {
             return new ValidationInfo("Please select or provide a valid App Id", appIdCB);
         }
 
-        if(StringUtil.isEmpty(authAccountTf.getText()) && mandatoryAccount && !disableSignerFields) {
-            return new ValidationInfo("Please select a valid from account or enter valid mnemonic", authAccountTf);
-        }
-
         if(StringUtil.isEmpty(senderAddressTf.getText()) && mandatoryAccount) {
             return new ValidationInfo("Please select a valid sender address", senderAddressTf);
+        }
+
+        if(mandatoryAccount && !disableSignerFields) {
+            if (StringUtil.isEmpty(authAccountTf.getText())) {
+                return new ValidationInfo("Please select a valid Authorized Address or enter valid Authorized Mnemonic", authAccountTf);
+            }
+
+            //If auth account is set , auth mnemonic should be set
+            if (!StringUtil.isEmpty(authAccountTf.getText())
+                    && StringUtil.isEmpty(authMnemonicTf.getText())) {
+                return new ValidationInfo("Please provide a valid mnemonic for the Authorized Address.",
+                        authMnemonicTf);
+            }
         }
 
         return null;
