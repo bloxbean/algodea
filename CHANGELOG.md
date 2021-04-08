@@ -1,4 +1,4 @@
-### 0.4.1
+### 0.4.2
   - Rekey support [#19]
   - Sign and submit exported transaction file [#20]
   - Payment and Opt-In transaction using Stateless TEAL file [#17, #18]
