@@ -16,10 +16,10 @@ public class TransferDialog extends TxnDialogWrapper {
 
     public TransferDialog(@Nullable Project project) throws DeploymentTargetNotConfigured {
         super(project, true);
-        transferTxnForm.initializeData(project);
-        transactionDtlsEntryForm.initializeData(project);
         init();
         setTitle("Transfer");
+        transferTxnForm.initializeData(project);
+        transactionDtlsEntryForm.initializeData(project);
     }
 
     public TransferTxnParamEntryForm getTransferTxnEntryForm() {
