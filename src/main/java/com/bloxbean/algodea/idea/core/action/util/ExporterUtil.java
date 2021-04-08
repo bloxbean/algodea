@@ -110,8 +110,14 @@ public class ExporterUtil {
         String txnOutFileName = finalOutputFileName;
 
         if(txnOutputFolder.findChild(txnOutFileName + extension) != null) {
-            int ret = Messages.showYesNoCancelDialog(String.format("Already a file exists with file name %s. Do you want to overwrite?",
-                    txnOutFileName + extension), command, "Overwrite", "Create New", "Cancel", AllIcons.General.QuestionDialog);
+            int ret = 0;
+            try {
+                ret = Messages.showYesNoCancelDialog(String.format("Already a file exists with file name %s. Do you want to overwrite?",
+                        txnOutFileName + extension), command, "Overwrite", "Create New", "Cancel", AllIcons.General.QuestionDialog);
+            } catch (Error e) {
+                //TODO BigSur 2020.3.3 error
+                ret = Messages.NO;
+            }
 
             if(ret == Messages.NO) {
                 int i = 0;
