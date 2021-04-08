@@ -50,7 +50,13 @@ The plugin has been tested with the following IDEs
 - WebStorm
 - PhpStorm
 
-Known Issues:
+**Known Issues:**
+ - Message alert popup doesn't work properly on 2020.3 Ultimate edition with Big Sur OS (Mac). Due to this some functionalities don't work as expected.
+   
+   Similar issue (https://youtrack.jetbrains.com/issue/IDEA-257834)
+   
+   Fix: Upgrade your IDE to a newer version.
+   
  - PyTeal compilation through pop-up menu only works in IntelliJ IDEA and PyCharm.
 
 ## Installation
