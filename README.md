@@ -6,7 +6,7 @@ algoDEA - Algorand Plugin for Intellij
 
 [algoDEA Documents](https://algodea-docs.bloxbean.com)
 
-Latest Version : [v0.3.2](https://github.com/bloxbean/algodea/releases/tag/v0.3.2)
+Latest Version : [v0.4.2](https://github.com/bloxbean/algodea/releases/tag/v0.4.2)
 
 ## Features
   - Algorand Smart Contract Project type
