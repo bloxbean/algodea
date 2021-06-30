@@ -8,7 +8,13 @@ import com.intellij.psi.PsiElement;
 public interface TEALPushBytesOperation extends PsiElement {
 
   @Nullable
+  PsiElement getBase32();
+
+  @Nullable
   PsiElement getBase64();
+
+  @Nullable
+  PsiElement getHex();
 
   @Nullable
   PsiElement getId();
@@ -17,6 +23,6 @@ public interface TEALPushBytesOperation extends PsiElement {
   PsiElement getVarTmpl();
 
   @Nullable
-  PsiElement getLInteger();
+  PsiElement getLString();
 
 }

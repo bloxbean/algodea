@@ -29,8 +29,20 @@ public class TEALPushBytesOperationImpl extends ASTWrapperPsiElement implements 
 
   @Override
   @Nullable
+  public PsiElement getBase32() {
+    return findChildByType(BASE32);
+  }
+
+  @Override
+  @Nullable
   public PsiElement getBase64() {
     return findChildByType(BASE64);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getHex() {
+    return findChildByType(HEX);
   }
 
   @Override
@@ -47,8 +59,8 @@ public class TEALPushBytesOperationImpl extends ASTWrapperPsiElement implements 
 
   @Override
   @Nullable
-  public PsiElement getLInteger() {
-    return findChildByType(L_INTEGER);
+  public PsiElement getLString() {
+    return findChildByType(L_STRING);
   }
 
 }

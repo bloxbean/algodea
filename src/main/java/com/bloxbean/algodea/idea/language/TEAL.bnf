@@ -214,7 +214,7 @@ loadOperation ::= 'load' (unsignedInteger | VAR_TMPL) {pin=1}
 storeOperation ::= 'store' (unsignedInteger | VAR_TMPL) {pin=1}
 
 pushIntOperation ::= 'pushint' (l_integer | VAR_TMPL) {pin=1}
-pushBytesOperation ::= 'pushbytes' (VAR_TMPL | ID | l_integer | BASE64) {pin=1}
+pushBytesOperation ::= 'pushbytes' (l_string | HEX | byte_base64encoding_type_values_function_type | byte_base32encoding_type_values_function_type | VAR_TMPL | ID) {pin=1}
 
 TXN_OPCODE ::= 'txn'
 GTXN_OPCODE ::= 'gtxn'
