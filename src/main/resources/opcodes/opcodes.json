@@ -814,6 +814,46 @@
         }
       ]
     },
+   {
+     "op": "gtxns",
+     "opcode": "0x38 {uint8 transaction field index}",
+     "pops": ["... stack", "uint64"],
+     "pushes": ["any"],
+     "desc": "push field F of the Ath transaction in the current group",
+     "error": "",
+     "additionalDesc": "for notes on transaction fields available, see txn. If top of stack is i, gtxns field is equivalent to gtxn _i_ field. gtxns exists so that i can be calculated, often based on the index of the current transaction",
+     "params": [],
+     "metadata": {
+       "LogicSigVersion": ">=3"
+     },
+     "costs": [
+       {
+         "cost": 1,
+         "filter": ""
+       }
+     ],
+     "anchor": "gtxns-f"
+   },
+   {
+     "op": "gtxnsa",
+     "opcode": "0x39 {uint8 transaction field index} {uint8 transaction field array index}",
+     "pops": ["... stack", "uint64"],
+     "pushes": ["any"],
+     "desc": "push Ith value of the array field F from the Ath transaction in the current group",
+     "error": "",
+     "additionalDesc": "",
+     "params": [],
+     "metadata": {
+       "LogicSigVersion": ">=3"
+     },
+     "costs": [
+       {
+         "cost": 1,
+         "filter": ""
+       }
+     ],
+     "anchor": "gtxnsa-f-i"
+   },
     {
       "op": "bnz",
       "opcode": "0x40 {0..0x7fff forward branch offset, big endian}",
@@ -886,6 +926,24 @@
         }
       ]
     },
+   {
+     "op": "assert",
+     "opcode": "0x44",
+     "pops": [ "... stack", "uint64"],
+     "pushes": [],
+     "desc": "immediately fail unless value X is a non-zero number",
+     "error": "",
+     "additionalDesc": "",
+     "metadata": {
+       "LogicSigVersion": ">=3"
+     },
+     "costs": [
+       {
+         "cost": 1,
+         "filter": ""
+       }
+     ]
+    },
     {
       "op": "pop",
       "opcode": "0x48",
@@ -905,7 +963,7 @@
       "op": "dup",
       "opcode": "0x49",
       "pops": ["... stack", "any"],
-      "pushes": ["any", "any"],
+      "pushes": ["... stack","any", "any"],
       "desc": "duplicate last value on stack",
       "error": "",
       "additionalDesc": "",
@@ -920,7 +978,7 @@
       "op": "dup2",
       "opcode": "0x4a",
       "pops": ["... stack", "{any A}", "{any B}"],
-      "pushes": ["any", "any", "any", "any"],
+      "pushes": ["... stack","any", "any", "any", "any"],
       "desc": "duplicate two last values on stack: A, B -> A, B, A, B",
       "error": "",
       "additionalDesc": "",
@@ -934,6 +992,64 @@
         }
       ]
     },
+    {
+       "op": "dig",
+       "opcode": "0x4b {uint8 depth}",
+       "pops": ["... stack", "any"],
+       "pushes": ["... stack","any", "any"],
+       "desc": "push the Nth value from the top of the stack. dig 0 is equivalent to dup",
+       "error": "",
+       "additionalDesc": "",
+       "params": ["uint8"],
+       "metadata": {
+         "LogicSigVersion": ">=3"
+       },
+       "costs": [
+         {
+           "cost": 1,
+           "filter": ""
+         }
+       ],
+      "anchor": "dig-n"
+    },
+     {
+       "op": "swap",
+       "opcode": "0x4c",
+       "pops": ["... stack", "{any A}", "{any B}"],
+       "pushes": ["... stack","any", "any"],
+       "desc": "swaps two last values on stack: A, B -> B, A",
+       "error": "",
+       "additionalDesc": "",
+       "params": [],
+       "metadata": {
+         "LogicSigVersion": ">=3"
+       },
+       "costs": [
+         {
+           "cost": 1,
+           "filter": ""
+         }
+       ]
+     },
+   {
+     "op": "select",
+     "opcode": "0x4d",
+     "pops": ["... stack", "{any A}", "{any B}", "{uint64 C}"],
+     "pushes": ["any"],
+     "desc": "selects one of two values based on top-of-stack: A, B, C -> (if C != 0 then B else A)",
+     "error": "",
+     "additionalDesc": "",
+     "params": [],
+     "metadata": {
+       "LogicSigVersion": ">=3"
+     },
+     "costs": [
+       {
+         "cost": 1,
+         "filter": ""
+       }
+     ]
+   },
     {
       "op": "concat",
       "opcode": "0x50",
@@ -989,6 +1105,78 @@
         }
       ]
     },
+   {
+     "op": "getbit",
+     "opcode": "0x53",
+     "pops": ["... stack", "{any A}", "{uint64 B}"],
+     "pushes": ["uint64"],
+     "desc": "pop a target A (integer or byte-array), and index B. Push the Bth bit of A",
+     "error": "",
+     "additionalDesc": "",
+     "metadata": {
+       "LogicSigVersion": ">=3"
+     },
+     "costs": [
+       {
+         "cost": 1,
+         "filter": ""
+       }
+     ]
+   },
+   {
+     "op": "setbit",
+     "opcode": "0x54",
+     "pops": ["... stack", "{any A}", "{uint64 B}", "{uint64 C}"],
+     "pushes": ["uint64"],
+     "desc": "pop a target A, index B, and bit C. Set the Bth bit of A to C, and push the result",
+     "error": "",
+     "additionalDesc": "bit indexing begins with low-order bits in integers. Setting bit 4 to 1 on the integer 0 yields 16 (int 0x0010, or 2^4). Indexing begins in the first bytes of a byte-string (as seen in getbyte and substring). Setting bits 0 through 11 to 1 in a 4 byte-array of 0s yields byte 0xfff00000",
+     "metadata": {
+       "LogicSigVersion": ">=3"
+     },
+     "costs": [
+       {
+         "cost": 1,
+         "filter": ""
+       }
+     ]
+   },
+   {
+     "op": "getbyte",
+     "opcode": "0x55",
+     "pops": ["... stack", "{[]byte A}", "{uint64 B}"],
+     "pushes": ["uint64"],
+     "desc": "pop a byte-array A and integer B. Extract the Bth byte of A and push it as an integer",
+     "error": "",
+     "additionalDesc": "",
+     "metadata": {
+       "LogicSigVersion": ">=3"
+     },
+     "costs": [
+       {
+         "cost": 1,
+         "filter": ""
+       }
+     ]
+   },
+   {
+     "op": "setbyte",
+     "opcode": "0x56",
+     "pops": ["... stack", "{[]byte A}", "{uint64 B}", "{uint64 C}"],
+     "pushes": ["[]byte"],
+     "desc": "pop a byte-array A, integer B, and small integer C (between 0..255). Set the Bth byte of A to C, and push the result",
+     "error": "",
+     "additionalDesc": "",
+     "metadata": {
+       "LogicSigVersion": ">=3"
+     },
+     "costs": [
+       {
+         "cost": 1,
+         "filter": ""
+       }
+     ]
+   },
     {
       "op": "balance",
       "opcode": "0x60",
@@ -1219,6 +1407,64 @@
         }
       ]
     },
+   {
+     "op": "min_balance",
+     "opcode": "0x78",
+     "pops": ["... stack", "uint64"],
+     "pushes": ["uint64"],
+     "desc": "get minimum required balance for the requested account specified by Txn.Accounts[A] in microalgos. A is specified as an account index in the Accounts field of the ApplicationCall transaction, zero index means the sender. Required balance is affected by ASA and App usage. When creating or opting into an app, the minimum balance grows before the app code runs, therefore the increase is visible there. When deleting or closing out, the minimum balance decreases after the app executes.",
+     "error": "",
+     "metadata": {
+       "LogicSigVersion": ">=3"
+     },
+     "mode": "Application",
+     "additionalDesc": "",
+     "params": [],
+     "costs": [
+       {
+         "cost": 1,
+         "filter": ""
+       }
+     ]
+   },
+   {
+     "op": "pushbytes",
+     "opcode": "0x80 {varuint length} {bytes}",
+     "pops": [],
+     "pushes": ["[]byte"],
+     "desc": "push the following program bytes to the stack",
+     "error": "",
+     "metadata": {
+       "LogicSigVersion": ">=3"
+     },
+     "additionalDesc": "pushbytes args are not added to the bytecblock during assembly processes",
+     "params": [],
+     "costs": [
+       {
+         "cost": 1,
+         "filter": ""
+       }
+     ]
+   },
+   {
+     "op": "pushint",
+     "opcode": "0x81 {varuint int}",
+     "pops": [],
+     "pushes": ["uint64"],
+     "desc": "push immediate UINT to the stack as an integer",
+     "error": "",
+     "metadata": {
+       "LogicSigVersion": ">=3"
+     },
+     "additionalDesc": "pushint args are not added to the intcblock during assembly processes",
+     "params": [],
+     "costs": [
+       {
+         "cost": 1,
+         "filter": ""
+       }
+     ]
+   },
    {
      "op": "int",
      "opcode": "Pseudo opcode",

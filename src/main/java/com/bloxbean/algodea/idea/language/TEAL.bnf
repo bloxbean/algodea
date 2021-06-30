@@ -34,11 +34,11 @@
         l_integer="regexp:0|[1-9][0-9]*"
         l_string="regexp:('([^'\\]|\\.)*'|\"([^\"\\]|\\.)*\")"
 
-    LOADING_OP = "regexp:(intcblock|intc|intc_0|intc_1|intc_2|intc_3|bytecblock|bytec|bytec_0|bytec_1|bytec_2|bytec_3|arg|arg_0|arg_1|arg_2|arg_3|global|load|store)"
-    FLOWCONTROL_OP = "regexp:(err|return|pop|dup|dup2|bnz|bz|b)"
-    STATEACCESS_OP = "regexp:(balance|app_opted_in|app_local_get|app_local_get_ex|app_global_get|app_global_get_ex|app_local_put|app_global_put|app_local_del|app_global_del|asset_holding_get|asset_params_get)"
+    LOADING_OP = "regexp:(intcblock|intc|intc_0|intc_1|intc_2|intc_3|bytecblock|bytec|bytec_0|bytec_1|bytec_2|bytec_3|arg|arg_0|arg_1|arg_2|arg_3|global|load|store|pushint|pushbytes)"
+    FLOWCONTROL_OP = "regexp:(err|return|pop|dup|dup2|bnz|bz|b|dig|swap|select|assert)"
+    STATEACCESS_OP = "regexp:(balance|app_opted_in|app_local_get|app_local_get_ex|app_global_get|app_global_get_ex|app_local_put|app_global_put|app_local_del|app_global_del|asset_holding_get|asset_params_get|min_balance)"
 
-    TXN_LOADING_OP = 'regexp:(txn|gtxn|txna|gtxna)'
+    TXN_LOADING_OP = 'regexp:(txn|gtxn|txna|gtxna|gtxns|gtxnsa)'
 
   //Operations
     SHA256              = 'sha256'
@@ -72,6 +72,10 @@
 
     MULW                = 'mulw'
     ADDW                = 'addw'
+    GETBIT              = 'getbit'
+    SETBIT              = 'setbit'
+    GETBYTE             = 'getbyte'
+    SETBYTE             = 'setbyte'
     CONCAT              = 'concat'
     SUBSTRING           = 'substring'
     SUBSTRING3          = 'substring3'
@@ -83,7 +87,7 @@
     TYPENUM_CONSTANT = 'regexp:(unknown|pay|keyreg|acfg|axfer|afrz|appl|Unknown|Payment|KeyRegistration|AssetConfig|AssetTransfer|AssetFreeze|ApplicationCall)'
 
     //Global Fields
-    GLOBAL_FIELD        = 'regexp:(MinTxnFee|MinBalance|MaxTxnLife|ZeroAddress|GroupSize|LogicSigVersion|Round|LatestTimestamp|CurrentApplicationID)'
+    GLOBAL_FIELD        = 'regexp:(MinTxnFee|MinBalance|MaxTxnLife|ZeroAddress|GroupSize|LogicSigVersion|Round|LatestTimestamp|CurrentApplicationID|CreatorAddress)'
 
     //Asset Fields
     ASSET_HOLDING_GET_FIELD      = 'regexp:(AssetBalance|AssetFrozen)'
@@ -192,7 +196,11 @@ LoadingOperation ::=  intcblockOperation
                                   | txnLoadingOperation
                                   | gtxnLoadingOperation
                                   | txnaLoadingOperation
-                                  | gtxnaLoadingOperation {pin=1}
+                                  | gtxnaLoadingOperation
+                                  | pushIntOperation
+                                  | pushBytesOperation
+                                  | gtxnsLoadingOperation
+                                  | gtxnsaLoadingOperation {pin=1}
 
 //TODO implement strict validation for both intcblockOperation and bytecblockOperation
 intcblockOperation ::= 'intcblock' (VAR_TMPL | (ID | l_integer)*) {pin=1}
@@ -205,16 +213,24 @@ globalOperation ::= globalOpCode (unsignedInteger | GLOBAL_FIELD | VAR_TMPL) {pi
 loadOperation ::= 'load' (unsignedInteger | VAR_TMPL) {pin=1}
 storeOperation ::= 'store' (unsignedInteger | VAR_TMPL) {pin=1}
 
+pushIntOperation ::= 'pushint' (l_integer | VAR_TMPL) {pin=1}
+pushBytesOperation ::= 'pushbytes' (VAR_TMPL | ID | l_integer | BASE64) {pin=1}
+
 TXN_OPCODE ::= 'txn'
 GTXN_OPCODE ::= 'gtxn'
 TXNA_OPCODE ::= 'txna'
 GTXNA_OPCODE ::= 'gtxna';
+GTXNS_OPCODE ::= 'gtxns';
+GTXNSA_OPCODE ::= 'gtxnsa';
 
-txnLoadingOperation ::= TXN_OPCODE (unsignedInteger | TxnFieldArg | VAR_TMPL) {pin=1}
-gtxnLoadingOperation ::= GTXN_OPCODE (unsignedInteger | VAR_TMPL) (unsignedInteger | TxnFieldArg | VAR_TMPL) {pin=1}
+txnLoadingOperation ::= TXN_OPCODE (unsignedInteger | TxnFieldArg | VAR_TMPL) (unsignedInteger | VAR_TMPL)? {pin=1}
+gtxnLoadingOperation ::= GTXN_OPCODE (unsignedInteger | VAR_TMPL) (unsignedInteger | TxnFieldArg | VAR_TMPL) (unsignedInteger | VAR_TMPL)? {pin=1}
 
 txnaLoadingOperation ::= TXNA_OPCODE (unsignedInteger | TxnFieldArg | VAR_TMPL) (unsignedInteger | VAR_TMPL) {pin=1}
 gtxnaLoadingOperation ::= GTXNA_OPCODE (unsignedInteger | VAR_TMPL) (unsignedInteger | TxnFieldArg | VAR_TMPL) (unsignedInteger | VAR_TMPL) {pin=1}
+
+gtxnsLoadingOperation ::= GTXNS_OPCODE (unsignedInteger | TxnFieldArg | VAR_TMPL) {pin=1}
+gtxnsaLoadingOperation ::= GTXNSA_OPCODE (unsignedInteger | TxnFieldArg | VAR_TMPL) (unsignedInteger | VAR_TMPL) {pin=1}
 
 argOperation ::= 'arg' (unsignedInteger | VAR_TMPL) {pin=1}
 
@@ -226,7 +242,8 @@ TxnFieldArg ::= 'Sender'| 'Fee'| 'FirstValid'| 'FirstValidTime'| 'LastValid'| 'N
                        |'ApprovalProgram'|'ClearStateProgram'|'RekeyTo'|'ConfigAsset'|'ConfigAssetTotal'|'ConfigAssetDecimals'
                        | 'ConfigAssetDefaultFrozen'|'ConfigAssetUnitName'|'ConfigAssetName'|'ConfigAssetURL'|'ConfigAssetMetadataHash'
                        | 'ConfigAssetManager'|'ConfigAssetReserve'|'ConfigAssetFreeze'|'ConfigAssetClawback'|'FreezeAsset'
-                       | 'FreezeAssetAccount'|'FreezeAssetFrozen'
+                       | 'FreezeAssetAccount'|'FreezeAssetFrozen' | 'Assets' | 'NumAssets' | 'Applications' | 'NumApplications'
+                       | 'GlobalNumUint' | 'GlobalNumByteSlice' | 'LocalNumUint' | 'LocalNumByteSlice'
 
 GeneralOperation                   ::= SHA256
                                      | KECCAK256
@@ -255,22 +272,28 @@ GeneralOperation                   ::= SHA256
                                      | BITWISE_INVERT
                                      | MULW
                                      | ADDW
+                                     | GETBIT
+                                     | SETBIT
+                                     | GETBYTE
+                                     | SETBYTE
                                      | CONCAT
                                      | substringOperation
                                      | SUBSTRING3
 
 substringOperation ::= SUBSTRING (unsignedInteger | VAR_TMPL) (unsignedInteger | VAR_TMPL) {pin=1}
 
-FlowControlOperation ::= 'err' | 'return' | 'pop' | 'dup' | 'dup2'
+FlowControlOperation ::= 'err' | 'return' | 'pop' | 'dup' | 'dup2' | 'swap' | 'select' | 'assert' | digOperation
                                 | branchOperation {pin=1}
 
 branchOperation ::= ('bnz' | 'bz' | 'b') (VAR_TMPL | ID) {pin=1}
+digOperation ::= 'dig' (unsignedInteger | VAR_TMPL) {pin=1}
 
 StateAccessOperation ::=  'balance' | 'app_opted_in' | 'app_local_get'| 'app_local_get_ex' | 'app_global_get'
                             | 'app_global_get_ex'| 'app_local_put'| 'app_global_put'| 'app_local_del'
                             | 'app_global_del'
                             | assetHoldingGetOperation
                             | assetParamsGetOperation
+                            | 'min_balance'
 
 assetHoldingGetOperation ::= assetHoldingGetOP (unsignedInteger | ASSET_HOLDING_GET_FIELD | VAR_TMPL) {pin=1}
 assetParamsGetOperation ::=  assetParamsGetOp (unsignedInteger | ASSET_PARAMS_GET_FIELD | 'AssetFreeze' | VAR_TMPL) {pin=1}

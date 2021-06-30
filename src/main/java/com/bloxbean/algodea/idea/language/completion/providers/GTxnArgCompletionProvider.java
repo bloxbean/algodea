@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 import static com.intellij.patterns.PlatformPatterns.psiElement;
 
 public final class GTxnArgCompletionProvider extends BaseCompletionProvider {
-    private final static String GTXNA = "gtxa";
+    private final static String GTXNA = "gtxna";
     private final static String FIRST_ARG = "FIRST_ARG";
 
     public static final ElementPattern<PsiElement> FIRSTARG_PATTERN = PlatformPatterns

@@ -36,7 +36,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // 'err' | 'return' | 'pop' | 'dup' | 'dup2'
+  // 'err' | 'return' | 'pop' | 'dup' | 'dup2' | 'swap' | 'select' | 'assert' | digOperation
   //                                 | branchOperation
   public static boolean FlowControlOperation(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "FlowControlOperation")) return false;
@@ -47,6 +47,10 @@ public class TEALParser implements PsiParser, LightPsiParser {
     if (!r) r = consumeToken(b, "pop");
     if (!r) r = consumeToken(b, "dup");
     if (!r) r = consumeToken(b, "dup2");
+    if (!r) r = consumeToken(b, "swap");
+    if (!r) r = consumeToken(b, "select");
+    if (!r) r = consumeToken(b, "assert");
+    if (!r) r = digOperation(b, l + 1);
     if (!r) r = branchOperation(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
@@ -59,6 +63,28 @@ public class TEALParser implements PsiParser, LightPsiParser {
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, GTXNA_OPCODE, "<gtxna opcode>");
     r = consumeToken(b, "gtxna");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // 'gtxnsa'
+  public static boolean GTXNSA_OPCODE(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "GTXNSA_OPCODE")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, GTXNSA_OPCODE, "<gtxnsa opcode>");
+    r = consumeToken(b, "gtxnsa");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // 'gtxns'
+  public static boolean GTXNS_OPCODE(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "GTXNS_OPCODE")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, GTXNS_OPCODE, "<gtxns opcode>");
+    r = consumeToken(b, "gtxns");
     exit_section_(b, l, m, r, false, null);
     return r;
   }
@@ -102,6 +128,10 @@ public class TEALParser implements PsiParser, LightPsiParser {
   //                                      | BITWISE_INVERT
   //                                      | MULW
   //                                      | ADDW
+  //                                      | GETBIT
+  //                                      | SETBIT
+  //                                      | GETBYTE
+  //                                      | SETBYTE
   //                                      | CONCAT
   //                                      | substringOperation
   //                                      | SUBSTRING3
@@ -136,6 +166,10 @@ public class TEALParser implements PsiParser, LightPsiParser {
     if (!r) r = consumeToken(b, BITWISE_INVERT);
     if (!r) r = consumeToken(b, MULW);
     if (!r) r = consumeToken(b, ADDW);
+    if (!r) r = consumeToken(b, GETBIT);
+    if (!r) r = consumeToken(b, SETBIT);
+    if (!r) r = consumeToken(b, GETBYTE);
+    if (!r) r = consumeToken(b, SETBYTE);
     if (!r) r = consumeToken(b, CONCAT);
     if (!r) r = substringOperation(b, l + 1);
     if (!r) r = consumeToken(b, SUBSTRING3);
@@ -168,6 +202,10 @@ public class TEALParser implements PsiParser, LightPsiParser {
   //                                   | gtxnLoadingOperation
   //                                   | txnaLoadingOperation
   //                                   | gtxnaLoadingOperation
+  //                                   | pushIntOperation
+  //                                   | pushBytesOperation
+  //                                   | gtxnsLoadingOperation
+  //                                   | gtxnsaLoadingOperation
   public static boolean LoadingOperation(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "LoadingOperation")) return false;
     boolean r;
@@ -196,6 +234,10 @@ public class TEALParser implements PsiParser, LightPsiParser {
     if (!r) r = gtxnLoadingOperation(b, l + 1);
     if (!r) r = txnaLoadingOperation(b, l + 1);
     if (!r) r = gtxnaLoadingOperation(b, l + 1);
+    if (!r) r = pushIntOperation(b, l + 1);
+    if (!r) r = pushBytesOperation(b, l + 1);
+    if (!r) r = gtxnsLoadingOperation(b, l + 1);
+    if (!r) r = gtxnsaLoadingOperation(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
@@ -206,6 +248,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
   //                             | 'app_global_del'
   //                             | assetHoldingGetOperation
   //                             | assetParamsGetOperation
+  //                             | 'min_balance'
   public static boolean StateAccessOperation(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "StateAccessOperation")) return false;
     boolean r;
@@ -222,6 +265,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
     if (!r) r = consumeToken(b, "app_global_del");
     if (!r) r = assetHoldingGetOperation(b, l + 1);
     if (!r) r = assetParamsGetOperation(b, l + 1);
+    if (!r) r = consumeToken(b, "min_balance");
     exit_section_(b, l, m, r, false, null);
     return r;
   }
@@ -256,7 +300,8 @@ public class TEALParser implements PsiParser, LightPsiParser {
   //                        |'ApprovalProgram'|'ClearStateProgram'|'RekeyTo'|'ConfigAsset'|'ConfigAssetTotal'|'ConfigAssetDecimals'
   //                        | 'ConfigAssetDefaultFrozen'|'ConfigAssetUnitName'|'ConfigAssetName'|'ConfigAssetURL'|'ConfigAssetMetadataHash'
   //                        | 'ConfigAssetManager'|'ConfigAssetReserve'|'ConfigAssetFreeze'|'ConfigAssetClawback'|'FreezeAsset'
-  //                        | 'FreezeAssetAccount'|'FreezeAssetFrozen'
+  //                        | 'FreezeAssetAccount'|'FreezeAssetFrozen' | 'Assets' | 'NumAssets' | 'Applications' | 'NumApplications'
+  //                        | 'GlobalNumUint' | 'GlobalNumByteSlice' | 'LocalNumUint' | 'LocalNumByteSlice'
   public static boolean TxnFieldArg(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "TxnFieldArg")) return false;
     boolean r;
@@ -309,6 +354,14 @@ public class TEALParser implements PsiParser, LightPsiParser {
     if (!r) r = consumeToken(b, "FreezeAsset");
     if (!r) r = consumeToken(b, "FreezeAssetAccount");
     if (!r) r = consumeToken(b, "FreezeAssetFrozen");
+    if (!r) r = consumeToken(b, "Assets");
+    if (!r) r = consumeToken(b, "NumAssets");
+    if (!r) r = consumeToken(b, "Applications");
+    if (!r) r = consumeToken(b, "NumApplications");
+    if (!r) r = consumeToken(b, "GlobalNumUint");
+    if (!r) r = consumeToken(b, "GlobalNumByteSlice");
+    if (!r) r = consumeToken(b, "LocalNumUint");
+    if (!r) r = consumeToken(b, "LocalNumByteSlice");
     exit_section_(b, l, m, r, false, null);
     return r;
   }
@@ -680,6 +733,28 @@ public class TEALParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // 'dig' (unsignedInteger | VAR_TMPL)
+  public static boolean digOperation(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "digOperation")) return false;
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, DIG_OPERATION, "<dig operation>");
+    r = consumeToken(b, "dig");
+    p = r; // pin = 1
+    r = r && digOperation_1(b, l + 1);
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
+  }
+
+  // unsignedInteger | VAR_TMPL
+  private static boolean digOperation_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "digOperation_1")) return false;
+    boolean r;
+    r = unsignedInteger(b, l + 1);
+    if (!r) r = consumeToken(b, VAR_TMPL);
+    return r;
+  }
+
+  /* ********************************************************** */
   // 'global'
   public static boolean globalOpCode(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "globalOpCode")) return false;
@@ -714,7 +789,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // GTXN_OPCODE (unsignedInteger | VAR_TMPL) (unsignedInteger | TxnFieldArg | VAR_TMPL)
+  // GTXN_OPCODE (unsignedInteger | VAR_TMPL) (unsignedInteger | TxnFieldArg | VAR_TMPL) (unsignedInteger | VAR_TMPL)?
   public static boolean gtxnLoadingOperation(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "gtxnLoadingOperation")) return false;
     boolean r, p;
@@ -722,7 +797,8 @@ public class TEALParser implements PsiParser, LightPsiParser {
     r = GTXN_OPCODE(b, l + 1);
     p = r; // pin = 1
     r = r && report_error_(b, gtxnLoadingOperation_1(b, l + 1));
-    r = p && gtxnLoadingOperation_2(b, l + 1) && r;
+    r = p && report_error_(b, gtxnLoadingOperation_2(b, l + 1)) && r;
+    r = p && gtxnLoadingOperation_3(b, l + 1) && r;
     exit_section_(b, l, m, r, p, null);
     return r || p;
   }
@@ -742,6 +818,22 @@ public class TEALParser implements PsiParser, LightPsiParser {
     boolean r;
     r = unsignedInteger(b, l + 1);
     if (!r) r = TxnFieldArg(b, l + 1);
+    if (!r) r = consumeToken(b, VAR_TMPL);
+    return r;
+  }
+
+  // (unsignedInteger | VAR_TMPL)?
+  private static boolean gtxnLoadingOperation_3(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "gtxnLoadingOperation_3")) return false;
+    gtxnLoadingOperation_3_0(b, l + 1);
+    return true;
+  }
+
+  // unsignedInteger | VAR_TMPL
+  private static boolean gtxnLoadingOperation_3_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "gtxnLoadingOperation_3_0")) return false;
+    boolean r;
+    r = unsignedInteger(b, l + 1);
     if (!r) r = consumeToken(b, VAR_TMPL);
     return r;
   }
@@ -783,6 +875,62 @@ public class TEALParser implements PsiParser, LightPsiParser {
   // unsignedInteger | VAR_TMPL
   private static boolean gtxnaLoadingOperation_3(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "gtxnaLoadingOperation_3")) return false;
+    boolean r;
+    r = unsignedInteger(b, l + 1);
+    if (!r) r = consumeToken(b, VAR_TMPL);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // GTXNS_OPCODE (unsignedInteger | TxnFieldArg | VAR_TMPL)
+  public static boolean gtxnsLoadingOperation(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "gtxnsLoadingOperation")) return false;
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, GTXNS_LOADING_OPERATION, "<gtxns loading operation>");
+    r = GTXNS_OPCODE(b, l + 1);
+    p = r; // pin = 1
+    r = r && gtxnsLoadingOperation_1(b, l + 1);
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
+  }
+
+  // unsignedInteger | TxnFieldArg | VAR_TMPL
+  private static boolean gtxnsLoadingOperation_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "gtxnsLoadingOperation_1")) return false;
+    boolean r;
+    r = unsignedInteger(b, l + 1);
+    if (!r) r = TxnFieldArg(b, l + 1);
+    if (!r) r = consumeToken(b, VAR_TMPL);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // GTXNSA_OPCODE (unsignedInteger | TxnFieldArg | VAR_TMPL) (unsignedInteger | VAR_TMPL)
+  public static boolean gtxnsaLoadingOperation(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "gtxnsaLoadingOperation")) return false;
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, GTXNSA_LOADING_OPERATION, "<gtxnsa loading operation>");
+    r = GTXNSA_OPCODE(b, l + 1);
+    p = r; // pin = 1
+    r = r && report_error_(b, gtxnsaLoadingOperation_1(b, l + 1));
+    r = p && gtxnsaLoadingOperation_2(b, l + 1) && r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
+  }
+
+  // unsignedInteger | TxnFieldArg | VAR_TMPL
+  private static boolean gtxnsaLoadingOperation_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "gtxnsaLoadingOperation_1")) return false;
+    boolean r;
+    r = unsignedInteger(b, l + 1);
+    if (!r) r = TxnFieldArg(b, l + 1);
+    if (!r) r = consumeToken(b, VAR_TMPL);
+    return r;
+  }
+
+  // unsignedInteger | VAR_TMPL
+  private static boolean gtxnsaLoadingOperation_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "gtxnsaLoadingOperation_2")) return false;
     boolean r;
     r = unsignedInteger(b, l + 1);
     if (!r) r = consumeToken(b, VAR_TMPL);
@@ -995,6 +1143,52 @@ public class TEALParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // 'pushbytes' (VAR_TMPL | ID | l_integer | BASE64)
+  public static boolean pushBytesOperation(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "pushBytesOperation")) return false;
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, PUSH_BYTES_OPERATION, "<push bytes operation>");
+    r = consumeToken(b, "pushbytes");
+    p = r; // pin = 1
+    r = r && pushBytesOperation_1(b, l + 1);
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
+  }
+
+  // VAR_TMPL | ID | l_integer | BASE64
+  private static boolean pushBytesOperation_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "pushBytesOperation_1")) return false;
+    boolean r;
+    r = consumeToken(b, VAR_TMPL);
+    if (!r) r = consumeToken(b, ID);
+    if (!r) r = consumeToken(b, L_INTEGER);
+    if (!r) r = consumeToken(b, BASE64);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // 'pushint' (l_integer | VAR_TMPL)
+  public static boolean pushIntOperation(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "pushIntOperation")) return false;
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, PUSH_INT_OPERATION, "<push int operation>");
+    r = consumeToken(b, "pushint");
+    p = r; // pin = 1
+    r = r && pushIntOperation_1(b, l + 1);
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
+  }
+
+  // l_integer | VAR_TMPL
+  private static boolean pushIntOperation_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "pushIntOperation_1")) return false;
+    boolean r;
+    r = consumeToken(b, L_INTEGER);
+    if (!r) r = consumeToken(b, VAR_TMPL);
+    return r;
+  }
+
+  /* ********************************************************** */
   // COMMENT
   //                     | LoadingOperation
   //                     | FlowControlOperation
@@ -1133,14 +1327,15 @@ public class TEALParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // TXN_OPCODE (unsignedInteger | TxnFieldArg | VAR_TMPL)
+  // TXN_OPCODE (unsignedInteger | TxnFieldArg | VAR_TMPL) (unsignedInteger | VAR_TMPL)?
   public static boolean txnLoadingOperation(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "txnLoadingOperation")) return false;
     boolean r, p;
     Marker m = enter_section_(b, l, _NONE_, TXN_LOADING_OPERATION, "<txn loading operation>");
     r = TXN_OPCODE(b, l + 1);
     p = r; // pin = 1
-    r = r && txnLoadingOperation_1(b, l + 1);
+    r = r && report_error_(b, txnLoadingOperation_1(b, l + 1));
+    r = p && txnLoadingOperation_2(b, l + 1) && r;
     exit_section_(b, l, m, r, p, null);
     return r || p;
   }
@@ -1151,6 +1346,22 @@ public class TEALParser implements PsiParser, LightPsiParser {
     boolean r;
     r = unsignedInteger(b, l + 1);
     if (!r) r = TxnFieldArg(b, l + 1);
+    if (!r) r = consumeToken(b, VAR_TMPL);
+    return r;
+  }
+
+  // (unsignedInteger | VAR_TMPL)?
+  private static boolean txnLoadingOperation_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "txnLoadingOperation_2")) return false;
+    txnLoadingOperation_2_0(b, l + 1);
+    return true;
+  }
+
+  // unsignedInteger | VAR_TMPL
+  private static boolean txnLoadingOperation_2_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "txnLoadingOperation_2_0")) return false;
+    boolean r;
+    r = unsignedInteger(b, l + 1);
     if (!r) r = consumeToken(b, VAR_TMPL);
     return r;
   }

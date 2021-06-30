@@ -40,15 +40,9 @@ public class TEALTxnLoadingOperationImpl extends ASTWrapperPsiElement implements
   }
 
   @Override
-  @Nullable
-  public TEALUnsignedInteger getUnsignedInteger() {
-    return findChildByClass(TEALUnsignedInteger.class);
-  }
-
-  @Override
-  @Nullable
-  public PsiElement getVarTmpl() {
-    return findChildByType(VAR_TMPL);
+  @NotNull
+  public List<TEALUnsignedInteger> getUnsignedIntegerList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, TEALUnsignedInteger.class);
   }
 
 }

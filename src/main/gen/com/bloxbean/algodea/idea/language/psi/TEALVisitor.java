@@ -15,6 +15,14 @@ public class TEALVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitGtxnsaOpcode(@NotNull TEALGtxnsaOpcode o) {
+    visitPsiElement(o);
+  }
+
+  public void visitGtxnsOpcode(@NotNull TEALGtxnsOpcode o) {
+    visitPsiElement(o);
+  }
+
   public void visitGtxnOpcode(@NotNull TEALGtxnOpcode o) {
     visitPsiElement(o);
   }
@@ -91,6 +99,10 @@ public class TEALVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitDigOperation(@NotNull TEALDigOperation o) {
+    visitPsiElement(o);
+  }
+
   public void visitGlobalOpCode(@NotNull TEALGlobalOpCode o) {
     visitPsiElement(o);
   }
@@ -104,6 +116,14 @@ public class TEALVisitor extends PsiElementVisitor {
   }
 
   public void visitGtxnaLoadingOperation(@NotNull TEALGtxnaLoadingOperation o) {
+    visitPsiElement(o);
+  }
+
+  public void visitGtxnsLoadingOperation(@NotNull TEALGtxnsLoadingOperation o) {
+    visitPsiElement(o);
+  }
+
+  public void visitGtxnsaLoadingOperation(@NotNull TEALGtxnsaLoadingOperation o) {
     visitPsiElement(o);
   }
 
@@ -136,6 +156,14 @@ public class TEALVisitor extends PsiElementVisitor {
   }
 
   public void visitPseudoOp(@NotNull TEALPseudoOp o) {
+    visitPsiElement(o);
+  }
+
+  public void visitPushBytesOperation(@NotNull TEALPushBytesOperation o) {
+    visitPsiElement(o);
+  }
+
+  public void visitPushIntOperation(@NotNull TEALPushIntOperation o) {
     visitPsiElement(o);
   }
 

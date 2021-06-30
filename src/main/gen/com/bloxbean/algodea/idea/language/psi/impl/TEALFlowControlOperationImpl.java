@@ -33,4 +33,10 @@ public class TEALFlowControlOperationImpl extends ASTWrapperPsiElement implement
     return findChildByClass(TEALBranchOperation.class);
   }
 
+  @Override
+  @Nullable
+  public TEALDigOperation getDigOperation() {
+    return findChildByClass(TEALDigOperation.class);
+  }
+
 }

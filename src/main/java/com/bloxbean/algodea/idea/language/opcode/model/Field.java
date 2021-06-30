@@ -1,14 +1,20 @@
 package com.bloxbean.algodea.idea.language.opcode.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import java.util.Objects;
 import java.util.Optional;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Field {
     private int index;
     private String name;
     private String type;
     private String note;
     private String desc;
+    private int since;
 
     public Field() {
 

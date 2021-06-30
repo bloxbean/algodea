@@ -72,6 +72,10 @@ public class TEALSyntaxHighlighter extends SyntaxHighlighterBase {
             BITWISE_INVERT,
             MULW,
             ADDW,
+            SETBIT,
+            GETBIT,
+            SETBYTE,
+            GETBYTE,
             CONCAT,
             SUBSTRING,
             SUBSTRING3

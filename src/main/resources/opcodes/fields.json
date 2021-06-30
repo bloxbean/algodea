@@ -287,6 +287,62 @@
       "name": "FreezeAssetFrozen",
       "type": "uint64",
       "note": "The new frozen value, 0 or 1. LogicSigVersion >= 2."
+    },
+    {
+      "index": 48,
+      "name": "Assets",
+      "type": "uint64",
+      "note": "Foreign Assets listed in the ApplicationCall transaction. LogicSigVersion >= 3.",
+      "since": 3
+    },
+    {
+      "index": 49,
+      "name": "NumAssets",
+      "type": "uint64",
+      "note": "Number of Assets. LogicSigVersion >= 3.",
+      "since": 3
+    },
+    {
+      "index": 50,
+      "name": "Applications",
+      "type": "uint64",
+      "note": "Foreign Apps listed in the ApplicationCall transaction. LogicSigVersion >= 3.",
+      "since": 3
+    },
+    {
+      "index": 51,
+      "name": "NumApplications",
+      "type": "uint64",
+      "note": "Number of Applications. LogicSigVersion >= 3.",
+      "since": 3
+    },
+    {
+      "index": 52,
+      "name": "GlobalNumUint",
+      "type": "uint64",
+      "note": "Number of global state integers in ApplicationCall. LogicSigVersion >= 3.",
+      "since": 3
+    },
+    {
+      "index": 53,
+      "name": "GlobalNumByteSlice",
+      "type": "uint64",
+      "note": "Number of global state byteslices in ApplicationCall. LogicSigVersion >= 3.",
+      "since": 3
+    },
+    {
+      "index": 54,
+      "name": "LocalNumUint",
+      "type": "uint64",
+      "note": "Number of local state integers in ApplicationCall. LogicSigVersion >= 3.",
+      "since": 3
+    },
+    {
+      "index": 55,
+      "name": "LocalNumByteSlice",
+      "type": "uint64",
+      "note": "Number of local state byteslices in ApplicationCall. LogicSigVersion >= 3.",
+      "since": 3
     }
   ],
   "oncomplete": [
@@ -425,6 +481,13 @@
       "name": "CurrentApplicationID",
       "type": "uint64",
       "note": "ID of current application executing. Fails if no such application is executing. LogicSigVersion >= 2."
+    },
+    {
+      "index": 9,
+      "name": "CreatorAddress",
+      "type": "[]byte",
+      "note": "Address of the creator of the current application. Fails if no such application is executing. LogicSigVersion >= 3.",
+      "since": 3
     }
   ],
   "asset_holding_get_fields": [

@@ -13,10 +13,7 @@ public interface TEALTxnLoadingOperation extends PsiElement {
   @Nullable
   TEALTxnFieldArg getTxnFieldArg();
 
-  @Nullable
-  TEALUnsignedInteger getUnsignedInteger();
-
-  @Nullable
-  PsiElement getVarTmpl();
+  @NotNull
+  List<TEALUnsignedInteger> getUnsignedIntegerList();
 
 }

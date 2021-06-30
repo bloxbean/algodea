@@ -65,6 +65,18 @@ public class TEALLoadingOperationImpl extends ASTWrapperPsiElement implements TE
 
   @Override
   @Nullable
+  public TEALGtxnsLoadingOperation getGtxnsLoadingOperation() {
+    return findChildByClass(TEALGtxnsLoadingOperation.class);
+  }
+
+  @Override
+  @Nullable
+  public TEALGtxnsaLoadingOperation getGtxnsaLoadingOperation() {
+    return findChildByClass(TEALGtxnsaLoadingOperation.class);
+  }
+
+  @Override
+  @Nullable
   public TEALIntcOperation getIntcOperation() {
     return findChildByClass(TEALIntcOperation.class);
   }
@@ -79,6 +91,18 @@ public class TEALLoadingOperationImpl extends ASTWrapperPsiElement implements TE
   @Nullable
   public TEALLoadOperation getLoadOperation() {
     return findChildByClass(TEALLoadOperation.class);
+  }
+
+  @Override
+  @Nullable
+  public TEALPushBytesOperation getPushBytesOperation() {
+    return findChildByClass(TEALPushBytesOperation.class);
+  }
+
+  @Override
+  @Nullable
+  public TEALPushIntOperation getPushIntOperation() {
+    return findChildByClass(TEALPushIntOperation.class);
   }
 
   @Override

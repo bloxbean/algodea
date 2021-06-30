@@ -20,12 +20,17 @@ public interface TEALTypes {
   IElementType BYTECBLOCK_OPERATION = new TEALElementType("BYTECBLOCK_OPERATION");
   IElementType BYTEC_OPERATION = new TEALElementType("BYTEC_OPERATION");
   IElementType BYTE_STATEMENT = new TEALElementType("BYTE_STATEMENT");
+  IElementType DIG_OPERATION = new TEALElementType("DIG_OPERATION");
   IElementType FLOW_CONTROL_OPERATION = new TEALElementType("FLOW_CONTROL_OPERATION");
   IElementType GENERAL_OPERATION = new TEALElementType("GENERAL_OPERATION");
   IElementType GLOBAL_OPERATION = new TEALElementType("GLOBAL_OPERATION");
   IElementType GLOBAL_OP_CODE = new TEALElementType("GLOBAL_OP_CODE");
   IElementType GTXNA_LOADING_OPERATION = new TEALElementType("GTXNA_LOADING_OPERATION");
   IElementType GTXNA_OPCODE = new TEALElementType("GTXNA_OPCODE");
+  IElementType GTXNSA_LOADING_OPERATION = new TEALElementType("GTXNSA_LOADING_OPERATION");
+  IElementType GTXNSA_OPCODE = new TEALElementType("GTXNSA_OPCODE");
+  IElementType GTXNS_LOADING_OPERATION = new TEALElementType("GTXNS_LOADING_OPERATION");
+  IElementType GTXNS_OPCODE = new TEALElementType("GTXNS_OPCODE");
   IElementType GTXN_LOADING_OPERATION = new TEALElementType("GTXN_LOADING_OPERATION");
   IElementType GTXN_OPCODE = new TEALElementType("GTXN_OPCODE");
   IElementType INTCBLOCK_OPERATION = new TEALElementType("INTCBLOCK_OPERATION");
@@ -37,6 +42,8 @@ public interface TEALTypes {
   IElementType PRAGMA_VERSION = new TEALElementType("PRAGMA_VERSION");
   IElementType PROGRAM = new TEALElementType("PROGRAM");
   IElementType PSEUDO_OP = new TEALElementType("PSEUDO_OP");
+  IElementType PUSH_BYTES_OPERATION = new TEALElementType("PUSH_BYTES_OPERATION");
+  IElementType PUSH_INT_OPERATION = new TEALElementType("PUSH_INT_OPERATION");
   IElementType STATEMENT = new TEALElementType("STATEMENT");
   IElementType STATE_ACCESS_OPERATION = new TEALElementType("STATE_ACCESS_OPERATION");
   IElementType STORE_OPERATION = new TEALElementType("STORE_OPERATION");
@@ -67,6 +74,8 @@ public interface TEALTypes {
   IElementType ED25519VERIFY = new TEALTokenType("ed25519verify");
   IElementType EOF = new TEALTokenType("EOF");
   IElementType FLOWCONTROL_OP = new TEALTokenType("FLOWCONTROL_OP");
+  IElementType GETBIT = new TEALTokenType("getbit");
+  IElementType GETBYTE = new TEALTokenType("getbyte");
   IElementType GLOBAL_FIELD = new TEALTokenType("GLOBAL_FIELD");
   IElementType GREATERTHAN = new TEALTokenType(">");
   IElementType GREATERTHANEQUAL = new TEALTokenType(">=");
@@ -94,6 +103,8 @@ public interface TEALTypes {
   IElementType OCTAL = new TEALTokenType("OCTAL");
   IElementType PLUS = new TEALTokenType("+");
   IElementType PRAGMA_KEYWORD = new TEALTokenType("#pragma");
+  IElementType SETBIT = new TEALTokenType("setbit");
+  IElementType SETBYTE = new TEALTokenType("setbyte");
   IElementType SHA256 = new TEALTokenType("sha256");
   IElementType SHA512_256 = new TEALTokenType("sha512_256");
   IElementType STATEACCESS_OP = new TEALTokenType("STATEACCESS_OP");
@@ -144,6 +155,9 @@ public interface TEALTypes {
       else if (type == BYTE_STATEMENT) {
         return new TEALByteStatementImpl(node);
       }
+      else if (type == DIG_OPERATION) {
+        return new TEALDigOperationImpl(node);
+      }
       else if (type == FLOW_CONTROL_OPERATION) {
         return new TEALFlowControlOperationImpl(node);
       }
@@ -161,6 +175,18 @@ public interface TEALTypes {
       }
       else if (type == GTXNA_OPCODE) {
         return new TEALGtxnaOpcodeImpl(node);
+      }
+      else if (type == GTXNSA_LOADING_OPERATION) {
+        return new TEALGtxnsaLoadingOperationImpl(node);
+      }
+      else if (type == GTXNSA_OPCODE) {
+        return new TEALGtxnsaOpcodeImpl(node);
+      }
+      else if (type == GTXNS_LOADING_OPERATION) {
+        return new TEALGtxnsLoadingOperationImpl(node);
+      }
+      else if (type == GTXNS_OPCODE) {
+        return new TEALGtxnsOpcodeImpl(node);
       }
       else if (type == GTXN_LOADING_OPERATION) {
         return new TEALGtxnLoadingOperationImpl(node);
@@ -194,6 +220,12 @@ public interface TEALTypes {
       }
       else if (type == PSEUDO_OP) {
         return new TEALPseudoOpImpl(node);
+      }
+      else if (type == PUSH_BYTES_OPERATION) {
+        return new TEALPushBytesOperationImpl(node);
+      }
+      else if (type == PUSH_INT_OPERATION) {
+        return new TEALPushIntOperationImpl(node);
       }
       else if (type == STATEMENT) {
         return new TEALStatementImpl(node);

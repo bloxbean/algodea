@@ -23,6 +23,7 @@
 package com.bloxbean.algodea.idea.language.opcode.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.intellij.openapi.util.text.StringUtil;
 
 import java.util.Map;
@@ -32,6 +33,7 @@ import java.util.Optional;
 import static com.bloxbean.algodea.idea.language.opcode.model.OpCodeConstants.*;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class OpCode {
     private String op;
     private String opcode;

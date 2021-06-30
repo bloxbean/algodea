@@ -10,4 +10,7 @@ public interface TEALFlowControlOperation extends PsiElement {
   @Nullable
   TEALBranchOperation getBranchOperation();
 
+  @Nullable
+  TEALDigOperation getDigOperation();
+
 }

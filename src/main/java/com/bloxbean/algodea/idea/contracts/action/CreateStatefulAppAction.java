@@ -254,7 +254,7 @@ public class CreateStatefulAppAction extends BaseTxnAction {
                         if(LOG.isDebugEnabled()) {
                             LOG.warn(exception);
                         }
-                        //console.showErrorMessage("Error creating the app", exception);
+                        console.showErrorMessage("Error creating the app", exception);
                     }
 
                     if(requestMode == null || requestMode.equals(RequestMode.TRANSACTION)) {
