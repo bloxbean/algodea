@@ -88,6 +88,10 @@ public final class TEALKeywords {
 
             MULW,
             ADDW ,
+            SETBIT,
+            GETBIT,
+            SETBYTE,
+            GETBYTE,
             CONCAT ,
             SUBSTRING  ,
             SUBSTRING3
