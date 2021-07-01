@@ -43,6 +43,7 @@ import static com.intellij.patterns.PlatformPatterns.psiElement;
 
 public final class TxnArgCompletionProvider extends BaseCompletionProvider {
     private final static String TXNA = "txna";
+    private final static String GTXNSA = "gtxnsa";
 
     public static final ElementPattern<PsiElement> PATTERN = PlatformPatterns
             .psiElement()
@@ -60,6 +61,20 @@ public final class TxnArgCompletionProvider extends BaseCompletionProvider {
                             context.put(TXNA, TXNA);
                             return true;
                         }
+                    }),
+                    psiElement().afterLeaf(
+                            psiElement(TEALTypes.TXN_LOADING_OP)
+                                    .withParent(psiElement(TEALTypes.GTXNS_OPCODE))
+                    ),
+                    psiElement().afterLeaf(
+                            psiElement(TEALTypes.TXN_LOADING_OP)
+                                    .withParent(psiElement(TEALTypes.GTXNSA_OPCODE))
+                    ).with(new PatternCondition<PsiElement>("gtxnsa") {
+                        @Override
+                        public boolean accepts(@NotNull PsiElement psiElement, ProcessingContext context) {
+                            context.put(GTXNSA, GTXNSA);
+                            return true;
+                        }
                     })
 
             ))
@@ -71,7 +86,7 @@ public final class TxnArgCompletionProvider extends BaseCompletionProvider {
     protected void addCompletions(@NotNull CompletionParameters parameters,
                                   ProcessingContext context,
                                   @NotNull CompletionResultSet result) {
-        if (context.get(TXNA) != null) {
+        if (context.get(TXNA) != null || context.get(GTXNSA) != null) {
             result.addAllElements(TEALKeywords.TXNARGS_LOOKUP_ELEMENTS_STREAM
                     .stream()
                     .map(e -> e.getCompositeLookupElement(null, TEALKeywordConstant.UINT8_PLACEHOLDER))
