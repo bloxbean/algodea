@@ -29,18 +29,6 @@ public class TEALByteStatementImpl extends ASTWrapperPsiElement implements TEALB
 
   @Override
   @Nullable
-  public PsiElement getBase32() {
-    return findChildByType(BASE32);
-  }
-
-  @Override
-  @Nullable
-  public PsiElement getBase64() {
-    return findChildByType(BASE64);
-  }
-
-  @Override
-  @Nullable
   public PsiElement getHex() {
     return findChildByType(HEX);
   }

@@ -59,8 +59,6 @@ public interface TEALTypes {
   IElementType ADDW = new TEALTokenType("addw");
   IElementType ASSET_HOLDING_GET_FIELD = new TEALTokenType("ASSET_HOLDING_GET_FIELD");
   IElementType ASSET_PARAMS_GET_FIELD = new TEALTokenType("ASSET_PARAMS_GET_FIELD");
-  IElementType BASE32 = new TEALTokenType("BASE32");
-  IElementType BASE64 = new TEALTokenType("BASE64");
   IElementType BITWISE_AND = new TEALTokenType("&");
   IElementType BITWISE_INVERT = new TEALTokenType("~");
   IElementType BITWISE_OR = new TEALTokenType("|");

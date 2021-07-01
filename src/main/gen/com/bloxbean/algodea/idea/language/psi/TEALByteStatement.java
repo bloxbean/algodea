@@ -8,12 +8,6 @@ import com.intellij.psi.PsiElement;
 public interface TEALByteStatement extends PsiElement {
 
   @Nullable
-  PsiElement getBase32();
-
-  @Nullable
-  PsiElement getBase64();
-
-  @Nullable
   PsiElement getHex();
 
   @Nullable

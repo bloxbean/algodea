@@ -539,7 +539,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // byte_base32_encoding_type (BASE32 | VAR_TMPL)
+  // byte_base32_encoding_type (ID | VAR_TMPL)
   static boolean byte_base32_encoding_type_values(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "byte_base32_encoding_type_values")) return false;
     boolean r;
@@ -550,17 +550,17 @@ public class TEALParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // BASE32 | VAR_TMPL
+  // ID | VAR_TMPL
   private static boolean byte_base32_encoding_type_values_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "byte_base32_encoding_type_values_1")) return false;
     boolean r;
-    r = consumeToken(b, BASE32);
+    r = consumeToken(b, ID);
     if (!r) r = consumeToken(b, VAR_TMPL);
     return r;
   }
 
   /* ********************************************************** */
-  // byte_base32_encoding_type '(' (BASE32 | VAR_TMPL) ')'
+  // byte_base32_encoding_type '(' (ID | VAR_TMPL) ')'
   static boolean byte_base32encoding_type_values_function_type(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "byte_base32encoding_type_values_function_type")) return false;
     boolean r;
@@ -573,11 +573,11 @@ public class TEALParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // BASE32 | VAR_TMPL
+  // ID | VAR_TMPL
   private static boolean byte_base32encoding_type_values_function_type_2(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "byte_base32encoding_type_values_function_type_2")) return false;
     boolean r;
-    r = consumeToken(b, BASE32);
+    r = consumeToken(b, ID);
     if (!r) r = consumeToken(b, VAR_TMPL);
     return r;
   }
@@ -593,7 +593,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // byte_base64_encoding_type (BASE64 | VAR_TMPL)
+  // byte_base64_encoding_type (ID | VAR_TMPL)
   static boolean byte_base64_encoding_type_values(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "byte_base64_encoding_type_values")) return false;
     boolean r;
@@ -604,17 +604,17 @@ public class TEALParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // BASE64 | VAR_TMPL
+  // ID | VAR_TMPL
   private static boolean byte_base64_encoding_type_values_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "byte_base64_encoding_type_values_1")) return false;
     boolean r;
-    r = consumeToken(b, BASE64);
+    r = consumeToken(b, ID);
     if (!r) r = consumeToken(b, VAR_TMPL);
     return r;
   }
 
   /* ********************************************************** */
-  // byte_base64_encoding_type '(' (BASE64 | VAR_TMPL) ')'
+  // byte_base64_encoding_type '(' (ID | VAR_TMPL) ')'
   static boolean byte_base64encoding_type_values_function_type(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "byte_base64encoding_type_values_function_type")) return false;
     boolean r;
@@ -627,11 +627,11 @@ public class TEALParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // BASE64 | VAR_TMPL
+  // ID | VAR_TMPL
   private static boolean byte_base64encoding_type_values_function_type_2(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "byte_base64encoding_type_values_function_type_2")) return false;
     boolean r;
-    r = consumeToken(b, BASE64);
+    r = consumeToken(b, ID);
     if (!r) r = consumeToken(b, VAR_TMPL);
     return r;
   }
@@ -688,7 +688,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // 'bytecblock' (VAR_TMPL | (ID | l_integer | BASE64)*)
+  // 'bytecblock' (VAR_TMPL | (ID | l_integer)*)
   public static boolean bytecblockOperation(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "bytecblockOperation")) return false;
     boolean r, p;
@@ -700,7 +700,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
     return r || p;
   }
 
-  // VAR_TMPL | (ID | l_integer | BASE64)*
+  // VAR_TMPL | (ID | l_integer)*
   private static boolean bytecblockOperation_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "bytecblockOperation_1")) return false;
     boolean r;
@@ -711,7 +711,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // (ID | l_integer | BASE64)*
+  // (ID | l_integer)*
   private static boolean bytecblockOperation_1_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "bytecblockOperation_1_1")) return false;
     while (true) {
@@ -722,13 +722,12 @@ public class TEALParser implements PsiParser, LightPsiParser {
     return true;
   }
 
-  // ID | l_integer | BASE64
+  // ID | l_integer
   private static boolean bytecblockOperation_1_1_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "bytecblockOperation_1_1_0")) return false;
     boolean r;
     r = consumeToken(b, ID);
     if (!r) r = consumeToken(b, L_INTEGER);
-    if (!r) r = consumeToken(b, BASE64);
     return r;
   }
 
