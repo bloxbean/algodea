@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 import static com.bloxbean.algodea.idea.language.psi.TEALTypes.*;
 
 public final class TEALKeywords {
-    public final static LookupElement PRAGMA_LINE = new TEALKeywordElement("#pragma version 2").getLookupElement();
+    public final static LookupElement PRAGMA_LINE = new TEALKeywordElement("#pragma version 3").getLookupElement();
 
     public final static String TXN_FIELDS = "txn_fields";
     public final static String TYPE_ENUM_MAPPING = "typeenum_constants";
