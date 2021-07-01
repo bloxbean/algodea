@@ -1410,7 +1410,7 @@
    {
      "op": "min_balance",
      "opcode": "0x78",
-     "pops": ["... stack", "uint64"],
+     "pops": ["... stack", "any"],
      "pushes": ["uint64"],
      "desc": "get minimum required balance for the requested account specified by Txn.Accounts[A] in microalgos. A is specified as an account index in the Accounts field of the ApplicationCall transaction, zero index means the sender. Required balance is affected by ASA and App usage. When creating or opting into an app, the minimum balance grows before the app code runs, therefore the increase is visible there. When deleting or closing out, the minimum balance decreases after the app executes.",
      "error": "",
@@ -1418,7 +1418,7 @@
        "LogicSigVersion": ">=3"
      },
      "mode": "Application",
-     "additionalDesc": "",
+     "additionalDesc": "params: Before v4, Txn.Accounts offset. Since v4, Txn.Accounts offset or an account address that appears in Txn.Accounts or is Txn.Sender). Return: value.",
      "params": [],
      "costs": [
        {
@@ -1463,7 +1463,8 @@
          "cost": 1,
          "filter": ""
        }
-     ]
+     ],
+     "anchor": "pushint-uint"
    },
    {
      "op": "int",
