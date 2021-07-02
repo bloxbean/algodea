@@ -33,6 +33,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.util.ProcessingContext;
 import org.jetbrains.annotations.NotNull;
 
+import static com.bloxbean.algodea.idea.language.TEALUtil.getTEALVersion;
 import static com.intellij.patterns.PlatformPatterns.psiElement;
 
 public final class GlobalFieldsCompletionProvider extends BaseCompletionProvider {
@@ -50,7 +51,14 @@ public final class GlobalFieldsCompletionProvider extends BaseCompletionProvider
     protected void addCompletions(@NotNull CompletionParameters parameters,
                                   ProcessingContext context,
                                   @NotNull CompletionResultSet result) {
+        Integer version = getTEALVersion(parameters.getOriginalFile());
+
         result.addAllElements(TEALKeywords.GLOBAL_FIELDS_ELEMENTS);
+        if(version != null) {
+            if (version >= 3) {
+                result.addAllElements(TEALKeywords.GLOBAL_FIELDS_ELEMENTS_V3);
+            }
+        }
         result.stopHere();
     }
 }

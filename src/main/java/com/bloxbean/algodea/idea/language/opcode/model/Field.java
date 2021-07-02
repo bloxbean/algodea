@@ -60,6 +60,14 @@ public class Field {
         this.desc = desc;
     }
 
+    public int getSince() {
+        return since;
+    }
+
+    public void setSince(int since) {
+        this.since = since;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -21,48 +21,44 @@
  */
 
 package com.bloxbean.algodea.idea.language;
-//import com.bloxbean.algorand.idea.language.psi.TEALProperty;
 
+import com.bloxbean.algodea.idea.language.psi.TEALFile;
+import com.bloxbean.algodea.idea.language.psi.TEALPragma;
+import com.bloxbean.algodea.idea.language.psi.TEALPragmaVersion;
+import com.bloxbean.algodea.idea.language.psi.TEALProgram;
+import com.bloxbean.algodea.idea.language.psi.impl.TEALProgramImpl;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiFile;
 
 public class TEALUtil {
 
-//    // Searches the entire project for Simple language files with instances of the Simple property with the given key
-//    public static List<TEALProperty> findProperties(Project project, String key) {
-//        List<TEALProperty> result = new ArrayList<>();
-//        Collection<VirtualFile> virtualFiles =
-//                FileTypeIndex.getFiles(TEALFileType.INSTANCE, GlobalSearchScope.allScope(project));
-//        for (VirtualFile virtualFile : virtualFiles) {
-//            TEALFile simpleFile = (TEALFile) PsiManager.getInstance(project).findFile(virtualFile);
-//            if (simpleFile != null) {
-//                TEALProperty[] properties = PsiTreeUtil.getChildrenOfType(simpleFile, TEALProperty.class);
-//                if (properties != null) {
-//                    for (TEALProperty property : properties) {
-//                 //TODO 6. PSI Helper Utilities
-////                        if (key.equals(property.getKey())) {
-////                            result.add(property);
-////                        }
-//                    }
-//                }
-//            }
-//        }
-//        return result;
-//    }
-//
-//    public static List<TEALProperty> findProperties(Project project) {
-//        List<TEALProperty> result = new ArrayList<>();
-//        Collection<VirtualFile> virtualFiles =
-//                FileTypeIndex.getFiles(TEALFileType.INSTANCE, GlobalSearchScope.allScope(project));
-//        for (VirtualFile virtualFile : virtualFiles) {
-//            TEALFile simpleFile = (TEALFile) PsiManager.getInstance(project).findFile(virtualFile);
-//            if (simpleFile != null) {
-//                TEALProperty[] properties = PsiTreeUtil.getChildrenOfType(simpleFile, TEALProperty.class);
-//                if (properties != null) {
-//                    Collections.addAll(result, properties);
-//                }
-//            }
-//        }
-//        return result;
-//    }
+    public static Integer getTEALVersion(PsiFile psiFile) {
+        if(psiFile == null || !(psiFile instanceof TEALFile))
+            return null;
+
+        TEALFile tealFile = (TEALFile) psiFile;
+        PsiElement firstChildElm = tealFile.getFirstChild();
+        if(firstChildElm == null || !(firstChildElm instanceof TEALProgram)) {
+            return null;
+        }
+
+        TEALPragma tealPragma = ((TEALProgramImpl)firstChildElm).getPragma();
+        if(tealPragma == null)
+            return null;
+
+        TEALPragmaVersion pragmaVersion = tealPragma.getPragmaVersion();
+        if(pragmaVersion == null)
+            return null;
+
+        String version = pragmaVersion.getUnsignedInteger().getText();
+        int versionInt;
+        try {
+            versionInt = Integer.parseInt(version);
+        } catch (Exception e) {
+            return null;
+        }
+        return versionInt;
+    }
 
 }
 

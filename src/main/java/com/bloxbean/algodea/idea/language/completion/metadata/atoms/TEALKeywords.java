@@ -26,6 +26,7 @@ import com.bloxbean.algodea.idea.language.completion.metadata.elements.TEALConst
 import com.bloxbean.algodea.idea.language.completion.metadata.elements.TEALFieldElement;
 import com.bloxbean.algodea.idea.language.completion.metadata.elements.TEALKeywordElement;
 import com.bloxbean.algodea.idea.language.opcode.TEALOpCodeFactory;
+import com.bloxbean.algodea.idea.language.opcode.model.Field;
 import com.google.common.collect.Sets;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.psi.tree.IElementType;
@@ -88,13 +89,16 @@ public final class TEALKeywords {
 
             MULW,
             ADDW ,
-            SETBIT,
-            GETBIT,
-            SETBYTE,
-            GETBYTE,
             CONCAT ,
             SUBSTRING  ,
             SUBSTRING3
+    );
+
+    public static final Collection<IElementType> GENERAL_OPERATIONS_ELEMENTS_V3 = Sets.newHashSet(
+            SETBIT,
+            GETBIT,
+            SETBYTE,
+            GETBYTE
     );
 
 //    public static final Collection<String> TXN_ARGS = Sets.newHashSet(
@@ -121,16 +125,34 @@ public final class TEALKeywords {
             .map(TEALKeywordElement::getLookupElement)
             .collect(Collectors.toList());
 
-    public static final List<LookupElement> TXNARGS_LOOKUP_ELEMENTS = TEALOpCodeFactory.getInstance()
-            .getFields(TXN_FIELDS)
+    private static final Collection<Field> txnFieldsList = TEALOpCodeFactory.getInstance().getFields(TXN_FIELDS);
+    //V2
+    public static final List<LookupElement> TXNARGS_LOOKUP_ELEMENTS = txnFieldsList
             .stream()
+            .filter(f -> f.getSince() <= 2)
             .map(f -> new TEALFieldElement(f))
             .map(TEALFieldElement::getLookupElement)
             .collect(Collectors.toList());
 
-    public static final List<TEALFieldElement> TXNARGS_LOOKUP_ELEMENTS_STREAM = TEALOpCodeFactory.getInstance()
-            .getFields(TXN_FIELDS)
+    //V3
+    public static final List<LookupElement> TXNARGS_LOOKUP_ELEMENTS_V3 = txnFieldsList
             .stream()
+            .filter(f -> f.getSince() == 3)
+            .map(f -> new TEALFieldElement(f))
+            .map(TEALFieldElement::getLookupElement)
+            .collect(Collectors.toList());
+
+    //V2
+    public static final List<TEALFieldElement> TXNARGS_LOOKUP_ELEMENTS_STREAM = txnFieldsList
+            .stream()
+            .filter(f -> f.getSince() <= 2)
+            .map(f -> new TEALFieldElement(f))
+            .collect(Collectors.toList());
+
+    //V3
+    public static final List<TEALFieldElement> TXNARGS_LOOKUP_ELEMENTS_STREAM_V3 = txnFieldsList
+            .stream()
+            .filter(f -> f.getSince() == 3)
             .map(f -> new TEALFieldElement(f))
             .collect(Collectors.toList());
 
@@ -141,9 +163,19 @@ public final class TEALKeywords {
             .map(TEALConstantElement::getLookupElement)
             .collect(Collectors.toList());
 
-    public static final List<LookupElement> GLOBAL_FIELDS_ELEMENTS = TEALOpCodeFactory.getInstance()
-            .getFields(GLOBAL_FIELDS)
+    private static final Collection<Field> gloablFields = TEALOpCodeFactory.getInstance().getFields(GLOBAL_FIELDS);
+    //V2
+    public static final List<LookupElement> GLOBAL_FIELDS_ELEMENTS = gloablFields
             .stream()
+            .filter(f -> f.getSince() <= 2)
+            .map(f -> new TEALFieldElement(f))
+            .map(TEALFieldElement::getLookupElement)
+            .collect(Collectors.toList());
+
+    //since V3
+    public static final List<LookupElement> GLOBAL_FIELDS_ELEMENTS_V3 = gloablFields
+            .stream()
+            .filter(f -> f.getSince() == 3)
             .map(f -> new TEALFieldElement(f))
             .map(TEALFieldElement::getLookupElement)
             .collect(Collectors.toList());
