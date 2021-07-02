@@ -118,8 +118,20 @@ public final class TEALKeywords {
 //            .map(TEALKeywordElement::getLookupElement)
 //            .collect(Collectors.toList());
     public static final List<LookupElement> KEYWORD_LOOKUP_ELEMENTS = TEALOpCodeFactory.getInstance()
-            .getOps().stream()
-//            .getOpCodes().parallelStream()
+            //.getOps().stream()
+            .getOpCodes().stream()
+            .filter(opc -> opc.getSince() <= 2)
+            .map(opc -> opc.getOp())
+            .sorted()
+            .map(TEALKeywordElement::new)
+            .map(TEALKeywordElement::getLookupElement)
+            .collect(Collectors.toList());
+
+    public static final List<LookupElement> KEYWORD_LOOKUP_ELEMENTS_V3 = TEALOpCodeFactory.getInstance()
+            //.getOps().stream()
+            .getOpCodes().stream()
+            .filter(opc -> opc.getSince() == 3)
+            .map(opc -> opc.getOp())
             .sorted()
             .map(TEALKeywordElement::new)
             .map(TEALKeywordElement::getLookupElement)

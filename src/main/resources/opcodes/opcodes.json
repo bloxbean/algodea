@@ -843,7 +843,8 @@
          "filter": ""
        }
      ],
-     "anchor": "gtxns-f"
+     "anchor": "gtxns-f",
+     "since": 3
    },
    {
      "op": "gtxnsa",
@@ -863,7 +864,8 @@
          "filter": ""
        }
      ],
-     "anchor": "gtxnsa-f-i"
+     "anchor": "gtxnsa-f-i",
+     "since": 3
    },
     {
       "op": "bnz",
@@ -956,7 +958,8 @@
          "cost": 1,
          "filter": ""
        }
-     ]
+     ],
+     "since": 3
     },
     {
       "op": "pop",
@@ -1024,7 +1027,8 @@
            "filter": ""
          }
        ],
-      "anchor": "dig-n"
+      "anchor": "dig-n",
+      "since": 3
     },
      {
        "op": "swap",
@@ -1043,7 +1047,8 @@
            "cost": 1,
            "filter": ""
          }
-       ]
+       ],
+       "since": 3
      },
    {
      "op": "select",
@@ -1062,7 +1067,8 @@
          "cost": 1,
          "filter": ""
        }
-     ]
+     ],
+     "since": 3
    },
     {
       "op": "concat",
@@ -1136,7 +1142,8 @@
          "cost": 1,
          "filter": ""
        }
-     ]
+     ],
+     "since": 3
    },
    {
      "op": "setbit",
@@ -1154,7 +1161,8 @@
          "cost": 1,
          "filter": ""
        }
-     ]
+     ],
+     "since": 3
    },
    {
      "op": "getbyte",
@@ -1172,7 +1180,8 @@
          "cost": 1,
          "filter": ""
        }
-     ]
+     ],
+     "since": 3
    },
    {
      "op": "setbyte",
@@ -1190,7 +1199,8 @@
          "cost": 1,
          "filter": ""
        }
-     ]
+     ],
+     "since": 3
    },
     {
       "op": "balance",
@@ -1442,7 +1452,8 @@
          "cost": 1,
          "filter": ""
        }
-     ]
+     ],
+     "since": 3
    },
    {
      "op": "pushbytes",
@@ -1461,7 +1472,8 @@
          "cost": 1,
          "filter": ""
        }
-     ]
+     ],
+     "since": 3
    },
    {
      "op": "pushint",
@@ -1481,7 +1493,8 @@
          "filter": ""
        }
      ],
-     "anchor": "pushint-uint"
+     "anchor": "pushint-uint",
+     "since": 3
    },
    {
      "op": "int",

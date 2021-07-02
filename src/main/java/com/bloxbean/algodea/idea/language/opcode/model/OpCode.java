@@ -48,6 +48,7 @@ public class OpCode {
     Cost[] costs;
 
     String anchor;
+    int since;
 
     public OpCode() {
 
@@ -147,6 +148,14 @@ public class OpCode {
 
     public void setAnchor(String anchor) {
         this.anchor = anchor;
+    }
+
+    public int getSince() {
+        return since;
+    }
+
+    public void setSince(int since) {
+        this.since = since;
     }
 
     @Override
