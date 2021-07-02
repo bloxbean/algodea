@@ -41,4 +41,8 @@ public class AccountListAction extends AnAction {
         AccountChooser.getSelectedAccount(project, true);
     }
 
+    @Override
+    public boolean isDumbAware() {
+        return true;
+    }
 }

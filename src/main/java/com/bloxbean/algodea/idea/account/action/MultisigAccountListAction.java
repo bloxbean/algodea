@@ -41,4 +41,8 @@ public class MultisigAccountListAction extends AnAction {
         AccountChooser.getSelectedMultisigAccount(project, true);
     }
 
+    @Override
+    public boolean isDumbAware() {
+        return true;
+    }
 }
