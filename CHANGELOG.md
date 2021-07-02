@@ -1,3 +1,8 @@
+### 0.5.0-beta
+  - TEAL v3 support (New Opcodes, Global Fields, Txn Fields)
+  - Auto-complete, Syntax Highlights for TEAL v3
+  - Algorand java sdk version updated to support v3 deployment
+  - Error highlighter if v3 opcodes are used in TEAL v2 files
 ### 0.4.2
   - Rekey support [#19]
   - Sign and submit exported transaction file [#20]
