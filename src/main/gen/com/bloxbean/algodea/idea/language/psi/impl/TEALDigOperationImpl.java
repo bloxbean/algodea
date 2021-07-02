@@ -28,6 +28,12 @@ public class TEALDigOperationImpl extends ASTWrapperPsiElement implements TEALDi
   }
 
   @Override
+  @NotNull
+  public TEALDigOpcode getDigOpcode() {
+    return findNotNullChildByClass(TEALDigOpcode.class);
+  }
+
+  @Override
   @Nullable
   public TEALUnsignedInteger getUnsignedInteger() {
     return findChildByClass(TEALUnsignedInteger.class);

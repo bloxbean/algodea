@@ -123,8 +123,25 @@
   ]
 }
 
+//top level
 tealFile ::= program
 program ::= [pragma NL*] statement*
+
+//since v3 opcodes
+GTXNS_OPCODE ::= 'gtxns';
+GTXNSA_OPCODE ::= 'gtxnsa';
+DIG_OPCODE ::= 'dig'
+GETBIT_OPCODE ::= GETBIT
+SETBIT_OPCODE ::= SETBIT
+GETBYTE_OPCODE ::= GETBYTE
+SETBYTE_OPCODE ::= SETBYTE
+PUSH_INT_OPCODE ::= 'pushint'
+PUSH_BYTE_OPCODE ::= 'pushbytes'
+SWAP_OPCODE ::= 'swap'
+SELECT_OPCODE ::= 'select'
+ASSERT_OPCODE ::= 'assert'
+MIN_BALANCE_OPCODE ::= 'min_balance'
+//v3 opcodes ends
 
 pragma ::= PRAGMA_KEYWORD VERSION pragma_version {pin=1 recoverWhile=statement_recover}
 pragma_version ::= unsignedInteger
@@ -213,15 +230,13 @@ globalOperation ::= globalOpCode (unsignedInteger | GLOBAL_FIELD | VAR_TMPL) {pi
 loadOperation ::= 'load' (unsignedInteger | VAR_TMPL) {pin=1}
 storeOperation ::= 'store' (unsignedInteger | VAR_TMPL) {pin=1}
 
-pushIntOperation ::= 'pushint' (l_integer | VAR_TMPL) {pin=1}
-pushBytesOperation ::= 'pushbytes' (l_string | HEX | byte_base64encoding_type_values_function_type | byte_base32encoding_type_values_function_type | VAR_TMPL | ID) {pin=1}
+pushIntOperation ::= PUSH_INT_OPCODE (l_integer | VAR_TMPL) {pin=1}
+pushBytesOperation ::= PUSH_BYTE_OPCODE (l_string | HEX | byte_base64encoding_type_values_function_type | byte_base32encoding_type_values_function_type | VAR_TMPL | ID) {pin=1}
 
 TXN_OPCODE ::= 'txn'
 GTXN_OPCODE ::= 'gtxn'
 TXNA_OPCODE ::= 'txna'
 GTXNA_OPCODE ::= 'gtxna';
-GTXNS_OPCODE ::= 'gtxns';
-GTXNSA_OPCODE ::= 'gtxnsa';
 
 txnLoadingOperation ::= TXN_OPCODE (unsignedInteger | TxnFieldArg | VAR_TMPL) (unsignedInteger | VAR_TMPL)? {pin=1}
 gtxnLoadingOperation ::= GTXN_OPCODE (unsignedInteger | VAR_TMPL) (unsignedInteger | TxnFieldArg | VAR_TMPL) (unsignedInteger | VAR_TMPL)? {pin=1}
@@ -272,28 +287,28 @@ GeneralOperation                   ::= SHA256
                                      | BITWISE_INVERT
                                      | MULW
                                      | ADDW
-                                     | GETBIT
-                                     | SETBIT
-                                     | GETBYTE
-                                     | SETBYTE
+                                     | GETBIT_OPCODE
+                                     | SETBIT_OPCODE
+                                     | GETBYTE_OPCODE
+                                     | SETBYTE_OPCODE
                                      | CONCAT
                                      | substringOperation
                                      | SUBSTRING3
 
 substringOperation ::= SUBSTRING (unsignedInteger | VAR_TMPL) (unsignedInteger | VAR_TMPL) {pin=1}
 
-FlowControlOperation ::= 'err' | 'return' | 'pop' | 'dup' | 'dup2' | 'swap' | 'select' | 'assert' | digOperation
+FlowControlOperation ::= 'err' | 'return' | 'pop' | 'dup' | 'dup2' | SWAP_OPCODE | SELECT_OPCODE | ASSERT_OPCODE | digOperation
                                 | branchOperation {pin=1}
 
 branchOperation ::= ('bnz' | 'bz' | 'b') (VAR_TMPL | ID) {pin=1}
-digOperation ::= 'dig' (unsignedInteger | VAR_TMPL) {pin=1}
+digOperation ::= DIG_OPCODE (unsignedInteger | VAR_TMPL) {pin=1}
 
 StateAccessOperation ::=  'balance' | 'app_opted_in' | 'app_local_get'| 'app_local_get_ex' | 'app_global_get'
                             | 'app_global_get_ex'| 'app_local_put'| 'app_global_put'| 'app_local_del'
                             | 'app_global_del'
                             | assetHoldingGetOperation
                             | assetParamsGetOperation
-                            | 'min_balance'
+                            | MIN_BALANCE_OPCODE
 
 assetHoldingGetOperation ::= assetHoldingGetOP (unsignedInteger | ASSET_HOLDING_GET_FIELD | VAR_TMPL) {pin=1}
 assetParamsGetOperation ::=  assetParamsGetOp (unsignedInteger | ASSET_PARAMS_GET_FIELD | 'AssetFreeze' | VAR_TMPL) {pin=1}

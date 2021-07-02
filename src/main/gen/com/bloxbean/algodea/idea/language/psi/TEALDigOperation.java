@@ -7,6 +7,9 @@ import com.intellij.psi.PsiElement;
 
 public interface TEALDigOperation extends PsiElement {
 
+  @NotNull
+  TEALDigOpcode getDigOpcode();
+
   @Nullable
   TEALUnsignedInteger getUnsignedInteger();
 

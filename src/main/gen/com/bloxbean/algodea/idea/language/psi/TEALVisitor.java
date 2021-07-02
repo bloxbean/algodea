@@ -7,7 +7,23 @@ import com.intellij.psi.PsiElement;
 
 public class TEALVisitor extends PsiElementVisitor {
 
+  public void visitAssertOpcode(@NotNull TEALAssertOpcode o) {
+    visitPsiElement(o);
+  }
+
+  public void visitDigOpcode(@NotNull TEALDigOpcode o) {
+    visitPsiElement(o);
+  }
+
   public void visitFlowControlOperation(@NotNull TEALFlowControlOperation o) {
+    visitPsiElement(o);
+  }
+
+  public void visitGetbitOpcode(@NotNull TEALGetbitOpcode o) {
+    visitPsiElement(o);
+  }
+
+  public void visitGetbyteOpcode(@NotNull TEALGetbyteOpcode o) {
     visitPsiElement(o);
   }
 
@@ -32,6 +48,34 @@ public class TEALVisitor extends PsiElementVisitor {
   }
 
   public void visitLoadingOperation(@NotNull TEALLoadingOperation o) {
+    visitPsiElement(o);
+  }
+
+  public void visitMinBalanceOpcode(@NotNull TEALMinBalanceOpcode o) {
+    visitPsiElement(o);
+  }
+
+  public void visitPushByteOpcode(@NotNull TEALPushByteOpcode o) {
+    visitPsiElement(o);
+  }
+
+  public void visitPushIntOpcode(@NotNull TEALPushIntOpcode o) {
+    visitPsiElement(o);
+  }
+
+  public void visitSelectOpcode(@NotNull TEALSelectOpcode o) {
+    visitPsiElement(o);
+  }
+
+  public void visitSetbitOpcode(@NotNull TEALSetbitOpcode o) {
+    visitPsiElement(o);
+  }
+
+  public void visitSetbyteOpcode(@NotNull TEALSetbyteOpcode o) {
+    visitPsiElement(o);
+  }
+
+  public void visitSwapOpcode(@NotNull TEALSwapOpcode o) {
     visitPsiElement(o);
   }
 

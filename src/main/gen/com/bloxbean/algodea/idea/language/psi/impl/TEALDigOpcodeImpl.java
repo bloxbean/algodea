@@ -11,50 +11,20 @@ import static com.bloxbean.algodea.idea.language.psi.TEALTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.bloxbean.algodea.idea.language.psi.*;
 
-public class TEALPushBytesOperationImpl extends ASTWrapperPsiElement implements TEALPushBytesOperation {
+public class TEALDigOpcodeImpl extends ASTWrapperPsiElement implements TEALDigOpcode {
 
-  public TEALPushBytesOperationImpl(@NotNull ASTNode node) {
+  public TEALDigOpcodeImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull TEALVisitor visitor) {
-    visitor.visitPushBytesOperation(this);
+    visitor.visitDigOpcode(this);
   }
 
   @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof TEALVisitor) accept((TEALVisitor)visitor);
     else super.accept(visitor);
-  }
-
-  @Override
-  @NotNull
-  public TEALPushByteOpcode getPushByteOpcode() {
-    return findNotNullChildByClass(TEALPushByteOpcode.class);
-  }
-
-  @Override
-  @Nullable
-  public PsiElement getHex() {
-    return findChildByType(HEX);
-  }
-
-  @Override
-  @Nullable
-  public PsiElement getId() {
-    return findChildByType(ID);
-  }
-
-  @Override
-  @Nullable
-  public PsiElement getVarTmpl() {
-    return findChildByType(VAR_TMPL);
-  }
-
-  @Override
-  @Nullable
-  public PsiElement getLString() {
-    return findChildByType(L_STRING);
   }
 
 }

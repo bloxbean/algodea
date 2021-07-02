@@ -5,15 +5,6 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface TEALPushIntOperation extends PsiElement {
-
-  @NotNull
-  TEALPushIntOpcode getPushIntOpcode();
-
-  @Nullable
-  PsiElement getVarTmpl();
-
-  @Nullable
-  PsiElement getLInteger();
+public interface TEALSetbyteOpcode extends PsiElement {
 
 }

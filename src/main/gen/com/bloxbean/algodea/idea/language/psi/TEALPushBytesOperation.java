@@ -7,6 +7,9 @@ import com.intellij.psi.PsiElement;
 
 public interface TEALPushBytesOperation extends PsiElement {
 
+  @NotNull
+  TEALPushByteOpcode getPushByteOpcode();
+
   @Nullable
   PsiElement getHex();
 

@@ -8,6 +8,9 @@ import com.intellij.psi.PsiElement;
 public interface TEALStateAccessOperation extends PsiElement {
 
   @Nullable
+  TEALMinBalanceOpcode getMinBalanceOpcode();
+
+  @Nullable
   TEALAssetHoldingGetOperation getAssetHoldingGetOperation();
 
   @Nullable

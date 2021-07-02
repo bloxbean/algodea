@@ -8,6 +8,15 @@ import com.intellij.psi.PsiElement;
 public interface TEALFlowControlOperation extends PsiElement {
 
   @Nullable
+  TEALAssertOpcode getAssertOpcode();
+
+  @Nullable
+  TEALSelectOpcode getSelectOpcode();
+
+  @Nullable
+  TEALSwapOpcode getSwapOpcode();
+
+  @Nullable
   TEALBranchOperation getBranchOperation();
 
   @Nullable

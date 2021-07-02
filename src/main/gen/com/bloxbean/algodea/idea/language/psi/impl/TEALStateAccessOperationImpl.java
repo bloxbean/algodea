@@ -29,6 +29,12 @@ public class TEALStateAccessOperationImpl extends ASTWrapperPsiElement implement
 
   @Override
   @Nullable
+  public TEALMinBalanceOpcode getMinBalanceOpcode() {
+    return findChildByClass(TEALMinBalanceOpcode.class);
+  }
+
+  @Override
+  @Nullable
   public TEALAssetHoldingGetOperation getAssetHoldingGetOperation() {
     return findChildByClass(TEALAssetHoldingGetOperation.class);
   }

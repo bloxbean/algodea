@@ -28,6 +28,12 @@ public class TEALPushIntOperationImpl extends ASTWrapperPsiElement implements TE
   }
 
   @Override
+  @NotNull
+  public TEALPushIntOpcode getPushIntOpcode() {
+    return findNotNullChildByClass(TEALPushIntOpcode.class);
+  }
+
+  @Override
   @Nullable
   public PsiElement getVarTmpl() {
     return findChildByType(VAR_TMPL);

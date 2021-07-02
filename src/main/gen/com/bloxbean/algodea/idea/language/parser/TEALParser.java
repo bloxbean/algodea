@@ -36,7 +36,29 @@ public class TEALParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // 'err' | 'return' | 'pop' | 'dup' | 'dup2' | 'swap' | 'select' | 'assert' | digOperation
+  // 'assert'
+  public static boolean ASSERT_OPCODE(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "ASSERT_OPCODE")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, ASSERT_OPCODE, "<assert opcode>");
+    r = consumeToken(b, "assert");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // 'dig'
+  public static boolean DIG_OPCODE(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "DIG_OPCODE")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, DIG_OPCODE, "<dig opcode>");
+    r = consumeToken(b, "dig");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // 'err' | 'return' | 'pop' | 'dup' | 'dup2' | SWAP_OPCODE | SELECT_OPCODE | ASSERT_OPCODE | digOperation
   //                                 | branchOperation
   public static boolean FlowControlOperation(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "FlowControlOperation")) return false;
@@ -47,12 +69,36 @@ public class TEALParser implements PsiParser, LightPsiParser {
     if (!r) r = consumeToken(b, "pop");
     if (!r) r = consumeToken(b, "dup");
     if (!r) r = consumeToken(b, "dup2");
-    if (!r) r = consumeToken(b, "swap");
-    if (!r) r = consumeToken(b, "select");
-    if (!r) r = consumeToken(b, "assert");
+    if (!r) r = SWAP_OPCODE(b, l + 1);
+    if (!r) r = SELECT_OPCODE(b, l + 1);
+    if (!r) r = ASSERT_OPCODE(b, l + 1);
     if (!r) r = digOperation(b, l + 1);
     if (!r) r = branchOperation(b, l + 1);
     exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // GETBIT
+  public static boolean GETBIT_OPCODE(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "GETBIT_OPCODE")) return false;
+    if (!nextTokenIs(b, GETBIT)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, GETBIT);
+    exit_section_(b, m, GETBIT_OPCODE, r);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // GETBYTE
+  public static boolean GETBYTE_OPCODE(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "GETBYTE_OPCODE")) return false;
+    if (!nextTokenIs(b, GETBYTE)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, GETBYTE);
+    exit_section_(b, m, GETBYTE_OPCODE, r);
     return r;
   }
 
@@ -128,10 +174,10 @@ public class TEALParser implements PsiParser, LightPsiParser {
   //                                      | BITWISE_INVERT
   //                                      | MULW
   //                                      | ADDW
-  //                                      | GETBIT
-  //                                      | SETBIT
-  //                                      | GETBYTE
-  //                                      | SETBYTE
+  //                                      | GETBIT_OPCODE
+  //                                      | SETBIT_OPCODE
+  //                                      | GETBYTE_OPCODE
+  //                                      | SETBYTE_OPCODE
   //                                      | CONCAT
   //                                      | substringOperation
   //                                      | SUBSTRING3
@@ -166,10 +212,10 @@ public class TEALParser implements PsiParser, LightPsiParser {
     if (!r) r = consumeToken(b, BITWISE_INVERT);
     if (!r) r = consumeToken(b, MULW);
     if (!r) r = consumeToken(b, ADDW);
-    if (!r) r = consumeToken(b, GETBIT);
-    if (!r) r = consumeToken(b, SETBIT);
-    if (!r) r = consumeToken(b, GETBYTE);
-    if (!r) r = consumeToken(b, SETBYTE);
+    if (!r) r = GETBIT_OPCODE(b, l + 1);
+    if (!r) r = SETBIT_OPCODE(b, l + 1);
+    if (!r) r = GETBYTE_OPCODE(b, l + 1);
+    if (!r) r = SETBYTE_OPCODE(b, l + 1);
     if (!r) r = consumeToken(b, CONCAT);
     if (!r) r = substringOperation(b, l + 1);
     if (!r) r = consumeToken(b, SUBSTRING3);
@@ -243,12 +289,91 @@ public class TEALParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // 'min_balance'
+  public static boolean MIN_BALANCE_OPCODE(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "MIN_BALANCE_OPCODE")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, MIN_BALANCE_OPCODE, "<min balance opcode>");
+    r = consumeToken(b, "min_balance");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // 'pushbytes'
+  public static boolean PUSH_BYTE_OPCODE(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "PUSH_BYTE_OPCODE")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, PUSH_BYTE_OPCODE, "<push byte opcode>");
+    r = consumeToken(b, "pushbytes");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // 'pushint'
+  public static boolean PUSH_INT_OPCODE(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "PUSH_INT_OPCODE")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, PUSH_INT_OPCODE, "<push int opcode>");
+    r = consumeToken(b, "pushint");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // 'select'
+  public static boolean SELECT_OPCODE(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "SELECT_OPCODE")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, SELECT_OPCODE, "<select opcode>");
+    r = consumeToken(b, "select");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // SETBIT
+  public static boolean SETBIT_OPCODE(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "SETBIT_OPCODE")) return false;
+    if (!nextTokenIs(b, SETBIT)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, SETBIT);
+    exit_section_(b, m, SETBIT_OPCODE, r);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // SETBYTE
+  public static boolean SETBYTE_OPCODE(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "SETBYTE_OPCODE")) return false;
+    if (!nextTokenIs(b, SETBYTE)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, SETBYTE);
+    exit_section_(b, m, SETBYTE_OPCODE, r);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // 'swap'
+  public static boolean SWAP_OPCODE(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "SWAP_OPCODE")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, SWAP_OPCODE, "<swap opcode>");
+    r = consumeToken(b, "swap");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
   // 'balance' | 'app_opted_in' | 'app_local_get'| 'app_local_get_ex' | 'app_global_get'
   //                             | 'app_global_get_ex'| 'app_local_put'| 'app_global_put'| 'app_local_del'
   //                             | 'app_global_del'
   //                             | assetHoldingGetOperation
   //                             | assetParamsGetOperation
-  //                             | 'min_balance'
+  //                             | MIN_BALANCE_OPCODE
   public static boolean StateAccessOperation(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "StateAccessOperation")) return false;
     boolean r;
@@ -265,7 +390,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
     if (!r) r = consumeToken(b, "app_global_del");
     if (!r) r = assetHoldingGetOperation(b, l + 1);
     if (!r) r = assetParamsGetOperation(b, l + 1);
-    if (!r) r = consumeToken(b, "min_balance");
+    if (!r) r = MIN_BALANCE_OPCODE(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
@@ -732,12 +857,12 @@ public class TEALParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // 'dig' (unsignedInteger | VAR_TMPL)
+  // DIG_OPCODE (unsignedInteger | VAR_TMPL)
   public static boolean digOperation(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "digOperation")) return false;
     boolean r, p;
     Marker m = enter_section_(b, l, _NONE_, DIG_OPERATION, "<dig operation>");
-    r = consumeToken(b, "dig");
+    r = DIG_OPCODE(b, l + 1);
     p = r; // pin = 1
     r = r && digOperation_1(b, l + 1);
     exit_section_(b, l, m, r, p, null);
@@ -1142,12 +1267,12 @@ public class TEALParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // 'pushbytes' (l_string | HEX | byte_base64encoding_type_values_function_type | byte_base32encoding_type_values_function_type | VAR_TMPL | ID)
+  // PUSH_BYTE_OPCODE (l_string | HEX | byte_base64encoding_type_values_function_type | byte_base32encoding_type_values_function_type | VAR_TMPL | ID)
   public static boolean pushBytesOperation(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "pushBytesOperation")) return false;
     boolean r, p;
     Marker m = enter_section_(b, l, _NONE_, PUSH_BYTES_OPERATION, "<push bytes operation>");
-    r = consumeToken(b, "pushbytes");
+    r = PUSH_BYTE_OPCODE(b, l + 1);
     p = r; // pin = 1
     r = r && pushBytesOperation_1(b, l + 1);
     exit_section_(b, l, m, r, p, null);
@@ -1168,12 +1293,12 @@ public class TEALParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // 'pushint' (l_integer | VAR_TMPL)
+  // PUSH_INT_OPCODE (l_integer | VAR_TMPL)
   public static boolean pushIntOperation(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "pushIntOperation")) return false;
     boolean r, p;
     Marker m = enter_section_(b, l, _NONE_, PUSH_INT_OPERATION, "<push int operation>");
-    r = consumeToken(b, "pushint");
+    r = PUSH_INT_OPCODE(b, l + 1);
     p = r; // pin = 1
     r = r && pushIntOperation_1(b, l + 1);
     exit_section_(b, l, m, r, p, null);

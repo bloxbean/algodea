@@ -8,6 +8,18 @@ import com.intellij.psi.PsiElement;
 public interface TEALGeneralOperation extends PsiElement {
 
   @Nullable
+  TEALGetbitOpcode getGetbitOpcode();
+
+  @Nullable
+  TEALGetbyteOpcode getGetbyteOpcode();
+
+  @Nullable
+  TEALSetbitOpcode getSetbitOpcode();
+
+  @Nullable
+  TEALSetbyteOpcode getSetbyteOpcode();
+
+  @Nullable
   TEALSubstringOperation getSubstringOperation();
 
 }
