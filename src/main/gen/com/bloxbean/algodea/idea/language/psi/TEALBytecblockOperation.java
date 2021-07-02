@@ -7,7 +7,4 @@ import com.intellij.psi.PsiElement;
 
 public interface TEALBytecblockOperation extends PsiElement {
 
-  @Nullable
-  PsiElement getVarTmpl();
-
 }

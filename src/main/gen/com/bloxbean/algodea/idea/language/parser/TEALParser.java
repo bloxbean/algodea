@@ -813,7 +813,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // 'bytecblock' (VAR_TMPL | (ID | l_integer)*)
+  // 'bytecblock' (VAR_TMPL | (l_string | HEX | byte_base64encoding_type_values_function_type | byte_base32encoding_type_values_function_type | VAR_TMPL | ID)*)
   public static boolean bytecblockOperation(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "bytecblockOperation")) return false;
     boolean r, p;
@@ -825,7 +825,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
     return r || p;
   }
 
-  // VAR_TMPL | (ID | l_integer)*
+  // VAR_TMPL | (l_string | HEX | byte_base64encoding_type_values_function_type | byte_base32encoding_type_values_function_type | VAR_TMPL | ID)*
   private static boolean bytecblockOperation_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "bytecblockOperation_1")) return false;
     boolean r;
@@ -836,7 +836,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // (ID | l_integer)*
+  // (l_string | HEX | byte_base64encoding_type_values_function_type | byte_base32encoding_type_values_function_type | VAR_TMPL | ID)*
   private static boolean bytecblockOperation_1_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "bytecblockOperation_1_1")) return false;
     while (true) {
@@ -847,12 +847,16 @@ public class TEALParser implements PsiParser, LightPsiParser {
     return true;
   }
 
-  // ID | l_integer
+  // l_string | HEX | byte_base64encoding_type_values_function_type | byte_base32encoding_type_values_function_type | VAR_TMPL | ID
   private static boolean bytecblockOperation_1_1_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "bytecblockOperation_1_1_0")) return false;
     boolean r;
-    r = consumeToken(b, ID);
-    if (!r) r = consumeToken(b, L_INTEGER);
+    r = consumeToken(b, L_STRING);
+    if (!r) r = consumeToken(b, HEX);
+    if (!r) r = byte_base64encoding_type_values_function_type(b, l + 1);
+    if (!r) r = byte_base32encoding_type_values_function_type(b, l + 1);
+    if (!r) r = consumeToken(b, VAR_TMPL);
+    if (!r) r = consumeToken(b, ID);
     return r;
   }
 

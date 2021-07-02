@@ -221,7 +221,7 @@ LoadingOperation ::=  intcblockOperation
 
 //TODO implement strict validation for both intcblockOperation and bytecblockOperation
 intcblockOperation ::= 'intcblock' (VAR_TMPL | (ID | l_integer)*) {pin=1}
-bytecblockOperation ::= 'bytecblock' (VAR_TMPL | (ID | l_integer)*) {pin=1}
+bytecblockOperation ::= 'bytecblock' (VAR_TMPL | (l_string | HEX | byte_base64encoding_type_values_function_type | byte_base32encoding_type_values_function_type | VAR_TMPL | ID)*) {pin=1}
 
 intcOperation ::= 'intc' (unsignedInteger | VAR_TMPL) {pin=1}
 bytecOperation ::= 'bytec' (unsignedInteger | VAR_TMPL) {pin=1}

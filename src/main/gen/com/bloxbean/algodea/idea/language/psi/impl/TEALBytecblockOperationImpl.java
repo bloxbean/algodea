@@ -27,10 +27,4 @@ public class TEALBytecblockOperationImpl extends ASTWrapperPsiElement implements
     else super.accept(visitor);
   }
 
-  @Override
-  @Nullable
-  public PsiElement getVarTmpl() {
-    return findChildByType(VAR_TMPL);
-  }
-
 }
