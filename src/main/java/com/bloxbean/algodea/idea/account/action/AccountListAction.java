@@ -32,7 +32,7 @@ import org.jetbrains.annotations.NotNull;
 public class AccountListAction extends AnAction {
 
     public AccountListAction() {
-        super(AllIcons.Actions.ListFiles);
+        super("List Accounts", "List Accounts", AllIcons.Actions.ListFiles);
     }
 
     @Override

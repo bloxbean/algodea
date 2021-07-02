@@ -32,7 +32,7 @@ import org.jetbrains.annotations.NotNull;
 public class MultisigAccountListAction extends AnAction {
 
     public MultisigAccountListAction() {
-        super(AllIcons.Actions.GroupByPrefix);
+        super("List Multi-sig Accounts", "List Multi-sig Accounts", AllIcons.Actions.GroupByPrefix);
     }
 
     @Override

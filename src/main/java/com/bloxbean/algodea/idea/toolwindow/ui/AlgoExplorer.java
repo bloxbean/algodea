@@ -1,5 +1,7 @@
 package com.bloxbean.algodea.idea.toolwindow.ui;
 
+import com.bloxbean.algodea.idea.account.action.AccountListAction;
+import com.bloxbean.algodea.idea.account.action.MultisigAccountListAction;
 import com.bloxbean.algodea.idea.configuration.action.*;
 import com.bloxbean.algodea.idea.configuration.model.AlgoLocalSDK;
 import com.bloxbean.algodea.idea.configuration.model.NodeInfo;
@@ -183,6 +185,9 @@ public class AlgoExplorer extends SimpleToolWindowPanel implements DataProvider,
         final DefaultActionGroup group = new DefaultActionGroup();
         group.add(new CreateNewServerAction());
         group.add(new CreateNewLocalSDKAction());
+        group.add(new Separator());
+        group.add(new AccountListAction());
+        group.add(new MultisigAccountListAction());
 //        group.add(new RemoveAction());
 //        group.add(new RunAction());
 //        group.add(new ShowAllTargetsAction());
