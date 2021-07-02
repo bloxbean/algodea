@@ -446,7 +446,8 @@
           "cost": 1,
           "filter": ""
         }
-      ]
+      ],
+      "anchor": "intcblock-uint"
     },
     {
       "op": "intc",
@@ -537,7 +538,8 @@
           "cost": 1,
           "filter": ""
         }
-      ]
+      ],
+      "anchor": "bytecblock-bytes"
     },
     {
       "op": "bytec",
@@ -553,7 +555,8 @@
           "cost": 1,
           "filter": ""
         }
-      ]
+      ],
+      "anchor": "bytec-i"
     },
     {
       "op": "bytec_0",
@@ -630,7 +633,8 @@
           "cost": 1,
           "filter": ""
         }
-      ]
+      ],
+      "anchor": "arg-n"
     },
     {
       "op": "arg_0",
@@ -710,7 +714,8 @@
           "cost": 1,
           "filter": ""
         }
-      ]
+      ],
+      "anchor": "txn-f"
     },
     {
       "op": "global",
@@ -726,7 +731,8 @@
           "cost": 1,
           "filter": ""
         }
-      ]
+      ],
+      "anchor": "global-f"
     },
     {
       "op": "gtxn",
@@ -742,7 +748,8 @@
           "cost": 1,
           "filter": ""
         }
-      ]
+      ],
+      "anchor": "gtxn-t-f"
     },
     {
       "op": "load",
@@ -758,7 +765,8 @@
           "cost": 1,
           "filter": ""
         }
-      ]
+      ],
+      "anchor": "load-i"
     },
     {
       "op": "store",
@@ -774,7 +782,8 @@
           "cost": 1,
           "filter": ""
         }
-      ]
+      ],
+      "anchor": "store-i"
     },
     {
       "op": "txna",
@@ -793,7 +802,8 @@
           "cost": 1,
           "filter": ""
         }
-      ]
+      ],
+      "anchor": "txna-f-i"
     },
     {
       "op": "gtxna",
@@ -812,7 +822,8 @@
           "cost": 1,
           "filter": ""
         }
-      ]
+      ],
+      "anchor": "gtxna-t-f-i"
     },
    {
      "op": "gtxns",
@@ -868,7 +879,8 @@
           "cost": 1,
           "filter": ""
         }
-      ]
+      ],
+      "anchor": "bnz-target"
     },
     {
       "op": "bz",
@@ -887,7 +899,8 @@
           "cost": 1,
           "filter": ""
         }
-      ]
+      ],
+      "anchor": "bz-target"
     },
     {
       "op": "b",
@@ -906,7 +919,8 @@
           "cost": 1,
           "filter": ""
         }
-      ]
+      ],
+      "anchor": "b-target"
     },
     {
       "op": "return",
@@ -1085,7 +1099,8 @@
           "cost": 1,
           "filter": ""
         }
-      ]
+      ],
+      "anchor": "substring-s-e"
     },
     {
       "op": "substring3",
@@ -1385,7 +1400,8 @@
           "cost": 1,
           "filter": ""
         }
-      ]
+      ],
+      "anchor": "asset_holding_get-i"
     },
     {
       "op": "asset_params_get",
@@ -1405,7 +1421,8 @@
           "cost": 1,
           "filter": ""
         }
-      ]
+      ],
+      "anchor": "asset_params_get-i"
     },
    {
      "op": "min_balance",
