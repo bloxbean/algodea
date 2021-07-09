@@ -1,4 +1,4 @@
-### 0.5.0-beta
+### 0.5.0
   - TEAL v3 support (New Opcodes, Global Fields, Txn Fields)
   - Auto-complete, Syntax Highlights for TEAL v3
   - Algorand java sdk version updated to support v3 deployment
