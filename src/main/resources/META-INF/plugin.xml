@@ -37,6 +37,8 @@
 
         <annotator language="TEAL" implementationClass="com.bloxbean.algodea.idea.language.annotator.TEALV3OpCodeAnnotator"/>
         <annotator language="TEAL" implementationClass="com.bloxbean.algodea.idea.language.annotator.TEALV3FieldsAnnotator"/>
+
+        <annotator language="TEAL" implementationClass="com.bloxbean.algodea.idea.language.annotator.TEALV4OpCodeAnnotator"/>
         <!-- module extensions -->
         <moduleType id="Algorand_Module" implementationClass="com.bloxbean.algodea.idea.module.AlgorandModuleType"/>
 <!--        <facetType implementation="com.bloxbean.algorand.idea.module.facet.AlgoFacetType"/>-->
