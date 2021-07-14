@@ -952,6 +952,28 @@
      "anchor": "gaid-t",
      "since": 4
    },
+   {
+     "op": "gaids",
+     "opcode": "0x3d",
+     "pops": ["...stacke", "uint64"],
+     "pushes": ["uint64"],
+     "desc": "push the ID of the asset or application created in the Xth transaction of the current group",
+     "error": "",
+     "additionalDesc": "gaids fails unless the requested transaction created an asset or application and X < GroupIndex",
+     "params": [],
+     "metadata": {
+       "LogicSigVersion": ">=4"
+     },
+     "mode": "Application",
+     "costs": [
+       {
+         "cost": 1,
+         "filter": ""
+       }
+     ],
+     "anchor": "gaids",
+     "since": 4
+   },
     {
       "op": "bnz",
       "opcode": "0x40 {0..0x7fff forward branch offset, big endian}",
