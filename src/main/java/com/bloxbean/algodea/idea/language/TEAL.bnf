@@ -34,7 +34,7 @@
         l_integer="regexp:0|[1-9][0-9]*"
         l_string="regexp:('([^'\\]|\\.)*'|\"([^\"\\]|\\.)*\")"
 
-    LOADING_OP = "regexp:(intcblock|intc|intc_0|intc_1|intc_2|intc_3|bytecblock|bytec|bytec_0|bytec_1|bytec_2|bytec_3|arg|arg_0|arg_1|arg_2|arg_3|global|load|store|pushint|pushbytes)"
+    LOADING_OP = "regexp:(intcblock|intc|intc_0|intc_1|intc_2|intc_3|bytecblock|bytec|bytec_0|bytec_1|bytec_2|bytec_3|arg|arg_0|arg_1|arg_2|arg_3|global|load|store|pushint|pushbytes|gload|gloads|gaid|gaids)"
     FLOWCONTROL_OP = "regexp:(err|return|pop|dup|dup2|bnz|bz|b|dig|swap|select|assert)"
     STATEACCESS_OP = "regexp:(balance|app_opted_in|app_local_get|app_local_get_ex|app_global_get|app_global_get_ex|app_local_put|app_global_put|app_local_del|app_global_del|asset_holding_get|asset_params_get|min_balance)"
 
@@ -72,6 +72,7 @@
 
     MULW                = 'mulw'
     ADDW                = 'addw'
+    DIVMODW             = 'divmodw'
     GETBIT              = 'getbit'
     SETBIT              = 'setbit'
     GETBYTE             = 'getbyte'
@@ -141,7 +142,17 @@ SWAP_OPCODE ::= 'swap'
 SELECT_OPCODE ::= 'select'
 ASSERT_OPCODE ::= 'assert'
 MIN_BALANCE_OPCODE ::= 'min_balance'
-//v3 opcodes ends
+//v3 opcodes end
+
+//v4 opcodes start
+DIVMODW_OPCODE ::= 'divmodw'
+CALLSUB_OPCODE ::= 'callsub'
+RETSUB_OPCODE ::= 'retsub'
+GLOAD_OPCODE ::= 'gload'
+GLOADS_OPCODE ::= 'gloads'
+GAID_OPCODE ::= 'gaid'
+GAIDS_OPCODE ::= 'gaids'
+//v4 opcodes end
 
 pragma ::= PRAGMA_KEYWORD VERSION pragma_version {pin=1 recoverWhile=statement_recover}
 pragma_version ::= unsignedInteger
@@ -217,7 +228,11 @@ LoadingOperation ::=  intcblockOperation
                                   | pushIntOperation
                                   | pushBytesOperation
                                   | gtxnsLoadingOperation
-                                  | gtxnsaLoadingOperation {pin=1}
+                                  | gtxnsaLoadingOperation
+                                  | gloadOperation
+                                  | gloadsOperation
+                                  | gaidOperation
+                                  | gaidsOperation {pin=1}
 
 //TODO implement strict validation for both intcblockOperation and bytecblockOperation
 intcblockOperation ::= 'intcblock' (VAR_TMPL | (ID | l_integer)*) {pin=1}
@@ -246,6 +261,13 @@ gtxnaLoadingOperation ::= GTXNA_OPCODE (unsignedInteger | VAR_TMPL) (unsignedInt
 
 gtxnsLoadingOperation ::= GTXNS_OPCODE (unsignedInteger | TxnFieldArg | VAR_TMPL) {pin=1}
 gtxnsaLoadingOperation ::= GTXNSA_OPCODE (unsignedInteger | TxnFieldArg | VAR_TMPL) (unsignedInteger | VAR_TMPL) {pin=1}
+
+gloadOperation ::= GLOAD_OPCODE (unsignedInteger | VAR_TMPL) (unsignedInteger | VAR_TMPL) {pin=1}
+gloadsOperation ::= GLOADS_OPCODE (unsignedInteger | VAR_TMPL) {pin=1}
+
+gaidOperation ::= GAID_OPCODE (unsignedInteger | VAR_TMPL) {pin=1}
+gaidsOperation ::= GAIDS_OPCODE
+
 
 argOperation ::= 'arg' (unsignedInteger | VAR_TMPL) {pin=1}
 
@@ -287,6 +309,7 @@ GeneralOperation                   ::= SHA256
                                      | BITWISE_INVERT
                                      | MULW
                                      | ADDW
+                                     | DIVMODW_OPCODE
                                      | GETBIT_OPCODE
                                      | SETBIT_OPCODE
                                      | GETBYTE_OPCODE
@@ -298,10 +321,13 @@ GeneralOperation                   ::= SHA256
 substringOperation ::= SUBSTRING (unsignedInteger | VAR_TMPL) (unsignedInteger | VAR_TMPL) {pin=1}
 
 FlowControlOperation ::= 'err' | 'return' | 'pop' | 'dup' | 'dup2' | SWAP_OPCODE | SELECT_OPCODE | ASSERT_OPCODE | digOperation
-                                | branchOperation {pin=1}
+                                | branchOperation
+                                | callSubroutineOperation
+                                | RETSUB_OPCODE {pin=1}
 
 branchOperation ::= ('bnz' | 'bz' | 'b') (VAR_TMPL | ID) {pin=1}
 digOperation ::= DIG_OPCODE (unsignedInteger | VAR_TMPL) {pin=1}
+callSubroutineOperation ::= CALLSUB_OPCODE (VAR_TMPL | ID) {pin=1}
 
 StateAccessOperation ::=  'balance' | 'app_opted_in' | 'app_local_get'| 'app_local_get_ex' | 'app_global_get'
                             | 'app_global_get_ex'| 'app_local_put'| 'app_global_put'| 'app_local_del'

@@ -31,8 +31,8 @@ SPACE=[ \t\n\x0B\f\r]+
 COMMENT="//".*
 L_INTEGER=0|[1-9][0-9]*
 L_STRING=('([^'\\]|\\.)*'|\"([^\"\\]|\\.)*\")
-LOADING_OP=(intcblock|intc|intc_0|intc_1|intc_2|intc_3|bytecblock|bytec|bytec_0|bytec_1|bytec_2|bytec_3|arg|arg_0|arg_1|arg_2|arg_3|global|load|store|pushint|pushbytes)
-FLOWCONTROL_OP=(err|return|pop|dup|dup2|bnz|bz|b|dig|swap|select|assert)
+LOADING_OP=(intcblock|intc|intc_0|intc_1|intc_2|intc_3|bytecblock|bytec|bytec_0|bytec_1|bytec_2|bytec_3|arg|arg_0|arg_1|arg_2|arg_3|global|load|store|pushint|pushbytes|gload|gloads|gaid|gaids)
+FLOWCONTROL_OP=(err|return|pop|dup|dup2|bnz|bz|b|dig|swap|select|assert|callsub|retsub)
 STATEACCESS_OP=(balance|app_opted_in|app_local_get|app_local_get_ex|app_global_get|app_global_get_ex|app_local_put|app_global_put|app_local_del|app_global_del|asset_holding_get|asset_params_get|min_balance)
 TXN_LOADING_OP=(txn|gtxn|txna|gtxna|gtxns|gtxnsa)
 NAMED_INTEGER_CONSTANT=(NoOp|OptIn|CloseOut|ClearState|UpdateApplication|DeleteApplication)
@@ -78,6 +78,7 @@ ID=([a-zA-Z0-9_$.#@~?=+-]+[a-zA-Z0-9_$.#@~?=+-]*)
   "~"                            { return BITWISE_INVERT; }
   "mulw"                         { return MULW; }
   "addw"                         { return ADDW; }
+  "divmodw"                      { return DIVMODW;}
   "getbit"                       { return GETBIT; }
   "setbit"                       { return SETBIT; }
   "getbyte"                      { return GETBYTE; }

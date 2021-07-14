@@ -21,12 +21,23 @@ public interface TEALTypes {
   IElementType BYTECBLOCK_OPERATION = new TEALElementType("BYTECBLOCK_OPERATION");
   IElementType BYTEC_OPERATION = new TEALElementType("BYTEC_OPERATION");
   IElementType BYTE_STATEMENT = new TEALElementType("BYTE_STATEMENT");
+  IElementType CALLSUB_OPCODE = new TEALElementType("CALLSUB_OPCODE");
+  IElementType CALL_SUBROUTINE_OPERATION = new TEALElementType("CALL_SUBROUTINE_OPERATION");
   IElementType DIG_OPCODE = new TEALElementType("DIG_OPCODE");
   IElementType DIG_OPERATION = new TEALElementType("DIG_OPERATION");
+  IElementType DIVMODW_OPCODE = new TEALElementType("DIVMODW_OPCODE");
   IElementType FLOW_CONTROL_OPERATION = new TEALElementType("FLOW_CONTROL_OPERATION");
+  IElementType GAIDS_OPCODE = new TEALElementType("GAIDS_OPCODE");
+  IElementType GAIDS_OPERATION = new TEALElementType("GAIDS_OPERATION");
+  IElementType GAID_OPCODE = new TEALElementType("GAID_OPCODE");
+  IElementType GAID_OPERATION = new TEALElementType("GAID_OPERATION");
   IElementType GENERAL_OPERATION = new TEALElementType("GENERAL_OPERATION");
   IElementType GETBIT_OPCODE = new TEALElementType("GETBIT_OPCODE");
   IElementType GETBYTE_OPCODE = new TEALElementType("GETBYTE_OPCODE");
+  IElementType GLOADS_OPCODE = new TEALElementType("GLOADS_OPCODE");
+  IElementType GLOADS_OPERATION = new TEALElementType("GLOADS_OPERATION");
+  IElementType GLOAD_OPCODE = new TEALElementType("GLOAD_OPCODE");
+  IElementType GLOAD_OPERATION = new TEALElementType("GLOAD_OPERATION");
   IElementType GLOBAL_OPERATION = new TEALElementType("GLOBAL_OPERATION");
   IElementType GLOBAL_OP_CODE = new TEALElementType("GLOBAL_OP_CODE");
   IElementType GTXNA_LOADING_OPERATION = new TEALElementType("GTXNA_LOADING_OPERATION");
@@ -51,6 +62,7 @@ public interface TEALTypes {
   IElementType PUSH_BYTE_OPCODE = new TEALElementType("PUSH_BYTE_OPCODE");
   IElementType PUSH_INT_OPCODE = new TEALElementType("PUSH_INT_OPCODE");
   IElementType PUSH_INT_OPERATION = new TEALElementType("PUSH_INT_OPERATION");
+  IElementType RETSUB_OPCODE = new TEALElementType("RETSUB_OPCODE");
   IElementType SELECT_OPCODE = new TEALElementType("SELECT_OPCODE");
   IElementType SETBIT_OPCODE = new TEALElementType("SETBIT_OPCODE");
   IElementType SETBYTE_OPCODE = new TEALElementType("SETBYTE_OPCODE");
@@ -80,6 +92,7 @@ public interface TEALTypes {
   IElementType COMMENT = new TEALTokenType("COMMENT");
   IElementType CONCAT = new TEALTokenType("concat");
   IElementType DIVIDE = new TEALTokenType("/");
+  IElementType DIVMODW = new TEALTokenType("divmodw");
   IElementType ED25519VERIFY = new TEALTokenType("ed25519verify");
   IElementType EOF = new TEALTokenType("EOF");
   IElementType FLOWCONTROL_OP = new TEALTokenType("FLOWCONTROL_OP");
@@ -167,14 +180,35 @@ public interface TEALTypes {
       else if (type == BYTE_STATEMENT) {
         return new TEALByteStatementImpl(node);
       }
+      else if (type == CALLSUB_OPCODE) {
+        return new TEALCallsubOpcodeImpl(node);
+      }
+      else if (type == CALL_SUBROUTINE_OPERATION) {
+        return new TEALCallSubroutineOperationImpl(node);
+      }
       else if (type == DIG_OPCODE) {
         return new TEALDigOpcodeImpl(node);
       }
       else if (type == DIG_OPERATION) {
         return new TEALDigOperationImpl(node);
       }
+      else if (type == DIVMODW_OPCODE) {
+        return new TEALDivmodwOpcodeImpl(node);
+      }
       else if (type == FLOW_CONTROL_OPERATION) {
         return new TEALFlowControlOperationImpl(node);
+      }
+      else if (type == GAIDS_OPCODE) {
+        return new TEALGaidsOpcodeImpl(node);
+      }
+      else if (type == GAIDS_OPERATION) {
+        return new TEALGaidsOperationImpl(node);
+      }
+      else if (type == GAID_OPCODE) {
+        return new TEALGaidOpcodeImpl(node);
+      }
+      else if (type == GAID_OPERATION) {
+        return new TEALGaidOperationImpl(node);
       }
       else if (type == GENERAL_OPERATION) {
         return new TEALGeneralOperationImpl(node);
@@ -184,6 +218,18 @@ public interface TEALTypes {
       }
       else if (type == GETBYTE_OPCODE) {
         return new TEALGetbyteOpcodeImpl(node);
+      }
+      else if (type == GLOADS_OPCODE) {
+        return new TEALGloadsOpcodeImpl(node);
+      }
+      else if (type == GLOADS_OPERATION) {
+        return new TEALGloadsOperationImpl(node);
+      }
+      else if (type == GLOAD_OPCODE) {
+        return new TEALGloadOpcodeImpl(node);
+      }
+      else if (type == GLOAD_OPERATION) {
+        return new TEALGloadOperationImpl(node);
       }
       else if (type == GLOBAL_OPERATION) {
         return new TEALGlobalOperationImpl(node);
@@ -256,6 +302,9 @@ public interface TEALTypes {
       }
       else if (type == PUSH_INT_OPERATION) {
         return new TEALPushIntOperationImpl(node);
+      }
+      else if (type == RETSUB_OPCODE) {
+        return new TEALRetsubOpcodeImpl(node);
       }
       else if (type == SELECT_OPCODE) {
         return new TEALSelectOpcodeImpl(node);

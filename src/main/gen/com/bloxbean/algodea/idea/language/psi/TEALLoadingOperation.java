@@ -17,6 +17,18 @@ public interface TEALLoadingOperation extends PsiElement {
   TEALBytecblockOperation getBytecblockOperation();
 
   @Nullable
+  TEALGaidOperation getGaidOperation();
+
+  @Nullable
+  TEALGaidsOperation getGaidsOperation();
+
+  @Nullable
+  TEALGloadOperation getGloadOperation();
+
+  @Nullable
+  TEALGloadsOperation getGloadsOperation();
+
+  @Nullable
   TEALGlobalOperation getGlobalOperation();
 
   @Nullable

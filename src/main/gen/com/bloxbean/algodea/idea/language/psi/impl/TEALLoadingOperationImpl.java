@@ -47,6 +47,30 @@ public class TEALLoadingOperationImpl extends ASTWrapperPsiElement implements TE
 
   @Override
   @Nullable
+  public TEALGaidOperation getGaidOperation() {
+    return findChildByClass(TEALGaidOperation.class);
+  }
+
+  @Override
+  @Nullable
+  public TEALGaidsOperation getGaidsOperation() {
+    return findChildByClass(TEALGaidsOperation.class);
+  }
+
+  @Override
+  @Nullable
+  public TEALGloadOperation getGloadOperation() {
+    return findChildByClass(TEALGloadOperation.class);
+  }
+
+  @Override
+  @Nullable
+  public TEALGloadsOperation getGloadsOperation() {
+    return findChildByClass(TEALGloadsOperation.class);
+  }
+
+  @Override
+  @Nullable
   public TEALGlobalOperation getGlobalOperation() {
     return findChildByClass(TEALGlobalOperation.class);
   }

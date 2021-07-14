@@ -11,11 +11,27 @@ public class TEALVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitCallsubOpcode(@NotNull TEALCallsubOpcode o) {
+    visitPsiElement(o);
+  }
+
   public void visitDigOpcode(@NotNull TEALDigOpcode o) {
     visitPsiElement(o);
   }
 
+  public void visitDivmodwOpcode(@NotNull TEALDivmodwOpcode o) {
+    visitPsiElement(o);
+  }
+
   public void visitFlowControlOperation(@NotNull TEALFlowControlOperation o) {
+    visitPsiElement(o);
+  }
+
+  public void visitGaidsOpcode(@NotNull TEALGaidsOpcode o) {
+    visitPsiElement(o);
+  }
+
+  public void visitGaidOpcode(@NotNull TEALGaidOpcode o) {
     visitPsiElement(o);
   }
 
@@ -24,6 +40,14 @@ public class TEALVisitor extends PsiElementVisitor {
   }
 
   public void visitGetbyteOpcode(@NotNull TEALGetbyteOpcode o) {
+    visitPsiElement(o);
+  }
+
+  public void visitGloadsOpcode(@NotNull TEALGloadsOpcode o) {
+    visitPsiElement(o);
+  }
+
+  public void visitGloadOpcode(@NotNull TEALGloadOpcode o) {
     visitPsiElement(o);
   }
 
@@ -60,6 +84,10 @@ public class TEALVisitor extends PsiElementVisitor {
   }
 
   public void visitPushIntOpcode(@NotNull TEALPushIntOpcode o) {
+    visitPsiElement(o);
+  }
+
+  public void visitRetsubOpcode(@NotNull TEALRetsubOpcode o) {
     visitPsiElement(o);
   }
 
@@ -143,7 +171,27 @@ public class TEALVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitCallSubroutineOperation(@NotNull TEALCallSubroutineOperation o) {
+    visitPsiElement(o);
+  }
+
   public void visitDigOperation(@NotNull TEALDigOperation o) {
+    visitPsiElement(o);
+  }
+
+  public void visitGaidOperation(@NotNull TEALGaidOperation o) {
+    visitPsiElement(o);
+  }
+
+  public void visitGaidsOperation(@NotNull TEALGaidsOperation o) {
+    visitPsiElement(o);
+  }
+
+  public void visitGloadOperation(@NotNull TEALGloadOperation o) {
+    visitPsiElement(o);
+  }
+
+  public void visitGloadsOperation(@NotNull TEALGloadsOperation o) {
     visitPsiElement(o);
   }
 
