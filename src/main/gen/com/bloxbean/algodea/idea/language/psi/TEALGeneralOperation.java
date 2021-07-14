@@ -8,6 +8,9 @@ import com.intellij.psi.PsiElement;
 public interface TEALGeneralOperation extends PsiElement {
 
   @Nullable
+  TEALDivmodwOpcode getDivmodwOpcode();
+
+  @Nullable
   TEALGetbitOpcode getGetbitOpcode();
 
   @Nullable

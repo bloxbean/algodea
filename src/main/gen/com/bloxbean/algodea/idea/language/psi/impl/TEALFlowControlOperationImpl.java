@@ -35,6 +35,12 @@ public class TEALFlowControlOperationImpl extends ASTWrapperPsiElement implement
 
   @Override
   @Nullable
+  public TEALRetsubOpcode getRetsubOpcode() {
+    return findChildByClass(TEALRetsubOpcode.class);
+  }
+
+  @Override
+  @Nullable
   public TEALSelectOpcode getSelectOpcode() {
     return findChildByClass(TEALSelectOpcode.class);
   }
@@ -49,6 +55,12 @@ public class TEALFlowControlOperationImpl extends ASTWrapperPsiElement implement
   @Nullable
   public TEALBranchOperation getBranchOperation() {
     return findChildByClass(TEALBranchOperation.class);
+  }
+
+  @Override
+  @Nullable
+  public TEALCallSubroutineOperation getCallSubroutineOperation() {
+    return findChildByClass(TEALCallSubroutineOperation.class);
   }
 
   @Override

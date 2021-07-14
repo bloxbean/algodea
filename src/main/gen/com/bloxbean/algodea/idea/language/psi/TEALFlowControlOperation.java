@@ -11,6 +11,9 @@ public interface TEALFlowControlOperation extends PsiElement {
   TEALAssertOpcode getAssertOpcode();
 
   @Nullable
+  TEALRetsubOpcode getRetsubOpcode();
+
+  @Nullable
   TEALSelectOpcode getSelectOpcode();
 
   @Nullable
@@ -18,6 +21,9 @@ public interface TEALFlowControlOperation extends PsiElement {
 
   @Nullable
   TEALBranchOperation getBranchOperation();
+
+  @Nullable
+  TEALCallSubroutineOperation getCallSubroutineOperation();
 
   @Nullable
   TEALDigOperation getDigOperation();
