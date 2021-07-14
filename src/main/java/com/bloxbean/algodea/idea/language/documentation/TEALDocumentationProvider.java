@@ -66,7 +66,6 @@ public class TEALDocumentationProvider extends AbstractDocumentationProvider  {
 
     static {
         SEARCH_TYPES.addAll(GENERAL_OPERATIONS_ELEMENTS);
-        SEARCH_TYPES.addAll(SEARCH_TYPES.size()-1, GENERAL_OPERATIONS_ELEMENTS_V3);
     }
 
     @Nullable
@@ -106,9 +105,7 @@ public class TEALDocumentationProvider extends AbstractDocumentationProvider  {
                 || TEALTypes.TXN_LOADING_OP.equals(element.getNode().getElementType())
                 || TEALTypes.FLOWCONTROL_OP.equals(element.getNode().getElementType())
                 || TEALTypes.STATEACCESS_OP.equals(element.getNode().getElementType())
-                || TEALKeywords.GENERAL_OPERATIONS_ELEMENTS.contains(element.getNode().getElementType())
-                || TEALKeywords.GENERAL_OPERATIONS_ELEMENTS_V3.contains(element.getNode().getElementType()))
-
+                || TEALKeywords.GENERAL_OPERATIONS_ELEMENTS.contains(element.getNode().getElementType()))
         {
             String value = element.getNode().getText();
             return getDocumentHtmlForKey(value);

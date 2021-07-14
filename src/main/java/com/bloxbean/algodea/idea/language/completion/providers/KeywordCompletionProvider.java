@@ -100,6 +100,9 @@ public final class KeywordCompletionProvider extends BaseCompletionProvider {
             if (version >= 3) {
                 result.addAllElements(TEALKeywords.KEYWORD_LOOKUP_ELEMENTS_V3);
             }
+            if (version >= 4) {
+                result.addAllElements(TEALKeywords.KEYWORD_LOOKUP_ELEMENTS_V4);
+            }
         }
 
         result.stopHere();

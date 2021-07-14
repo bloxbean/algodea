@@ -57,6 +57,7 @@ public final class TEALKeywords {
 //            , "app_global_del", "asset_holding_get", "asset_params_get"
 //    );
 
+    //This collection is only used from Documentation provider
     public static final Collection<IElementType> GENERAL_OPERATIONS_ELEMENTS = Sets.newHashSet(
             SHA256,
             KECCAK256,
@@ -91,32 +92,17 @@ public final class TEALKeywords {
             ADDW ,
             CONCAT ,
             SUBSTRING  ,
-            SUBSTRING3
-    );
-
-    public static final Collection<IElementType> GENERAL_OPERATIONS_ELEMENTS_V3 = Sets.newHashSet(
+            SUBSTRING3,
+            //v3
             SETBIT,
             GETBIT,
             SETBYTE,
-            GETBYTE
+            GETBYTE,
+            //v4
+            DIVMODW
     );
 
-//    public static final Collection<String> TXN_ARGS = Sets.newHashSet(
-//            "Sender", "Fee", "FirstValid", "FirstValidTime", "LastValid", "Note", "Lease", "Receiver", "Amount"
-//            , "CloseRemainderTo", "VotePK", "SelectionPK", "VoteFirst", "VoteLast", "VoteKeyDilution", "Type"
-//            , "TypeEnum", "XferAsset", "AssetAmount", "AssetSender", "AssetReceiver", "AssetCloseTo", "GroupIndex"
-//            , "TxID", "ApplicationID", "OnCompletion", "ApplicationArgs", "NumAppArgs", "Accounts", "NumAccounts"
-//            , "ApprovalProgram", "ClearStateProgram", "RekeyTo", "ConfigAsset", "ConfigAssetTotal", "ConfigAssetDecimals"
-//            , "ConfigAssetDefaultFrozen", "ConfigAssetUnitName", "ConfigAssetName", "ConfigAssetURL", "ConfigAssetMetadataHash"
-//            , "ConfigAssetManager", "ConfigAssetReserve", "ConfigAssetFreeze", "ConfigAssetClawback", "FreezeAsset"
-//            , "FreezeAssetAccount", "FreezeAssetFrozen"
-//    );
-
-
-//    public static final List<LookupElement> KEYWORD_LOOKUP_ELEMENTS = LOADING_OPERATIONS.stream()
-//            .map(TEALKeywordElement::new)
-//            .map(TEALKeywordElement::getLookupElement)
-//            .collect(Collectors.toList());
+    //Lists needed for auto-completion
     public static final List<LookupElement> KEYWORD_LOOKUP_ELEMENTS = TEALOpCodeFactory.getInstance()
             //.getOps().stream()
             .getOpCodes().stream()
@@ -131,6 +117,16 @@ public final class TEALKeywords {
             //.getOps().stream()
             .getOpCodes().stream()
             .filter(opc -> opc.getSince() == 3)
+            .map(opc -> opc.getOp())
+            .sorted()
+            .map(TEALKeywordElement::new)
+            .map(TEALKeywordElement::getLookupElement)
+            .collect(Collectors.toList());
+
+    public static final List<LookupElement> KEYWORD_LOOKUP_ELEMENTS_V4 = TEALOpCodeFactory.getInstance()
+            //.getOps().stream()
+            .getOpCodes().stream()
+            .filter(opc -> opc.getSince() == 4)
             .map(opc -> opc.getOp())
             .sorted()
             .map(TEALKeywordElement::new)
