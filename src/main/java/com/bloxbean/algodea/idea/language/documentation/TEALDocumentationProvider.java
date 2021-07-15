@@ -23,9 +23,9 @@
 package com.bloxbean.algodea.idea.language.documentation;
 
 import com.bloxbean.algodea.idea.language.completion.metadata.atoms.TEALKeywords;
+import com.bloxbean.algodea.idea.language.opcode.TEALOpCodeFactory;
 import com.bloxbean.algodea.idea.language.opcode.model.Field;
 import com.bloxbean.algodea.idea.language.opcode.model.OpCode;
-import com.bloxbean.algodea.idea.language.opcode.TEALOpCodeFactory;
 import com.bloxbean.algodea.idea.language.psi.TEALTypes;
 import com.bloxbean.algodea.idea.util.PsiUtil;
 import com.google.common.collect.Lists;
@@ -40,7 +40,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Optional;
 
-import static com.bloxbean.algodea.idea.language.completion.metadata.atoms.TEALKeywords.*;
+import static com.bloxbean.algodea.idea.language.completion.metadata.atoms.TEALKeywords.GENERAL_OPERATIONS_ELEMENTS;
 
 public class TEALDocumentationProvider extends AbstractDocumentationProvider  {
 

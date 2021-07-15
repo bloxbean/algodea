@@ -29,6 +29,12 @@ public class TEALLoadingOperationImpl extends ASTWrapperPsiElement implements TE
 
   @Override
   @Nullable
+  public TEALBZeroOpcode getBZeroOpcode() {
+    return findChildByClass(TEALBZeroOpcode.class);
+  }
+
+  @Override
+  @Nullable
   public TEALArgOperation getArgOperation() {
     return findChildByClass(TEALArgOperation.class);
   }

@@ -31,7 +31,7 @@ SPACE=[ \t\n\x0B\f\r]+
 COMMENT="//".*
 L_INTEGER=0|[1-9][0-9]*
 L_STRING=('([^'\\]|\\.)*'|\"([^\"\\]|\\.)*\")
-LOADING_OP=(intcblock|intc|intc_0|intc_1|intc_2|intc_3|bytecblock|bytec|bytec_0|bytec_1|bytec_2|bytec_3|arg|arg_0|arg_1|arg_2|arg_3|global|load|store|pushint|pushbytes|gload|gloads|gaid|gaids)
+LOADING_OP=(intcblock|intc|intc_0|intc_1|intc_2|intc_3|bytecblock|bytec|bytec_0|bytec_1|bytec_2|bytec_3|arg|arg_0|arg_1|arg_2|arg_3|global|load|store|pushint|pushbytes|gload|gloads|gaid|gaids|bzero)
 FLOWCONTROL_OP=(err|return|pop|dup|dup2|bnz|bz|b|dig|swap|select|assert|callsub|retsub)
 STATEACCESS_OP=(balance|app_opted_in|app_local_get|app_local_get_ex|app_global_get|app_global_get_ex|app_local_put|app_global_put|app_local_del|app_global_del|asset_holding_get|asset_params_get|min_balance)
 TXN_LOADING_OP=(txn|gtxn|txna|gtxna|gtxns|gtxnsa)
@@ -118,7 +118,6 @@ ID=([a-zA-Z0-9_$.#@~?=+-]+[a-zA-Z0-9_$.#@~?=+-]*)
   "b&"                           { return B_BITWISE_AND_OPCODE; }
   "b^"                           { return B_BITWISE_XOR_OPCODE; }
   "b~"                           { return B_INVERT_OPCODE; }
-  "bzero"                        { return B_ZERO_OPCODE; }
 
   {NL}                           { return NL; }
   {EOF}                          { return EOF; }

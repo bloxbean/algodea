@@ -23,6 +23,7 @@
 package com.bloxbean.algodea.idea.language.highlights;
 
 import com.bloxbean.algodea.idea.language.TEALLexerAdapter;
+import com.bloxbean.algodea.idea.language.completion.metadata.atoms.TEALKeywords;
 import com.bloxbean.algodea.idea.language.psi.TEALTypes;
 import com.intellij.lexer.Lexer;
 import com.intellij.openapi.editor.colors.TextAttributesKey;
@@ -41,46 +42,8 @@ public class TEALSyntaxHighlighter extends SyntaxHighlighterBase {
 
     private static final TextAttributesKey[] EMPTY_KEYS = new TextAttributesKey[0];
 
-    private static final TokenSet OPERATIONS = TokenSet.create(
-            SHA256,
-            KECCAK256,
-            SHA512_256,
-            ED25519VERIFY,
-            PLUS,
-            MINUS,
-            DIVIDE,
-            TIMES,
-            LESSTHAN,
-            GREATERTHAN,
-            LESSTHANEQUAL,
-            GREATERTHANEQUAL,
-
-            LOGICAL_AND,
-            LOGICAL_OR,
-            LOGICAL_EQUAL,
-            LOGICAL_NOTEQUAL,
-
-            NOT,
-            LEN,
-            ITOB,
-            BTOI,
-
-            MODULO,
-            BITWISE_OR,
-            BITWISE_AND,
-            BITWISE_XOR,
-            BITWISE_INVERT,
-            MULW,
-            ADDW,
-            DIVMODW,
-            SETBIT,
-            GETBIT,
-            SETBYTE,
-            GETBYTE,
-            CONCAT,
-            SUBSTRING,
-            SUBSTRING3
-    );
+    //https://developer.algorand.org/docs/reference/teal/specification/#arithmetic-logic-and-cryptographic-operations
+    private static final TokenSet OPERATIONS = TokenSet.create(TEALKeywords.GENERAL_OPERATIONS_ELEMENTS.toArray(new IElementType[0]));
 
     private static final TokenSet PSEUDO_OP_CODES = TokenSet.create(
             INT, BYTE, ADDR

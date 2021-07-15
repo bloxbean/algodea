@@ -550,6 +550,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
   //                                   | gloadsOperation
   //                                   | gaidOperation
   //                                   | gaidsOperation
+  //                                   | B_ZERO_OPCODE
   public static boolean LoadingOperation(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "LoadingOperation")) return false;
     boolean r;
@@ -586,6 +587,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
     if (!r) r = gloadsOperation(b, l + 1);
     if (!r) r = gaidOperation(b, l + 1);
     if (!r) r = gaidsOperation(b, l + 1);
+    if (!r) r = B_ZERO_OPCODE(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
@@ -1211,7 +1213,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
   //                                   | B_LESS_THAN_OPCODE | B_GREATER_THAN_OPCODE | B_LESS_THAN_EQ_OPCODE | B_GREATER_THAN_EQ_OPCODE
   //                                   | B_EQUAL_OPCODE | B_NOT_EQUAL_OPCODE | B_MODULO_OPCODE
   //                                   | B_BITWISE_OR_OPCODE | B_BITWISE_AND_OPCODE | B_BITWISE_XOR_OPCODE
-  //                                   | B_INVERT_OPCODE | B_ZERO_OPCODE
+  //                                   | B_INVERT_OPCODE
   public static boolean bytesliceOperation(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "bytesliceOperation")) return false;
     boolean r;
@@ -1231,7 +1233,6 @@ public class TEALParser implements PsiParser, LightPsiParser {
     if (!r) r = B_BITWISE_AND_OPCODE(b, l + 1);
     if (!r) r = B_BITWISE_XOR_OPCODE(b, l + 1);
     if (!r) r = B_INVERT_OPCODE(b, l + 1);
-    if (!r) r = B_ZERO_OPCODE(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
   }

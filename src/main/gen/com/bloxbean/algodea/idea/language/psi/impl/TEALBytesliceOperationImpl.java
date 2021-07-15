@@ -117,10 +117,4 @@ public class TEALBytesliceOperationImpl extends ASTWrapperPsiElement implements 
     return findChildByClass(TEALBTimesOpcode.class);
   }
 
-  @Override
-  @Nullable
-  public TEALBZeroOpcode getBZeroOpcode() {
-    return findChildByClass(TEALBZeroOpcode.class);
-  }
-
 }

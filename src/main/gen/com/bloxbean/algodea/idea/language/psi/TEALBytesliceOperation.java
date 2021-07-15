@@ -52,7 +52,4 @@ public interface TEALBytesliceOperation extends PsiElement {
   @Nullable
   TEALBTimesOpcode getBTimesOpcode();
 
-  @Nullable
-  TEALBZeroOpcode getBZeroOpcode();
-
 }

@@ -34,7 +34,7 @@
         l_integer="regexp:0|[1-9][0-9]*"
         l_string="regexp:('([^'\\]|\\.)*'|\"([^\"\\]|\\.)*\")"
 
-    LOADING_OP = "regexp:(intcblock|intc|intc_0|intc_1|intc_2|intc_3|bytecblock|bytec|bytec_0|bytec_1|bytec_2|bytec_3|arg|arg_0|arg_1|arg_2|arg_3|global|load|store|pushint|pushbytes|gload|gloads|gaid|gaids)"
+    LOADING_OP = "regexp:(intcblock|intc|intc_0|intc_1|intc_2|intc_3|bytecblock|bytec|bytec_0|bytec_1|bytec_2|bytec_3|arg|arg_0|arg_1|arg_2|arg_3|global|load|store|pushint|pushbytes|gload|gloads|gaid|gaids|bzero)"
     FLOWCONTROL_OP = "regexp:(err|return|pop|dup|dup2|bnz|bz|b|dig|swap|select|assert)"
     STATEACCESS_OP = "regexp:(balance|app_opted_in|app_local_get|app_local_get_ex|app_global_get|app_global_get_ex|app_local_put|app_global_put|app_local_del|app_global_del|asset_holding_get|asset_params_get|min_balance)"
 
@@ -254,7 +254,8 @@ LoadingOperation ::=  intcblockOperation
                                   | gloadOperation
                                   | gloadsOperation
                                   | gaidOperation
-                                  | gaidsOperation {pin=1}
+                                  | gaidsOperation
+                                  | B_ZERO_OPCODE {pin=1}
 
 //TODO implement strict validation for both intcblockOperation and bytecblockOperation
 intcblockOperation ::= 'intcblock' (VAR_TMPL | (ID | l_integer)*) {pin=1}
@@ -377,4 +378,4 @@ bytesliceOperation ::= B_PLUS_OPCODE | B_MINUS_OPCODE | B_DIV_OPCODE | B_TIMES_O
                                   | B_LESS_THAN_OPCODE | B_GREATER_THAN_OPCODE | B_LESS_THAN_EQ_OPCODE | B_GREATER_THAN_EQ_OPCODE
                                   | B_EQUAL_OPCODE | B_NOT_EQUAL_OPCODE | B_MODULO_OPCODE
                                   | B_BITWISE_OR_OPCODE | B_BITWISE_AND_OPCODE | B_BITWISE_XOR_OPCODE
-                                  | B_INVERT_OPCODE | B_ZERO_OPCODE
+                                  | B_INVERT_OPCODE

@@ -8,6 +8,9 @@ import com.intellij.psi.PsiElement;
 public interface TEALLoadingOperation extends PsiElement {
 
   @Nullable
+  TEALBZeroOpcode getBZeroOpcode();
+
+  @Nullable
   TEALArgOperation getArgOperation();
 
   @Nullable

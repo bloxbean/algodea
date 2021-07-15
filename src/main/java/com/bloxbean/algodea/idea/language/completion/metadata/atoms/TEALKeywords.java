@@ -47,59 +47,77 @@ public final class TEALKeywords {
     public final static String ASSET_PARAMS_GET_FIELDS = "asset_params_get_fields";
     public final static String ONCOMPLETE_CONSTANTS = "oncomplete";
 
-//    public static final Collection<String> LOADING_OPERATIONS = Sets.newHashSet(
-//            "intcblock", "intc", "intc_0", "intc_1", "intc_2", "intc_3", "bytecblock", "bytec", "bytec_0"
-//            , "bytec_1", "bytec_2", "bytec_3", "arg", "arg_0", "arg_1", "arg_2", "arg_3", "global", "load", "store"
-//            , "txn", "gtxn", "txna", "gtxna", "addr"
-//            , "err", "return", "pop", "dup", "dup2", "bnz", "bz", "b"
-//            , "balance", "app_opted_in", "app_local_get", "app_local_get_ex", "app_global_get"
-//            , "app_global_get_ex", "app_local_put", "app_global_put", "app_local_del"
-//            , "app_global_del", "asset_holding_get", "asset_params_get"
-//    );
-
-    //This collection is only used from Documentation provider
+    //https://developer.algorand.org/docs/reference/teal/specification/#arithmetic-logic-and-cryptographic-operations
     public static final Collection<IElementType> GENERAL_OPERATIONS_ELEMENTS = Sets.newHashSet(
             SHA256,
             KECCAK256,
             SHA512_256,
             ED25519VERIFY,
             PLUS,
-            MINUS ,
-            DIVIDE ,
+            MINUS,
+            DIVIDE,
             TIMES,
-            LESSTHAN ,
-            GREATERTHAN ,
-            LESSTHANEQUAL  ,
+            LESSTHAN,
+            GREATERTHAN,
+            LESSTHANEQUAL,
             GREATERTHANEQUAL,
 
             LOGICAL_AND,
-            LOGICAL_OR  ,
+            LOGICAL_OR,
+
+            //v4
+            SHL_OPCODE,
+            SHR_OPCODE,
+            SQRT_OPCODE,
+            BITLEN_OPCODE,
+            EXP_OPCODE,
+            //v4
+
             LOGICAL_EQUAL,
             LOGICAL_NOTEQUAL,
 
-            NOT ,
-            LEN ,
+            NOT,
+            LEN,
             ITOB,
-            BTOI ,
+            BTOI,
 
-            MODULO ,
-            BITWISE_OR  ,
-            BITWISE_AND ,
-            BITWISE_XOR  ,
+            MODULO,
+            BITWISE_OR,
+            BITWISE_AND,
+            BITWISE_XOR,
             BITWISE_INVERT,
-
             MULW,
-            ADDW ,
-            CONCAT ,
-            SUBSTRING  ,
-            SUBSTRING3,
-            //v3
+            ADDW,
+
+            DIVMODW, //v4
+            EXPW_OPCODE, //v4
+
             SETBIT,
             GETBIT,
             SETBYTE,
             GETBYTE,
+            CONCAT,
+            SUBSTRING,
+            SUBSTRING3,
+
             //v4
-            DIVMODW
+            B_PLUS_OPCODE,
+            B_MINUS_OPCODE,
+            B_DIV_OPCODE,
+            B_TIMES_OPCODE,
+            B_LESS_THAN_OPCODE,
+            B_GREATER_THAN_OPCODE,
+            B_LESS_THAN_EQ_OPCODE,
+            B_GREATER_THAN_EQ_OPCODE,
+            B_EQUAL_OPCODE,
+            B_NOT_EQUAL_OPCODE,
+            B_MODULO_OPCODE,
+
+            B_BITWISE_OR_OPCODE,
+            B_BITWISE_AND_OPCODE,
+            B_BITWISE_XOR_OPCODE,
+            B_INVERT_OPCODE
+            //v4
     );
 
     //Lists needed for auto-completion
@@ -208,6 +226,5 @@ public final class TEALKeywords {
             .map(f -> new TEALConstantElement(f))
             .map(TEALConstantElement::getLookupElement)
             .collect(Collectors.toList());
-
 
 }
