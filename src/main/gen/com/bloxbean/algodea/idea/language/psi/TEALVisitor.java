@@ -11,6 +11,74 @@ public class TEALVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitBitlenOpcode(@NotNull TEALBitlenOpcode o) {
+    visitPsiElement(o);
+  }
+
+  public void visitBBitwiseAndOpcode(@NotNull TEALBBitwiseAndOpcode o) {
+    visitPsiElement(o);
+  }
+
+  public void visitBBitwiseOrOpcode(@NotNull TEALBBitwiseOrOpcode o) {
+    visitPsiElement(o);
+  }
+
+  public void visitBBitwiseXorOpcode(@NotNull TEALBBitwiseXorOpcode o) {
+    visitPsiElement(o);
+  }
+
+  public void visitBDivOpcode(@NotNull TEALBDivOpcode o) {
+    visitPsiElement(o);
+  }
+
+  public void visitBEqualOpcode(@NotNull TEALBEqualOpcode o) {
+    visitPsiElement(o);
+  }
+
+  public void visitBGreaterThanEqOpcode(@NotNull TEALBGreaterThanEqOpcode o) {
+    visitPsiElement(o);
+  }
+
+  public void visitBGreaterThanOpcode(@NotNull TEALBGreaterThanOpcode o) {
+    visitPsiElement(o);
+  }
+
+  public void visitBInvertOpcode(@NotNull TEALBInvertOpcode o) {
+    visitPsiElement(o);
+  }
+
+  public void visitBLessThanEqOpcode(@NotNull TEALBLessThanEqOpcode o) {
+    visitPsiElement(o);
+  }
+
+  public void visitBLessThanOpcode(@NotNull TEALBLessThanOpcode o) {
+    visitPsiElement(o);
+  }
+
+  public void visitBMinusOpcode(@NotNull TEALBMinusOpcode o) {
+    visitPsiElement(o);
+  }
+
+  public void visitBModuloOpcode(@NotNull TEALBModuloOpcode o) {
+    visitPsiElement(o);
+  }
+
+  public void visitBNotEqualOpcode(@NotNull TEALBNotEqualOpcode o) {
+    visitPsiElement(o);
+  }
+
+  public void visitBPlusOpcode(@NotNull TEALBPlusOpcode o) {
+    visitPsiElement(o);
+  }
+
+  public void visitBTimesOpcode(@NotNull TEALBTimesOpcode o) {
+    visitPsiElement(o);
+  }
+
+  public void visitBZeroOpcode(@NotNull TEALBZeroOpcode o) {
+    visitPsiElement(o);
+  }
+
   public void visitCallsubOpcode(@NotNull TEALCallsubOpcode o) {
     visitPsiElement(o);
   }
@@ -20,6 +88,14 @@ public class TEALVisitor extends PsiElementVisitor {
   }
 
   public void visitDivmodwOpcode(@NotNull TEALDivmodwOpcode o) {
+    visitPsiElement(o);
+  }
+
+  public void visitExpwOpcode(@NotNull TEALExpwOpcode o) {
+    visitPsiElement(o);
+  }
+
+  public void visitExpOpcode(@NotNull TEALExpOpcode o) {
     visitPsiElement(o);
   }
 
@@ -103,6 +179,18 @@ public class TEALVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitShlOpcode(@NotNull TEALShlOpcode o) {
+    visitPsiElement(o);
+  }
+
+  public void visitShrOpcode(@NotNull TEALShrOpcode o) {
+    visitPsiElement(o);
+  }
+
+  public void visitSqrtOpcode(@NotNull TEALSqrtOpcode o) {
+    visitPsiElement(o);
+  }
+
   public void visitSwapOpcode(@NotNull TEALSwapOpcode o) {
     visitPsiElement(o);
   }
@@ -168,6 +256,10 @@ public class TEALVisitor extends PsiElementVisitor {
   }
 
   public void visitBytecblockOperation(@NotNull TEALBytecblockOperation o) {
+    visitPsiElement(o);
+  }
+
+  public void visitBytesliceOperation(@NotNull TEALBytesliceOperation o) {
     visitPsiElement(o);
   }
 

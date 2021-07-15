@@ -47,6 +47,193 @@ public class TEALParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // 'bitlen'
+  public static boolean BITLEN_OPCODE(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "BITLEN_OPCODE")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, BITLEN_OPCODE, "<bitlen opcode>");
+    r = consumeToken(b, "bitlen");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // 'b&'
+  public static boolean B_BITWISE_AND_OPCODE(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "B_BITWISE_AND_OPCODE")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, B_BITWISE_AND_OPCODE, "<b bitwise and opcode>");
+    r = consumeToken(b, "b&");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // 'b|'
+  public static boolean B_BITWISE_OR_OPCODE(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "B_BITWISE_OR_OPCODE")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, B_BITWISE_OR_OPCODE, "<b bitwise or opcode>");
+    r = consumeToken(b, "b|");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // 'b^'
+  public static boolean B_BITWISE_XOR_OPCODE(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "B_BITWISE_XOR_OPCODE")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, B_BITWISE_XOR_OPCODE, "<b bitwise xor opcode>");
+    r = consumeToken(b, "b^");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // 'b/'
+  public static boolean B_DIV_OPCODE(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "B_DIV_OPCODE")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, B_DIV_OPCODE, "<b div opcode>");
+    r = consumeToken(b, "b/");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // 'b=='
+  public static boolean B_EQUAL_OPCODE(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "B_EQUAL_OPCODE")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, B_EQUAL_OPCODE, "<b equal opcode>");
+    r = consumeToken(b, "b==");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // 'b>='
+  public static boolean B_GREATER_THAN_EQ_OPCODE(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "B_GREATER_THAN_EQ_OPCODE")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, B_GREATER_THAN_EQ_OPCODE, "<b greater than eq opcode>");
+    r = consumeToken(b, "b>=");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // 'b>'
+  public static boolean B_GREATER_THAN_OPCODE(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "B_GREATER_THAN_OPCODE")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, B_GREATER_THAN_OPCODE, "<b greater than opcode>");
+    r = consumeToken(b, "b>");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // 'b~'
+  public static boolean B_INVERT_OPCODE(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "B_INVERT_OPCODE")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, B_INVERT_OPCODE, "<b invert opcode>");
+    r = consumeToken(b, "b~");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // 'b<='
+  public static boolean B_LESS_THAN_EQ_OPCODE(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "B_LESS_THAN_EQ_OPCODE")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, B_LESS_THAN_EQ_OPCODE, "<b less than eq opcode>");
+    r = consumeToken(b, "b<=");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // 'b<'
+  public static boolean B_LESS_THAN_OPCODE(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "B_LESS_THAN_OPCODE")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, B_LESS_THAN_OPCODE, "<b less than opcode>");
+    r = consumeToken(b, "b<");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // 'b-'
+  public static boolean B_MINUS_OPCODE(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "B_MINUS_OPCODE")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, B_MINUS_OPCODE, "<b minus opcode>");
+    r = consumeToken(b, "b-");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // 'b%'
+  public static boolean B_MODULO_OPCODE(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "B_MODULO_OPCODE")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, B_MODULO_OPCODE, "<b modulo opcode>");
+    r = consumeToken(b, "b%");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // 'b!='
+  public static boolean B_NOT_EQUAL_OPCODE(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "B_NOT_EQUAL_OPCODE")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, B_NOT_EQUAL_OPCODE, "<b not equal opcode>");
+    r = consumeToken(b, "b!=");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // 'b+'
+  public static boolean B_PLUS_OPCODE(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "B_PLUS_OPCODE")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, B_PLUS_OPCODE, "<b plus opcode>");
+    r = consumeToken(b, "b+");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // 'b*'
+  public static boolean B_TIMES_OPCODE(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "B_TIMES_OPCODE")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, B_TIMES_OPCODE, "<b times opcode>");
+    r = consumeToken(b, "b*");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // 'bzero'
+  public static boolean B_ZERO_OPCODE(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "B_ZERO_OPCODE")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, B_ZERO_OPCODE, "<b zero opcode>");
+    r = consumeToken(b, "bzero");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
   // 'callsub'
   public static boolean CALLSUB_OPCODE(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "CALLSUB_OPCODE")) return false;
@@ -77,6 +264,28 @@ public class TEALParser implements PsiParser, LightPsiParser {
     Marker m = enter_section_(b);
     r = consumeToken(b, DIVMODW);
     exit_section_(b, m, DIVMODW_OPCODE, r);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // 'expw'
+  public static boolean EXPW_OPCODE(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "EXPW_OPCODE")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, EXPW_OPCODE, "<expw opcode>");
+    r = consumeToken(b, "expw");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // 'exp'
+  public static boolean EXP_OPCODE(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "EXP_OPCODE")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, EXP_OPCODE, "<exp opcode>");
+    r = consumeToken(b, "exp");
+    exit_section_(b, l, m, r, false, null);
     return r;
   }
 
@@ -232,6 +441,11 @@ public class TEALParser implements PsiParser, LightPsiParser {
   //                                      | GREATERTHANEQUAL
   //                                      | LOGICAL_AND
   //                                      | LOGICAL_OR
+  //                                      | SHL_OPCODE
+  //                                      | SHR_OPCODE
+  //                                      | SQRT_OPCODE
+  //                                      | BITLEN_OPCODE
+  //                                      | EXP_OPCODE
   //                                      | LOGICAL_EQUAL
   //                                      | LOGICAL_NOTEQUAL
   //                                      | NOT
@@ -246,6 +460,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
   //                                      | MULW
   //                                      | ADDW
   //                                      | DIVMODW_OPCODE
+  //                                      | EXPW_OPCODE
   //                                      | GETBIT_OPCODE
   //                                      | SETBIT_OPCODE
   //                                      | GETBYTE_OPCODE
@@ -271,6 +486,11 @@ public class TEALParser implements PsiParser, LightPsiParser {
     if (!r) r = consumeToken(b, GREATERTHANEQUAL);
     if (!r) r = consumeToken(b, LOGICAL_AND);
     if (!r) r = consumeToken(b, LOGICAL_OR);
+    if (!r) r = SHL_OPCODE(b, l + 1);
+    if (!r) r = SHR_OPCODE(b, l + 1);
+    if (!r) r = SQRT_OPCODE(b, l + 1);
+    if (!r) r = BITLEN_OPCODE(b, l + 1);
+    if (!r) r = EXP_OPCODE(b, l + 1);
     if (!r) r = consumeToken(b, LOGICAL_EQUAL);
     if (!r) r = consumeToken(b, LOGICAL_NOTEQUAL);
     if (!r) r = consumeToken(b, NOT);
@@ -285,6 +505,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
     if (!r) r = consumeToken(b, MULW);
     if (!r) r = consumeToken(b, ADDW);
     if (!r) r = DIVMODW_OPCODE(b, l + 1);
+    if (!r) r = EXPW_OPCODE(b, l + 1);
     if (!r) r = GETBIT_OPCODE(b, l + 1);
     if (!r) r = SETBIT_OPCODE(b, l + 1);
     if (!r) r = GETBYTE_OPCODE(b, l + 1);
@@ -445,6 +666,39 @@ public class TEALParser implements PsiParser, LightPsiParser {
     Marker m = enter_section_(b);
     r = consumeToken(b, SETBYTE);
     exit_section_(b, m, SETBYTE_OPCODE, r);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // 'shl'
+  public static boolean SHL_OPCODE(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "SHL_OPCODE")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, SHL_OPCODE, "<shl opcode>");
+    r = consumeToken(b, "shl");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // 'shr'
+  public static boolean SHR_OPCODE(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "SHR_OPCODE")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, SHR_OPCODE, "<shr opcode>");
+    r = consumeToken(b, "shr");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // 'sqrt'
+  public static boolean SQRT_OPCODE(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "SQRT_OPCODE")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, SQRT_OPCODE, "<sqrt opcode>");
+    r = consumeToken(b, "sqrt");
+    exit_section_(b, l, m, r, false, null);
     return r;
   }
 
@@ -949,6 +1203,36 @@ public class TEALParser implements PsiParser, LightPsiParser {
     if (!r) r = byte_base32encoding_type_values_function_type(b, l + 1);
     if (!r) r = consumeToken(b, VAR_TMPL);
     if (!r) r = consumeToken(b, ID);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // B_PLUS_OPCODE | B_MINUS_OPCODE | B_DIV_OPCODE | B_TIMES_OPCODE
+  //                                   | B_LESS_THAN_OPCODE | B_GREATER_THAN_OPCODE | B_LESS_THAN_EQ_OPCODE | B_GREATER_THAN_EQ_OPCODE
+  //                                   | B_EQUAL_OPCODE | B_NOT_EQUAL_OPCODE | B_MODULO_OPCODE
+  //                                   | B_BITWISE_OR_OPCODE | B_BITWISE_AND_OPCODE | B_BITWISE_XOR_OPCODE
+  //                                   | B_INVERT_OPCODE | B_ZERO_OPCODE
+  public static boolean bytesliceOperation(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "bytesliceOperation")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, BYTESLICE_OPERATION, "<byteslice operation>");
+    r = B_PLUS_OPCODE(b, l + 1);
+    if (!r) r = B_MINUS_OPCODE(b, l + 1);
+    if (!r) r = B_DIV_OPCODE(b, l + 1);
+    if (!r) r = B_TIMES_OPCODE(b, l + 1);
+    if (!r) r = B_LESS_THAN_OPCODE(b, l + 1);
+    if (!r) r = B_GREATER_THAN_OPCODE(b, l + 1);
+    if (!r) r = B_LESS_THAN_EQ_OPCODE(b, l + 1);
+    if (!r) r = B_GREATER_THAN_EQ_OPCODE(b, l + 1);
+    if (!r) r = B_EQUAL_OPCODE(b, l + 1);
+    if (!r) r = B_NOT_EQUAL_OPCODE(b, l + 1);
+    if (!r) r = B_MODULO_OPCODE(b, l + 1);
+    if (!r) r = B_BITWISE_OR_OPCODE(b, l + 1);
+    if (!r) r = B_BITWISE_AND_OPCODE(b, l + 1);
+    if (!r) r = B_BITWISE_XOR_OPCODE(b, l + 1);
+    if (!r) r = B_INVERT_OPCODE(b, l + 1);
+    if (!r) r = B_ZERO_OPCODE(b, l + 1);
+    exit_section_(b, l, m, r, false, null);
     return r;
   }
 
@@ -1525,6 +1809,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
   //                     | FlowControlOperation
   //                     | StateAccessOperation
   //                     | GeneralOperation
+  //                     | bytesliceOperation
   //                     | pseudo_op
   //                     | branch
   //                     | VAR_TMPL
@@ -1539,6 +1824,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
     if (!r) r = FlowControlOperation(b, l + 1);
     if (!r) r = StateAccessOperation(b, l + 1);
     if (!r) r = GeneralOperation(b, l + 1);
+    if (!r) r = bytesliceOperation(b, l + 1);
     if (!r) r = pseudo_op(b, l + 1);
     if (!r) r = branch(b, l + 1);
     if (!r) r = consumeToken(b, VAR_TMPL);
@@ -1555,6 +1841,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
   //                                         | FlowControlOperation
   //                                         | StateAccessOperation
   //                                         | GeneralOperation
+  //                                         | bytesliceOperation
   //                                         | pseudo_op
   //                                         | branch
   //                                         | VAR_TMPL
@@ -1575,6 +1862,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
   //                                         | FlowControlOperation
   //                                         | StateAccessOperation
   //                                         | GeneralOperation
+  //                                         | bytesliceOperation
   //                                         | pseudo_op
   //                                         | branch
   //                                         | VAR_TMPL
@@ -1588,6 +1876,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
     if (!r) r = FlowControlOperation(b, l + 1);
     if (!r) r = StateAccessOperation(b, l + 1);
     if (!r) r = GeneralOperation(b, l + 1);
+    if (!r) r = bytesliceOperation(b, l + 1);
     if (!r) r = pseudo_op(b, l + 1);
     if (!r) r = branch(b, l + 1);
     if (!r) r = consumeToken(b, VAR_TMPL);

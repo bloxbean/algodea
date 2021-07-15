@@ -116,11 +116,6 @@
     //ID     = 'regexp:([a-zA-Z_?]+[a-zA-Z0-9_$.#@~?]*)'
     ID     = 'regexp:([a-zA-Z0-9_$.#@~?=+-]+[a-zA-Z0-9_$.#@~?=+-]*)'
 
-//    BASE32 ='regexp:([A-Z2-7]{8})*([A-Z2-7]{2}={6}|[A-Z2-7]{4}={4}|[A-Z2-7]{5}={3}|[A-Z2-7]{7}=)?'
-//    BASE64 = 'regexp:[-A-Za-z0-9+=]{1,50}|=[^=]|={3}'
-
-//    HASH = '#'
-
   ]
 }
 
@@ -152,6 +147,31 @@ GLOAD_OPCODE ::= 'gload'
 GLOADS_OPCODE ::= 'gloads'
 GAID_OPCODE ::= 'gaid'
 GAIDS_OPCODE ::= 'gaids'
+
+SHL_OPCODE ::= 'shl'
+SHR_OPCODE ::= 'shr'
+SQRT_OPCODE ::= 'sqrt'
+BITLEN_OPCODE ::= 'bitlen'
+EXP_OPCODE ::= 'exp'
+EXPW_OPCODE ::= 'expw'
+
+B_PLUS_OPCODE ::= 'b+'
+B_MINUS_OPCODE ::= 'b-'
+B_DIV_OPCODE ::= 'b/'
+B_TIMES_OPCODE ::= 'b*'
+B_LESS_THAN_OPCODE ::= 'b<'
+B_GREATER_THAN_OPCODE ::= 'b>'
+B_LESS_THAN_EQ_OPCODE ::= 'b<='
+B_GREATER_THAN_EQ_OPCODE ::= 'b>='
+B_EQUAL_OPCODE ::= 'b=='
+B_NOT_EQUAL_OPCODE ::= 'b!='
+B_MODULO_OPCODE ::= 'b%'
+
+B_BITWISE_OR_OPCODE ::= 'b|'
+B_BITWISE_AND_OPCODE ::= 'b&'
+B_BITWISE_XOR_OPCODE ::= 'b^'
+B_INVERT_OPCODE ::= 'b~'
+B_ZERO_OPCODE ::= 'bzero'
 //v4 opcodes end
 
 pragma ::= PRAGMA_KEYWORD VERSION pragma_version {pin=1 recoverWhile=statement_recover}
@@ -161,6 +181,7 @@ statement ::= COMMENT
                     | FlowControlOperation
                     | StateAccessOperation
                     | GeneralOperation
+                    | bytesliceOperation
                     | pseudo_op
                     | branch
                     | VAR_TMPL
@@ -173,6 +194,7 @@ private statement_recover ::= !(
                                         | FlowControlOperation
                                         | StateAccessOperation
                                         | GeneralOperation
+                                        | bytesliceOperation
                                         | pseudo_op
                                         | branch
                                         | VAR_TMPL
@@ -282,6 +304,7 @@ TxnFieldArg ::= 'Sender'| 'Fee'| 'FirstValid'| 'FirstValidTime'| 'LastValid'| 'N
                        | 'FreezeAssetAccount'|'FreezeAssetFrozen' | 'Assets' | 'NumAssets' | 'Applications' | 'NumApplications'
                        | 'GlobalNumUint' | 'GlobalNumByteSlice' | 'LocalNumUint' | 'LocalNumByteSlice'
 
+//Follow same sequence in https://developer.algorand.org/docs/reference/teal/specification/#arithmetic-logic-and-cryptographic-operations
 GeneralOperation                   ::= SHA256
                                      | KECCAK256
                                      | SHA512_256
@@ -296,6 +319,11 @@ GeneralOperation                   ::= SHA256
                                      | GREATERTHANEQUAL
                                      | LOGICAL_AND
                                      | LOGICAL_OR
+                                     | SHL_OPCODE
+                                     | SHR_OPCODE
+                                     | SQRT_OPCODE
+                                     | BITLEN_OPCODE
+                                     | EXP_OPCODE
                                      | LOGICAL_EQUAL
                                      | LOGICAL_NOTEQUAL
                                      | NOT
@@ -310,6 +338,7 @@ GeneralOperation                   ::= SHA256
                                      | MULW
                                      | ADDW
                                      | DIVMODW_OPCODE
+                                     | EXPW_OPCODE
                                      | GETBIT_OPCODE
                                      | SETBIT_OPCODE
                                      | GETBYTE_OPCODE
@@ -342,3 +371,10 @@ assetHoldingGetOP    ::= 'asset_holding_get'
 assetParamsGetOp     ::= 'asset_params_get'
 
 unsignedInteger ::= l_integer {name="uint8"}
+
+//In v4
+bytesliceOperation ::= B_PLUS_OPCODE | B_MINUS_OPCODE | B_DIV_OPCODE | B_TIMES_OPCODE
+                                  | B_LESS_THAN_OPCODE | B_GREATER_THAN_OPCODE | B_LESS_THAN_EQ_OPCODE | B_GREATER_THAN_EQ_OPCODE
+                                  | B_EQUAL_OPCODE | B_NOT_EQUAL_OPCODE | B_MODULO_OPCODE
+                                  | B_BITWISE_OR_OPCODE | B_BITWISE_AND_OPCODE | B_BITWISE_XOR_OPCODE
+                                  | B_INVERT_OPCODE | B_ZERO_OPCODE

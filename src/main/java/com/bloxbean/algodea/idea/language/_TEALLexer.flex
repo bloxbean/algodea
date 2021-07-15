@@ -65,6 +65,15 @@ ID=([a-zA-Z0-9_$.#@~?=+-]+[a-zA-Z0-9_$.#@~?=+-]*)
   ">="                           { return GREATERTHANEQUAL; }
   "&&"                           { return LOGICAL_AND; }
   "||"                           { return LOGICAL_OR; }
+
+  //v4
+  "shl"                          { return SHL_OPCODE; }
+  "shr"                          { return SHR_OPCODE; }
+  "sqrt"                         { return SQRT_OPCODE; }
+  "bitlen"                       { return BITLEN_OPCODE; }
+  "exp"                          { return EXP_OPCODE; }
+  //v4 ends
+
   "=="                           { return LOGICAL_EQUAL; }
   "!="                           { return LOGICAL_NOTEQUAL; }
   "!"                            { return NOT; }
@@ -78,7 +87,8 @@ ID=([a-zA-Z0-9_$.#@~?=+-]+[a-zA-Z0-9_$.#@~?=+-]*)
   "~"                            { return BITWISE_INVERT; }
   "mulw"                         { return MULW; }
   "addw"                         { return ADDW; }
-  "divmodw"                      { return DIVMODW;}
+  "divmodw"                      { return DIVMODW;} //v4
+  "expw"                         { return EXPW_OPCODE; } //v4
   "getbit"                       { return GETBIT; }
   "setbit"                       { return SETBIT; }
   "getbyte"                      { return GETBYTE; }
@@ -92,6 +102,23 @@ ID=([a-zA-Z0-9_$.#@~?=+-]+[a-zA-Z0-9_$.#@~?=+-]*)
   "addr"                         { return ADDR; }
   "#pragma"                      { return PRAGMA_KEYWORD; }
   ":"                            { return COLON; }
+
+  "b+"                           { return B_PLUS_OPCODE; }
+  "b-"                           { return B_MINUS_OPCODE; }
+  "b/"                           { return B_DIV_OPCODE; }
+  "b*"                           { return B_TIMES_OPCODE; }
+  "b<"                           { return B_LESS_THAN_OPCODE; }
+  "b>"                           { return B_GREATER_THAN_OPCODE; }
+  "b<="                          { return B_LESS_THAN_EQ_OPCODE; }
+  "b>="                          { return B_GREATER_THAN_EQ_OPCODE; }
+  "b=="                          { return B_EQUAL_OPCODE; }
+  "b!="                          { return B_NOT_EQUAL_OPCODE; }
+  "b%"                           { return B_MODULO_OPCODE; }
+  "b|"                           { return B_BITWISE_OR_OPCODE; }
+  "b&"                           { return B_BITWISE_AND_OPCODE; }
+  "b^"                           { return B_BITWISE_XOR_OPCODE; }
+  "b~"                           { return B_INVERT_OPCODE; }
+  "bzero"                        { return B_ZERO_OPCODE; }
 
   {NL}                           { return NL; }
   {EOF}                          { return EOF; }

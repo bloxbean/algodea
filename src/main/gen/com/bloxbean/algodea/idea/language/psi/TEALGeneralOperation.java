@@ -8,7 +8,16 @@ import com.intellij.psi.PsiElement;
 public interface TEALGeneralOperation extends PsiElement {
 
   @Nullable
+  TEALBitlenOpcode getBitlenOpcode();
+
+  @Nullable
   TEALDivmodwOpcode getDivmodwOpcode();
+
+  @Nullable
+  TEALExpwOpcode getExpwOpcode();
+
+  @Nullable
+  TEALExpOpcode getExpOpcode();
 
   @Nullable
   TEALGetbitOpcode getGetbitOpcode();
@@ -21,6 +30,15 @@ public interface TEALGeneralOperation extends PsiElement {
 
   @Nullable
   TEALSetbyteOpcode getSetbyteOpcode();
+
+  @Nullable
+  TEALShlOpcode getShlOpcode();
+
+  @Nullable
+  TEALShrOpcode getShrOpcode();
+
+  @Nullable
+  TEALSqrtOpcode getSqrtOpcode();
 
   @Nullable
   TEALSubstringOperation getSubstringOperation();

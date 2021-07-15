@@ -59,6 +59,12 @@ public class TEALStatementImpl extends ASTWrapperPsiElement implements TEALState
 
   @Override
   @Nullable
+  public TEALBytesliceOperation getBytesliceOperation() {
+    return findChildByClass(TEALBytesliceOperation.class);
+  }
+
+  @Override
+  @Nullable
   public TEALPseudoOp getPseudoOp() {
     return findChildByClass(TEALPseudoOp.class);
   }
