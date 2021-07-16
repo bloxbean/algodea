@@ -27,6 +27,14 @@ public class TEALV4OpCodeAnnotator implements Annotator {
                     || element instanceof TEALGaidOpcode
                     || element instanceof TEALGaidsOpcode
                     || element instanceof TEALDivmodwOpcode
+                    || element instanceof TEALShlOpcode
+                    || element instanceof TEALShrOpcode
+                    || element instanceof TEALSqrtOpcode
+                    || element instanceof TEALBitlenOpcode
+                    || element instanceof TEALExpOpcode
+                    || element instanceof TEALExpwOpcode
+                    || element instanceof TEALBytesliceOperation
+                    || element instanceof TEALBZeroOpcode
             ) {
                 holder.newAnnotation(HighlightSeverity.ERROR,
                         V4_SUPPORT_MSG).create();
