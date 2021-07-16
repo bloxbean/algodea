@@ -1,3 +1,6 @@
+### 0.6.0-beta
+  - TEAL v4 support (New Opcodes, Txn Fields)
+  - New Structure view
 ### 0.5.0
   - TEAL v3 support (New Opcodes, Global Fields, Txn Fields)
   - Auto-complete, Syntax Highlights for TEAL v3
