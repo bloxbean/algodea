@@ -12,8 +12,9 @@ import org.jetbrains.annotations.NotNull;
 
 import static com.bloxbean.algodea.idea.language.TEALUtil.getTEALVersion;
 
-public class TEALV3FieldsAnnotator implements Annotator {
+public class TEALFieldsAnnotator implements Annotator {
     private static String  V3_SUPPORT_MSG = "Supported in TEAL v3 or later";
+    private static String  V4_SUPPORT_MSG = "Supported in TEAL v4 or later";
     public static final String GLOBAL_FIELDS = "global_fields";
     public static final String TXN_FIELDS = "txn_fields";
 
@@ -22,20 +23,26 @@ public class TEALV3FieldsAnnotator implements Annotator {
         PsiFile psiFile = element.getContainingFile();
         Integer versionInt = getTEALVersion(psiFile);
         if (versionInt == null) return;
+        
+        createErrorIfRequired(3, element, versionInt,  holder, V3_SUPPORT_MSG);
+        createErrorIfRequired(4, element, versionInt,  holder, V4_SUPPORT_MSG);
+    }
 
-        if(versionInt < 3) {
-            if(TEALTypes.GLOBAL_FIELD.equals(element.getNode().getElementType())) {
+    private void createErrorIfRequired(int tealSpecVersion, @NotNull PsiElement element,
+                                       int actualVersion, @NotNull AnnotationHolder holder, String errorMsg) {
+        if(actualVersion < tealSpecVersion) {
+            if (TEALTypes.GLOBAL_FIELD.equals(element.getNode().getElementType())) {
                 String value = element.getNode().getText();
                 Field field = TEALOpCodeFactory.getInstance().getField(GLOBAL_FIELDS, value);
-                if(field != null && field.getSince() == 3) {
-                    createError(holder);
+                if (field != null && field.getSince() == tealSpecVersion) {
+                    createError(holder, errorMsg);
                 }
 
-            } else if(TEALTypes.TXN_FIELD_ARG.equals(element.getNode().getElementType())) {
+            } else if (TEALTypes.TXN_FIELD_ARG.equals(element.getNode().getElementType())) {
                 String value = element.getNode().getText();
                 Field field = TEALOpCodeFactory.getInstance().getField(TXN_FIELDS, value);
-                if(field != null && field.getSince() == 3) {
-                    createError(holder);
+                if (field != null && field.getSince() == tealSpecVersion) {
+                    createError(holder, errorMsg);
                 }
             } else {
                 return;
@@ -43,8 +50,8 @@ public class TEALV3FieldsAnnotator implements Annotator {
         }
     }
 
-    private void createError(@NotNull AnnotationHolder holder) {
+    private void createError(@NotNull AnnotationHolder holder, String errorMsg) {
         holder.newAnnotation(HighlightSeverity.ERROR,
-                V3_SUPPORT_MSG).create();
+                errorMsg).create();
     }
 }

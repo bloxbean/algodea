@@ -168,6 +168,14 @@ public final class TEALKeywords {
             .map(TEALFieldElement::getLookupElement)
             .collect(Collectors.toList());
 
+    //V4
+    public static final List<LookupElement> TXNARGS_LOOKUP_ELEMENTS_V4 = txnFieldsList
+            .stream()
+            .filter(f -> f.getSince() == 4)
+            .map(f -> new TEALFieldElement(f))
+            .map(TEALFieldElement::getLookupElement)
+            .collect(Collectors.toList());
+
     //V2
     public static final List<TEALFieldElement> TXNARGS_LOOKUP_ELEMENTS_STREAM = txnFieldsList
             .stream()
@@ -179,6 +187,13 @@ public final class TEALKeywords {
     public static final List<TEALFieldElement> TXNARGS_LOOKUP_ELEMENTS_STREAM_V3 = txnFieldsList
             .stream()
             .filter(f -> f.getSince() == 3)
+            .map(f -> new TEALFieldElement(f))
+            .collect(Collectors.toList());
+
+    //V4
+    public static final List<TEALFieldElement> TXNARGS_LOOKUP_ELEMENTS_STREAM_V4 = txnFieldsList
+            .stream()
+            .filter(f -> f.getSince() == 4)
             .map(f -> new TEALFieldElement(f))
             .collect(Collectors.toList());
 

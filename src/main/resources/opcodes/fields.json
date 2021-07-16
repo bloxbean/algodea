@@ -343,6 +343,13 @@
       "type": "uint64",
       "note": "Number of local state byteslices in ApplicationCall. LogicSigVersion >= 3.",
       "since": 3
+    },
+    {
+      "index": 56,
+      "name": "ExtraProgramPages",
+      "type": "uint64",
+      "note": "Number of additional pages for each of the application's approval and clear state programs. An ExtraProgramPages of 1 means 2048 more total bytes, or 1024 for each program. LogicSigVersion >= 4.",
+      "since": 4
     }
   ],
   "oncomplete": [
