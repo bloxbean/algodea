@@ -125,6 +125,12 @@
         <properties/>
         <border type="none"/>
         <children>
+          <component id="3b4d0" class="javax.swing.JButton" binding="newBtn">
+            <constraints/>
+            <properties>
+              <text value="New"/>
+            </properties>
+          </component>
           <component id="32da5" class="javax.swing.JButton" binding="fetchBalanceButton" default-binding="true">
             <constraints/>
             <properties>

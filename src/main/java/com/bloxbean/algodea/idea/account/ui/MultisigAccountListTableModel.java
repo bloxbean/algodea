@@ -54,9 +54,17 @@ public class MultisigAccountListTableModel extends AbstractTableModel {
     }
 
     public void setElements(List<AlgoMultisigAccount> multisigAccounts) {
-        accounts.clear();
-        accounts.addAll(multisigAccounts);
-        fireTableRowsUpdated(0, accounts.size()-1);
+        int size = this.accounts.size();
+        this.accounts.clear();
+
+        if(size == 0)
+            size = 1;
+        if(size > 0) { //Refresh based on old size
+            fireTableRowsDeleted(0, size - 1);
+        }
+
+        this.accounts.addAll(multisigAccounts);
+        fireTableRowsUpdated(0, this.accounts.size()-1);
     }
 
     @Override
@@ -104,11 +112,7 @@ public class MultisigAccountListTableModel extends AbstractTableModel {
     }
 
     public boolean isCellEditable(int row, int col) {
-        if (col== 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return false;
     }
 
     public List<AlgoMultisigAccount> getAccounts() {

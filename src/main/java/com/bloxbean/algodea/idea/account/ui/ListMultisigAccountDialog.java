@@ -22,29 +22,48 @@
 
 package com.bloxbean.algodea.idea.account.ui;
 
+import com.bloxbean.algodea.idea.account.action.CreateMultisigAccountAction;
 import com.bloxbean.algodea.idea.account.model.AlgoMultisigAccount;
 import com.bloxbean.algodea.idea.account.service.AccountService;
+import com.bloxbean.algodea.idea.configuration.action.ConfigurationAction;
+import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
+import com.bloxbean.algodea.idea.nodeint.service.AlgoAccountService;
 import com.bloxbean.algodea.idea.nodeint.service.LogListenerAdapter;
 import com.bloxbean.algodea.idea.toolwindow.AlgoConsole;
-import com.bloxbean.algodea.idea.configuration.action.ConfigurationAction;
-import com.bloxbean.algodea.idea.nodeint.service.AlgoAccountService;
-import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
 import com.bloxbean.algodea.idea.util.IdeaUtil;
+import com.intellij.icons.AllIcons;
+import com.intellij.ide.DataManager;
 import com.intellij.notification.NotificationType;
+import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.DataContext;
+import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.ui.popup.JBPopupFactory;
+import com.intellij.openapi.ui.popup.ListPopup;
+import com.intellij.ui.awt.RelativePoint;
 import com.intellij.ui.components.JBList;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
+import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
+
+import static java.awt.event.MouseEvent.BUTTON1;
 
 public class ListMultisigAccountDialog extends DialogWrapper {
     private JPanel mainPanel;
@@ -54,6 +73,7 @@ public class ListMultisigAccountDialog extends DialogWrapper {
     private JTextField multisigAccTf;
     private JTextField thresholdTf;
     private JLabel messageLabel;
+    private JButton newBtn;
     private Project project;
     private MultisigAccountListTableModel tableModel;
     private boolean isRemote;
@@ -94,6 +114,8 @@ public class ListMultisigAccountDialog extends DialogWrapper {
                 fetchBalance(isRemote);
             }
         });
+
+        attachTableListener();
     }
 
     public void fetchBalance(boolean isRemote) {
@@ -167,17 +189,7 @@ public class ListMultisigAccountDialog extends DialogWrapper {
         multisigAccTf.setEditable(false);
         thresholdTf.setEditable(false);
 
-        ApplicationManager.getApplication().invokeLater(() -> {
-            try {
-                List<AlgoMultisigAccount> accounts = accountService.getMultisigAccounts();
-
-                tableModel.setElements(accounts);
-            } catch(Exception e) {
-                messageLabel.setText("Account loading failed !!!");
-            }
-
-            messageLabel.setText("");
-        }, ModalityState.stateForComponent(accListTable));
+        populateMultisigAccounts();
 
         ListSelectionModel listSelectionModel = accListTable.getSelectionModel();
         listSelectionModel.addListSelectionListener(e -> {
@@ -193,6 +205,157 @@ public class ListMultisigAccountDialog extends DialogWrapper {
                 defaultAccountsListModel.clear();
             }
         });
+
+        newBtn.addActionListener(e -> {
+            try {
+                AlgoMultisigAccount algoMultisigAccount = CreateMultisigAccountAction.createAccount(project);
+                if(algoMultisigAccount != null) {
+                    populateMultisigAccounts();
+                    Messages.showInfoMessage("New multisig account has been added successfully.", "Multi-sig account create");
+                }
+            } catch (Exception ex) {
+                Messages.showErrorDialog(mainPanel, "Error adding new account");
+                return;
+            }
+        });
+    }
+
+    private void populateMultisigAccounts() {
+        ApplicationManager.getApplication().invokeLater(() -> {
+            try {
+                List<AlgoMultisigAccount> accounts = accountService.getMultisigAccounts();
+
+                tableModel.setElements(accounts);
+            } catch(Exception e) {
+                messageLabel.setText("Account loading failed !!!");
+            }
+
+            messageLabel.setText("");
+        }, ModalityState.stateForComponent(accListTable));
+    }
+
+    //Create popup
+    private void attachTableListener() {
+        accListTable.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                if(e.getClickCount() == 1)
+                    tableRowPopupMenuHandler(e);
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                if(e.getClickCount() == 1)
+                    tableRowPopupMenuHandler(e);
+            }
+
+            public void mouseClicked(MouseEvent me) {
+                if (me.getClickCount() == 2 && me.getButton() == BUTTON1) {     // to detect doble click events
+                    handleDoubleClickEvents();
+                }
+            }
+        });
+
+    }
+
+    private void handleDoubleClickEvents() {
+        int rowindex = accListTable.getSelectedRow();
+        if (rowindex < 0)
+            return;
+
+        int column = accListTable.getSelectedColumn(); // select a column
+        AlgoMultisigAccount account = tableModel.getAccounts().get(rowindex);
+        if(account == null)
+            return;
+
+        if(column == 0) {
+            copyAddress(account);
+        }
+    }
+
+    private void tableRowPopupMenuHandler(MouseEvent e) {
+        int r = accListTable.rowAtPoint(e.getPoint());
+        if (r >= 0 && r < accListTable.getRowCount()) {
+            accListTable.setRowSelectionInterval(r, r);
+        } else {
+            accListTable.clearSelection();
+        }
+
+        int rowindex = accListTable.getSelectedRow();
+        if (rowindex < 0)
+            return;
+        if (e.isPopupTrigger() && e.getComponent() instanceof JTable ) {
+            AlgoMultisigAccount account = tableModel.getAccounts().get(rowindex);
+            ListPopup popup = createPopup(account);
+            RelativePoint relativePoint = new RelativePoint(e.getComponent(), new Point(e.getX(), e.getY()));
+            popup.show(relativePoint);
+        }
+    }
+
+    private ListPopup createPopup(AlgoMultisigAccount account) {
+        final DefaultActionGroup group = new DefaultActionGroup();
+
+        group.add(createCopyAction(account));
+//        if(!StringUtil.isEmpty(account.getMnemonic())) {
+//            group.add(createCopyMnemonicAction(account));
+//        }
+//        group.add(createShowAccountDetailsAction(account));
+        group.add(createRemoveAction(account));
+
+        DataContext dataContext = DataManager.getInstance().getDataContext(accListTable);
+        return JBPopupFactory.getInstance().createActionGroupPopup("",
+                group, dataContext, JBPopupFactory.ActionSelectionAid.MNEMONICS, true);
+    }
+
+    @NotNull
+    private AnAction createRemoveAction(AlgoMultisigAccount account) {
+        return new AnAction("Remove", "Remove", AllIcons.General.Remove) {
+            @Override
+            public void actionPerformed(@NotNull AnActionEvent e) {
+                AlgoMultisigAccount algoAccount = getSelectAccount();
+                if (algoAccount == null)
+                    return;
+                int response = Messages.showYesNoDialog("Do you really want to delete this account ? \n " + algoAccount.getAddress(),
+                        "Delete Account", AllIcons.General.Warning);
+                if (response == Messages.YES) {
+                    if (accountService.removeMultisigAccount(algoAccount)) {
+                        int index = tableModel.getAccounts().indexOf(account);
+                        if (index != -1 && index < tableModel.getAccounts().size()) {
+                            tableModel.getAccounts().remove(index);
+                            tableModel.fireTableDataChanged();
+                        }
+                    }
+                }
+
+            }
+
+            @Override
+            public boolean isDumbAware() {
+                return true;
+            }
+        };
+    }
+
+    private AnAction createCopyAction(AlgoMultisigAccount account) {
+        return new AnAction("Copy Address", "Copy Address", AllIcons.General.CopyHovered) {
+            @Override
+            public void actionPerformed(@NotNull AnActionEvent e) {
+                AlgoMultisigAccount algoAccount = getSelectAccount();
+                copyAddress(algoAccount);
+            }
+
+            @Override
+            public boolean isDumbAware() {
+                return true;
+            }
+        };
+    }
+
+    private void copyAddress(AlgoMultisigAccount algoAccount) {
+        StringSelection stringSelection = new StringSelection(algoAccount.getAddress());
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        clipboard.setContents(stringSelection, null);
+        Messages.showInfoMessage("Address copied to the clipboard", "Copy Address");
     }
 
     @Nullable

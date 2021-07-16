@@ -146,6 +146,11 @@ public class AccountService {
         return accountCacheService.deleteAccount(account);
     }
 
+    public boolean removeMultisigAccount(AlgoMultisigAccount account) {
+        if(account == null) return false;
+        return accountCacheService.deleteMultisigAccount(account);
+    }
+
     public boolean updateAccountName(String address, String accountName) {
         if(StringUtil.isEmpty(address))
             return false;

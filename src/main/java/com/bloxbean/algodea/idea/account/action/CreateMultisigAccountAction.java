@@ -49,6 +49,14 @@ public class CreateMultisigAccountAction extends AnAction {
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
         Project project = e.getProject();
+        AlgoMultisigAccount algoMultisigAccount = createAccount(project);
+        if(algoMultisigAccount != null) {
+            IdeaUtil.showNotification(project, "Multisig Account Create",
+                    "Multisig account created successfully", NotificationType.INFORMATION, IdeaUtil.MULTISIG_ACCOUNT_LIST_ACTION);
+        }
+    }
+
+    public static AlgoMultisigAccount createAccount(Project project) {
         AccountService accountService = AccountService.getAccountService();
         AlgoConsole console = AlgoConsole.getConsole(project);
 
@@ -58,7 +66,7 @@ public class CreateMultisigAccountAction extends AnAction {
             if (!ok) {
                 IdeaUtil.showNotification(project, "Multisig Account Create",
                         "Multisig account creation was cancelled", NotificationType.WARNING, null);
-                return;
+                return null;
             } else {
                 int threshold = multiSignAccountCreateDialog.getThreshold();
                 List<AlgoAccount> accounts = multiSignAccountCreateDialog.getAccounts();
@@ -74,9 +82,7 @@ public class CreateMultisigAccountAction extends AnAction {
                         console.showInfoMessage( String.format("Account                  : %s", account));
                     }
 
-                    IdeaUtil.showNotification(project, "Multisig Account Create",
-                            "Multisig account created successfully", NotificationType.INFORMATION, IdeaUtil.MULTISIG_ACCOUNT_LIST_ACTION);
-
+                    return algoMultisigAccount;
                 } catch (AccountException accountException) {
                     if(LOG.isDebugEnabled()) {
                         LOG.warn(accountException);
@@ -94,5 +100,7 @@ public class CreateMultisigAccountAction extends AnAction {
         } finally {
             multiSignAccountCreateDialog.disposeIfNeeded();
         }
+
+        return null;
     }
 }
