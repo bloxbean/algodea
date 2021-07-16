@@ -71,7 +71,7 @@ public class CreateStatefulAppAction extends BaseTxnAction {
     private final static Logger LOG = Logger.getInstance(CreateStatefulAppAction.class);
 
     public CreateStatefulAppAction() {
-        super(AllIcons.Actions.Install);
+        super("Create App", "Create Application", AllIcons.Actions.Install);
     }
 
     @Override

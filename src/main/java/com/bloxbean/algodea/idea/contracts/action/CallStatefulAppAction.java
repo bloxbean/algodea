@@ -11,7 +11,7 @@ import com.intellij.icons.AllIcons;
 public class CallStatefulAppAction extends BaseStatefulAppAction {
 
     public CallStatefulAppAction() {
-        super(AllIcons.Actions.Execute);
+        super("Call App", "Call Application", AllIcons.Actions.Execute);
     }
 
     @Override

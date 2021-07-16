@@ -45,6 +45,10 @@ public abstract class  BaseStatefulAppAction extends BaseTxnAction {
         super(icon);
     }
 
+    public BaseStatefulAppAction(String text, String description, Icon icon) {
+        super(text, description, icon);
+    }
+
     public abstract String getInputDialogTitle();
 
     public abstract String getApplicationTxnDescription();

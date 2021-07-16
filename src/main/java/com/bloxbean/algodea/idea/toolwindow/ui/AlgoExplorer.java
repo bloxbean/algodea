@@ -193,6 +193,11 @@ public class AlgoExplorer extends SimpleToolWindowPanel implements DataProvider,
         group.add(new Separator());
         group.add(new TransferAction());
         group.add(new AtomicTransferAction());
+        //TODO The following actions cannot be added here as the actions are dependent on modules
+//        group.add(new Separator());
+//        group.add(new CreateStatefulAppAction());
+//        group.add(new OptInStatefulAppAction());
+//        group.add(new CallStatefulAppAction());
 
         final ActionToolbar actionToolBar = ActionManager.getInstance().createActionToolbar(ActionPlaces.ANT_EXPLORER_TOOLBAR, group, true);
         return JBUI.Panels.simplePanel(actionToolBar.getComponent());

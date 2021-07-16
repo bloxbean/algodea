@@ -11,7 +11,7 @@ import com.intellij.icons.AllIcons;
 public class OptInStatefulAppAction extends BaseStatefulAppAction {
 
     public OptInStatefulAppAction() {
-        super(AllIcons.Actions.ShowReadAccess);
+        super("Opt In", "Opt In", AllIcons.Actions.ShowReadAccess);
     }
 
     @Override
