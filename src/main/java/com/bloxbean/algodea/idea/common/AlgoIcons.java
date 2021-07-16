@@ -50,6 +50,9 @@ public class AlgoIcons {
     public static final Icon LOCALSDK = IconLoader.getIcon("/icons/localsdk.png", AlgoIcons.class);
     public static final Icon LOCALSDK_COMPILE = IconLoader.getIcon("/icons/localsdk_compile.png", AlgoIcons.class);
 
+    public static final Icon TRANSFER_ICON = IconLoader.getIcon("/icons/transfer.png", AlgoIcons.class);
+    public static final Icon ATOMIC_TRANSFER_ICON = IconLoader.getIcon("/icons/atomic_transfer.png", AlgoIcons.class);
+
     //Structure view icons
     public static final Icon SUB_ROUTINE_ICON = IconLoader.getIcon("/icons/subroutine.png");
     public static final Icon TEAL_PROG_ICON = IconLoader.getIcon("/icons/teal_program.png");

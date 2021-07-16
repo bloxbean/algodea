@@ -2,6 +2,7 @@ package com.bloxbean.algodea.idea.atomic.action;
 
 import com.algorand.algosdk.transaction.SignedTransaction;
 import com.bloxbean.algodea.idea.atomic.ui.AtomicTransferDialog;
+import com.bloxbean.algodea.idea.common.AlgoIcons;
 import com.bloxbean.algodea.idea.core.action.BaseTxnAction;
 import com.bloxbean.algodea.idea.nodeint.common.RequestMode;
 import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
@@ -29,6 +30,10 @@ import java.util.List;
 
 public class AtomicTransferAction extends BaseTxnAction {
     private final static Logger LOG = Logger.getInstance(AtomicTransferAction.class);
+
+    public AtomicTransferAction(){
+        super("Atomic Transfer", "Atomic Transfer", AlgoIcons.ATOMIC_TRANSFER_ICON);
+    }
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {

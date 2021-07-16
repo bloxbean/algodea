@@ -2,6 +2,7 @@ package com.bloxbean.algodea.idea.transaction.action;
 
 import com.algorand.algosdk.account.Account;
 import com.algorand.algosdk.crypto.Address;
+import com.bloxbean.algodea.idea.common.AlgoIcons;
 import com.bloxbean.algodea.idea.common.Tuple;
 import com.bloxbean.algodea.idea.core.action.BaseTxnAction;
 import com.bloxbean.algodea.idea.nodeint.common.RequestMode;
@@ -33,6 +34,10 @@ import java.math.BigInteger;
 
 public class TransferAction extends BaseTxnAction {
     private final static Logger LOG = Logger.getInstance(TransferAction.class);
+
+    public TransferAction() {
+        super("Transfer", "Transfer", AlgoIcons.TRANSFER_ICON);
+    }
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {

@@ -2,6 +2,7 @@ package com.bloxbean.algodea.idea.toolwindow.ui;
 
 import com.bloxbean.algodea.idea.account.action.AccountListAction;
 import com.bloxbean.algodea.idea.account.action.MultisigAccountListAction;
+import com.bloxbean.algodea.idea.atomic.action.AtomicTransferAction;
 import com.bloxbean.algodea.idea.configuration.action.*;
 import com.bloxbean.algodea.idea.configuration.model.AlgoLocalSDK;
 import com.bloxbean.algodea.idea.configuration.model.NodeInfo;
@@ -14,6 +15,7 @@ import com.bloxbean.algodea.idea.toolwindow.AlgoSDKDescriptor;
 import com.bloxbean.algodea.idea.toolwindow.AlgoServerNodeDescriptor;
 import com.bloxbean.algodea.idea.toolwindow.action.SetCompilerTargetAction;
 import com.bloxbean.algodea.idea.toolwindow.action.SetDeploymentTargetAction;
+import com.bloxbean.algodea.idea.transaction.action.TransferAction;
 import com.intellij.ide.util.treeView.NodeRenderer;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.actionSystem.*;
@@ -188,16 +190,9 @@ public class AlgoExplorer extends SimpleToolWindowPanel implements DataProvider,
         group.add(new Separator());
         group.add(new AccountListAction());
         group.add(new MultisigAccountListAction());
-//        group.add(new RemoveAction());
-//        group.add(new RunAction());
-//        group.add(new ShowAllTargetsAction());
-//        AnAction action = CommonActionsManager.getInstance().createExpandAllAction(myTreeExpander, this);
-//        action.getTemplatePresentation().setDescription(AntBundle.messagePointer("ant.explorer.expand.all.nodes.action.description"));
-//        group.add(action);
-//        action = CommonActionsManager.getInstance().createCollapseAllAction(myTreeExpander, this);
-//        action.getTemplatePresentation().setDescription(AntBundle.messagePointer("ant.explorer.collapse.all.nodes.action.description"));
-//        group.add(action);
-//        group.add(myAntBuildFilePropertiesAction);
+        group.add(new Separator());
+        group.add(new TransferAction());
+        group.add(new AtomicTransferAction());
 
         final ActionToolbar actionToolBar = ActionManager.getInstance().createActionToolbar(ActionPlaces.ANT_EXPLORER_TOOLBAR, group, true);
         return JBUI.Panels.simplePanel(actionToolBar.getComponent());

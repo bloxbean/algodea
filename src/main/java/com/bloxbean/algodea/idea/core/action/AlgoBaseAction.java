@@ -24,6 +24,10 @@ public abstract class AlgoBaseAction extends AnAction {
         super(icon);
     }
 
+    public AlgoBaseAction(String text, String description, Icon icon) {
+        super(text, description, icon);
+    }
+
     public void warnDeploymentTargetNotConfigured(Project project, String actionTitle) {
         IdeaUtil.showNotification(project, actionTitle, "Algorand Node for deployment node is not configured. Click here to configure.",
                 NotificationType.ERROR, ConfigurationAction.ACTION_ID);
@@ -49,5 +53,4 @@ public abstract class AlgoBaseAction extends AnAction {
             return false;
         }
     }
-
 }

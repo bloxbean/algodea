@@ -30,6 +30,15 @@ public abstract class BaseTxnAction extends AlgoBaseAction {
         super(icon);
     }
 
+    public BaseTxnAction(String text, String description, Icon icon) {
+        super(text, description, icon);
+    }
+
+    @Override
+    public boolean isDumbAware() {
+        return true;
+    }
+
     public void exportTransaction(Project project, Module module, RequestMode requestMode, Result result, LogListener logListener) {
         if(result == null) {
             logListener.error("Export failed. Result : null");
