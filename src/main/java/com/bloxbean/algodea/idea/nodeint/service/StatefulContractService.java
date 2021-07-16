@@ -49,7 +49,7 @@ public class StatefulContractService extends AlgoBaseService {
     }
 
     public Result<Long> createApp(String approvalProgram, String clearStateProgram, Account signer, Address sender,
-                          int globalBytes, int globalInts, int localBytes, int localInts,
+                          int globalBytes, int globalInts, int localBytes, int localInts, long extraPages,
                           TxnDetailsParameters txnDetailsParameters, RequestMode requestMode) throws Exception {
         if(signer == null && sender == null) {
             logListener.error("Creator account cannot be null");
@@ -82,7 +82,7 @@ public class StatefulContractService extends AlgoBaseService {
         }
 
         return _createApp(signer, sender, new TEALProgram(approvalProgramBytes), new TEALProgram(clearProgramBytes),
-                globalInts, globalBytes, localInts, localBytes, txnDetailsParameters, requestMode);
+                globalInts, globalBytes, localInts, localBytes, extraPages, txnDetailsParameters, requestMode);
     }
 
     public Result updateApp(Long appId, Account signer, Address sender, String approvalProgram, String clearStateProgram
@@ -273,7 +273,7 @@ public class StatefulContractService extends AlgoBaseService {
 
     private Result<Long> _createApp(Account creator, Address sender, TEALProgram approvalProgramSource,
                           TEALProgram clearProgramSource, int globalInts, int globalBytes, int localInts, int localBytes,
-                                    TxnDetailsParameters txnDetailsParameters, RequestMode requestMode)
+                                    long extraPages, TxnDetailsParameters txnDetailsParameters, RequestMode requestMode)
             throws Exception {
 
         logListener.info("Getting node suggested transaction parameters ...");
@@ -297,7 +297,8 @@ public class StatefulContractService extends AlgoBaseService {
                 .approvalProgram(approvalProgramSource)
                 .clearStateProgram(clearProgramSource)
                 .globalStateSchema(new StateSchema(globalInts, globalBytes))
-                .localStateSchema(new StateSchema(localInts, localBytes));
+                .localStateSchema(new StateSchema(localInts, localBytes))
+                .extraPages(extraPages);
         //.build();
 
         Transaction txn = populateBaseAppTransaction(transactionBuilder, null, sender, txnDetailsParameters);

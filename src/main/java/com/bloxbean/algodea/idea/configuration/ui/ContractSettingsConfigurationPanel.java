@@ -38,6 +38,7 @@ public class ContractSettingsConfigurationPanel {
     private JTextField globalIntTf;
     private JTextField localByteslicesTf;
     private JTextField localIntsTf;
+    private JTextField extraPagesTf;
     private boolean newContractAdd = false;
 
     private AlgoPkgJsonService algoPkgJsonService;
@@ -89,6 +90,7 @@ public class ContractSettingsConfigurationPanel {
                     globalIntTf.setText(String.valueOf(statefulContract.getGlobalInts()));
                     localByteslicesTf.setText(String.valueOf(statefulContract.getLocalByteSlices()));
                     localIntsTf.setText(String.valueOf(statefulContract.getLocalInts()));
+                    extraPagesTf.setText(String.valueOf(statefulContract.getExtraPages()));
                 }
             } catch (PackageJsonException packageJsonException) {
                 if(LOG.isDebugEnabled()) {
@@ -145,6 +147,7 @@ public class ContractSettingsConfigurationPanel {
         globalIntTf.setText("1");
         localByteslicesTf.setText("1");
         localIntsTf.setText("1");
+        extraPagesTf.setText("0");
     }
 
     public void setProjectFolder(String projectFolder) {
@@ -194,6 +197,14 @@ public class ContractSettingsConfigurationPanel {
     public int getLocalInts() {
         try {
             return Integer.parseInt(StringUtil.trim(localIntsTf.getText()));
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
+    public int getExtraPages() {
+        try {
+            return Integer.parseInt(StringUtil.trim(extraPagesTf.getText()));
         } catch (Exception e) {
             return 0;
         }
@@ -251,6 +262,10 @@ public class ContractSettingsConfigurationPanel {
 
         if(!NumberUtils.isNumber(localIntsTf.getText())) {
             return new ValidationInfo("Invalid Local Ints. Integer value expected.", localIntsTf);
+        }
+
+        if(!NumberUtils.isNumber(extraPagesTf.getText())) {
+            return new ValidationInfo("Invalid Extra Pages. Integer value expected.", extraPagesTf);
         }
 
         return null;
@@ -366,6 +381,7 @@ public class ContractSettingsConfigurationPanel {
                 sfContract.setGlobalInts(getGlobalInts());
                 sfContract.setLocalByteSlices(getLocalByteslices());
                 sfContract.setLocalInts(getLocalInts());
+                sfContract.setExtraPages(getExtraPages());
 
                 algoPkgJsonService.setStatefulContract(sfContract);
                 algoPkgJsonService.save();
@@ -379,6 +395,7 @@ public class ContractSettingsConfigurationPanel {
                 statefulContract.setGlobalInts(getGlobalInts());
                 statefulContract.setLocalByteSlices(getLocalByteslices());
                 statefulContract.setLocalInts(getLocalInts());
+                statefulContract.setExtraPages(getExtraPages());
 
                 algoPkgJsonService.setStatefulContract(statefulContract);
                 algoPkgJsonService.save();

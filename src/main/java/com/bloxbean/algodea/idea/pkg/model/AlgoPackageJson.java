@@ -1,6 +1,7 @@
 package com.bloxbean.algodea.idea.pkg.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.intellij.openapi.util.text.StringUtil;
@@ -86,6 +87,7 @@ public class AlgoPackageJson {
         return this.statefulContractList.get(0);
     }
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class StatefulContract {
         @JsonProperty("name")
         private String name;
@@ -107,6 +109,9 @@ public class AlgoPackageJson {
 
         @JsonProperty("local-ints")
         private int localInts;
+
+        @JsonProperty("extra-pages")
+        private int extraPages;
 
         public String getName() {
             return name;
@@ -170,6 +175,14 @@ public class AlgoPackageJson {
 
         public void setLocalInts(int localInts) {
             this.localInts = localInts;
+        }
+
+        public int getExtraPages() {
+            return extraPages;
+        }
+
+        public void setExtraPages(int extraPages) {
+            this.extraPages = extraPages;
         }
 
         @Override

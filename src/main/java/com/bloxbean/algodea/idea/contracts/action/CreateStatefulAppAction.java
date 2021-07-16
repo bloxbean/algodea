@@ -163,6 +163,7 @@ public class CreateStatefulAppAction extends BaseTxnAction {
             int globalInts = createForm.getGlobalInts();
             int localByteslices = createForm.getLocalByteslices();
             int localInts = createForm.getLocalInts();
+            int extraPages = createForm.getExtraPages();
 
             List<byte[]> appArgs = appTxnDetailsEntryForm.getArgsAsBytes();
             List<Address> accounts = appTxnDetailsEntryForm.getAccounts();
@@ -248,7 +249,7 @@ public class CreateStatefulAppAction extends BaseTxnAction {
                     Result<Long> result = null;
                     try {
                         result = sfService.createApp(appProgText, clearProgText, signerAccount, senderAddress,
-                                globalByteslices, globalInts, localByteslices, localInts,
+                                globalByteslices, globalInts, localByteslices, localInts, extraPages,
                                 generalTxnDetailsParams, requestMode);
                     } catch (Exception exception) {
                         if(LOG.isDebugEnabled()) {

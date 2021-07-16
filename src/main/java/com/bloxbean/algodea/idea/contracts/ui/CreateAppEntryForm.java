@@ -69,6 +69,7 @@ public class CreateAppEntryForm {
     private JTextField senderAddressTf;
     private JButton senderChooser;
     private JButton senderMultiSigChooser;
+    private JTextField extraPagesTf;
     private List<AlgoPackageJson.StatefulContract> contracts;
     private AlgoPkgJsonService pkgJsonService;
     private AlgoPackageJson.StatefulContract selectedContract;
@@ -221,6 +222,7 @@ public class CreateAppEntryForm {
                         globalIntTf.setText(String.valueOf(this.selectedContract.getGlobalInts()));
                         localByteslicesTf.setText(String.valueOf(this.selectedContract.getLocalByteSlices()));
                         localIntsTf.setText(String.valueOf(this.selectedContract.getLocalInts()));
+                        extraPagesTf.setText(String.valueOf(this.selectedContract.getExtraPages()));
                     }
                 }
             });
@@ -325,6 +327,10 @@ public class CreateAppEntryForm {
         return Integer.parseInt(localIntsTf.getText());
     }
 
+    public int getExtraPages() {
+        return Integer.parseInt(extraPagesTf.getText());
+    }
+
     public Account getAuthorizedAccount() {
         String mnemonic = authMnemonicTf.getText().trim();
         try {
@@ -382,6 +388,10 @@ public class CreateAppEntryForm {
             return new ValidationInfo("Invalid Local Ints. Integer value expected.", localIntsTf);
         }
 
+        if(!NumberUtils.isNumber(extraPagesTf.getText())) {
+            return new ValidationInfo("Invalid Extra Pages. Integer value expected.", extraPagesTf);
+        }
+
         return null;
     }
 
@@ -392,7 +402,9 @@ public class CreateAppEntryForm {
         if(selectedContract.getGlobalByteSlices() != getGlobalByteslices()
                 || selectedContract.getGlobalInts() != getGlobalInts()
                 || selectedContract.getLocalByteSlices() != getLocalByteslices()
-                || selectedContract.getLocalInts() != getLocalInts()) {
+                || selectedContract.getLocalInts() != getLocalInts()
+                || selectedContract.getExtraPages() != getExtraPages()
+        ) {
             return true;
         } else {
             return false;
@@ -413,6 +425,7 @@ public class CreateAppEntryForm {
                             contract.setGlobalInts(getGlobalInts());
                             contract.setLocalByteSlices(getLocalByteslices());
                             contract.setLocalInts(getLocalInts());
+                            contract.setExtraPages(getExtraPages());
                         }
 
                         pkgJsonService.save();
