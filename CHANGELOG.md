@@ -1,4 +1,4 @@
-### 0.6.0-beta
+### 0.6.0
   - TEAL v4 support (New Opcodes, Txn Fields)
   - New Structure view
 ### 0.5.0
