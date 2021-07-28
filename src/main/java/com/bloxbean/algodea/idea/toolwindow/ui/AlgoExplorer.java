@@ -10,6 +10,7 @@ import com.bloxbean.algodea.idea.configuration.service.AlgoProjectState;
 import com.bloxbean.algodea.idea.core.messaging.AlgoNodeChangeNotifier;
 import com.bloxbean.algodea.idea.core.messaging.AlgoProjectNodeConfigChangeNotifier;
 import com.bloxbean.algodea.idea.core.messaging.AlgoSDKChangeNotifier;
+import com.bloxbean.algodea.idea.debugger.action.StopDebuggerAction;
 import com.bloxbean.algodea.idea.toolwindow.AlgoExplorerTreeStructure;
 import com.bloxbean.algodea.idea.toolwindow.AlgoSDKDescriptor;
 import com.bloxbean.algodea.idea.toolwindow.AlgoServerNodeDescriptor;
@@ -193,6 +194,7 @@ public class AlgoExplorer extends SimpleToolWindowPanel implements DataProvider,
         group.add(new Separator());
         group.add(new TransferAction());
         group.add(new AtomicTransferAction());
+        group.add(new StopDebuggerAction());
         //TODO The following actions cannot be added here as the actions are dependent on modules
 //        group.add(new Separator());
 //        group.add(new CreateStatefulAppAction());
