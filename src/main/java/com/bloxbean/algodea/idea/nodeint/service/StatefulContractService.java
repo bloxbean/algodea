@@ -30,6 +30,7 @@ import com.algorand.algosdk.transaction.SignedTransaction;
 import com.algorand.algosdk.transaction.Transaction;
 import com.algorand.algosdk.v2.client.common.Response;
 import com.algorand.algosdk.v2.client.model.*;
+import com.bloxbean.algodea.idea.dryrun.util.DryRunJsonUtil;
 import com.bloxbean.algodea.idea.nodeint.common.RequestMode;
 import com.bloxbean.algodea.idea.nodeint.exception.ApiCallException;
 import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
@@ -394,11 +395,13 @@ public class StatefulContractService extends AlgoBaseService {
             return postApplicationTransaction(fromAccount, stxn);
         } else if (requestMode.equals(RequestMode.EXPORT_SIGNED)) {
             return Result.success(JsonUtil.getPrettyJson(stxn));
-        } else if(requestMode.equals(RequestMode.EXPORT_UNSIGNED)) {
+        } else if (requestMode.equals(RequestMode.EXPORT_UNSIGNED)) {
             return Result.success(JsonUtil.getPrettyJson(txn));
         } else if (requestMode.equals(RequestMode.DRY_RUN)) {
             return processDryRun(stxn);
-        }  else {
+        } else if (requestMode.equals(RequestMode.DRYRUN_DUMP)) {
+            return processDryRunDump(stxn);
+        } else {
             return Result.error("Invalid request mode : " + requestMode);
         }
     }
@@ -417,6 +420,20 @@ public class StatefulContractService extends AlgoBaseService {
                 return Result.error("Dry run failed");
 
             return Result.success(JsonUtil.getPrettyJson(dryrunTxnResults.get(0)));
+        }
+    }
+
+    @NotNull
+    private Result processDryRunDump(SignedTransaction signTxn) throws Exception {
+        List<SignedTransaction> stxns = new ArrayList<>();
+        stxns.add(signTxn);
+
+        DryrunRequest dryrunRequest = getDryrunRequest(stxns);
+        if(dryrunRequest == null) {
+            return Result.error("Dry run request dump failed");
+        } else {
+            String json = DryRunJsonUtil.toJson(dryrunRequest);
+            return Result.success(json).withValue(dryrunRequest);
         }
     }
 }

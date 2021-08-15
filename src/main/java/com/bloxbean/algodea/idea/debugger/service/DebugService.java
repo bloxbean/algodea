@@ -44,8 +44,7 @@ public class DebugService {
         }
     }
 
-    public void startDebugger(String sourceTeal, File txnFile, DebugResultListener listener) {
-
+    public void startDebugger(String sourceTeal, File txnFile, File dryRunReqDump, DebugResultListener listener) {
         List<String> cmd = new ArrayList<>();
         cmd.add(localSDK.getHome() + File.separator + getTealDbgCmd());
         cmd.add("debug");
@@ -56,7 +55,15 @@ public class DebugService {
             cmd.add("--txn");
             cmd.add(txnFile.getAbsolutePath());
         }
-        cmd.add(sourceTeal);
+
+        if(dryRunReqDump != null) {
+            cmd.add("--dryrun-req");
+            cmd.add(dryRunReqDump.getAbsolutePath());
+        }
+
+        if(sourceTeal != null) {
+            cmd.add(sourceTeal);
+        }
 
         if(handler != null) {
             listener.info("Stopping previous debug session ...");
@@ -92,9 +99,8 @@ public class DebugService {
             public void processTerminated(@NotNull ProcessEvent event) {
                 if(event.getExitCode() == 0) {
                     listener.info("Debugger started successfully.");
-//                    listener.onSuccessful(sourceTeal, destination);
                 } else {
-                    failed(listener, sourceTeal, "Debug failed.", new CompileException("Goal compilation process failed with error."));
+                    failed(listener, sourceTeal, "Debug failed.", new Exception("Debugger startup failed. " + event.getText()));
                 }
             }
 

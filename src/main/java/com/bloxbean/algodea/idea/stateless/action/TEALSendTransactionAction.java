@@ -2,6 +2,7 @@ package com.bloxbean.algodea.idea.stateless.action;
 
 import com.algorand.algosdk.account.Account;
 import com.algorand.algosdk.crypto.Address;
+import com.algorand.algosdk.transaction.SignedTransaction;
 import com.bloxbean.algodea.idea.common.AlgoIcons;
 import com.bloxbean.algodea.idea.common.Tuple;
 import com.bloxbean.algodea.idea.compile.service.CompilationResultListener;
@@ -389,7 +390,7 @@ public class TEALSendTransactionAction extends BaseTxnAction {
 
                     if(originalReqMode.equals(RequestMode.DEBUG)) {//Debug call
                         DebugHandler debugHandler = new DebugHandler();
-                        debugHandler.startDebugger(project, console, sourcePath, result.getResponse(), logicSigParams);
+                        debugHandler.startDebugger(project, console, sourcePath, (SignedTransaction) result.getValue(), logicSigParams);
                     } else {
                         processResult(project, module, result, requestMode, logListener);
                     }
