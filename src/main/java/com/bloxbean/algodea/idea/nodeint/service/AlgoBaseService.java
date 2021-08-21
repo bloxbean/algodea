@@ -399,10 +399,41 @@ public class AlgoBaseService {
 
     protected DryrunResponse postStatefulDryRunTransaction(List<SignedTransaction> stxns) throws Exception {
 
-        List<DryrunSource> sources = new ArrayList<DryrunSource>();
-
         Tuple<String[], String[]> headers = algoConnectionFactory.getHeadersForBinaryContent();
 
+        DryrunRequest dr = getDryrunRequest(stxns);
+
+        Response<DryrunResponse> dryrunResponse;
+
+        logListener.info(String.format("Connecting to network (%s) ...", client.getHost()));
+        dryrunResponse = client.TealDryrun().request(dr).execute(headers._1(), headers._2());
+
+        if(!dryrunResponse.isSuccessful()) {
+            printErrorMessage("Dry run failed", dryrunResponse);
+            if(dryrunResponse.body() != null) {
+                logListener.error("Error: " + dryrunResponse.body().error);
+            }
+            return dryrunResponse.body();
+        }
+
+        if(dryrunResponse.isSuccessful()) {
+            logListener.info("Dry Run Result :");
+            if(dryrunResponse.body() != null && dryrunResponse.body().txns != null) {
+                for(DryrunTxnResult dryrunTxnResult:dryrunResponse.body().txns)
+                    logListener.info(JsonUtil.getPrettyJson(dryrunTxnResult));
+            }
+        }
+
+        if(dryrunResponse.body() != null && !StringUtil.isEmpty(dryrunResponse.body().error)) {
+            logListener.error(dryrunResponse.body().toString());
+        }
+
+        return dryrunResponse.body();
+    }
+
+    @NotNull
+    protected DryrunRequest getDryrunRequest(List<SignedTransaction> stxns) throws Exception {
+        List<DryrunSource> sources = new ArrayList<DryrunSource>();
         // source
         if (dryRunContext != null && dryRunContext.sources != null && dryRunContext.sources.size() > 0) {
             for(DryRunContext.Source source: dryRunContext.sources) {
@@ -452,37 +483,15 @@ public class AlgoBaseService {
 
         dr.txns = stxns;
         dr.sources = sources;
-
-        Response<DryrunResponse> dryrunResponse;
-
-        logListener.info(String.format("Connecting to network (%s) ...", client.getHost()));
-        dryrunResponse = client.TealDryrun().request(dr).execute(headers._1(), headers._2());
-
-        if(!dryrunResponse.isSuccessful()) {
-            printErrorMessage("Dry run failed", dryrunResponse);
-            if(dryrunResponse.body() != null) {
-                logListener.error("Error: " + dryrunResponse.body().error);
-            }
-            return dryrunResponse.body();
-        }
-
-        if(dryrunResponse.isSuccessful()) {
-            logListener.info("Dry Run Result :");
-            if(dryrunResponse.body() != null && dryrunResponse.body().txns != null) {
-                for(DryrunTxnResult dryrunTxnResult:dryrunResponse.body().txns)
-                    logListener.info(JsonUtil.getPrettyJson(dryrunTxnResult));
-            }
-        }
-
-        if(dryrunResponse.body() != null && !StringUtil.isEmpty(dryrunResponse.body().error)) {
-            logListener.error(dryrunResponse.body().toString());
-        }
-
-        return dryrunResponse.body();
+        return dr;
     }
 
     public void setDryRunContext(DryRunContext dryRunContext) {
         this.dryRunContext = dryRunContext;
+    }
+
+    public DryRunContext getDryRunContext() {
+        return this.dryRunContext;
     }
 
     protected void waitForConfirmation(String txID) throws Exception {

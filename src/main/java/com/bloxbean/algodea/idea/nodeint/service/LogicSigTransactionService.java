@@ -155,9 +155,9 @@ public class LogicSigTransactionService extends TransactionService {
             PendingTransactionResponse txnResponse = postTransaction(signTxn);
             return txnResponse != null ? Result.success(txnResponse.toString()) : Result.error();
         } else if (requestMode.equals(RequestMode.EXPORT_SIGNED)) {
-            return Result.success(JsonUtil.getPrettyJson(signTxn));
+            return Result.success(JsonUtil.getPrettyJson(signTxn)).withValue(signTxn);
         } else if (requestMode.equals(RequestMode.EXPORT_UNSIGNED)) {
-            return Result.success(JsonUtil.getPrettyJson(txn));
+            return Result.success(JsonUtil.getPrettyJson(txn)).withValue(txn);
         } else if (requestMode.equals(RequestMode.DRY_RUN)) {
             return processDryRun(signTxn, sourceBytes);
         } else {

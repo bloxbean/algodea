@@ -16,8 +16,10 @@ public abstract class TxnDialogWrapper extends DialogWrapper {
     protected Action exportSignedAction;
     protected Action exportUnsignedAction;
     protected Action dryRunAction;
+    protected Action debugAction;
 
     private boolean enableDryRun;
+    private boolean enableDebug;
 
     protected TxnDialogWrapper(@Nullable Project project, boolean canBeParent) {
         super(project, canBeParent);
@@ -25,6 +27,9 @@ public abstract class TxnDialogWrapper extends DialogWrapper {
         exportUnsignedAction = new RequestAction("Export Tx", RequestMode.EXPORT_UNSIGNED);
         dryRunAction = new RequestAction("Dry Run", RequestMode.DRY_RUN);
         dryRunAction.setEnabled(false);
+
+        debugAction = new RequestAction("Debug", RequestMode.DEBUG);
+        debugAction.setEnabled(false);
     }
 
     protected TxnDialogWrapper(@Nullable Project project) {
@@ -37,7 +42,8 @@ public abstract class TxnDialogWrapper extends DialogWrapper {
         return new Action[]{
                 exportUnsignedAction,
                 exportSignedAction,
-                dryRunAction
+                dryRunAction,
+                debugAction
         };
     }
 
@@ -60,6 +66,10 @@ public abstract class TxnDialogWrapper extends DialogWrapper {
             if(enableDryRun) {
                 dryRunAction.setEnabled(true);
             }
+            if(enableDebug) {
+                debugAction.setEnabled(true);
+            }
+
             return null;
         } else {
             exportUnsignedAction.setEnabled(false);
@@ -68,6 +78,9 @@ public abstract class TxnDialogWrapper extends DialogWrapper {
             if(enableDryRun) {
                 dryRunAction.setEnabled(false);
             }
+            if(enableDebug) {
+                debugAction.setEnabled(false);
+            }
             return validationInfo;
         }
     }
@@ -75,6 +88,11 @@ public abstract class TxnDialogWrapper extends DialogWrapper {
     public void enableDryRun() {
         enableDryRun = true;
         dryRunAction.setEnabled(enableDryRun);
+    }
+
+    public void enableDebug() {
+        enableDebug = true;
+        debugAction.setEnabled(enableDebug);
     }
 
     protected abstract ValidationInfo doTransactionInputValidation();

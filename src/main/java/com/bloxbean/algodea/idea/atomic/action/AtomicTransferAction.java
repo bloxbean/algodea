@@ -11,6 +11,7 @@ import com.bloxbean.algodea.idea.nodeint.model.Result;
 import com.bloxbean.algodea.idea.nodeint.service.LogListener;
 import com.bloxbean.algodea.idea.nodeint.service.LogListenerAdapter;
 import com.bloxbean.algodea.idea.nodeint.service.TransactionService;
+import com.bloxbean.algodea.idea.stateless.action.DebugHandler;
 import com.bloxbean.algodea.idea.toolwindow.AlgoConsole;
 import com.bloxbean.algodea.idea.util.IdeaUtil;
 import com.intellij.notification.NotificationType;
@@ -63,7 +64,8 @@ public class AtomicTransferAction extends BaseTxnAction {
 
             RequestMode requestMode = dialog.getRequestMode();
             List<SignedTransaction> signedTransactionList;
-            if(RequestMode.DRY_RUN.equals(requestMode)) {
+            if(RequestMode.DRY_RUN.equals(requestMode) || RequestMode.DRYRUN_DUMP.equals(requestMode)
+                    ||RequestMode.DEBUG.equals(requestMode)) { //If dry run or debug, get dryrun context
                 signedTransactionList = dialog.getSignedTransactions();
                 List<DryRunContext.Source> dryRunSources = dialog.getDryContextSources();
 
@@ -92,13 +94,22 @@ public class AtomicTransferAction extends BaseTxnAction {
                     try {
                         Result result = null;
 
-                        if(requestMode == null || requestMode.equals(RequestMode.TRANSACTION)) {
-                            result = transactionService.atomicTransfer(groupId, groupTxnBytes);
-                        } else if(requestMode.equals(RequestMode.DRY_RUN)) {
-                            result = transactionService.atomicTransferDryRun(groupId, dialog.getSignedTransactions());
+                        RequestMode originalReqMode = requestMode;
+                        RequestMode callRequestMode = originalReqMode;
+                        if(callRequestMode.equals(RequestMode.DEBUG)) {
+                            callRequestMode = RequestMode.DRYRUN_DUMP;
                         }
 
-                        if (result.isSuccessful()) {
+                        if(callRequestMode == null || callRequestMode.equals(RequestMode.TRANSACTION)) {
+                            result = transactionService.atomicTransfer(groupId, groupTxnBytes);
+                        } else if(callRequestMode.equals(RequestMode.DRY_RUN)) {
+                            result = transactionService.atomicTransferDryRun(groupId, dialog.getSignedTransactions());
+                        } else if(callRequestMode.equals(RequestMode.DRYRUN_DUMP)) {
+                            result = transactionService.processDryRunDump(dialog.getSignedTransactions());
+                        }
+
+                        if(callRequestMode == null || callRequestMode.equals(RequestMode.TRANSACTION)) {
+                            if (result.isSuccessful()) {
                                 console.showInfoMessage("Atomic transfer completed successfully");
                                 IdeaUtil.showNotification(project, getTitle(), "Atomic transfer completed successfully",
                                         NotificationType.INFORMATION, null);
@@ -106,6 +117,24 @@ public class AtomicTransferAction extends BaseTxnAction {
                                 console.showErrorMessage(String.format("%s failed: %s", getTxnCommand(), result.getResponse()));
                                 IdeaUtil.showNotification(project, getTitle(), "Atomic Transfer failed : " + result.getResponse(), NotificationType.ERROR, null);
                             }
+                        } else {
+                            if(originalReqMode.equals(RequestMode.DEBUG)) {//Debug call
+                                DebugHandler debugHandler = new DebugHandler();
+                                DryRunContext dryRunContext = transactionService.getDryRunContext();
+
+                                String[] sourceFiles = null;
+                                if(dryRunContext != null && dryRunContext.sources != null && dryRunContext.sources.size() > 0) {
+                                    sourceFiles = new String[dryRunContext.sources.size()];
+                                    for(int i=0; i < dryRunContext.sources.size(); i++) {
+                                        sourceFiles[i] = dryRunContext.sources.get(i).code;
+                                    }
+                                }
+
+                                debugHandler.startStatefulCallDebugger(project, sourceFiles, console, result.getResponse());
+                            } else {
+                                processResult(project, module, result, requestMode, logListener);
+                            }
+                        }
                     } catch (Exception exception) {
                         if (LOG.isDebugEnabled()) {
                             LOG.warn(exception);

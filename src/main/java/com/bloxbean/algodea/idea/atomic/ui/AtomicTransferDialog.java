@@ -75,6 +75,7 @@ public class AtomicTransferDialog extends DialogWrapper {
 
     protected RequestMode requestMode = RequestMode.TRANSACTION;
     protected Action dryRunAction;
+    protected Action debugAction;
 
     private Project project;
     private Module module;
@@ -82,6 +83,7 @@ public class AtomicTransferDialog extends DialogWrapper {
     public AtomicTransferDialog(@Nullable Project project, Module module) {
         super(project, true);
         dryRunAction = new RequestAction("Dry Run", RequestMode.DRY_RUN);
+        debugAction = new RequestAction("Debug", RequestMode.DEBUG);
 
         init();
         setTitle("Atomic Transfer");
@@ -348,9 +350,11 @@ public class AtomicTransferDialog extends DialogWrapper {
         ValidationInfo validationInfo = doAtomicTransactionInputValidation();
         if(validationInfo == null) {
             dryRunAction.setEnabled(true);
+            debugAction.setEnabled(true);
             return null;
         } else {
             dryRunAction.setEnabled(false);
+            debugAction.setEnabled(false);
             return validationInfo;
         }
     }
@@ -359,7 +363,8 @@ public class AtomicTransferDialog extends DialogWrapper {
     protected @NotNull Action[] createLeftSideActions() {
 
         return new Action[]{
-                dryRunAction
+                dryRunAction,
+                debugAction
         };
     }
 

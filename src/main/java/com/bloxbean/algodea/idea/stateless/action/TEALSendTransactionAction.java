@@ -2,6 +2,7 @@ package com.bloxbean.algodea.idea.stateless.action;
 
 import com.algorand.algosdk.account.Account;
 import com.algorand.algosdk.crypto.Address;
+import com.algorand.algosdk.transaction.SignedTransaction;
 import com.bloxbean.algodea.idea.common.AlgoIcons;
 import com.bloxbean.algodea.idea.common.Tuple;
 import com.bloxbean.algodea.idea.compile.service.CompilationResultListener;
@@ -125,7 +126,7 @@ public class TEALSendTransactionAction extends BaseTxnAction {
         final String sourcePath = sourceOutputPaths._1(); //sourcePath;
         final String compiledOutputPath = sourceOutputPaths._2(); //outputFilePath;
 
-        TEALLogicSigTxnHandler compilationResultListener = new TEALLogicSigTxnHandler(project, module, remoteCompilerSDK, console);
+        TEALLogicSigTxnHandler compilationResultListener = new TEALLogicSigTxnHandler(project, module, remoteCompilerSDK, console, sourcePath);
         compilationResultListener.compile(sourcePath, compiledOutputPath);
     }
 
@@ -184,12 +185,14 @@ public class TEALSendTransactionAction extends BaseTxnAction {
         private Module module;
         private AlgoConsole console;
         private NodeInfo remoteCompilerSDK;
+        private String sourcePath;
 
-        public TEALLogicSigTxnHandler(Project project, Module module, NodeInfo remoteCompilerSDK, AlgoConsole console) {
+        public TEALLogicSigTxnHandler(Project project, Module module, NodeInfo remoteCompilerSDK, AlgoConsole console, String sourcePath) {
             this.project = project;
             this.module = module;
             this.remoteCompilerSDK = remoteCompilerSDK;
             this.console = console;
+            this.sourcePath = sourcePath;
         }
 
         @Override
@@ -284,6 +287,7 @@ public class TEALSendTransactionAction extends BaseTxnAction {
             //Catpure inputs
             TEALSendTransactionDialog dialog = new TEALSendTransactionDialog(project, module, contractHash);
             dialog.enableDryRun();
+            dialog.enableDebug();
             boolean ok = dialog.showAndGet();
             if (!ok) {
                 return;
@@ -341,7 +345,6 @@ public class TEALSendTransactionAction extends BaseTxnAction {
             asset = dialog.getAsset();
             isAlgoTransfer = dialog.isAlgoTransfer();
             requestMode = dialog.getRequestMode();
-
             generateLogicSig(project, console, remoteCompilerSDK, sourcePath, outputPath, logicSigParams, compilationResultListener);
         }
 
@@ -371,6 +374,11 @@ public class TEALSendTransactionAction extends BaseTxnAction {
                 LogListener logListener = new LogListenerAdapter(console);
                 LogicSigTransactionService transactionService = new LogicSigTransactionService(project, logListener);
 
+                RequestMode originalReqMode = requestMode;
+                if(requestMode.equals(RequestMode.DEBUG)) {
+                    requestMode = RequestMode.EXPORT_SIGNED;
+                }
+
                 console.showInfoMessage(String.format("Starting %s ...\n", getTxnCommand()));
                 try {
                     Result result = null;
@@ -380,7 +388,12 @@ public class TEALSendTransactionAction extends BaseTxnAction {
                         result = transactionService.logicSigTransaction(logicSig, finalSenderAccount, receiverAddress, asset, amounts._2(), finalTxnDetailsParams, requestMode);
                     }
 
-                    processResult(project, module, result, requestMode, logListener);
+                    if(originalReqMode.equals(RequestMode.DEBUG)) {//Debug call
+                        DebugHandler debugHandler = new DebugHandler();
+                        debugHandler.startDebugger(project, console, sourcePath, (SignedTransaction) result.getValue(), logicSigParams);
+                    } else {
+                        processResult(project, module, result, requestMode, logListener);
+                    }
                 } catch (Exception exception) {
                     console.showErrorMessage(String.format("%s failed", getTxnCommand()), exception);
                     IdeaUtil.showNotification(project, getTitle(), String.format("%s failed, Reason: %s", getTxnCommand(), exception.getMessage()), NotificationType.ERROR, null);

@@ -14,6 +14,7 @@ import com.bloxbean.algodea.idea.nodeint.model.Result;
 import com.bloxbean.algodea.idea.nodeint.model.TxnDetailsParameters;
 import com.bloxbean.algodea.idea.nodeint.service.LogListenerAdapter;
 import com.bloxbean.algodea.idea.nodeint.service.StatefulContractService;
+import com.bloxbean.algodea.idea.stateless.action.DebugHandler;
 import com.bloxbean.algodea.idea.toolwindow.AlgoConsole;
 import com.bloxbean.algodea.idea.transaction.ui.TransactionDtlsEntryForm;
 import com.bloxbean.algodea.idea.util.IdeaUtil;
@@ -81,6 +82,7 @@ public abstract class  BaseStatefulAppAction extends BaseTxnAction {
             return;
         }
         dialog.enableDryRun();
+        dialog.enableDebug();
 
         boolean ok = dialog.showAndGet();
 
@@ -137,7 +139,8 @@ public abstract class  BaseStatefulAppAction extends BaseTxnAction {
 
             RequestMode requestMode = dialog.getRequestMode();
 
-            if(RequestMode.DRY_RUN.equals(requestMode)) { //If dry run capture dryrun request context
+            if(RequestMode.DRY_RUN.equals(requestMode) || RequestMode.DRYRUN_DUMP.equals(requestMode)
+                    ||RequestMode.DEBUG.equals(requestMode)) { //If dry run capture dryrun request context
 
                 List<Long> appIds = appId != null ? Arrays.asList(appId): Collections.EMPTY_LIST;
                 DryRunContext dryRunContext = captureDryRunContext(project, appIds);
@@ -154,12 +157,18 @@ public abstract class  BaseStatefulAppAction extends BaseTxnAction {
                 @Override
                 public void run(@NotNull ProgressIndicator indicator) {
                     console.showInfoMessage(String.format("Starting %s transaction ...", getTxnCommand()));
+
+                    RequestMode originalReqMode = requestMode;
+                    RequestMode callRequestMode = originalReqMode;
+                    if(callRequestMode.equals(RequestMode.DEBUG)) {
+                        callRequestMode = RequestMode.DRYRUN_DUMP;
+                    }
                     try {
-                        Result result = invokeTransaction(sfService, appId, signerAccount, senderAddress, generalTxnDetailsParam, requestMode);
+                        Result result = invokeTransaction(sfService, appId, signerAccount, senderAddress, generalTxnDetailsParam, callRequestMode);
 
                         String fromAccountAddress = senderAddress != null ? senderAddress.toString(): "";
 
-                        if(requestMode == null || requestMode.equals(RequestMode.TRANSACTION)) {
+                        if(callRequestMode == null || callRequestMode.equals(RequestMode.TRANSACTION)) {
                             if (result.isSuccessful()) {
                                 console.showInfoMessage(String.format("%s was successful with app id : %s, from account: %s", getTxnCommand(), appId, fromAccountAddress));
                                 IdeaUtil.showNotification(project, getTitle(), String.format("%s was successful", getTxnCommand()), NotificationType.INFORMATION, null);
@@ -168,7 +177,18 @@ public abstract class  BaseStatefulAppAction extends BaseTxnAction {
                                 IdeaUtil.showNotification(project, getTitle(), String.format("%s failed", getTxnCommand()), NotificationType.ERROR, null);
                             }
                         } else {
-                            processResult(project, module, result, requestMode, logListener);
+                            if(originalReqMode.equals(RequestMode.DEBUG)) {//Debug call
+                                DebugHandler debugHandler = new DebugHandler();
+                                DryRunContext dryRunContext = sfService.getDryRunContext();
+                                String[] sourceFiles = null;
+                                if(dryRunContext != null && dryRunContext.sources != null && dryRunContext.sources.size() > 0) {
+                                    sourceFiles = new String[] {dryRunContext.sources.get(0).code};
+                                }
+
+                                debugHandler.startStatefulCallDebugger(project, sourceFiles, console, result.getResponse());
+                            } else {
+                                processResult(project, module, result, requestMode, logListener);
+                            }
                         }
                     } catch (Exception exception) {
                         if(LOG.isDebugEnabled()) {
