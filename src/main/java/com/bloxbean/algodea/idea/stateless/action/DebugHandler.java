@@ -36,7 +36,7 @@ public class DebugHandler {
         try {
             txnFile = File.createTempFile("tealsrc", ".json");
             FileUtil.writeToFile(txnFile, DryRunJsonUtil.toJson(signedTransaction));
-            debugService.startDebugger(sourcePath, txnFile, null, new DebugListenerImpl(console));
+            debugService.startDebugger(new String[] {sourcePath}, txnFile, null, new DebugListenerImpl(console));
         } catch (Exception e) {
             console.showErrorMessage("Error starting debugger", e);
         }
@@ -50,7 +50,7 @@ public class DebugHandler {
         }
     }
 
-    public void startStatefulCallDebugger(Project project, String sourceFile, AlgoConsole console, String dryRunDumpJson) {
+    public void startStatefulCallDebugger(Project project, String[] sourceFiles, AlgoConsole console, String dryRunDumpJson) {
         DebugService debugService = null;
         try {
             debugService = new DebugService(project);
@@ -65,7 +65,7 @@ public class DebugHandler {
             dryReqDumpFile = File.createTempFile("statefultx-dump", ".json");
             FileUtil.writeToFile(dryReqDumpFile, dryRunDumpJson);
             console.showInfoMessage(dryReqDumpFile.getAbsolutePath());
-            debugService.startDebugger(sourceFile, null, dryReqDumpFile, new DebugListenerImpl(console));
+            debugService.startDebugger(sourceFiles, null, dryReqDumpFile, new DebugListenerImpl(console));
         } catch (Exception e) {
             console.showErrorMessage("Error starting debugger", e);
         }

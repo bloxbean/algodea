@@ -6,8 +6,10 @@ import com.algorand.algosdk.crypto.Address;
 import com.algorand.algosdk.transaction.SignedTransaction;
 import com.algorand.algosdk.transaction.Transaction;
 import com.algorand.algosdk.util.Encoder;
+import com.algorand.algosdk.v2.client.model.DryrunRequest;
 import com.algorand.algosdk.v2.client.model.DryrunResponse;
 import com.algorand.algosdk.v2.client.model.DryrunTxnResult;
+import com.bloxbean.algodea.idea.dryrun.util.DryRunJsonUtil;
 import com.bloxbean.algodea.idea.nodeint.common.RequestMode;
 import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
 import com.bloxbean.algodea.idea.nodeint.model.Result;
@@ -87,6 +89,16 @@ public class TransactionService extends AlgoBaseService {
                 return Result.error("Dry run failed");
 
             return Result.success(JsonUtil.getPrettyJson(dryrunTxnResults.get(0)));
+        }
+    }
+
+    public Result processDryRunDump(List<SignedTransaction> stxns) throws Exception {
+        DryrunRequest dryrunRequest = getDryrunRequest(stxns);
+        if(dryrunRequest == null) {
+            return Result.error("Dry run request dump failed");
+        } else {
+            String json = DryRunJsonUtil.toJson(dryrunRequest);
+            return Result.success(json).withValue(dryrunRequest);
         }
     }
 

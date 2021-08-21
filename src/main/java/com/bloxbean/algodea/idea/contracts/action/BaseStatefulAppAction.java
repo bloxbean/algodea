@@ -180,11 +180,12 @@ public abstract class  BaseStatefulAppAction extends BaseTxnAction {
                             if(originalReqMode.equals(RequestMode.DEBUG)) {//Debug call
                                 DebugHandler debugHandler = new DebugHandler();
                                 DryRunContext dryRunContext = sfService.getDryRunContext();
-                                String sourceFile = null;
-                                if(dryRunContext != null && dryRunContext.sources != null && dryRunContext.sources.size() > 0)
-                                    sourceFile = dryRunContext.sources.get(0).code;
+                                String[] sourceFiles = null;
+                                if(dryRunContext != null && dryRunContext.sources != null && dryRunContext.sources.size() > 0) {
+                                    sourceFiles = new String[] {dryRunContext.sources.get(0).code};
+                                }
 
-                                debugHandler.startStatefulCallDebugger(project, sourceFile, console, result.getResponse());
+                                debugHandler.startStatefulCallDebugger(project, sourceFiles, console, result.getResponse());
                             } else {
                                 processResult(project, module, result, requestMode, logListener);
                             }

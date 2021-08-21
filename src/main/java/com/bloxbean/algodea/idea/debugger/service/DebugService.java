@@ -1,6 +1,5 @@
 package com.bloxbean.algodea.idea.debugger.service;
 
-import com.bloxbean.algodea.idea.compile.CompileException;
 import com.bloxbean.algodea.idea.configuration.model.AlgoLocalSDK;
 import com.bloxbean.algodea.idea.core.exception.LocalSDKNotConfigured;
 import com.bloxbean.algodea.idea.nodeint.AlgoServerConfigurationHelper;
@@ -44,7 +43,7 @@ public class DebugService {
         }
     }
 
-    public void startDebugger(String sourceTeal, File txnFile, File dryRunReqDump, DebugResultListener listener) {
+    public void startDebugger(String[] sourceTeals, File txnFile, File dryRunReqDump, DebugResultListener listener) {
         List<String> cmd = new ArrayList<>();
         cmd.add(localSDK.getHome() + File.separator + getTealDbgCmd());
         cmd.add("debug");
@@ -61,8 +60,11 @@ public class DebugService {
             cmd.add(dryRunReqDump.getAbsolutePath());
         }
 
-        if(sourceTeal != null) {
-            cmd.add(sourceTeal);
+        if(sourceTeals != null && sourceTeals.length > 0) {
+            for(String sourceTeal: sourceTeals) {
+                if(sourceTeal != null)
+                    cmd.add(sourceTeal);
+            }
         }
 
         if(handler != null) {
@@ -82,7 +84,7 @@ public class DebugService {
 
         } catch (ExecutionException ex) {
             //ex.printStackTrace();
-            failed(listener, sourceTeal, "Debug failed : " + ex.getMessage(), ex);
+            failed(listener, "Debug failed : " + ex.getMessage(), ex);
             return;
         }
 
@@ -100,7 +102,7 @@ public class DebugService {
                 if(event.getExitCode() == 0) {
                     listener.info("Debugger started successfully.");
                 } else {
-                    failed(listener, sourceTeal, "Debug failed.", new Exception("Debugger startup failed. " + event.getText()));
+                    failed(listener,"Debug failed.", new Exception("Debugger startup failed. " + event.getText()));
                 }
             }
 
@@ -161,7 +163,6 @@ public class DebugService {
         // Navigate to github.com.
         Navigate navigate = page.navigate("chrome://inspect");
 
-        System.out.println("Chrome .opened..........");
        // devToolsService.waitUntilClosed();
     }
 
@@ -179,7 +180,7 @@ public class DebugService {
         }
     }
 
-    protected void failed(DebugResultListener resultListener, String source, String message, Throwable t) {
+    protected void failed(DebugResultListener resultListener, String message, Throwable t) {
         resultListener.error(message);
 //        resultListener.onFailure(source, t);
     }
