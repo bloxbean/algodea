@@ -91,8 +91,11 @@
         <applicationService serviceImplementation="com.bloxbean.algodea.idea.configuration.service.NodeConfigState"/>
         <applicationService serviceImplementation="com.bloxbean.algodea.idea.configuration.service.AlgoLocalSDKState"/>
         <applicationService serviceImplementation="com.bloxbean.algodea.idea.assets.service.AssetCacheService"/>
+        <applicationService serviceImplementation="com.bloxbean.algodea.idea.debugger.service.DebugConfigState"/>
         <projectService serviceImplementation="com.bloxbean.algodea.idea.configuration.service.AlgoProjectState"/>
         <projectService serviceImplementation="com.bloxbean.algodea.idea.core.service.AlgoCacheService"/>
+
+        <projectService serviceImplementation="com.bloxbean.algodea.idea.debugger.service.DebugService"/>
     </extensions>
     <actions>
         <action id="Algorand.NewTEALFile" class="com.bloxbean.algodea.idea.core.action.NewTEALFileAction"

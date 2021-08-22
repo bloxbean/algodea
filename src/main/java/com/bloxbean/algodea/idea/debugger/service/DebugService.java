@@ -3,6 +3,7 @@ package com.bloxbean.algodea.idea.debugger.service;
 import com.bloxbean.algodea.idea.configuration.model.AlgoLocalSDK;
 import com.bloxbean.algodea.idea.core.exception.LocalSDKNotConfigured;
 import com.bloxbean.algodea.idea.nodeint.AlgoServerConfigurationHelper;
+import com.github.kklisura.cdt.launch.ChromeArguments;
 import com.github.kklisura.cdt.launch.ChromeLauncher;
 import com.github.kklisura.cdt.launch.config.ChromeLauncherConfiguration;
 import com.github.kklisura.cdt.protocol.commands.Debugger;
@@ -18,37 +19,51 @@ import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.process.OSProcessHandler;
 import com.intellij.execution.process.ProcessEvent;
 import com.intellij.execution.process.ProcessListener;
+import com.intellij.openapi.Disposable;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.util.SystemInfo;
+import com.intellij.openapi.util.text.StringUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DebugService {
+public class DebugService implements Disposable {
     private AlgoLocalSDK localSDK;
     private String cwd;
-    private static OSProcessHandler handler;
+    private OSProcessHandler handler;
     private Project project;
 
-    public DebugService(Project project) throws LocalSDKNotConfigured {
+    public DebugService(Project project) {
         this.project = project;
         this.cwd = project.getBasePath();
+    }
 
+    public void startDebugger(String[] sourceTeals, File txnFile, File dryRunReqDump, DebugResultListener listener) throws LocalSDKNotConfigured {
         localSDK = AlgoServerConfigurationHelper.getCompilerLocalSDK(project);
         if(localSDK == null) {
             throw new LocalSDKNotConfigured("Algorand Local SDK is not configured.");
         }
-    }
 
-    public void startDebugger(String[] sourceTeals, File txnFile, File dryRunReqDump, DebugResultListener listener) {
+        DebugConfigState debugConfig = DebugConfigState.getInstance();
+        String chromeExecPath = debugConfig.getChromeExecPath();
+        String debugPort = debugConfig.getDebugPort();
+
+        if(debugConfig.isAutoDetectChromePath())
+            chromeExecPath = null;
+
+        if(StringUtil.isEmpty(debugPort))
+            debugPort = "9229";
+
         List<String> cmd = new ArrayList<>();
         cmd.add(localSDK.getHome() + File.separator + getTealDbgCmd());
         cmd.add("debug");
         cmd.add("--remote-debugging-port");
-        cmd.add("9229");
+        cmd.add(debugPort);
 
         if(txnFile != null) {
             cmd.add("--txn");
@@ -88,21 +103,28 @@ public class DebugService {
             return;
         }
 
-        listener.info("Compiling TEAL file using \"goal\" ...");
+        listener.info("Starting TEAL debugger ...");
         listener.attachProcess(handler);
 
+        final String chromeBinPath = chromeExecPath;
         handler.addProcessListener(new ProcessListener() {
             @Override
             public void startNotified(@NotNull ProcessEvent event) {
-
+                listener.info("Debugger started ...");
+                try {
+                    listener.info("Starting Chrome ...");
+                    openChrome(chromeBinPath, listener);
+                } catch (Exception e) {
+                    listener.error("Could not start Chrome Browser", e);
+                }
             }
 
             @Override
             public void processTerminated(@NotNull ProcessEvent event) {
                 if(event.getExitCode() == 0) {
-                    listener.info("Debugger started successfully.");
+                    listener.info("Debugger stopped.");
                 } else {
-                    failed(listener,"Debug failed.", new Exception("Debugger startup failed. " + event.getText()));
+                    failed(listener,"Debugger stopped", new Exception("Debugger failed. " + event.getText()));
                 }
             }
 
@@ -112,19 +134,23 @@ public class DebugService {
             }
         });
 
-        openChrome();
-
         return;
     }
 
-    private void openChrome() {
+    private void openChrome(String chromeExecPath, DebugResultListener listener) {
         ChromeLauncherConfiguration configuration = new ChromeLauncherConfiguration();
 
         // Create chrome launcher.
         final ChromeLauncher launcher = new ChromeLauncher();
+        final ChromeService chromeService ;
 
-        // Launch chrome either as headless (true) or regular (false).
-        final ChromeService chromeService = launcher.launch(false);
+        if(!StringUtil.isEmpty(chromeExecPath)) {
+            Path path = Paths.get(chromeExecPath);
+            listener.info("Chrome path: " + path.toString());
+            chromeService = launcher.launch(path, ChromeArguments.builder().headless(false).build());
+        } else {
+            chromeService = launcher.launch(false);
+        }
 
         // Create empty tab ie about:blank.
         final ChromeTab tab = chromeService.createTab();
@@ -139,14 +165,6 @@ public class DebugService {
         Debugger debugger = devToolsService.getDebugger();
 
         Inspector inspector = devToolsService.getInspector();
-
-        network.onRequestWillBeSent(
-                event ->
-                        System.out.printf(
-                                "request: %s %s%s",
-                                event.getRequest().getMethod(),
-                                event.getRequest().getUrl(),
-                                System.lineSeparator()));
 
         network.onLoadingFinished(
                 event -> {
@@ -166,13 +184,13 @@ public class DebugService {
        // devToolsService.waitUntilClosed();
     }
 
-    public static void stopDebugger() {
+    public void stopDebugger() {
         if(handler != null) {
             handler.destroyProcess();
         }
     }
 
-    public static boolean isDebuggerRunning() {
+    public boolean isDebuggerRunning() {
         if(handler != null) {
             return !handler.isProcessTerminated();
         } else {
@@ -191,5 +209,10 @@ public class DebugService {
             goalCmd = "tealdbg.exe";
 
         return goalCmd;
+    }
+
+    @Override
+    public void dispose() {
+        stopDebugger();
     }
 }

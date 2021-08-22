@@ -10,6 +10,7 @@ import com.bloxbean.algodea.idea.toolwindow.AlgoConsole;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.intellij.execution.process.OSProcessHandler;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.util.IncorrectOperationException;
@@ -24,13 +25,7 @@ public class DebugHandler {
     }
 
     public void startDebugger(Project project, AlgoConsole console, String sourcePath, SignedTransaction signedTransaction, LogicSigParams logicSigParams) {
-        DebugService debugService = null;
-        try {
-            debugService = new DebugService(project);
-        } catch (LocalSDKNotConfigured localSDKNotConfigured) {
-            console.showErrorMessage("Local SDK is not configured. To use \"tealdbg\", you need to configure compilation target as Local SDK.");
-            return;
-        }
+        DebugService debugService = getDebugService(project);
 
         File txnFile = null;
         try {
@@ -39,11 +34,14 @@ public class DebugHandler {
             debugService.startDebugger(new String[] {sourcePath}, txnFile, null, new DebugListenerImpl(console));
         } catch (Exception e) {
             console.showErrorMessage("Error starting debugger", e);
+        } catch (LocalSDKNotConfigured localSDKNotConfigured) {
+            console.showErrorMessage("Local SDK is not configured. To use \"tealdbg\", you need to configure compilation target as Local SDK.");
+            return;
         }
 
         if(txnFile != null) {
             try {
-                txnFile.delete();
+                txnFile.deleteOnExit();
             } catch (Exception e) {
 
             }
@@ -51,13 +49,7 @@ public class DebugHandler {
     }
 
     public void startStatefulCallDebugger(Project project, String[] sourceFiles, AlgoConsole console, String dryRunDumpJson) {
-        DebugService debugService = null;
-        try {
-            debugService = new DebugService(project);
-        } catch (LocalSDKNotConfigured localSDKNotConfigured) {
-            console.showErrorMessage("Local SDK is not configured.");
-            return;
-        }
+        DebugService debugService = getDebugService(project);
 
         File dryReqDumpFile = null;
         try {
@@ -68,15 +60,29 @@ public class DebugHandler {
             debugService.startDebugger(sourceFiles, null, dryReqDumpFile, new DebugListenerImpl(console));
         } catch (Exception e) {
             console.showErrorMessage("Error starting debugger", e);
+        } catch (LocalSDKNotConfigured localSDKNotConfigured) {
+            console.showErrorMessage("Local SDK is not configured. To use \"tealdbg\", you need to configure compilation target as Local SDK.");
+            return;
         }
 
         if(dryReqDumpFile != null) {
             try {
-                dryReqDumpFile.delete();
+                dryReqDumpFile.deleteOnExit();
             } catch (Exception e) {
 
             }
         }
+    }
+
+    private DebugService getDebugService(Project project) {
+        if(project == null)
+            return null;
+
+        DebugService debugService = null;
+        if(project != null) {
+            debugService = ServiceManager.getService(project, DebugService.class);
+        }
+        return debugService;
     }
 
     class DebugListenerImpl implements DebugResultListener {
