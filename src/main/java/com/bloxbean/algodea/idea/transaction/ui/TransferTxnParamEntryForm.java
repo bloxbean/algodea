@@ -355,6 +355,9 @@ public class TransferTxnParamEntryForm {
             @Override
             public void run() {
                 try {
+                    try {
+                        Thread.sleep(500);
+                    } catch (Exception e) {}
                     com.algorand.algosdk.v2.client.model.Account account = algoAccountService.getAccount(address);
                     authAddressCheck.accept(account.authAddr());
                 } catch (Exception e) {
