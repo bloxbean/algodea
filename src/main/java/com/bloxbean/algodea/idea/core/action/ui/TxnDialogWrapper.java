@@ -17,8 +17,10 @@ public abstract class TxnDialogWrapper extends DialogWrapper {
     protected Action exportUnsignedAction;
     protected Action dryRunAction;
     protected Action debugAction;
+    protected Action dryrunDumpAction;
 
     private boolean enableDryRun;
+    private boolean enableDryRunDump;
     private boolean enableDebug;
 
     protected TxnDialogWrapper(@Nullable Project project, boolean canBeParent) {
@@ -30,6 +32,9 @@ public abstract class TxnDialogWrapper extends DialogWrapper {
 
         debugAction = new RequestAction("Debug", RequestMode.DEBUG);
         debugAction.setEnabled(false);
+
+        dryrunDumpAction = new RequestAction("Dry Run Dump", RequestMode.DRYRUN_DUMP);
+        dryrunDumpAction.setEnabled(false);
     }
 
     protected TxnDialogWrapper(@Nullable Project project) {
@@ -43,7 +48,8 @@ public abstract class TxnDialogWrapper extends DialogWrapper {
                 exportUnsignedAction,
                 exportSignedAction,
                 dryRunAction,
-                debugAction
+                dryrunDumpAction,
+                debugAction,
         };
     }
 
@@ -66,6 +72,9 @@ public abstract class TxnDialogWrapper extends DialogWrapper {
             if(enableDryRun) {
                 dryRunAction.setEnabled(true);
             }
+            if(enableDryRunDump) {
+                dryrunDumpAction.setEnabled(true);
+            }
             if(enableDebug) {
                 debugAction.setEnabled(true);
             }
@@ -78,6 +87,9 @@ public abstract class TxnDialogWrapper extends DialogWrapper {
             if(enableDryRun) {
                 dryRunAction.setEnabled(false);
             }
+            if(enableDryRunDump) {
+                dryrunDumpAction.setEnabled(false);
+            }
             if(enableDebug) {
                 debugAction.setEnabled(false);
             }
@@ -88,6 +100,11 @@ public abstract class TxnDialogWrapper extends DialogWrapper {
     public void enableDryRun() {
         enableDryRun = true;
         dryRunAction.setEnabled(enableDryRun);
+    }
+
+    public void enableDryRunDump() {
+        enableDryRunDump = true;
+        dryrunDumpAction.setEnabled(enableDryRunDump);
     }
 
     public void enableDebug() {

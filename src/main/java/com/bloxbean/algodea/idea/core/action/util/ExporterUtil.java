@@ -10,8 +10,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 
 import java.io.IOException;
 
-import static com.bloxbean.algodea.idea.common.AlgoConstants.ALGO_DRY_RUN_FILE_EXT;
-import static com.bloxbean.algodea.idea.common.AlgoConstants.ALGO_TXN_FILE_EXT;
+import static com.bloxbean.algodea.idea.common.AlgoConstants.*;
 
 public class ExporterUtil {
     public static boolean exportTransaction(Module module, String txnJson, String outputFileName, LogListener logListener) throws Exception {
@@ -52,6 +51,28 @@ public class ExporterUtil {
             } catch (IOException e) {
                 e.printStackTrace();
                 logListener.error("Dry run export failed", e);
+            }
+        });
+
+        return true;
+    }
+
+    public static boolean exportDryRunDumpResponse(Module module, String debugContext, String outputFileName, LogListener logListener) throws Exception {
+        VirtualFile dryRunOutputFolder = AlgoContractModuleHelper.getDryRunOutputFolder(module);
+
+        String txnOutFileName = getOutputFileName(dryRunOutputFolder, outputFileName, ALGO_DEBUGGER_CONTEXT_FILE_EXT, "Debugger Context", logListener);
+        if(StringUtil.isEmpty(txnOutFileName))
+            return false;
+
+        ApplicationManager.getApplication().runWriteAction(()  -> {
+            VirtualFile outputFile = null;
+            try {
+                outputFile = dryRunOutputFolder.findOrCreateChildData(module, txnOutFileName);
+                outputFile.setBinaryContent(debugContext.getBytes("UTF-8"));
+                logListener.info("Debugger  context(Dryrun dump) has been written to " + outputFile.getCanonicalPath());
+            } catch (IOException e) {
+                e.printStackTrace();
+                logListener.error("Debugger Context export failed", e);
             }
         });
 

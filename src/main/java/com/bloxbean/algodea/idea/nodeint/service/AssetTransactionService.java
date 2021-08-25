@@ -63,9 +63,9 @@ public class AssetTransactionService extends AlgoBaseService {
             else
                 return Result.success(JsonUtil.getPrettyJson(transactionResponse)).withValue(transactionResponse.assetIndex);
         } else if (requestMode.equals(RequestMode.EXPORT_SIGNED)) {
-            return Result.success(JsonUtil.getPrettyJson(signTxn));
+            return Result.success(JsonUtil.getPrettyJson(signTxn)).withValue(signTxn);
         } else if(requestMode.equals(RequestMode.EXPORT_UNSIGNED)) {
-            return Result.success(JsonUtil.getPrettyJson(txn));
+            return Result.success(JsonUtil.getPrettyJson(txn)).withValue(txn);
         } else {
             return Result.error("Invalid request mode : " + requestMode);
         }
@@ -308,9 +308,9 @@ public class AssetTransactionService extends AlgoBaseService {
             return postApplicationTransaction(signer, signedTransaction);
         } else if (requestMode.equals(RequestMode.EXPORT_SIGNED)) {
             SignedTransaction signedTransaction = signTransaction(signer, txn);
-            return Result.success(JsonUtil.getPrettyJson(signedTransaction));
+            return Result.success(JsonUtil.getPrettyJson(signedTransaction)).withValue(signedTransaction);
         } else if(requestMode.equals(RequestMode.EXPORT_UNSIGNED)) {
-            return Result.success(JsonUtil.getPrettyJson(txn));
+            return Result.success(JsonUtil.getPrettyJson(txn)).withValue(txn);
         } else {
             return Result.error("Invalid request mode : " + requestMode);
         }
@@ -365,9 +365,9 @@ public class AssetTransactionService extends AlgoBaseService {
         if (requestMode == null || requestMode.equals(RequestMode.TRANSACTION)) {
             return postApplicationTransaction(null, signedTransaction); //TODO fromAccount is not used here. Let's remove this param in future
         } else if (requestMode.equals(RequestMode.EXPORT_SIGNED)) {
-            return Result.success(JsonUtil.getPrettyJson(signedTransaction));
+            return Result.success(JsonUtil.getPrettyJson(signedTransaction)).withValue(signedTransaction);
         } else if(requestMode.equals(RequestMode.EXPORT_UNSIGNED)) {
-            return Result.success(JsonUtil.getPrettyJson(txn));
+            return Result.success(JsonUtil.getPrettyJson(txn)).withValue(txn);
         } else if (requestMode.equals(RequestMode.DRY_RUN)) {
             return processDryRun(signedTransaction, sourceBytes);
         } else {
@@ -458,9 +458,9 @@ public class AssetTransactionService extends AlgoBaseService {
             else
                 return Result.success(transactionResponse.toString());
         } else if (requestMode.equals(RequestMode.EXPORT_SIGNED)) {
-            return Result.success(JsonUtil.getPrettyJson(signTxn));
+            return Result.success(JsonUtil.getPrettyJson(signTxn)).withValue(signTxn);
         } else if(requestMode.equals(RequestMode.EXPORT_UNSIGNED)) {
-            return Result.success(JsonUtil.getPrettyJson(txn));
+            return Result.success(JsonUtil.getPrettyJson(txn)).withValue(txn);
         } else {
             return Result.error("Invalid request mode : " + requestMode);
         }

@@ -82,6 +82,7 @@ public abstract class  BaseStatefulAppAction extends BaseTxnAction {
             return;
         }
         dialog.enableDryRun();
+        dialog.enableDryRunDump();
         dialog.enableDebug();
 
         boolean ok = dialog.showAndGet();
@@ -177,12 +178,12 @@ public abstract class  BaseStatefulAppAction extends BaseTxnAction {
                                 IdeaUtil.showNotification(project, getTitle(), String.format("%s failed", getTxnCommand()), NotificationType.ERROR, null);
                             }
                         } else {
-                            if(originalReqMode.equals(RequestMode.DEBUG)) {//Debug call
+                            if (originalReqMode.equals(RequestMode.DEBUG)) {//Debug call
                                 DebugHandler debugHandler = new DebugHandler();
                                 DryRunContext dryRunContext = sfService.getDryRunContext();
                                 String[] sourceFiles = null;
-                                if(dryRunContext != null && dryRunContext.sources != null && dryRunContext.sources.size() > 0) {
-                                    sourceFiles = new String[] {dryRunContext.sources.get(0).code};
+                                if (dryRunContext != null && dryRunContext.sources != null && dryRunContext.sources.size() > 0) {
+                                    sourceFiles = new String[]{dryRunContext.sources.get(0).code};
                                 }
 
                                 debugHandler.startStatefulCallDebugger(project, sourceFiles, console, result.getResponse());

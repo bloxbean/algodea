@@ -107,6 +107,8 @@ public abstract class BaseTxnAction extends AlgoBaseAction {
             exportTransaction(project, module, requestMode, result, logListener);
         } else if(requestMode.equals(RequestMode.DRY_RUN)) {
             processDryRunResult(project, module, result, logListener);
+        } else if(requestMode.equals(RequestMode.DRYRUN_DUMP)) {
+            processDryRunDumpResult(project, module, result, logListener);
         }
     }
 
@@ -161,6 +163,61 @@ public abstract class BaseTxnAction extends AlgoBaseAction {
         } else {
             logListener.error("Dry run result export was not successful");
             IdeaUtil.showNotification(project, "Dry Run export", String.format("Dry run result export was not successful"),
+                    NotificationType.INFORMATION, null);
+        }
+    }
+
+    protected void processDryRunDumpResult(Project project, Module module, Result result, LogListener logListener) {
+        if(result == null) {
+            logListener.error("Dry Run dump failed. Result : " + result.getResponse());
+            return;
+        }
+        if (result.isSuccessful()) {
+            Result finalResult = result;
+
+            ApplicationManager.getApplication().invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        String debuggerContextOutputFile = Messages.showInputDialog("Dry Run dump file name (Without extension) : ",
+                                "Dry Run dump", AllIcons.General.QuestionDialog, "NewDryRun-dump", new InputValidator() {
+                                    @Override
+                                    public boolean checkInput(String inputString) {
+                                        if(inputString != null && inputString.contains("."))
+                                            return false;
+                                        else
+                                            return true;
+                                    }
+
+                                    @Override
+                                    public boolean canClose(String inputString) {
+                                        if(inputString != null && inputString.contains("."))
+                                            return false;
+                                        else
+                                            return true;
+                                    }
+                                });
+                        if(StringUtil.isEmpty(debuggerContextOutputFile)) {
+                            //logListener.warn("Dry run export was cancelled");
+                            return;
+                        }
+
+//                      logListener.info(finalResult.getResponse());
+                        boolean status = ExporterUtil.exportDryRunDumpResponse(module, finalResult.getResponse(), debuggerContextOutputFile, logListener);
+                        if(status) {
+                            IdeaUtil.showNotification(project, "Dry Run dump", String.format("Dry Run dump exported successfully"),
+                                    NotificationType.INFORMATION, null);
+                        }
+                    } catch (Exception exception) {
+                        IdeaUtil.showNotification(project, "Dry Run dump", String.format("Dry Run dump was not successful"),
+                                NotificationType.INFORMATION, null);
+                    }
+                }
+            });
+
+        } else {
+            logListener.error("Dry Run dump was not successful");
+            IdeaUtil.showNotification(project, "Dry Run export", String.format("Dry Run dump was not successful"),
                     NotificationType.INFORMATION, null);
         }
     }

@@ -2,6 +2,7 @@ package com.bloxbean.algodea.idea.stateless.action;
 
 import com.algorand.algosdk.account.Account;
 import com.algorand.algosdk.crypto.Address;
+import com.algorand.algosdk.transaction.SignedTransaction;
 import com.bloxbean.algodea.idea.common.AlgoIcons;
 import com.bloxbean.algodea.idea.common.Tuple;
 import com.bloxbean.algodea.idea.compile.service.CompilationResultListener;
@@ -123,7 +124,7 @@ public class TEALOptInTransactionAction extends BaseTxnAction {
         final String sourcePath = sourceOutputPaths._1(); //sourcePath;
         final String compiledOutputPath = sourceOutputPaths._2(); //outputFilePath;
 
-        TEALOptInLogicSigTxnHandler compilationResultListener = new TEALOptInLogicSigTxnHandler(project, module, remoteCompilerSDK, console);
+        TEALOptInLogicSigTxnHandler compilationResultListener = new TEALOptInLogicSigTxnHandler(project, module, remoteCompilerSDK, console, sourcePath);
         compilationResultListener.compile(sourcePath, compiledOutputPath);
     }
 
@@ -179,12 +180,14 @@ public class TEALOptInTransactionAction extends BaseTxnAction {
         private Module module;
         private AlgoConsole console;
         private NodeInfo remoteCompilerSDK;
+        private String sourcePath;
 
-        public TEALOptInLogicSigTxnHandler(Project project, Module module, NodeInfo remoteCompilerSDK, AlgoConsole console) {
+        public TEALOptInLogicSigTxnHandler(Project project, Module module, NodeInfo remoteCompilerSDK, AlgoConsole console, String sourcePath) {
             this.project = project;
             this.module = module;
             this.remoteCompilerSDK = remoteCompilerSDK;
             this.console = console;
+            this.sourcePath = sourcePath;
         }
 
         @Override
@@ -279,6 +282,7 @@ public class TEALOptInTransactionAction extends BaseTxnAction {
             //Catpure inputs
             TEALOptInAssetDialog dialog = new TEALOptInAssetDialog(project, module, contractHash);
             dialog.enableDryRun();
+            dialog.enableDebug();
             boolean ok = dialog.showAndGet();
             if (!ok) {
                 return;
@@ -363,11 +367,22 @@ public class TEALOptInTransactionAction extends BaseTxnAction {
                 LogListener logListener = new LogListenerAdapter(console);
                 LogicSigTransactionService transactionService = new LogicSigTransactionService(project, logListener);
 
+                RequestMode originalReqMode = requestMode;
+                if(requestMode.equals(RequestMode.DEBUG)) {
+                    requestMode = RequestMode.EXPORT_SIGNED;
+                }
+
                 console.showInfoMessage(String.format("Starting %s ...\n", getTxnCommand()));
                 try {
 
                     Result result = transactionService.logicSigOptInAssetTransaction(logicSig, senderAddress, assetTxnParameters, txnDetailsParams, requestMode);
-                    processResult(project, module, result, requestMode, logListener);
+
+                    if(originalReqMode.equals(RequestMode.DEBUG)) {//Debug call
+                        DebugHandler debugHandler = new DebugHandler();
+                        debugHandler.startDebugger(project, console, sourcePath, (SignedTransaction) result.getValue(), logicSigParams);
+                    } else {
+                        processResult(project, module, result, requestMode, logListener);
+                    }
                 } catch (Exception exception) {
                     console.showErrorMessage(String.format("%s failed", getTxnCommand()), exception);
                     IdeaUtil.showNotification(project, getTitle(), String.format("%s failed, Reason: %s", getTxnCommand(), exception.getMessage()), NotificationType.ERROR, null);
