@@ -3,6 +3,7 @@ package com.bloxbean.algodea.idea.debugger.ui;
 import com.bloxbean.algodea.idea.debugger.service.DebugConfigState;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
+import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.openapi.util.text.StringUtil;
 import org.jetbrains.annotations.Nullable;
 
@@ -16,6 +17,7 @@ public class DebugConfigDialog extends DialogWrapper {
     private JButton browseButton;
     private JTextField debugPortTf;
     private JCheckBox autoDetectCB;
+    private JCheckBox disableChromeOpenCB;
 
     public DebugConfigDialog() {
         super(true);
@@ -68,6 +70,10 @@ public class DebugConfigDialog extends DialogWrapper {
             } catch (Exception e) {
             }
         }
+
+        if(debugConfig.isChromeOpeningDisabled()) {
+            disableChromeOpenCB.setSelected(true);
+        }
     }
 
     public void storeDebugConfig() {
@@ -85,6 +91,8 @@ public class DebugConfigDialog extends DialogWrapper {
         if(debugPort != null) {
             debugConfig.setDebugPort(debugPort);
         }
+
+        debugConfig.setChromeOpeningDisabled(disableChromeOpenCB.isSelected());
     }
 
     public boolean isAutoDetectChromePath() {
@@ -105,6 +113,26 @@ public class DebugConfigDialog extends DialogWrapper {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    public boolean isDisableChromeOpening() {
+        return disableChromeOpenCB.isSelected();
+    }
+
+    @Override
+    protected @Nullable ValidationInfo doValidate() {
+        if(isDisableChromeOpening() || isAutoDetectChromePath())
+            return null;
+
+        if(StringUtil.isEmpty(getChromeExecPath())) {
+            return new ValidationInfo("Enter a valid path to Chrome", chromeExecPath);
+        }
+
+        if(StringUtil.isEmpty(getDebugPort())) {
+            return new ValidationInfo("Enter a valid debugger port", debugPortTf);
+        }
+
+        return null;
     }
 
     @Override

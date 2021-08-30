@@ -4,7 +4,6 @@ import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
-import com.intellij.openapi.util.text.StringUtil;
 import org.jetbrains.annotations.NotNull;
 
 @State(
@@ -21,6 +20,7 @@ public class DebugConfigState implements PersistentStateComponent<DebugConfigSta
         public String chromeExecPath;
         public boolean autoDetectChromePath = true;
         public String debugPort;
+        public boolean disableChromeOpen;
     }
 
     public DebugConfigState.State state;
@@ -53,6 +53,11 @@ public class DebugConfigState implements PersistentStateComponent<DebugConfigSta
         return state.debugPort;
     }
 
+    public boolean isChromeOpeningDisabled() {
+        initializeStateIfRequired();
+        return state.disableChromeOpen;
+    }
+
     public void setChromeExecPath(String path) {
         initializeStateIfRequired();
         if(path != null)
@@ -67,6 +72,11 @@ public class DebugConfigState implements PersistentStateComponent<DebugConfigSta
     public void setDebugPort(String port) {
         initializeStateIfRequired();
         state.debugPort = port;
+    }
+
+    public void setChromeOpeningDisabled(boolean flag) {
+        initializeStateIfRequired();
+        state.disableChromeOpen = flag;
     }
 
     private void initializeStateIfRequired() {

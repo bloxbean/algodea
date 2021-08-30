@@ -360,6 +360,11 @@
                 description="Export Applications(s)">
             <add-to-group group-id="AlgoActionGroup.DryRun"/>
         </action>
+        <action id="com.bloxbean.algodea.idea.debugger.action.DebugConfigAction"
+                class="com.bloxbean.algodea.idea.debugger.action.DebugConfigAction" text="Debugger Configuration"
+                description="Debugger Configuration">
+            <add-to-group group-id="AlgoActionGroup.DryRun"/>
+        </action>
         <!-- Dry Run ends here -->
 
         <action id="com.bloxbean.algodea.idea.transaction.action.TransferAction" class="com.bloxbean.algodea.idea.transaction.action.TransferAction" text="Transfer"

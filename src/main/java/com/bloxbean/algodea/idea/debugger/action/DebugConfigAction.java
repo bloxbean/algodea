@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 public class DebugConfigAction extends AnAction {
 
     public DebugConfigAction() {
-        super("Debugger Config", "Debugger Configuration", AllIcons.RunConfigurations.RemoteDebug);
+        super("Debugger Configuration", "Debugger Configuration", AllIcons.RunConfigurations.RemoteDebug);
     }
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {

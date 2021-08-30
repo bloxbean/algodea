@@ -112,8 +112,14 @@ public class DebugService implements Disposable {
             public void startNotified(@NotNull ProcessEvent event) {
                 listener.info("Debugger started ...");
                 try {
-                    listener.info("Starting Chrome ...");
-                    openChrome(chromeBinPath, listener);
+                    if(!debugConfig.isChromeOpeningDisabled()) {
+                        listener.info("Starting Chrome ...");
+                        openChrome(chromeBinPath, listener);
+                    } else {
+                        listener.info("Automatic chrome opening is disabled.");
+                        listener.info("Please open your Chrome browser and access chrome://inspect");
+                        listener.info("Debugger is running on port : " + debugConfig.getDebugPort());
+                    }
                 } catch (Exception e) {
                     listener.error("Could not start Chrome Browser", e);
                 }
@@ -147,7 +153,7 @@ public class DebugService implements Disposable {
         if(!StringUtil.isEmpty(chromeExecPath)) {
             Path path = Paths.get(chromeExecPath);
             listener.info("Chrome path: " + path.toString());
-            chromeService = launcher.launch(path, ChromeArguments.builder().headless(false).build());
+            chromeService = launcher.launch(path, ChromeArguments.defaults(false).build());
         } else {
             chromeService = launcher.launch(false);
         }
