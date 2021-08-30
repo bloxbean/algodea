@@ -12,6 +12,7 @@ import com.bloxbean.algodea.idea.configuration.action.ConfigurationAction;
 import com.bloxbean.algodea.idea.configuration.model.NodeInfo;
 import com.bloxbean.algodea.idea.core.action.BaseTxnAction;
 import com.bloxbean.algodea.idea.core.action.util.AlgoContractModuleHelper;
+import com.bloxbean.algodea.idea.debugger.service.DebugHandler;
 import com.bloxbean.algodea.idea.language.psi.TEALFile;
 import com.bloxbean.algodea.idea.nodeint.AlgoServerConfigurationHelper;
 import com.bloxbean.algodea.idea.nodeint.common.RequestMode;

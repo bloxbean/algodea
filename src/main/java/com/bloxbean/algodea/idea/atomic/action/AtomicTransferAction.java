@@ -11,7 +11,7 @@ import com.bloxbean.algodea.idea.nodeint.model.Result;
 import com.bloxbean.algodea.idea.nodeint.service.LogListener;
 import com.bloxbean.algodea.idea.nodeint.service.LogListenerAdapter;
 import com.bloxbean.algodea.idea.nodeint.service.TransactionService;
-import com.bloxbean.algodea.idea.stateless.action.DebugHandler;
+import com.bloxbean.algodea.idea.debugger.service.DebugHandler;
 import com.bloxbean.algodea.idea.toolwindow.AlgoConsole;
 import com.bloxbean.algodea.idea.util.IdeaUtil;
 import com.intellij.notification.NotificationType;

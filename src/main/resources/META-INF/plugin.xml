@@ -360,6 +360,14 @@
                 description="Export Applications(s)">
             <add-to-group group-id="AlgoActionGroup.DryRun"/>
         </action>
+        <action id="com.bloxbean.algodea.idea.debugger.action.DumpFileDebugAction" class="com.bloxbean.algodea.idea.debugger.action.DumpFileDebugAction"
+                text="Start TEAL Debugger"
+                popup="true"
+                description="Start TEAL Debugger">
+            <add-to-group group-id="ProjectViewPopupMenu" relative-to-action="com.bloxbean.algodea.idea.core.action.AlgoActionGroup"  anchor="before"/>
+            <add-to-group group-id="AlgoActionGroup.DryRun"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl T" second-keystroke="D"/>
+        </action>
         <action id="com.bloxbean.algodea.idea.debugger.action.DebugConfigAction"
                 class="com.bloxbean.algodea.idea.debugger.action.DebugConfigAction" text="Debugger Configuration"
                 description="Debugger Configuration">

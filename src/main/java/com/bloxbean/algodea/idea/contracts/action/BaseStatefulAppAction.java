@@ -14,7 +14,7 @@ import com.bloxbean.algodea.idea.nodeint.model.Result;
 import com.bloxbean.algodea.idea.nodeint.model.TxnDetailsParameters;
 import com.bloxbean.algodea.idea.nodeint.service.LogListenerAdapter;
 import com.bloxbean.algodea.idea.nodeint.service.StatefulContractService;
-import com.bloxbean.algodea.idea.stateless.action.DebugHandler;
+import com.bloxbean.algodea.idea.debugger.service.DebugHandler;
 import com.bloxbean.algodea.idea.toolwindow.AlgoConsole;
 import com.bloxbean.algodea.idea.transaction.ui.TransactionDtlsEntryForm;
 import com.bloxbean.algodea.idea.util.IdeaUtil;

@@ -1,9 +1,7 @@
-package com.bloxbean.algodea.idea.stateless.action;
+package com.bloxbean.algodea.idea.debugger.service;
 
 import com.algorand.algosdk.transaction.SignedTransaction;
 import com.bloxbean.algodea.idea.core.exception.LocalSDKNotConfigured;
-import com.bloxbean.algodea.idea.debugger.service.DebugResultListener;
-import com.bloxbean.algodea.idea.debugger.service.DebugService;
 import com.bloxbean.algodea.idea.dryrun.util.DryRunJsonUtil;
 import com.bloxbean.algodea.idea.stateless.model.LogicSigParams;
 import com.bloxbean.algodea.idea.toolwindow.AlgoConsole;
@@ -16,6 +14,8 @@ import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.util.IncorrectOperationException;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DebugHandler {
     ObjectMapper mapper;
@@ -45,6 +45,40 @@ public class DebugHandler {
             } catch (Exception e) {
 
             }
+        }
+    }
+
+    //Used when directly run using dryrun dump file
+    public void startDebuggerForDryDumpFile(Project project, File dryRunDumpFile, AlgoConsole console) {
+        DebugService debugService = getDebugService(project);
+
+        List<String> sourceFiles = new ArrayList<>();
+        try {
+            String[] sources = null;
+            try {
+                console.showInfoMessage("Extracting source from the dump file...");
+                sources = DryRunJsonUtil.sources(dryRunDumpFile);
+                for(String source: sources) {
+                    File sourceFile = File.createTempFile("source", ".teal");
+                    FileUtil.writeToFile(sourceFile, source);
+                    sourceFiles.add(sourceFile.getAbsolutePath());
+                }
+            } catch (Exception e) {
+
+            }
+
+            debugService.startDebugger(sourceFiles.toArray(new String[0]), null, dryRunDumpFile, new DebugListenerImpl(console));
+        } catch (Exception e) {
+            console.showErrorMessage("Error starting debugger", e);
+        } catch (LocalSDKNotConfigured localSDKNotConfigured) {
+            console.showErrorMessage("Local SDK is not configured. To use \"tealdbg\", you need to configure compilation target as Local SDK.");
+            return;
+        }
+
+        for(String file: sourceFiles) {
+            try {
+                new File(file).deleteOnExit();
+            } catch (Exception e) {}
         }
     }
 
