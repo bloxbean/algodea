@@ -1,20 +1,20 @@
 package com.bloxbean.algodea.idea.dryrun.ui;
 
+import com.algorand.algosdk.crypto.Address;
 import com.bloxbean.algodea.idea.account.model.AlgoAccount;
 import com.bloxbean.algodea.idea.account.service.AccountChooser;
 import com.bloxbean.algodea.idea.nodeint.model.DryRunContext;
-import com.bloxbean.algodea.idea.util.AlgoModuleUtils;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.*;
+import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.ui.components.JBList;
 import com.intellij.ui.components.JBScrollPane;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import javax.swing.filechooser.FileFilter;
-import java.io.File;
 import java.math.BigInteger;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -104,6 +104,19 @@ public class DryRunContextForm  {
         return accounts;
     }
 
+    public void setAccounts(List<Address> addresses) {
+        if(addresses == null || addresses.isEmpty())
+            return;
+
+        for(Address address: addresses) {
+            try {
+                listModel.addElement(address.encodeAsString());
+            } catch (NoSuchAlgorithmException e) {
+
+            }
+        }
+    }
+
     public List<Long> getApplications() {
         if(StringUtil.isEmpty(appIdsTf.getText()))
             return Collections.EMPTY_LIST;
@@ -117,6 +130,14 @@ public class DryRunContextForm  {
         }
 
         return lIds;
+    }
+
+    public void setApplications(List<Long> appIds) {
+        if(appIds == null || appIds.isEmpty())
+            return;
+
+        String appIdsStr = appIds.stream().map(l -> String.valueOf(l)).collect(Collectors.joining(","));
+        appIdsTf.setText(appIdsStr);
     }
 
     public Long getLatestTimestamp() {

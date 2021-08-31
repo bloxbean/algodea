@@ -27,6 +27,7 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class AtomicTransferAction extends BaseTxnAction {
@@ -79,7 +80,7 @@ public class AtomicTransferAction extends BaseTxnAction {
                     }
                 }
 
-                DryRunContext dryRunContext = captureDryRunContext(project, appIds,  !appIds.isEmpty(), true, false);
+                DryRunContext dryRunContext = captureDryRunContext(project, appIds, Collections.EMPTY_LIST, Collections.EMPTY_LIST, !appIds.isEmpty(), true, false);
                 if(dryRunSources != null)
                     dryRunContext.sources = dryRunSources;
 

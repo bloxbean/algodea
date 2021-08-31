@@ -1,11 +1,12 @@
 package com.bloxbean.algodea.idea.core.action;
 
+import com.algorand.algosdk.crypto.Address;
 import com.bloxbean.algodea.idea.core.action.util.ExporterUtil;
 import com.bloxbean.algodea.idea.dryrun.ui.DryRunContextEntryDialog;
+import com.bloxbean.algodea.idea.nodeint.common.RequestMode;
 import com.bloxbean.algodea.idea.nodeint.model.DryRunContext;
 import com.bloxbean.algodea.idea.nodeint.model.Result;
 import com.bloxbean.algodea.idea.nodeint.service.LogListener;
-import com.bloxbean.algodea.idea.nodeint.common.RequestMode;
 import com.bloxbean.algodea.idea.util.IdeaUtil;
 import com.intellij.icons.AllIcons;
 import com.intellij.notification.NotificationType;
@@ -17,7 +18,6 @@ import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.text.StringUtil;
 
 import javax.swing.*;
-import java.util.ArrayList;
 import java.util.List;
 
 public abstract class BaseTxnAction extends AlgoBaseAction {
@@ -222,8 +222,8 @@ public abstract class BaseTxnAction extends AlgoBaseAction {
         }
     }
 
-    protected DryRunContext captureDryRunContext(Project project, List<Long> appIds, boolean isStatefulContract, boolean enableGeneralContextInfo, boolean enableSourceInfo) {
-        DryRunContextEntryDialog dialog = new DryRunContextEntryDialog(project, appIds, isStatefulContract, enableGeneralContextInfo, enableSourceInfo);
+    protected DryRunContext captureDryRunContext(Project project, List<Long> appIds, List<Address> accounts, List<Long> foreignApps, boolean isStatefulContract, boolean enableGeneralContextInfo, boolean enableSourceInfo) {
+        DryRunContextEntryDialog dialog = new DryRunContextEntryDialog(project, appIds, accounts, foreignApps, isStatefulContract, enableGeneralContextInfo, enableSourceInfo);
         boolean ok = dialog.showAndGet();
         if(!ok)
             return null;
@@ -231,21 +231,8 @@ public abstract class BaseTxnAction extends AlgoBaseAction {
         return dialog.getDryRunContext();
     }
 
-    protected DryRunContext captureDryRunContext(Project project, List<Long> appIds) {
-        return captureDryRunContext(project, appIds, true, true, true);
-    }
-
-    protected DryRunContext.Source captureDryRunSource(Project project, Long appId, boolean isStatefulContract) {
-        List<Long> appIds = new ArrayList<>();
-        if(appId != null)
-            appIds.add(appId);
-
-        DryRunContextEntryDialog dialog = new DryRunContextEntryDialog(project, appIds, isStatefulContract, false, true);
-        boolean ok = dialog.showAndGet();
-        if(!ok)
-            return null;
-
-        return dialog.getDryRunSource();
+    protected DryRunContext captureDryRunContext(Project project, List<Long> appIds, List<Address> accounts, List<Long> foreignApps) {
+        return captureDryRunContext(project, appIds, accounts, foreignApps, true, true, true);
     }
 
     protected abstract String getTitle();

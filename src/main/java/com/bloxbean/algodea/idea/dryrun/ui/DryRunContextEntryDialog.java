@@ -1,5 +1,6 @@
 package com.bloxbean.algodea.idea.dryrun.ui;
 
+import com.algorand.algosdk.crypto.Address;
 import com.bloxbean.algodea.idea.nodeint.model.DryRunContext;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
@@ -9,6 +10,7 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.List;
 
 public class DryRunContextEntryDialog extends DialogWrapper {
     private JPanel mainPanel;
@@ -21,7 +23,7 @@ public class DryRunContextEntryDialog extends DialogWrapper {
     private boolean enableSourceInfo;
 
     public DryRunContextEntryDialog(@Nullable Project project,
-                                    java.util.List<Long> appIds, boolean isStatefulContract, boolean enableGeneralContextInfo, boolean enableSourceInfo) {
+                                    java.util.List<Long> appIds, java.util.List<Address> accounts, List<Long> foreignApps, boolean isStatefulContract, boolean enableGeneralContextInfo, boolean enableSourceInfo) {
         super(project, true);
         init();
         setTitle("Dry Run Context");
@@ -35,8 +37,8 @@ public class DryRunContextEntryDialog extends DialogWrapper {
             generalPanel.setVisible(false);
         }
 
+        Long appId = null;
         if(enableSourceInfo) {
-            Long appId = null;
             if(appIds != null && appIds.size() > 0)
                 appId = appIds.get(0);
 
@@ -48,6 +50,19 @@ public class DryRunContextEntryDialog extends DialogWrapper {
         if(enableSourceInfo && !enableGeneralContextInfo) {
             mainPanel.setMinimumSize(new Dimension(650, 300));
             mainPanel.setPreferredSize(new Dimension(650, 300));
+        }
+
+        if(accounts != null && !accounts.isEmpty()) {
+            dryRunContextForm.setAccounts(accounts);
+        }
+
+        if(foreignApps != null && !foreignApps.isEmpty()) {
+            List<Long> allApps = new ArrayList<>();
+            if(appId != null)
+                allApps.add(appId);
+
+            allApps.addAll(foreignApps);
+            dryRunContextForm.setApplications(allApps);
         }
 
     }

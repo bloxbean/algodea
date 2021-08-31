@@ -484,7 +484,7 @@ public class AtomicTransferDialog extends DialogWrapper {
 
                 Long appId = atomicTransaction.getTransaction().applicationId;
                 List<Long> appIds = appId != null ? Arrays.asList(appId): Collections.EMPTY_LIST;
-                DryRunContextEntryDialog dialog = new DryRunContextEntryDialog(project, appIds,
+                DryRunContextEntryDialog dialog = new DryRunContextEntryDialog(project, appIds, Collections.EMPTY_LIST, Collections.EMPTY_LIST,
                         appId != null && appId != 0, false, true);
 
                 if(source != null) {

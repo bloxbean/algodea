@@ -144,7 +144,7 @@ public abstract class  BaseStatefulAppAction extends BaseTxnAction {
                     ||RequestMode.DEBUG.equals(requestMode)) { //If dry run capture dryrun request context
 
                 List<Long> appIds = appId != null ? Arrays.asList(appId): Collections.EMPTY_LIST;
-                DryRunContext dryRunContext = captureDryRunContext(project, appIds);
+                DryRunContext dryRunContext = captureDryRunContext(project, appIds, accounts, foreignApps);
                 if(dryRunContext != null) {
                     sfService.setDryRunContext(dryRunContext);
                 } else {
@@ -208,7 +208,7 @@ public abstract class  BaseStatefulAppAction extends BaseTxnAction {
             if(LOG.isDebugEnabled()) {
                 LOG.warn(ex);
             }
-            console.showErrorMessage(ex.getMessage());
+            console.showErrorMessage(ex.getMessage(), ex);
             IdeaUtil.showNotification(project, getTitle(), String.format("%s failed, reason: %s", getTxnCommand(), ex.getMessage()), NotificationType.ERROR, null);
         }
     }
