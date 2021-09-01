@@ -88,6 +88,13 @@ public class DryRunSourceContextForm {
             return new ValidationInfo("Please provide a valid transaction index. Error: " + e.getMessage(), srcTxnIndexTf);
         }
 
+        if(isStatefulContract) {
+            String srcFile = sourceFileTf.getText();
+            if(StringUtil.isEmpty(srcFile)) {
+                return new ValidationInfo("Please select a valid source file", sourceFileTf);
+            }
+        }
+
         return null;
     }
 

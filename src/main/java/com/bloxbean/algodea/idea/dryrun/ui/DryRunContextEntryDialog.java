@@ -5,10 +5,12 @@ import com.bloxbean.algodea.idea.nodeint.model.DryRunContext;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.ValidationInfo;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,14 +24,19 @@ public class DryRunContextEntryDialog extends DialogWrapper {
     private boolean enableGeneralContextInfo;
     private boolean enableSourceInfo;
 
+    protected Action fetchDefaultAction;
+    private Project project;
+
     public DryRunContextEntryDialog(@Nullable Project project,
                                     java.util.List<Long> appIds, java.util.List<Address> accounts, List<Long> foreignApps, boolean isStatefulContract, boolean enableGeneralContextInfo, boolean enableSourceInfo) {
         super(project, true);
-        init();
-        setTitle("Dry Run Context");
-
+        this.fetchDefaultAction = new FetchDefaultAction("Fetch Defaults");
+        this.project = project;
         this.enableSourceInfo = enableSourceInfo;
         this.enableGeneralContextInfo = enableGeneralContextInfo;
+
+        init();
+        setTitle("Dry Run Context");
 
         if(enableGeneralContextInfo) {
             dryRunContextForm.initializeData(project, appIds);
@@ -123,5 +130,29 @@ public class DryRunContextEntryDialog extends DialogWrapper {
         // TODO: place custom component creation code here
         dryRunSourceInputForm = new DryRunSourceContextForm();
         dryRunContextForm = new DryRunContextForm();
+    }
+
+    @Override
+    protected @NotNull Action[] createLeftSideActions() {
+
+        if(enableGeneralContextInfo) {
+            return new Action[]{
+                    fetchDefaultAction
+            };
+        } else {
+            return super.createLeftSideActions();
+        }
+    }
+
+    class FetchDefaultAction extends DialogWrapperAction {
+
+        public FetchDefaultAction(String label) {
+            super(label);
+        }
+
+        @Override
+        protected void doAction(ActionEvent e) {
+            dryRunContextForm.updateNetworkDefaults(project);
+        }
     }
 }

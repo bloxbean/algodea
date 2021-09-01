@@ -6,8 +6,6 @@ import com.bloxbean.algodea.idea.account.service.AccountChooser;
 import com.bloxbean.algodea.idea.nodeint.exception.InvalidInputParamException;
 import com.bloxbean.algodea.idea.nodeint.model.ApplArg;
 import com.bloxbean.algodea.idea.nodeint.model.ArgType;
-import com.bloxbean.algodea.idea.nodeint.model.Lease;
-import com.bloxbean.algodea.idea.nodeint.model.Note;
 import com.bloxbean.algodea.idea.nodeint.util.ArgTypeToByteConverter;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
@@ -17,6 +15,7 @@ import com.intellij.ui.components.JBList;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,7 +29,6 @@ public class AppTxnDetailsEntryForm {
     private JTextField accountsTf;
     private JList accountsList;
     private JList argList;
-    private JButton accountAddBtn;
     private JButton argAddBtn;
     private JPanel mainPanel;
     private JComboBox<ArgType> argTypeCB;
@@ -56,7 +54,10 @@ public class AppTxnDetailsEntryForm {
 
     public void initializeData(Project project) {
         this.project = project;
-        argAddBtn.addActionListener(e -> {
+
+        Action argAddAction = new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
                 ArgType argType = (ArgType)argTypeCB.getSelectedItem();
 
                 if(argType != null) {
@@ -64,7 +65,10 @@ public class AppTxnDetailsEntryForm {
                     argListModel.addElement(applArg);
                     argTf.setText("");
                 }
-        });
+            }
+        };
+        argTf.addActionListener(argAddAction);
+        argAddBtn.addActionListener(argAddAction);
 
         argDelBtn.addActionListener(e -> {
                 Object selectedValue = argList.getSelectedValue();
@@ -75,17 +79,21 @@ public class AppTxnDetailsEntryForm {
 
         accountsChooserBtn.addActionListener(e -> {
             AlgoAccount algoAccount = AccountChooser.getSelectedAccount(project, true);
-            if(algoAccount != null) {
-                accountsTf.setText(algoAccount.getAddress());
-            }
+            ((DefaultListModel) accountsList.getModel()).addElement(StringUtil.trim(algoAccount.getAddress()));
         });
 
-        accountAddBtn.addActionListener( e -> {
+        Action addAccountAction = new AbstractAction()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
                 if(!StringUtil.isEmpty(accountsTf.getText())) {
                     ((DefaultListModel) accountsList.getModel()).addElement(StringUtil.trim(accountsTf.getText()));
                     accountsTf.setText("");
                 }
-        });
+            }
+        };
+        accountsTf.addActionListener(addAccountAction);
 
         accountsDelBtn.addActionListener(e -> {
             Object selectedValue = accountsList.getSelectedValue();
