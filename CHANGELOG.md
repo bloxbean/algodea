@@ -1,4 +1,4 @@
-### 0.7.0-beta1
+### 0.7.0
   - TEAL debug support
 ### 0.6.0
   - TEAL v4 support (New Opcodes, Txn Fields)
