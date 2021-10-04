@@ -41,6 +41,9 @@ public interface TEALGeneralOperation extends PsiElement {
   TEALSqrtOpcode getSqrtOpcode();
 
   @Nullable
+  TEALEcdsaOp getEcdsaOp();
+
+  @Nullable
   TEALSubstringOperation getSubstringOperation();
 
 }

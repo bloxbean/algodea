@@ -40,6 +40,7 @@ TYPENUM_CONSTANT=(unknown|pay|keyreg|acfg|axfer|afrz|appl|Unknown|Payment|KeyReg
 GLOBAL_FIELD=(MinTxnFee|MinBalance|MaxTxnLife|ZeroAddress|GroupSize|LogicSigVersion|Round|LatestTimestamp|CurrentApplicationID|CreatorAddress)
 ASSET_HOLDING_GET_FIELD=(AssetBalance|AssetFrozen)
 ASSET_PARAMS_GET_FIELD=(AssetTotal|AssetDecimals|AssetDefaultFrozen|AssetUnitName|AssetName|AssetURL|AssetMetadataHash|AssetManager|AssetReserve|AssetFreeze|AssetClawback)
+ECDSA_OP=(ecdsa_verify|ecdsa_pk_decompress|ecdsa_pk_recover)
 OCTAL=(0)[0-9]+
 HEX=(0x|0X)[a-fA-F0-9]*
 VAR_TMPL=(VAR_TMPL_)([a-zA-Z0-9_$.#@~?]+)
@@ -118,6 +119,8 @@ ID=([a-zA-Z0-9_$.#@~?=+-]+[a-zA-Z0-9_$.#@~?=+-]*)
   "b&"                           { return B_BITWISE_AND_OPCODE; }
   "b^"                           { return B_BITWISE_XOR_OPCODE; }
   "b~"                           { return B_INVERT_OPCODE; }
+
+  {ECDSA_OP}                     { return ECDSA_OP;}
 
   {NL}                           { return NL; }
   {EOF}                          { return EOF; }

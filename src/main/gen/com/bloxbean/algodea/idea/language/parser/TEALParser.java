@@ -268,6 +268,39 @@ public class TEALParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // 'ecdsa_pk_decompress'
+  public static boolean ECDSA_PK_DECOMPRESS_OPCODE(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "ECDSA_PK_DECOMPRESS_OPCODE")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, ECDSA_PK_DECOMPRESS_OPCODE, "<ecdsa pk decompress opcode>");
+    r = consumeToken(b, "ecdsa_pk_decompress");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // 'ecdsa_pk_recover'
+  public static boolean ECDSA_PK_RECOVER_OPCODE(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "ECDSA_PK_RECOVER_OPCODE")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, ECDSA_PK_RECOVER_OPCODE, "<ecdsa pk recover opcode>");
+    r = consumeToken(b, "ecdsa_pk_recover");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // 'ecdsa_verify'
+  public static boolean ECDSA_VERIFY_OPCODE(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "ECDSA_VERIFY_OPCODE")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, ECDSA_VERIFY_OPCODE, "<ecdsa verify opcode>");
+    r = consumeToken(b, "ecdsa_verify");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
   // 'expw'
   public static boolean EXPW_OPCODE(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "EXPW_OPCODE")) return false;
@@ -431,6 +464,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
   //                                      | KECCAK256
   //                                      | SHA512_256
   //                                      | ED25519VERIFY
+  //                                      | ecdsaOp
   //                                      | PLUS
   //                                      | MINUS
   //                                      | DIVIDE
@@ -476,6 +510,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
     if (!r) r = consumeToken(b, KECCAK256);
     if (!r) r = consumeToken(b, SHA512_256);
     if (!r) r = consumeToken(b, ED25519VERIFY);
+    if (!r) r = ecdsaOp(b, l + 1);
     if (!r) r = consumeToken(b, PLUS);
     if (!r) r = consumeToken(b, MINUS);
     if (!r) r = consumeToken(b, DIVIDE);
@@ -1276,6 +1311,81 @@ public class TEALParser implements PsiParser, LightPsiParser {
   // unsignedInteger | VAR_TMPL
   private static boolean digOperation_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "digOperation_1")) return false;
+    boolean r;
+    r = unsignedInteger(b, l + 1);
+    if (!r) r = consumeToken(b, VAR_TMPL);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // ECDSA_VERIFY_OPCODE (unsignedInteger | VAR_TMPL)
+  //                 | ECDSA_PK_DECOMPRESS_OPCODE (unsignedInteger | VAR_TMPL)
+  //                 | ECDSA_PK_RECOVER_OPCODE (unsignedInteger | VAR_TMPL)
+  public static boolean ecdsaOp(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "ecdsaOp")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, ECDSA_OP, "<ecdsa op>");
+    r = ecdsaOp_0(b, l + 1);
+    if (!r) r = ecdsaOp_1(b, l + 1);
+    if (!r) r = ecdsaOp_2(b, l + 1);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  // ECDSA_VERIFY_OPCODE (unsignedInteger | VAR_TMPL)
+  private static boolean ecdsaOp_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "ecdsaOp_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = ECDSA_VERIFY_OPCODE(b, l + 1);
+    r = r && ecdsaOp_0_1(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // unsignedInteger | VAR_TMPL
+  private static boolean ecdsaOp_0_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "ecdsaOp_0_1")) return false;
+    boolean r;
+    r = unsignedInteger(b, l + 1);
+    if (!r) r = consumeToken(b, VAR_TMPL);
+    return r;
+  }
+
+  // ECDSA_PK_DECOMPRESS_OPCODE (unsignedInteger | VAR_TMPL)
+  private static boolean ecdsaOp_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "ecdsaOp_1")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = ECDSA_PK_DECOMPRESS_OPCODE(b, l + 1);
+    r = r && ecdsaOp_1_1(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // unsignedInteger | VAR_TMPL
+  private static boolean ecdsaOp_1_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "ecdsaOp_1_1")) return false;
+    boolean r;
+    r = unsignedInteger(b, l + 1);
+    if (!r) r = consumeToken(b, VAR_TMPL);
+    return r;
+  }
+
+  // ECDSA_PK_RECOVER_OPCODE (unsignedInteger | VAR_TMPL)
+  private static boolean ecdsaOp_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "ecdsaOp_2")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = ECDSA_PK_RECOVER_OPCODE(b, l + 1);
+    r = r && ecdsaOp_2_1(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // unsignedInteger | VAR_TMPL
+  private static boolean ecdsaOp_2_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "ecdsaOp_2_1")) return false;
     boolean r;
     r = unsignedInteger(b, l + 1);
     if (!r) r = consumeToken(b, VAR_TMPL);

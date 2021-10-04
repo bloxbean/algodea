@@ -53,6 +53,7 @@ public final class TEALKeywords {
             KECCAK256,
             SHA512_256,
             ED25519VERIFY,
+            ECDSA_OP,
             PLUS,
             MINUS,
             DIVIDE,
@@ -145,6 +146,16 @@ public final class TEALKeywords {
             //.getOps().stream()
             .getOpCodes().stream()
             .filter(opc -> opc.getSince() == 4)
+            .map(opc -> opc.getOp())
+            .sorted()
+            .map(TEALKeywordElement::new)
+            .map(TEALKeywordElement::getLookupElement)
+            .collect(Collectors.toList());
+
+    public static final List<LookupElement> KEYWORD_LOOKUP_ELEMENTS_V5 = TEALOpCodeFactory.getInstance()
+            //.getOps().stream()
+            .getOpCodes().stream()
+            .filter(opc -> opc.getSince() == 5)
             .map(opc -> opc.getOp())
             .sorted()
             .map(TEALKeywordElement::new)

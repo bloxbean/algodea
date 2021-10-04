@@ -44,6 +44,10 @@ public interface TEALTypes {
   IElementType DIG_OPCODE = new TEALElementType("DIG_OPCODE");
   IElementType DIG_OPERATION = new TEALElementType("DIG_OPERATION");
   IElementType DIVMODW_OPCODE = new TEALElementType("DIVMODW_OPCODE");
+  IElementType ECDSA_OP = new TEALElementType("ECDSA_OP");
+  IElementType ECDSA_PK_DECOMPRESS_OPCODE = new TEALElementType("ECDSA_PK_DECOMPRESS_OPCODE");
+  IElementType ECDSA_PK_RECOVER_OPCODE = new TEALElementType("ECDSA_PK_RECOVER_OPCODE");
+  IElementType ECDSA_VERIFY_OPCODE = new TEALElementType("ECDSA_VERIFY_OPCODE");
   IElementType EXPW_OPCODE = new TEALElementType("EXPW_OPCODE");
   IElementType EXP_OPCODE = new TEALElementType("EXP_OPCODE");
   IElementType FLOW_CONTROL_OPERATION = new TEALElementType("FLOW_CONTROL_OPERATION");
@@ -271,6 +275,18 @@ public interface TEALTypes {
       }
       else if (type == DIVMODW_OPCODE) {
         return new TEALDivmodwOpcodeImpl(node);
+      }
+      else if (type == ECDSA_OP) {
+        return new TEALEcdsaOpImpl(node);
+      }
+      else if (type == ECDSA_PK_DECOMPRESS_OPCODE) {
+        return new TEALEcdsaPkDecompressOpcodeImpl(node);
+      }
+      else if (type == ECDSA_PK_RECOVER_OPCODE) {
+        return new TEALEcdsaPkRecoverOpcodeImpl(node);
+      }
+      else if (type == ECDSA_VERIFY_OPCODE) {
+        return new TEALEcdsaVerifyOpcodeImpl(node);
       }
       else if (type == EXPW_OPCODE) {
         return new TEALExpwOpcodeImpl(node);

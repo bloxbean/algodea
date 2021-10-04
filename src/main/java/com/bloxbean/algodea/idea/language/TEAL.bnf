@@ -174,6 +174,12 @@ B_INVERT_OPCODE ::= 'b~'
 B_ZERO_OPCODE ::= 'bzero'
 //v4 opcodes end
 
+//v5 opcodes start
+ECDSA_VERIFY_OPCODE  ::= 'ecdsa_verify'
+ECDSA_PK_DECOMPRESS_OPCODE  ::= 'ecdsa_pk_decompress'
+ECDSA_PK_RECOVER_OPCODE     ::= 'ecdsa_pk_recover'
+//v5 opcodes end
+
 pragma ::= PRAGMA_KEYWORD VERSION pragma_version {pin=1 recoverWhile=statement_recover}
 pragma_version ::= unsignedInteger
 statement ::= COMMENT
@@ -310,6 +316,7 @@ GeneralOperation                   ::= SHA256
                                      | KECCAK256
                                      | SHA512_256
                                      | ED25519VERIFY
+                                     | ecdsaOp
                                      | PLUS
                                      | MINUS
                                      | DIVIDE
@@ -379,3 +386,8 @@ bytesliceOperation ::= B_PLUS_OPCODE | B_MINUS_OPCODE | B_DIV_OPCODE | B_TIMES_O
                                   | B_EQUAL_OPCODE | B_NOT_EQUAL_OPCODE | B_MODULO_OPCODE
                                   | B_BITWISE_OR_OPCODE | B_BITWISE_AND_OPCODE | B_BITWISE_XOR_OPCODE
                                   | B_INVERT_OPCODE
+
+//In v5
+ecdsaOp ::= ECDSA_VERIFY_OPCODE (unsignedInteger | VAR_TMPL)
+                | ECDSA_PK_DECOMPRESS_OPCODE (unsignedInteger | VAR_TMPL)
+                | ECDSA_PK_RECOVER_OPCODE (unsignedInteger | VAR_TMPL) {pin=1}

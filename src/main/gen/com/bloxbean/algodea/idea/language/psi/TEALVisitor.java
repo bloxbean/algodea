@@ -91,6 +91,18 @@ public class TEALVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitEcdsaPkDecompressOpcode(@NotNull TEALEcdsaPkDecompressOpcode o) {
+    visitPsiElement(o);
+  }
+
+  public void visitEcdsaPkRecoverOpcode(@NotNull TEALEcdsaPkRecoverOpcode o) {
+    visitPsiElement(o);
+  }
+
+  public void visitEcdsaVerifyOpcode(@NotNull TEALEcdsaVerifyOpcode o) {
+    visitPsiElement(o);
+  }
+
   public void visitExpwOpcode(@NotNull TEALExpwOpcode o) {
     visitPsiElement(o);
   }
@@ -268,6 +280,10 @@ public class TEALVisitor extends PsiElementVisitor {
   }
 
   public void visitDigOperation(@NotNull TEALDigOperation o) {
+    visitPsiElement(o);
+  }
+
+  public void visitEcdsaOp(@NotNull TEALEcdsaOp o) {
     visitPsiElement(o);
   }
 
