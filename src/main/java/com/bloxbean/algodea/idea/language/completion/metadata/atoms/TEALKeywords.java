@@ -31,8 +31,7 @@ import com.google.common.collect.Sets;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.psi.tree.IElementType;
 
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.bloxbean.algodea.idea.language.psi.TEALTypes.*;
@@ -269,11 +268,38 @@ public final class TEALKeywords {
             .map(TEALFieldElement::getLookupElement)
             .collect(Collectors.toList());
 
+    public static final Map<Integer, List<LookupElement>> ASSET_PARAMS_GET_FIELDS_ELEMENTS_MAP = createFieldMapForType(ASSET_PARAMS_GET_FIELDS);
+
     public static final List<LookupElement> ONCOMPLETE_CONSTANT_ELEMENTS = TEALOpCodeFactory.getInstance()
             .getFields(ONCOMPLETE_CONSTANTS)
             .stream()
             .map(f -> new TEALConstantElement(f))
             .map(TEALConstantElement::getLookupElement)
             .collect(Collectors.toList());
+
+
+    private static Map<Integer, List<LookupElement>> createFieldMapForType(String fieldType) {
+        Collection<Field> fields = TEALOpCodeFactory.getInstance().getFields(fieldType);
+        Map<Integer, List<LookupElement>> map = new HashMap<>();
+
+        fields.forEach(field -> {
+            Integer since = field.getSince();
+            TEALConstantElement constantElement = new TEALConstantElement(field);
+            LookupElement lookupElement = constantElement.getLookupElement();
+
+            if(since == null)
+                since = 0;
+
+            List<LookupElement> lookupElements = map.get(since);
+            if(lookupElements == null) {
+                lookupElements = new ArrayList<>();
+                map.put(since, lookupElements);
+            }
+
+            lookupElements.add(lookupElement);
+        });
+
+        return map;
+    }
 
 }

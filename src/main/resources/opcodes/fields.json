@@ -626,6 +626,13 @@
       "name": "AssetClawback",
       "type": "[]byte",
       "note": "Clawback address"
+    },
+    {
+      "index": 11,
+      "name": "AssetCreator",
+      "type": "[]byte",
+      "note": "Creator address. LogicSigVersion >= 5.",
+      "since": 5
     }
   ]
 }

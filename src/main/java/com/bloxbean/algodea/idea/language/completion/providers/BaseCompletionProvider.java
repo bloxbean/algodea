@@ -24,8 +24,24 @@ package com.bloxbean.algodea.idea.language.completion.providers;
 
 import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.codeInsight.completion.CompletionProvider;
+import com.intellij.codeInsight.completion.CompletionResultSet;
+import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.openapi.project.DumbAware;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public abstract class BaseCompletionProvider extends CompletionProvider<CompletionParameters> implements DumbAware {
 
+    protected void selectFieldsByVersion(@NotNull Map<Integer, List<LookupElement>> fieldMap,
+                                         @NotNull CompletionResultSet result, Integer version) {
+        Set<Integer> sinceSet = fieldMap.keySet();
+        for(Integer since: sinceSet) {
+            if(version >= since) {
+                result.addAllElements(fieldMap.get(since));
+            }
+        }
+    }
 }

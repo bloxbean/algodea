@@ -11,6 +11,7 @@ import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
 
 import static com.bloxbean.algodea.idea.language.TEALUtil.getTEALVersion;
+import static com.bloxbean.algodea.idea.language.completion.metadata.atoms.TEALKeywords.ASSET_PARAMS_GET_FIELDS;
 
 public class TEALFieldsAnnotator implements Annotator {
     private static String  V3_SUPPORT_MSG = "Supported in TEAL v3 or later";
@@ -43,6 +44,12 @@ public class TEALFieldsAnnotator implements Annotator {
             } else if (TEALTypes.TXN_FIELD_ARG.equals(element.getNode().getElementType())) {
                 String value = element.getNode().getText();
                 Field field = TEALOpCodeFactory.getInstance().getField(TXN_FIELDS, value);
+                if (field != null && field.getSince() == tealSpecVersion) {
+                    createError(holder, errorMsg);
+                }
+            } else if (TEALTypes.ASSET_PARAMS_GET_FIELD.equals(element.getNode().getElementType())) {
+                String value = element.getNode().getText();
+                Field field = TEALOpCodeFactory.getInstance().getField(ASSET_PARAMS_GET_FIELDS, value);
                 if (field != null && field.getSince() == tealSpecVersion) {
                     createError(holder, errorMsg);
                 }
