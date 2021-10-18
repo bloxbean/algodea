@@ -1598,6 +1598,27 @@
       "anchor": "asset_params_get-i"
     },
    {
+     "op": "app_params_get",
+     "opcode": "0x72 {uint8 app params field index}",
+     "pops": ["... stack", "uint64"],
+     "pushes": ["... stack", "any", "uint64"],
+     "desc": "read from app A params field X (imm arg) => {0 or 1 (top), value}",
+     "error": "",
+     "metadata": {
+       "LogicSigVersion": ">=5"
+     },
+     "mode": "Application",
+     "additionalDesc": "params: Txn.ForeignApps offset or an app id that appears in Txn.ForeignApps. Return: did_exist flag (1 if the application existed and 0 otherwise), value.",
+     "params": ["app_params_get_fields"],
+     "costs": [
+       {
+         "cost": 1,
+         "filter": ""
+       }
+     ],
+     "anchor": "app_params_get-i"
+   },
+   {
      "op": "min_balance",
      "opcode": "0x78",
      "pops": ["... stack", "any"],

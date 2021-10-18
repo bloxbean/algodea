@@ -756,6 +756,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
   //                             | 'app_global_del'
   //                             | assetHoldingGetOperation
   //                             | assetParamsGetOperation
+  //                             | appParamsGetOperation
   //                             | MIN_BALANCE_OPCODE
   public static boolean StateAccessOperation(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "StateAccessOperation")) return false;
@@ -773,6 +774,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
     if (!r) r = consumeToken(b, "app_global_del");
     if (!r) r = assetHoldingGetOperation(b, l + 1);
     if (!r) r = assetParamsGetOperation(b, l + 1);
+    if (!r) r = appParamsGetOperation(b, l + 1);
     if (!r) r = MIN_BALANCE_OPCODE(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
@@ -906,6 +908,40 @@ public class TEALParser implements PsiParser, LightPsiParser {
     r = r && addr_param(b, l + 1);
     exit_section_(b, l, m, r, p, null);
     return r || p;
+  }
+
+  /* ********************************************************** */
+  // 'app_params_get'
+  public static boolean appParamsGetOp(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "appParamsGetOp")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, APP_PARAMS_GET_OP, "<app params get op>");
+    r = consumeToken(b, "app_params_get");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // appParamsGetOp (unsignedInteger | APP_PARAMS_GET_FIELD | VAR_TMPL)
+  public static boolean appParamsGetOperation(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "appParamsGetOperation")) return false;
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, APP_PARAMS_GET_OPERATION, "<app params get operation>");
+    r = appParamsGetOp(b, l + 1);
+    p = r; // pin = 1
+    r = r && appParamsGetOperation_1(b, l + 1);
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
+  }
+
+  // unsignedInteger | APP_PARAMS_GET_FIELD | VAR_TMPL
+  private static boolean appParamsGetOperation_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "appParamsGetOperation_1")) return false;
+    boolean r;
+    r = unsignedInteger(b, l + 1);
+    if (!r) r = consumeToken(b, APP_PARAMS_GET_FIELD);
+    if (!r) r = consumeToken(b, VAR_TMPL);
+    return r;
   }
 
   /* ********************************************************** */

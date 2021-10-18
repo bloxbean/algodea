@@ -634,5 +634,70 @@
       "note": "Creator address. LogicSigVersion >= 5.",
       "since": 5
     }
+  ],
+  "app_params_get_fields": [
+    {
+      "index": 0,
+      "name": "AppApprovalProgram",
+      "type": "[]byte",
+      "note": "Bytecode of Approval Program",
+      "since": 5
+    },
+    {
+      "index": 1,
+      "name": "AppClearStateProgram",
+      "type": "[]byte",
+      "note": "Bytecode of Clear State Program",
+      "since": 5
+    },
+    {
+      "index": 2,
+      "name": "AppGlobalNumUint",
+      "type": "uint64",
+      "note": "Number of uint64 values allowed in Global State",
+      "since": 5
+    },
+    {
+      "index": 3,
+      "name": "AppGlobalNumByteSlice",
+      "type": "uint64",
+      "note": "Number of byte array values allowed in Global State",
+      "since": 5
+    },
+    {
+      "index": 4,
+      "name": "AppLocalNumUint",
+      "type": "uint64",
+      "note": "Number of uint64 values allowed in Local State",
+      "since": 5
+    },
+    {
+      "index": 5,
+      "name": "AppLocalNumByteSlice",
+      "type": "uint64",
+      "note": "Number of byte array values allowed in Local State",
+      "since": 5
+    },
+    {
+      "index": 6,
+      "name": "AppExtraProgramPages",
+      "type": "uint64",
+      "note": "Number of Extra Program Pages of code space",
+      "since": 5
+    },
+    {
+      "index": 7,
+      "name": "AppCreator",
+      "type": "[]byte",
+      "note": "Creator address",
+      "since": 5
+    },
+    {
+      "index": 8,
+      "name": "AppAddress",
+      "type": "[]byte",
+      "note": "Address for which this application has authority",
+      "since": 5
+    }
   ]
 }

@@ -10,6 +10,8 @@ public interface TEALTypes {
 
   IElementType ADDR_PARAM = new TEALElementType("ADDR_PARAM");
   IElementType ADDR_STATEMENT = new TEALElementType("ADDR_STATEMENT");
+  IElementType APP_PARAMS_GET_OP = new TEALElementType("APP_PARAMS_GET_OP");
+  IElementType APP_PARAMS_GET_OPERATION = new TEALElementType("APP_PARAMS_GET_OPERATION");
   IElementType ARG_OPERATION = new TEALElementType("ARG_OPERATION");
   IElementType ASSERT_OPCODE = new TEALElementType("ASSERT_OPCODE");
   IElementType ASSET_HOLDING_GET_OP = new TEALElementType("ASSET_HOLDING_GET_OP");
@@ -107,6 +109,7 @@ public interface TEALTypes {
 
   IElementType ADDR = new TEALTokenType("addr");
   IElementType ADDW = new TEALTokenType("addw");
+  IElementType APP_PARAMS_GET_FIELD = new TEALTokenType("APP_PARAMS_GET_FIELD");
   IElementType ASSET_HOLDING_GET_FIELD = new TEALTokenType("ASSET_HOLDING_GET_FIELD");
   IElementType ASSET_PARAMS_GET_FIELD = new TEALTokenType("ASSET_PARAMS_GET_FIELD");
   IElementType BITWISE_AND = new TEALTokenType("&");
@@ -173,6 +176,12 @@ public interface TEALTypes {
       }
       else if (type == ADDR_STATEMENT) {
         return new TEALAddrStatementImpl(node);
+      }
+      else if (type == APP_PARAMS_GET_OP) {
+        return new TEALAppParamsGetOpImpl(node);
+      }
+      else if (type == APP_PARAMS_GET_OPERATION) {
+        return new TEALAppParamsGetOperationImpl(node);
       }
       else if (type == ARG_OPERATION) {
         return new TEALArgOperationImpl(node);

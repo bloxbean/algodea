@@ -11,14 +11,14 @@ import static com.bloxbean.algodea.idea.language.psi.TEALTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.bloxbean.algodea.idea.language.psi.*;
 
-public class TEALStateAccessOperationImpl extends ASTWrapperPsiElement implements TEALStateAccessOperation {
+public class TEALAppParamsGetOperationImpl extends ASTWrapperPsiElement implements TEALAppParamsGetOperation {
 
-  public TEALStateAccessOperationImpl(@NotNull ASTNode node) {
+  public TEALAppParamsGetOperationImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull TEALVisitor visitor) {
-    visitor.visitStateAccessOperation(this);
+    visitor.visitAppParamsGetOperation(this);
   }
 
   @Override
@@ -28,27 +28,27 @@ public class TEALStateAccessOperationImpl extends ASTWrapperPsiElement implement
   }
 
   @Override
-  @Nullable
-  public TEALMinBalanceOpcode getMinBalanceOpcode() {
-    return findChildByClass(TEALMinBalanceOpcode.class);
+  @NotNull
+  public TEALAppParamsGetOp getAppParamsGetOp() {
+    return findNotNullChildByClass(TEALAppParamsGetOp.class);
   }
 
   @Override
   @Nullable
-  public TEALAppParamsGetOperation getAppParamsGetOperation() {
-    return findChildByClass(TEALAppParamsGetOperation.class);
+  public TEALUnsignedInteger getUnsignedInteger() {
+    return findChildByClass(TEALUnsignedInteger.class);
   }
 
   @Override
   @Nullable
-  public TEALAssetHoldingGetOperation getAssetHoldingGetOperation() {
-    return findChildByClass(TEALAssetHoldingGetOperation.class);
+  public PsiElement getAppParamsGetField() {
+    return findChildByType(APP_PARAMS_GET_FIELD);
   }
 
   @Override
   @Nullable
-  public TEALAssetParamsGetOperation getAssetParamsGetOperation() {
-    return findChildByClass(TEALAssetParamsGetOperation.class);
+  public PsiElement getVarTmpl() {
+    return findChildByType(VAR_TMPL);
   }
 
 }
