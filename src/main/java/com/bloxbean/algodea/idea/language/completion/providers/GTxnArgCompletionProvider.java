@@ -166,6 +166,9 @@ public final class GTxnArgCompletionProvider extends BaseCompletionProvider {
             if (version >= 4) {
                 txnFieldElements.addAll(txnFieldElements.size() - 1, TEALKeywords.TXNARGS_LOOKUP_ELEMENTS_STREAM_V4);
             }
+            if (version >= 5) {
+                txnFieldElements.addAll(txnFieldElements.size() - 1, TEALKeywords.TXNARGS_LOOKUP_ELEMENTS_STREAM_V5);
+            }
         }
 
         return txnFieldElements;
@@ -182,6 +185,9 @@ public final class GTxnArgCompletionProvider extends BaseCompletionProvider {
             }
             if (version >= 4) {
                 txnFieldElements.addAll(txnFieldElements.size() - 1, TEALKeywords.TXNARGS_LOOKUP_ELEMENTS_V4);
+            }
+            if (version >= 5) {
+                txnFieldElements.addAll(txnFieldElements.size() - 1, TEALKeywords.TXNARGS_LOOKUP_ELEMENTS_V5);
             }
         }
 

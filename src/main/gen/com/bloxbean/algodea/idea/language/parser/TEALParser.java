@@ -810,6 +810,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
   //                        | 'ConfigAssetManager'|'ConfigAssetReserve'|'ConfigAssetFreeze'|'ConfigAssetClawback'|'FreezeAsset'
   //                        | 'FreezeAssetAccount'|'FreezeAssetFrozen' | 'Assets' | 'NumAssets' | 'Applications' | 'NumApplications'
   //                        | 'GlobalNumUint' | 'GlobalNumByteSlice' | 'LocalNumUint' | 'LocalNumByteSlice' | 'ExtraProgramPages'
+  //                        | 'Nonparticipation' | 'Logs' | 'NumLogs' | 'CreatedAssetID' | 'CreatedApplicationID'
   public static boolean TxnFieldArg(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "TxnFieldArg")) return false;
     boolean r;
@@ -871,6 +872,11 @@ public class TEALParser implements PsiParser, LightPsiParser {
     if (!r) r = consumeToken(b, "LocalNumUint");
     if (!r) r = consumeToken(b, "LocalNumByteSlice");
     if (!r) r = consumeToken(b, "ExtraProgramPages");
+    if (!r) r = consumeToken(b, "Nonparticipation");
+    if (!r) r = consumeToken(b, "Logs");
+    if (!r) r = consumeToken(b, "NumLogs");
+    if (!r) r = consumeToken(b, "CreatedAssetID");
+    if (!r) r = consumeToken(b, "CreatedApplicationID");
     exit_section_(b, l, m, r, false, null);
     return r;
   }

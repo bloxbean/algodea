@@ -350,6 +350,41 @@
       "type": "uint64",
       "note": "Number of additional pages for each of the application's approval and clear state programs. An ExtraProgramPages of 1 means 2048 more total bytes, or 1024 for each program. LogicSigVersion >= 4.",
       "since": 4
+    },
+    {
+      "index": 57,
+      "name": "Nonparticipation",
+      "type": "uint64",
+      "note": "Marks an account nonparticipating for rewards. LogicSigVersion >= 5.",
+      "since": 5
+    },
+    {
+      "index": 58,
+      "name": "Logs",
+      "type": "[]byte",
+      "note": "Log messages emitted by an application call (itxn only). LogicSigVersion >= 5.",
+      "since": 5
+    },
+    {
+      "index": 59,
+      "name": "NumLogs",
+      "type": "uint64",
+      "note": "Number of Logs (itxn only). LogicSigVersion >= 5.",
+      "since": 5
+    },
+    {
+      "index": 60,
+      "name": "CreatedAssetID",
+      "type": "uint64",
+      "note": "Asset ID allocated by the creation of an ASA (itxn only). LogicSigVersion >= 5.",
+      "since": 5
+    },
+    {
+      "index": 61,
+      "name": "CreatedApplicationID",
+      "type": "uint64",
+      "note": "ApplicationID allocated by the creation of an application (itxn only). LogicSigVersion >= 5.",
+      "since": 5
     }
   ],
   "oncomplete": [

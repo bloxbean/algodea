@@ -310,6 +310,7 @@ TxnFieldArg ::= 'Sender'| 'Fee'| 'FirstValid'| 'FirstValidTime'| 'LastValid'| 'N
                        | 'ConfigAssetManager'|'ConfigAssetReserve'|'ConfigAssetFreeze'|'ConfigAssetClawback'|'FreezeAsset'
                        | 'FreezeAssetAccount'|'FreezeAssetFrozen' | 'Assets' | 'NumAssets' | 'Applications' | 'NumApplications'
                        | 'GlobalNumUint' | 'GlobalNumByteSlice' | 'LocalNumUint' | 'LocalNumByteSlice' | 'ExtraProgramPages'
+                       | 'Nonparticipation' | 'Logs' | 'NumLogs' | 'CreatedAssetID' | 'CreatedApplicationID'
 
 //Follow same sequence in https://developer.algorand.org/docs/reference/teal/specification/#arithmetic-logic-and-cryptographic-operations
 GeneralOperation                   ::= SHA256

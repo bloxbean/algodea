@@ -15,6 +15,7 @@ import static com.bloxbean.algodea.idea.language.TEALUtil.getTEALVersion;
 public class TEALFieldsAnnotator implements Annotator {
     private static String  V3_SUPPORT_MSG = "Supported in TEAL v3 or later";
     private static String  V4_SUPPORT_MSG = "Supported in TEAL v4 or later";
+    private static String  V5_SUPPORT_MSG = "Supported in TEAL v5 or later";
     public static final String GLOBAL_FIELDS = "global_fields";
     public static final String TXN_FIELDS = "txn_fields";
 
@@ -23,9 +24,10 @@ public class TEALFieldsAnnotator implements Annotator {
         PsiFile psiFile = element.getContainingFile();
         Integer versionInt = getTEALVersion(psiFile);
         if (versionInt == null) return;
-        
+
         createErrorIfRequired(3, element, versionInt,  holder, V3_SUPPORT_MSG);
         createErrorIfRequired(4, element, versionInt,  holder, V4_SUPPORT_MSG);
+        createErrorIfRequired(5, element, versionInt, holder, V5_SUPPORT_MSG);
     }
 
     private void createErrorIfRequired(int tealSpecVersion, @NotNull PsiElement element,
