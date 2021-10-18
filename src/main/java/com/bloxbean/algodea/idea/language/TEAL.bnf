@@ -88,7 +88,7 @@
     TYPENUM_CONSTANT = 'regexp:(unknown|pay|keyreg|acfg|axfer|afrz|appl|Unknown|Payment|KeyRegistration|AssetConfig|AssetTransfer|AssetFreeze|ApplicationCall)'
 
     //Global Fields
-    GLOBAL_FIELD        = 'regexp:(MinTxnFee|MinBalance|MaxTxnLife|ZeroAddress|GroupSize|LogicSigVersion|Round|LatestTimestamp|CurrentApplicationID|CreatorAddress)'
+    GLOBAL_FIELD        = 'regexp:(MinTxnFee|MinBalance|MaxTxnLife|ZeroAddress|GroupSize|LogicSigVersion|Round|LatestTimestamp|CurrentApplicationID|CreatorAddress|CurrentApplicationAddress|GroupID)'
 
     //Asset Fields
     ASSET_HOLDING_GET_FIELD      = 'regexp:(AssetBalance|AssetFrozen)'

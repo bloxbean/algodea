@@ -58,6 +58,9 @@ public final class GlobalFieldsCompletionProvider extends BaseCompletionProvider
             if (version >= 3) {
                 result.addAllElements(TEALKeywords.GLOBAL_FIELDS_ELEMENTS_V3);
             }
+            if (version >= 5) {
+                result.addAllElements(TEALKeywords.GLOBAL_FIELDS_ELEMENTS_V5);
+            }
         }
         result.stopHere();
     }

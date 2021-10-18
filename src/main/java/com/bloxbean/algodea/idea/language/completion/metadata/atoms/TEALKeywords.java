@@ -247,6 +247,14 @@ public final class TEALKeywords {
             .map(TEALFieldElement::getLookupElement)
             .collect(Collectors.toList());
 
+    //since V5
+    public static final List<LookupElement> GLOBAL_FIELDS_ELEMENTS_V5 = gloablFields
+            .stream()
+            .filter(f -> f.getSince() == 5)
+            .map(f -> new TEALFieldElement(f))
+            .map(TEALFieldElement::getLookupElement)
+            .collect(Collectors.toList());
+
     public static final List<LookupElement> ASSET_HOLDING_GET_FIELDS_ELEMENTS = TEALOpCodeFactory.getInstance()
             .getFields(ASSET_HOLDING_GET_FIELDS)
             .stream()

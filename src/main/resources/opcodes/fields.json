@@ -530,6 +530,20 @@
       "type": "[]byte",
       "note": "Address of the creator of the current application. Fails if no such application is executing. LogicSigVersion >= 3.",
       "since": 3
+    },
+    {
+      "index": 10,
+      "name": "CurrentApplicationAddress",
+      "type": "[]byte",
+      "note": "Address that the current application controls. Fails in LogicSigs. LogicSigVersion >= 5.",
+      "since": 5
+    },
+    {
+      "index": 11,
+      "name": "GroupID",
+      "type": "[]byte",
+      "note": "ID of the transaction group. 32 zero bytes if the transaction is not part of a group. LogicSigVersion >= 5.",
+      "since": 5
     }
   ],
   "asset_holding_get_fields": [
