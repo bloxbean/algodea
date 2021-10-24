@@ -21,7 +21,7 @@ public class TEALV5OpCodeAnnotator implements Annotator {
 
         if(versionInt < 5) {
             if(element instanceof TEALEcdsaOp
-//                    || element instanceof TEALRetsubOpcode
+                    || element instanceof TEALAppParamsGetOp
             ) {
                 holder.newAnnotation(HighlightSeverity.ERROR,
                         V5_SUPPORT_MSG).create();

@@ -44,6 +44,7 @@ public final class TEALKeywords {
     public final static String GLOBAL_FIELDS = "global_fields";
     public final static String ASSET_HOLDING_GET_FIELDS = "asset_holding_get_fields";
     public final static String ASSET_PARAMS_GET_FIELDS = "asset_params_get_fields";
+    public final static String APP_PARAMS_GET_FIELDS = "app_params_get_fields";
     public final static String ONCOMPLETE_CONSTANTS = "oncomplete";
 
     //https://developer.algorand.org/docs/reference/teal/specification/#arithmetic-logic-and-cryptographic-operations
@@ -261,14 +262,9 @@ public final class TEALKeywords {
             .map(TEALFieldElement::getLookupElement)
             .collect(Collectors.toList());
 
-    public static final List<LookupElement> ASSET_PARAMS_GET_FIELDS_ELEMENTS = TEALOpCodeFactory.getInstance()
-            .getFields(ASSET_PARAMS_GET_FIELDS)
-            .stream()
-            .map(f -> new TEALFieldElement(f))
-            .map(TEALFieldElement::getLookupElement)
-            .collect(Collectors.toList());
-
     public static final Map<Integer, List<LookupElement>> ASSET_PARAMS_GET_FIELDS_ELEMENTS_MAP = createFieldMapForType(ASSET_PARAMS_GET_FIELDS);
+
+    public static final Map<Integer, List<LookupElement>> APP_PARAMS_GET_FIELDS_ELEMENTS_MAP = createFieldMapForType(APP_PARAMS_GET_FIELDS);
 
     public static final List<LookupElement> ONCOMPLETE_CONSTANT_ELEMENTS = TEALOpCodeFactory.getInstance()
             .getFields(ONCOMPLETE_CONSTANTS)

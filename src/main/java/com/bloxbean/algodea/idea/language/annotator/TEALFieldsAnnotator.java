@@ -11,14 +11,12 @@ import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
 
 import static com.bloxbean.algodea.idea.language.TEALUtil.getTEALVersion;
-import static com.bloxbean.algodea.idea.language.completion.metadata.atoms.TEALKeywords.ASSET_PARAMS_GET_FIELDS;
+import static com.bloxbean.algodea.idea.language.completion.metadata.atoms.TEALKeywords.*;
 
 public class TEALFieldsAnnotator implements Annotator {
     private static String  V3_SUPPORT_MSG = "Supported in TEAL v3 or later";
     private static String  V4_SUPPORT_MSG = "Supported in TEAL v4 or later";
     private static String  V5_SUPPORT_MSG = "Supported in TEAL v5 or later";
-    public static final String GLOBAL_FIELDS = "global_fields";
-    public static final String TXN_FIELDS = "txn_fields";
 
     @Override
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
@@ -50,6 +48,12 @@ public class TEALFieldsAnnotator implements Annotator {
             } else if (TEALTypes.ASSET_PARAMS_GET_FIELD.equals(element.getNode().getElementType())) {
                 String value = element.getNode().getText();
                 Field field = TEALOpCodeFactory.getInstance().getField(ASSET_PARAMS_GET_FIELDS, value);
+                if (field != null && field.getSince() == tealSpecVersion) {
+                    createError(holder, errorMsg);
+                }
+            } else if (TEALTypes.APP_PARAMS_GET_FIELD.equals(element.getNode().getElementType())) {
+                String value = element.getNode().getText();
+                Field field = TEALOpCodeFactory.getInstance().getField(APP_PARAMS_GET_FIELDS, value);
                 if (field != null && field.getSince() == tealSpecVersion) {
                     createError(holder, errorMsg);
                 }

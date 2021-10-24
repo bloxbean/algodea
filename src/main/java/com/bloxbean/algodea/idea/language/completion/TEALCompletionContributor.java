@@ -72,6 +72,11 @@ public class TEALCompletionContributor extends CompletionContributor {
                 AssetParamsGetCompletionProvider.PATTERN,
                 new AssetParamsGetCompletionProvider());
 
+        //app_params_get
+        extend(CompletionType.BASIC,
+                AppParamsGetCompletionProvider.PATTERN,
+                new AppParamsGetCompletionProvider());
+
         //Named integer constants
         extend(CompletionType.BASIC,
                 NamedIntegerConstantsCompletionProvider.PATTERN,
