@@ -111,6 +111,8 @@ public interface TEALTypes {
   IElementType TXN_FIELD_ARG = new TEALElementType("TXN_FIELD_ARG");
   IElementType TXN_LOADING_OPERATION = new TEALElementType("TXN_LOADING_OPERATION");
   IElementType TXN_OPCODE = new TEALElementType("TXN_OPCODE");
+  IElementType UNCOVER_OPCODE = new TEALElementType("UNCOVER_OPCODE");
+  IElementType UNCOVER_OPERATION = new TEALElementType("UNCOVER_OPERATION");
   IElementType UNSIGNED_INTEGER = new TEALElementType("UNSIGNED_INTEGER");
 
   IElementType ADDR = new TEALTokenType("addr");
@@ -485,6 +487,12 @@ public interface TEALTypes {
       }
       else if (type == TXN_OPCODE) {
         return new TEALTxnOpcodeImpl(node);
+      }
+      else if (type == UNCOVER_OPCODE) {
+        return new TEALUncoverOpcodeImpl(node);
+      }
+      else if (type == UNCOVER_OPERATION) {
+        return new TEALUncoverOperationImpl(node);
       }
       else if (type == UNSIGNED_INTEGER) {
         return new TEALUnsignedIntegerImpl(node);

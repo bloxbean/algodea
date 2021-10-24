@@ -31,4 +31,7 @@ public interface TEALFlowControlOperation extends PsiElement {
   @Nullable
   TEALDigOperation getDigOperation();
 
+  @Nullable
+  TEALUncoverOperation getUncoverOperation();
+
 }

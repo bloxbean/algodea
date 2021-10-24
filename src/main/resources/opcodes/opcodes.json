@@ -1296,6 +1296,27 @@
      "anchor": "cover-n",
      "since": 5
    },
+   {
+     "op": "uncover",
+     "opcode": "0x4f {uint8 depth}",
+     "pops": ["... stack", "any"],
+     "pushes": ["any"],
+     "desc": "remove the value at depth N in the stack and shift above items down so the Nth deep value is on top of the stack. Fails if stack depth &lt;= N",
+     "error": "",
+     "additionalDesc": "",
+     "params": ["uint8"],
+     "metadata": {
+       "LogicSigVersion": ">=5"
+     },
+     "costs": [
+       {
+         "cost": 1,
+         "filter": ""
+       }
+     ],
+     "anchor": "uncover-n",
+     "since": 5
+   },
     {
       "op": "concat",
       "opcode": "0x50",

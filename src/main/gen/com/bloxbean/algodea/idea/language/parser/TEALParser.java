@@ -336,6 +336,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
   /* ********************************************************** */
   // 'err' | 'return' | 'pop' | 'dup' | 'dup2' | SWAP_OPCODE | SELECT_OPCODE | ASSERT_OPCODE | digOperation
   //                                 | coverOperation
+  //                                 | uncoverOperation
   //                                 | branchOperation
   //                                 | callSubroutineOperation
   //                                 | RETSUB_OPCODE
@@ -353,6 +354,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
     if (!r) r = ASSERT_OPCODE(b, l + 1);
     if (!r) r = digOperation(b, l + 1);
     if (!r) r = coverOperation(b, l + 1);
+    if (!r) r = uncoverOperation(b, l + 1);
     if (!r) r = branchOperation(b, l + 1);
     if (!r) r = callSubroutineOperation(b, l + 1);
     if (!r) r = RETSUB_OPCODE(b, l + 1);
@@ -918,6 +920,17 @@ public class TEALParser implements PsiParser, LightPsiParser {
     if (!r) r = consumeToken(b, "NumLogs");
     if (!r) r = consumeToken(b, "CreatedAssetID");
     if (!r) r = consumeToken(b, "CreatedApplicationID");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // 'uncover'
+  public static boolean UNCOVER_OPCODE(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "UNCOVER_OPCODE")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, UNCOVER_OPCODE, "<uncover opcode>");
+    r = consumeToken(b, "uncover");
     exit_section_(b, l, m, r, false, null);
     return r;
   }
@@ -2250,6 +2263,28 @@ public class TEALParser implements PsiParser, LightPsiParser {
   // unsignedInteger | VAR_TMPL
   private static boolean txnaLoadingOperation_2(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "txnaLoadingOperation_2")) return false;
+    boolean r;
+    r = unsignedInteger(b, l + 1);
+    if (!r) r = consumeToken(b, VAR_TMPL);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // UNCOVER_OPCODE (unsignedInteger | VAR_TMPL)
+  public static boolean uncoverOperation(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "uncoverOperation")) return false;
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, UNCOVER_OPERATION, "<uncover operation>");
+    r = UNCOVER_OPCODE(b, l + 1);
+    p = r; // pin = 1
+    r = r && uncoverOperation_1(b, l + 1);
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
+  }
+
+  // unsignedInteger | VAR_TMPL
+  private static boolean uncoverOperation_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "uncoverOperation_1")) return false;
     boolean r;
     r = unsignedInteger(b, l + 1);
     if (!r) r = consumeToken(b, VAR_TMPL);

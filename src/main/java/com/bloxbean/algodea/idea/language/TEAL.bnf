@@ -35,7 +35,7 @@
         l_string="regexp:('([^'\\]|\\.)*'|\"([^\"\\]|\\.)*\")"
 
     LOADING_OP = "regexp:(intcblock|intc|intc_0|intc_1|intc_2|intc_3|bytecblock|bytec|bytec_0|bytec_1|bytec_2|bytec_3|arg|arg_0|arg_1|arg_2|arg_3|global|load|store|pushint|pushbytes|gload|gloads|gaid|gaids|loads|stores|bzero)"
-    FLOWCONTROL_OP = "regexp:(err|return|pop|dup|dup2|bnz|bz|b|dig|swap|select|cover|assert)"
+    FLOWCONTROL_OP = "regexp:(err|return|pop|dup|dup2|bnz|bz|b|dig|swap|select|cover|uncover|assert)"
     STATEACCESS_OP = "regexp:(balance|app_opted_in|app_local_get|app_local_get_ex|app_global_get|app_global_get_ex|app_local_put|app_global_put|app_local_del|app_global_del|asset_holding_get|asset_params_get|app_params_get|min_balance)"
 
     TXN_LOADING_OP = 'regexp:(txn|gtxn|txna|gtxna|gtxns|gtxnsa)'
@@ -183,6 +183,7 @@ ECDSA_PK_RECOVER_OPCODE     ::= 'ecdsa_pk_recover'
 LOADS_OPCODE ::= 'loads'
 STORES_OPCODE ::= 'stores'
 COVER_OPCODE ::= 'cover'
+UNCOVER_OPCODE ::= 'uncover'
 //v5 opcodes end
 
 pragma ::= PRAGMA_KEYWORD VERSION pragma_version {pin=1 recoverWhile=statement_recover}
@@ -367,6 +368,7 @@ substringOperation ::= SUBSTRING (unsignedInteger | VAR_TMPL) (unsignedInteger |
 
 FlowControlOperation ::= 'err' | 'return' | 'pop' | 'dup' | 'dup2' | SWAP_OPCODE | SELECT_OPCODE | ASSERT_OPCODE | digOperation
                                 | coverOperation
+                                | uncoverOperation
                                 | branchOperation
                                 | callSubroutineOperation
                                 | RETSUB_OPCODE {pin=1}
@@ -408,3 +410,4 @@ appParamsGetOperation ::=  appParamsGetOp (unsignedInteger | APP_PARAMS_GET_FIEL
 loadsOperation ::= LOADS_OPCODE
 storesOperation ::= STORES_OPCODE
 coverOperation ::= COVER_OPCODE (unsignedInteger | VAR_TMPL) {pin=1}
+uncoverOperation ::= UNCOVER_OPCODE (unsignedInteger | VAR_TMPL) {pin=1}
