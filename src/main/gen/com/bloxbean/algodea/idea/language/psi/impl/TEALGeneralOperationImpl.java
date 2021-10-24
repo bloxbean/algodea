@@ -65,6 +65,18 @@ public class TEALGeneralOperationImpl extends ASTWrapperPsiElement implements TE
 
   @Override
   @Nullable
+  public TEALExtractUint32Opcode getExtractUint32Opcode() {
+    return findChildByClass(TEALExtractUint32Opcode.class);
+  }
+
+  @Override
+  @Nullable
+  public TEALExtractUint64Opcode getExtractUint64Opcode() {
+    return findChildByClass(TEALExtractUint64Opcode.class);
+  }
+
+  @Override
+  @Nullable
   public TEALGetbitOpcode getGetbitOpcode() {
     return findChildByClass(TEALGetbitOpcode.class);
   }

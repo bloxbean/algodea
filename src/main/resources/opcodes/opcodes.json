@@ -1512,6 +1512,48 @@
      "anchor": "extract_uint16",
      "since": 5
    },
+   {
+     "op": "extract_uint32",
+     "opcode": "0x5a",
+     "pops": ["... stack", "{[]byte A}", "{uint64 B}"],
+     "pushes": ["uint64"],
+     "desc": "pop a byte-array A and integer B. Extract a range of bytes from A starting at B up to but not including B+4, convert bytes as big endian and push the uint64 result. If B+4 is larger than the array length, the program fails",
+     "error": "",
+     "additionalDesc": "",
+     "metadata": {
+       "LogicSigVersion": ">=5"
+     },
+     "params": [],
+     "costs": [
+       {
+         "cost": 1,
+         "filter": ""
+       }
+     ],
+     "anchor": "extract_uint32",
+     "since": 5
+   },
+   {
+     "op": "extract_uint64",
+     "opcode": "0x5b",
+     "pops": ["... stack", "{[]byte A}", "{uint64 B}"],
+     "pushes": ["uint64"],
+     "desc": "pop a byte-array A and integer B. Extract a range of bytes from A starting at B up to but not including B+8, convert bytes as big endian and push the uint64 result. If B+8 is larger than the array length, the program fails",
+     "error": "",
+     "additionalDesc": "",
+     "metadata": {
+       "LogicSigVersion": ">=5"
+     },
+     "params": [],
+     "costs": [
+       {
+         "cost": 1,
+         "filter": ""
+       }
+     ],
+     "anchor": "extract_uint64",
+     "since": 5
+   },
     {
       "op": "balance",
       "opcode": "0x60",

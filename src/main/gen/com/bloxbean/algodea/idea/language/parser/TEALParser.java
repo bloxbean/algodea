@@ -367,6 +367,28 @@ public class TEALParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // 'extract_uint32'
+  public static boolean EXTRACT_UINT32_OPCODE(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "EXTRACT_UINT32_OPCODE")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, EXTRACT_UINT_32_OPCODE, "<extract uint 32 opcode>");
+    r = consumeToken(b, "extract_uint32");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // 'extract_uint64'
+  public static boolean EXTRACT_UINT64_OPCODE(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "EXTRACT_UINT64_OPCODE")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, EXTRACT_UINT_64_OPCODE, "<extract uint 64 opcode>");
+    r = consumeToken(b, "extract_uint64");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
   // 'err' | 'return' | 'pop' | 'dup' | 'dup2' | SWAP_OPCODE | SELECT_OPCODE | ASSERT_OPCODE | digOperation
   //                                 | coverOperation
   //                                 | uncoverOperation
@@ -553,6 +575,8 @@ public class TEALParser implements PsiParser, LightPsiParser {
   //                                      | extractOperation
   //                                      | EXTRACT3_OPCODE
   //                                      | EXTRACT_UINT16_OPCODE
+  //                                      | EXTRACT_UINT32_OPCODE
+  //                                      | EXTRACT_UINT64_OPCODE
   public static boolean GeneralOperation(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "GeneralOperation")) return false;
     boolean r;
@@ -602,6 +626,8 @@ public class TEALParser implements PsiParser, LightPsiParser {
     if (!r) r = extractOperation(b, l + 1);
     if (!r) r = EXTRACT3_OPCODE(b, l + 1);
     if (!r) r = EXTRACT_UINT16_OPCODE(b, l + 1);
+    if (!r) r = EXTRACT_UINT32_OPCODE(b, l + 1);
+    if (!r) r = EXTRACT_UINT64_OPCODE(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
   }

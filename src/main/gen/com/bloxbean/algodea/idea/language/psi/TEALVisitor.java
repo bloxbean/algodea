@@ -127,6 +127,14 @@ public class TEALVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitExtractUint32Opcode(@NotNull TEALExtractUint32Opcode o) {
+    visitPsiElement(o);
+  }
+
+  public void visitExtractUint64Opcode(@NotNull TEALExtractUint64Opcode o) {
+    visitPsiElement(o);
+  }
+
   public void visitFlowControlOperation(@NotNull TEALFlowControlOperation o) {
     visitPsiElement(o);
   }

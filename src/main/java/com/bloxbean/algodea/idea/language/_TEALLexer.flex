@@ -98,6 +98,8 @@ ID=([a-zA-Z0-9_$.#@~?=+-]+[a-zA-Z0-9_$.#@~?=+-]*)
   "extract"                      { return EXTRACT_OPCODE; }
   "extract3"                     { return EXTRACT_3_OPCODE; }
   "extract_uint16"               { return EXTRACT_UINT_16_OPCODE; }
+  "extract_uint32"               { return EXTRACT_UINT_32_OPCODE; }
+  "extract_uint64"               { return EXTRACT_UINT_64_OPCODE; }
   "concat"                       { return CONCAT; }
   "substring"                    { return SUBSTRING; }
   "substring3"                   { return SUBSTRING3; }

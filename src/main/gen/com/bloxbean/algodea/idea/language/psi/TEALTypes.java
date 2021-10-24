@@ -58,6 +58,8 @@ public interface TEALTypes {
   IElementType EXTRACT_OPCODE = new TEALElementType("EXTRACT_OPCODE");
   IElementType EXTRACT_OPERATION = new TEALElementType("EXTRACT_OPERATION");
   IElementType EXTRACT_UINT_16_OPCODE = new TEALElementType("EXTRACT_UINT_16_OPCODE");
+  IElementType EXTRACT_UINT_32_OPCODE = new TEALElementType("EXTRACT_UINT_32_OPCODE");
+  IElementType EXTRACT_UINT_64_OPCODE = new TEALElementType("EXTRACT_UINT_64_OPCODE");
   IElementType FLOW_CONTROL_OPERATION = new TEALElementType("FLOW_CONTROL_OPERATION");
   IElementType GAIDS_OPCODE = new TEALElementType("GAIDS_OPCODE");
   IElementType GAIDS_OPERATION = new TEALElementType("GAIDS_OPERATION");
@@ -332,6 +334,12 @@ public interface TEALTypes {
       }
       else if (type == EXTRACT_UINT_16_OPCODE) {
         return new TEALExtractUint16OpcodeImpl(node);
+      }
+      else if (type == EXTRACT_UINT_32_OPCODE) {
+        return new TEALExtractUint32OpcodeImpl(node);
+      }
+      else if (type == EXTRACT_UINT_64_OPCODE) {
+        return new TEALExtractUint64OpcodeImpl(node);
       }
       else if (type == FLOW_CONTROL_OPERATION) {
         return new TEALFlowControlOperationImpl(node);
