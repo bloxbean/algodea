@@ -23,6 +23,9 @@ public interface TEALGeneralOperation extends PsiElement {
   TEALExtract3Opcode getExtract3Opcode();
 
   @Nullable
+  TEALExtractUint16Opcode getExtractUint16Opcode();
+
+  @Nullable
   TEALGetbitOpcode getGetbitOpcode();
 
   @Nullable

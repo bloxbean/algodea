@@ -187,6 +187,7 @@ UNCOVER_OPCODE ::= 'uncover'
 
 EXTRACT_OPCODE ::= 'extract'
 EXTRACT3_OPCODE ::= 'extract3'
+EXTRACT_UINT16_OPCODE ::= 'extract_uint16'
 //v5 opcodes end
 
 pragma ::= PRAGMA_KEYWORD VERSION pragma_version {pin=1 recoverWhile=statement_recover}
@@ -368,6 +369,7 @@ GeneralOperation                   ::= SHA256
                                      | SUBSTRING3
                                      | extractOperation
                                      | EXTRACT3_OPCODE
+                                     | EXTRACT_UINT16_OPCODE
 
 substringOperation ::= SUBSTRING (unsignedInteger | VAR_TMPL) (unsignedInteger | VAR_TMPL) {pin=1}
 
