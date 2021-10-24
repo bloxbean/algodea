@@ -1275,6 +1275,27 @@
      ],
      "since": 3
    },
+   {
+     "op": "cover",
+     "opcode": "0x4e {uint8 depth}",
+     "pops": ["... stack", "any"],
+     "pushes": ["any"],
+     "desc": "remove top of stack, and place it deeper in the stack such that N elements are above it. Fails if stack depth &lt;= N",
+     "error": "",
+     "additionalDesc": "",
+     "params": ["uint8"],
+     "metadata": {
+       "LogicSigVersion": ">=5"
+     },
+     "costs": [
+       {
+         "cost": 1,
+         "filter": ""
+       }
+     ],
+     "anchor": "cover-n",
+     "since": 5
+   },
     {
       "op": "concat",
       "opcode": "0x50",

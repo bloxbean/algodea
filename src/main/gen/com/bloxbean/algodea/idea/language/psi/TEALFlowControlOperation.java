@@ -26,6 +26,9 @@ public interface TEALFlowControlOperation extends PsiElement {
   TEALCallSubroutineOperation getCallSubroutineOperation();
 
   @Nullable
+  TEALCoverOperation getCoverOperation();
+
+  @Nullable
   TEALDigOperation getDigOperation();
 
 }

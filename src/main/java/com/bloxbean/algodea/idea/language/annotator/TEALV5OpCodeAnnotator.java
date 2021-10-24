@@ -24,6 +24,7 @@ public class TEALV5OpCodeAnnotator implements Annotator {
                     || element instanceof TEALAppParamsGetOp
                     || element instanceof TEALLoadsOpcode
                     || element instanceof TEALStoresOpcode
+                    || element instanceof TEALCoverOpcode
             ) {
                 holder.newAnnotation(HighlightSeverity.ERROR,
                         V5_SUPPORT_MSG).create();

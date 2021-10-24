@@ -43,6 +43,8 @@ public interface TEALTypes {
   IElementType B_ZERO_OPCODE = new TEALElementType("B_ZERO_OPCODE");
   IElementType CALLSUB_OPCODE = new TEALElementType("CALLSUB_OPCODE");
   IElementType CALL_SUBROUTINE_OPERATION = new TEALElementType("CALL_SUBROUTINE_OPERATION");
+  IElementType COVER_OPCODE = new TEALElementType("COVER_OPCODE");
+  IElementType COVER_OPERATION = new TEALElementType("COVER_OPERATION");
   IElementType DIG_OPCODE = new TEALElementType("DIG_OPCODE");
   IElementType DIG_OPERATION = new TEALElementType("DIG_OPERATION");
   IElementType DIVMODW_OPCODE = new TEALElementType("DIVMODW_OPCODE");
@@ -279,6 +281,12 @@ public interface TEALTypes {
       }
       else if (type == CALL_SUBROUTINE_OPERATION) {
         return new TEALCallSubroutineOperationImpl(node);
+      }
+      else if (type == COVER_OPCODE) {
+        return new TEALCoverOpcodeImpl(node);
+      }
+      else if (type == COVER_OPERATION) {
+        return new TEALCoverOperationImpl(node);
       }
       else if (type == DIG_OPCODE) {
         return new TEALDigOpcodeImpl(node);

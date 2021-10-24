@@ -83,6 +83,10 @@ public class TEALVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitCoverOpcode(@NotNull TEALCoverOpcode o) {
+    visitPsiElement(o);
+  }
+
   public void visitDigOpcode(@NotNull TEALDigOpcode o) {
     visitPsiElement(o);
   }
@@ -292,6 +296,10 @@ public class TEALVisitor extends PsiElementVisitor {
   }
 
   public void visitCallSubroutineOperation(@NotNull TEALCallSubroutineOperation o) {
+    visitPsiElement(o);
+  }
+
+  public void visitCoverOperation(@NotNull TEALCoverOperation o) {
     visitPsiElement(o);
   }
 

@@ -245,6 +245,17 @@ public class TEALParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // 'cover'
+  public static boolean COVER_OPCODE(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "COVER_OPCODE")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, COVER_OPCODE, "<cover opcode>");
+    r = consumeToken(b, "cover");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
   // 'dig'
   public static boolean DIG_OPCODE(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "DIG_OPCODE")) return false;
@@ -324,6 +335,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
 
   /* ********************************************************** */
   // 'err' | 'return' | 'pop' | 'dup' | 'dup2' | SWAP_OPCODE | SELECT_OPCODE | ASSERT_OPCODE | digOperation
+  //                                 | coverOperation
   //                                 | branchOperation
   //                                 | callSubroutineOperation
   //                                 | RETSUB_OPCODE
@@ -340,6 +352,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
     if (!r) r = SELECT_OPCODE(b, l + 1);
     if (!r) r = ASSERT_OPCODE(b, l + 1);
     if (!r) r = digOperation(b, l + 1);
+    if (!r) r = coverOperation(b, l + 1);
     if (!r) r = branchOperation(b, l + 1);
     if (!r) r = callSubroutineOperation(b, l + 1);
     if (!r) r = RETSUB_OPCODE(b, l + 1);
@@ -1360,6 +1373,28 @@ public class TEALParser implements PsiParser, LightPsiParser {
     boolean r;
     r = consumeToken(b, VAR_TMPL);
     if (!r) r = consumeToken(b, ID);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // COVER_OPCODE (unsignedInteger | VAR_TMPL)
+  public static boolean coverOperation(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "coverOperation")) return false;
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, COVER_OPERATION, "<cover operation>");
+    r = COVER_OPCODE(b, l + 1);
+    p = r; // pin = 1
+    r = r && coverOperation_1(b, l + 1);
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
+  }
+
+  // unsignedInteger | VAR_TMPL
+  private static boolean coverOperation_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "coverOperation_1")) return false;
+    boolean r;
+    r = unsignedInteger(b, l + 1);
+    if (!r) r = consumeToken(b, VAR_TMPL);
     return r;
   }
 
