@@ -553,6 +553,17 @@ public class TEALParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // 'loads'
+  public static boolean LOADS_OPCODE(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "LOADS_OPCODE")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, LOADS_OPCODE, "<loads opcode>");
+    r = consumeToken(b, "loads");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
   // intcblockOperation
   //                                   | intcOperation
   //                                   | 'intc_0'
@@ -585,6 +596,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
   //                                   | gloadsOperation
   //                                   | gaidOperation
   //                                   | gaidsOperation
+  //                                   | loadsOperation
   //                                   | B_ZERO_OPCODE
   public static boolean LoadingOperation(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "LoadingOperation")) return false;
@@ -622,6 +634,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
     if (!r) r = gloadsOperation(b, l + 1);
     if (!r) r = gaidOperation(b, l + 1);
     if (!r) r = gaidsOperation(b, l + 1);
+    if (!r) r = loadsOperation(b, l + 1);
     if (!r) r = B_ZERO_OPCODE(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
@@ -1816,6 +1829,17 @@ public class TEALParser implements PsiParser, LightPsiParser {
     boolean r;
     r = unsignedInteger(b, l + 1);
     if (!r) r = consumeToken(b, VAR_TMPL);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // LOADS_OPCODE
+  public static boolean loadsOperation(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "loadsOperation")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, LOADS_OPERATION, "<loads operation>");
+    r = LOADS_OPCODE(b, l + 1);
+    exit_section_(b, l, m, r, false, null);
     return r;
   }
 

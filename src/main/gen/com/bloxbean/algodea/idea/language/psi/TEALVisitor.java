@@ -159,6 +159,10 @@ public class TEALVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitLoadsOpcode(@NotNull TEALLoadsOpcode o) {
+    visitPsiElement(o);
+  }
+
   public void visitLoadingOperation(@NotNull TEALLoadingOperation o) {
     visitPsiElement(o);
   }
@@ -348,6 +352,10 @@ public class TEALVisitor extends PsiElementVisitor {
   }
 
   public void visitLoadOperation(@NotNull TEALLoadOperation o) {
+    visitPsiElement(o);
+  }
+
+  public void visitLoadsOperation(@NotNull TEALLoadsOperation o) {
     visitPsiElement(o);
   }
 

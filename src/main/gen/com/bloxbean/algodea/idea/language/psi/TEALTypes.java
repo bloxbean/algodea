@@ -78,6 +78,8 @@ public interface TEALTypes {
   IElementType INTC_OPERATION = new TEALElementType("INTC_OPERATION");
   IElementType INT_STATEMENT = new TEALElementType("INT_STATEMENT");
   IElementType LOADING_OPERATION = new TEALElementType("LOADING_OPERATION");
+  IElementType LOADS_OPCODE = new TEALElementType("LOADS_OPCODE");
+  IElementType LOADS_OPERATION = new TEALElementType("LOADS_OPERATION");
   IElementType LOAD_OPERATION = new TEALElementType("LOAD_OPERATION");
   IElementType MIN_BALANCE_OPCODE = new TEALElementType("MIN_BALANCE_OPCODE");
   IElementType PRAGMA = new TEALElementType("PRAGMA");
@@ -380,6 +382,12 @@ public interface TEALTypes {
       }
       else if (type == LOADING_OPERATION) {
         return new TEALLoadingOperationImpl(node);
+      }
+      else if (type == LOADS_OPCODE) {
+        return new TEALLoadsOpcodeImpl(node);
+      }
+      else if (type == LOADS_OPERATION) {
+        return new TEALLoadsOperationImpl(node);
       }
       else if (type == LOAD_OPERATION) {
         return new TEALLoadOperationImpl(node);
