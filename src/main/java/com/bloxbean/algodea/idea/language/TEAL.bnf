@@ -184,6 +184,8 @@ LOADS_OPCODE ::= 'loads'
 STORES_OPCODE ::= 'stores'
 COVER_OPCODE ::= 'cover'
 UNCOVER_OPCODE ::= 'uncover'
+
+EXTRACT_OPCODE ::= 'extract'
 //v5 opcodes end
 
 pragma ::= PRAGMA_KEYWORD VERSION pragma_version {pin=1 recoverWhile=statement_recover}
@@ -363,6 +365,7 @@ GeneralOperation                   ::= SHA256
                                      | CONCAT
                                      | substringOperation
                                      | SUBSTRING3
+                                     | extractOperation
 
 substringOperation ::= SUBSTRING (unsignedInteger | VAR_TMPL) (unsignedInteger | VAR_TMPL) {pin=1}
 
@@ -411,3 +414,5 @@ loadsOperation ::= LOADS_OPCODE
 storesOperation ::= STORES_OPCODE
 coverOperation ::= COVER_OPCODE (unsignedInteger | VAR_TMPL) {pin=1}
 uncoverOperation ::= UNCOVER_OPCODE (unsignedInteger | VAR_TMPL) {pin=1}
+
+extractOperation ::= EXTRACT_OPCODE (unsignedInteger | VAR_TMPL) (unsignedInteger | VAR_TMPL) {pin=1}

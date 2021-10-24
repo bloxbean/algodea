@@ -101,6 +101,12 @@ public class TEALGeneralOperationImpl extends ASTWrapperPsiElement implements TE
 
   @Override
   @Nullable
+  public TEALExtractOperation getExtractOperation() {
+    return findChildByClass(TEALExtractOperation.class);
+  }
+
+  @Override
+  @Nullable
   public TEALSubstringOperation getSubstringOperation() {
     return findChildByClass(TEALSubstringOperation.class);
   }

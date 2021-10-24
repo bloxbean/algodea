@@ -115,6 +115,10 @@ public class TEALVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitExtractOpcode(@NotNull TEALExtractOpcode o) {
+    visitPsiElement(o);
+  }
+
   public void visitFlowControlOperation(@NotNull TEALFlowControlOperation o) {
     visitPsiElement(o);
   }
@@ -312,6 +316,10 @@ public class TEALVisitor extends PsiElementVisitor {
   }
 
   public void visitEcdsaOp(@NotNull TEALEcdsaOp o) {
+    visitPsiElement(o);
+  }
+
+  public void visitExtractOperation(@NotNull TEALExtractOperation o) {
     visitPsiElement(o);
   }
 

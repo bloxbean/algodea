@@ -334,6 +334,17 @@ public class TEALParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // 'extract'
+  public static boolean EXTRACT_OPCODE(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "EXTRACT_OPCODE")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, EXTRACT_OPCODE, "<extract opcode>");
+    r = consumeToken(b, "extract");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
   // 'err' | 'return' | 'pop' | 'dup' | 'dup2' | SWAP_OPCODE | SELECT_OPCODE | ASSERT_OPCODE | digOperation
   //                                 | coverOperation
   //                                 | uncoverOperation
@@ -517,6 +528,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
   //                                      | CONCAT
   //                                      | substringOperation
   //                                      | SUBSTRING3
+  //                                      | extractOperation
   public static boolean GeneralOperation(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "GeneralOperation")) return false;
     boolean r;
@@ -563,6 +575,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
     if (!r) r = consumeToken(b, CONCAT);
     if (!r) r = substringOperation(b, l + 1);
     if (!r) r = consumeToken(b, SUBSTRING3);
+    if (!r) r = extractOperation(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
@@ -1502,6 +1515,38 @@ public class TEALParser implements PsiParser, LightPsiParser {
   // unsignedInteger | VAR_TMPL
   private static boolean ecdsaOp_2_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "ecdsaOp_2_1")) return false;
+    boolean r;
+    r = unsignedInteger(b, l + 1);
+    if (!r) r = consumeToken(b, VAR_TMPL);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // EXTRACT_OPCODE (unsignedInteger | VAR_TMPL) (unsignedInteger | VAR_TMPL)
+  public static boolean extractOperation(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "extractOperation")) return false;
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, EXTRACT_OPERATION, "<extract operation>");
+    r = EXTRACT_OPCODE(b, l + 1);
+    p = r; // pin = 1
+    r = r && report_error_(b, extractOperation_1(b, l + 1));
+    r = p && extractOperation_2(b, l + 1) && r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
+  }
+
+  // unsignedInteger | VAR_TMPL
+  private static boolean extractOperation_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "extractOperation_1")) return false;
+    boolean r;
+    r = unsignedInteger(b, l + 1);
+    if (!r) r = consumeToken(b, VAR_TMPL);
+    return r;
+  }
+
+  // unsignedInteger | VAR_TMPL
+  private static boolean extractOperation_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "extractOperation_2")) return false;
     boolean r;
     r = unsignedInteger(b, l + 1);
     if (!r) r = consumeToken(b, VAR_TMPL);

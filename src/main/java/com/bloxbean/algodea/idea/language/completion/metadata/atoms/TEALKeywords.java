@@ -117,7 +117,12 @@ public final class TEALKeywords {
             B_BITWISE_OR_OPCODE,
             B_BITWISE_AND_OPCODE,
             B_BITWISE_XOR_OPCODE,
-            B_INVERT_OPCODE
+            B_INVERT_OPCODE,
+            //v4
+
+            //v5
+            EXTRACT_OPCODE
+
             //v4
     );
 
