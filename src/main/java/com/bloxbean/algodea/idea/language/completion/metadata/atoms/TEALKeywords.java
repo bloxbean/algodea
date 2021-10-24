@@ -121,7 +121,8 @@ public final class TEALKeywords {
             //v4
 
             //v5
-            EXTRACT_OPCODE
+            EXTRACT_OPCODE,
+            EXTRACT_3_OPCODE
 
             //v4
     );

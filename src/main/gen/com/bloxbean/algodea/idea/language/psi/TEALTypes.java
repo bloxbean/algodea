@@ -54,6 +54,7 @@ public interface TEALTypes {
   IElementType ECDSA_VERIFY_OPCODE = new TEALElementType("ECDSA_VERIFY_OPCODE");
   IElementType EXPW_OPCODE = new TEALElementType("EXPW_OPCODE");
   IElementType EXP_OPCODE = new TEALElementType("EXP_OPCODE");
+  IElementType EXTRACT_3_OPCODE = new TEALElementType("EXTRACT_3_OPCODE");
   IElementType EXTRACT_OPCODE = new TEALElementType("EXTRACT_OPCODE");
   IElementType EXTRACT_OPERATION = new TEALElementType("EXTRACT_OPERATION");
   IElementType FLOW_CONTROL_OPERATION = new TEALElementType("FLOW_CONTROL_OPERATION");
@@ -318,6 +319,9 @@ public interface TEALTypes {
       }
       else if (type == EXP_OPCODE) {
         return new TEALExpOpcodeImpl(node);
+      }
+      else if (type == EXTRACT_3_OPCODE) {
+        return new TEALExtract3OpcodeImpl(node);
       }
       else if (type == EXTRACT_OPCODE) {
         return new TEALExtractOpcodeImpl(node);

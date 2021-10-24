@@ -334,6 +334,17 @@ public class TEALParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // 'extract3'
+  public static boolean EXTRACT3_OPCODE(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "EXTRACT3_OPCODE")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, EXTRACT_3_OPCODE, "<extract 3 opcode>");
+    r = consumeToken(b, "extract3");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
   // 'extract'
   public static boolean EXTRACT_OPCODE(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "EXTRACT_OPCODE")) return false;
@@ -529,6 +540,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
   //                                      | substringOperation
   //                                      | SUBSTRING3
   //                                      | extractOperation
+  //                                      | EXTRACT3_OPCODE
   public static boolean GeneralOperation(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "GeneralOperation")) return false;
     boolean r;
@@ -576,6 +588,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
     if (!r) r = substringOperation(b, l + 1);
     if (!r) r = consumeToken(b, SUBSTRING3);
     if (!r) r = extractOperation(b, l + 1);
+    if (!r) r = EXTRACT3_OPCODE(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
   }

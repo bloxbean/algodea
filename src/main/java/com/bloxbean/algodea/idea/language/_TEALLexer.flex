@@ -96,6 +96,7 @@ ID=([a-zA-Z0-9_$.#@~?=+-]+[a-zA-Z0-9_$.#@~?=+-]*)
   "getbyte"                      { return GETBYTE; }
   "setbyte"                      { return SETBYTE; }
   "extract"                      { return EXTRACT_OPCODE; }
+  "extract3"                     { return EXTRACT_3_OPCODE; }
   "concat"                       { return CONCAT; }
   "substring"                    { return SUBSTRING; }
   "substring3"                   { return SUBSTRING3; }

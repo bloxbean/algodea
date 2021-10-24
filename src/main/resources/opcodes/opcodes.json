@@ -1470,6 +1470,27 @@
      "anchor": "extract-s-l",
      "since": 5
    },
+   {
+     "op": "extract3",
+     "opcode": "0x58",
+     "pops": ["... stack", "{[]byte A}", "{uint64 B}", "{uint64 C}"],
+     "pushes": ["[]byte"],
+     "desc": "pop a byte-array A and two integers B and C. Extract a range of bytes from A starting at B up to but not including B+C, push the substring result. If B+C is larger than the array length, the program fails",
+     "error": "",
+     "additionalDesc": "",
+     "metadata": {
+       "LogicSigVersion": ">=5"
+     },
+     "params": [],
+     "costs": [
+       {
+         "cost": 1,
+         "filter": ""
+       }
+     ],
+     "anchor": "extract3",
+     "since": 5
+   },
     {
       "op": "balance",
       "opcode": "0x60",
