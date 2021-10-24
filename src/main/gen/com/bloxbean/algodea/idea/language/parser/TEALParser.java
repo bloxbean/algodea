@@ -597,6 +597,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
   //                                   | gaidOperation
   //                                   | gaidsOperation
   //                                   | loadsOperation
+  //                                   | storesOperation
   //                                   | B_ZERO_OPCODE
   public static boolean LoadingOperation(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "LoadingOperation")) return false;
@@ -635,6 +636,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
     if (!r) r = gaidOperation(b, l + 1);
     if (!r) r = gaidsOperation(b, l + 1);
     if (!r) r = loadsOperation(b, l + 1);
+    if (!r) r = storesOperation(b, l + 1);
     if (!r) r = B_ZERO_OPCODE(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
@@ -748,6 +750,17 @@ public class TEALParser implements PsiParser, LightPsiParser {
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, SQRT_OPCODE, "<sqrt opcode>");
     r = consumeToken(b, "sqrt");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // 'stores'
+  public static boolean STORES_OPCODE(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "STORES_OPCODE")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, STORES_OPCODE, "<stores opcode>");
+    r = consumeToken(b, "stores");
     exit_section_(b, l, m, r, false, null);
     return r;
   }
@@ -2082,6 +2095,17 @@ public class TEALParser implements PsiParser, LightPsiParser {
     boolean r;
     r = unsignedInteger(b, l + 1);
     if (!r) r = consumeToken(b, VAR_TMPL);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // STORES_OPCODE
+  public static boolean storesOperation(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "storesOperation")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, STORES_OPERATION, "<stores operation>");
+    r = STORES_OPCODE(b, l + 1);
+    exit_section_(b, l, m, r, false, null);
     return r;
   }
 

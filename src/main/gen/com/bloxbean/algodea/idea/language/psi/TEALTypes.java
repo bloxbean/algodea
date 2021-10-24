@@ -99,6 +99,8 @@ public interface TEALTypes {
   IElementType SQRT_OPCODE = new TEALElementType("SQRT_OPCODE");
   IElementType STATEMENT = new TEALElementType("STATEMENT");
   IElementType STATE_ACCESS_OPERATION = new TEALElementType("STATE_ACCESS_OPERATION");
+  IElementType STORES_OPCODE = new TEALElementType("STORES_OPCODE");
+  IElementType STORES_OPERATION = new TEALElementType("STORES_OPERATION");
   IElementType STORE_OPERATION = new TEALElementType("STORE_OPERATION");
   IElementType SUBSTRING_OPERATION = new TEALElementType("SUBSTRING_OPERATION");
   IElementType SWAP_OPCODE = new TEALElementType("SWAP_OPCODE");
@@ -445,6 +447,12 @@ public interface TEALTypes {
       }
       else if (type == STATE_ACCESS_OPERATION) {
         return new TEALStateAccessOperationImpl(node);
+      }
+      else if (type == STORES_OPCODE) {
+        return new TEALStoresOpcodeImpl(node);
+      }
+      else if (type == STORES_OPERATION) {
+        return new TEALStoresOperationImpl(node);
       }
       else if (type == STORE_OPERATION) {
         return new TEALStoreOperationImpl(node);

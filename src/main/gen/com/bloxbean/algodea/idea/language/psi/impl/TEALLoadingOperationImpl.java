@@ -149,6 +149,12 @@ public class TEALLoadingOperationImpl extends ASTWrapperPsiElement implements TE
 
   @Override
   @Nullable
+  public TEALStoresOperation getStoresOperation() {
+    return findChildByClass(TEALStoresOperation.class);
+  }
+
+  @Override
+  @Nullable
   public TEALTxnLoadingOperation getTxnLoadingOperation() {
     return findChildByClass(TEALTxnLoadingOperation.class);
   }

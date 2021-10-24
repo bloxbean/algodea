@@ -207,6 +207,10 @@ public class TEALVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitStoresOpcode(@NotNull TEALStoresOpcode o) {
+    visitPsiElement(o);
+  }
+
   public void visitSwapOpcode(@NotNull TEALSwapOpcode o) {
     visitPsiElement(o);
   }
@@ -388,6 +392,10 @@ public class TEALVisitor extends PsiElementVisitor {
   }
 
   public void visitStoreOperation(@NotNull TEALStoreOperation o) {
+    visitPsiElement(o);
+  }
+
+  public void visitStoresOperation(@NotNull TEALStoresOperation o) {
     visitPsiElement(o);
   }
 

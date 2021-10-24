@@ -68,6 +68,9 @@ public interface TEALLoadingOperation extends PsiElement {
   TEALStoreOperation getStoreOperation();
 
   @Nullable
+  TEALStoresOperation getStoresOperation();
+
+  @Nullable
   TEALTxnLoadingOperation getTxnLoadingOperation();
 
   @Nullable

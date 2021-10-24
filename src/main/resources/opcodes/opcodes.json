@@ -1051,6 +1051,27 @@
      "anchor": "loads",
      "since": 5
    },
+   {
+     "op": "stores",
+     "opcode": "0x3f",
+     "pops": ["...stack", "{uint64 A}", "{any B}"],
+     "pushes": [],
+     "desc": "pop indexes A and B. store B to the Ath scratch space",
+     "error": "",
+     "additionalDesc": "",
+     "params": [],
+     "metadata": {
+       "LogicSigVersion": ">=5"
+     },
+     "costs": [
+       {
+         "cost": 1,
+         "filter": ""
+       }
+     ],
+     "anchor": "stores",
+     "since": 5
+   },
     {
       "op": "bnz",
       "opcode": "0x40 {0..0x7fff forward branch offset, big endian}",
