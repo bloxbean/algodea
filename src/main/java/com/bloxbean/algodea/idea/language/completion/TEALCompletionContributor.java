@@ -82,6 +82,11 @@ public class TEALCompletionContributor extends CompletionContributor {
                 NamedIntegerConstantsCompletionProvider.PATTERN,
                 new NamedIntegerConstantsCompletionProvider());
 
+        //Itxn fields
+        extend(CompletionType.BASIC,
+                ItxnTxnArgsCompletionProvider.PATTERN,
+                new ItxnTxnArgsCompletionProvider());
+
     }
 
 }
