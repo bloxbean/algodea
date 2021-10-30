@@ -36,6 +36,17 @@ public class TEALParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // 'args'
+  public static boolean ARGS_OPCODE(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "ARGS_OPCODE")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, ARGS_OPCODE, "<args opcode>");
+    r = consumeToken(b, "args");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
   // 'assert'
   public static boolean ASSERT_OPCODE(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "ASSERT_OPCODE")) return false;
@@ -749,6 +760,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
   //                                   | 'arg_1'
   //                                   | 'arg_2'
   //                                   | 'arg_3'
+  //                                   | ARGS_OPCODE
   //                                   | globalOperation
   //                                   | loadOperation
   //                                   | storeOperation
@@ -791,6 +803,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
     if (!r) r = consumeToken(b, "arg_1");
     if (!r) r = consumeToken(b, "arg_2");
     if (!r) r = consumeToken(b, "arg_3");
+    if (!r) r = ARGS_OPCODE(b, l + 1);
     if (!r) r = globalOperation(b, l + 1);
     if (!r) r = loadOperation(b, l + 1);
     if (!r) r = storeOperation(b, l + 1);

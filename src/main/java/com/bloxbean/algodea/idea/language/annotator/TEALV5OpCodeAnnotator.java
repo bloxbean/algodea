@@ -40,6 +40,7 @@ public class TEALV5OpCodeAnnotator implements Annotator {
                     || element instanceof TEALTxnasOpcode
                     || element instanceof TEALGtxnasOpcode
                     || element instanceof TEALGtxnsasOpcode
+                    || element instanceof TEALArgsOpcode
             ) {
                 holder.newAnnotation(HighlightSeverity.ERROR,
                         V5_SUPPORT_MSG).create();

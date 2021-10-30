@@ -12,6 +12,7 @@ public interface TEALTypes {
   IElementType ADDR_STATEMENT = new TEALElementType("ADDR_STATEMENT");
   IElementType APP_PARAMS_GET_OP = new TEALElementType("APP_PARAMS_GET_OP");
   IElementType APP_PARAMS_GET_OPERATION = new TEALElementType("APP_PARAMS_GET_OPERATION");
+  IElementType ARGS_OPCODE = new TEALElementType("ARGS_OPCODE");
   IElementType ARG_OPERATION = new TEALElementType("ARG_OPERATION");
   IElementType ASSERT_OPCODE = new TEALElementType("ASSERT_OPCODE");
   IElementType ASSET_HOLDING_GET_OP = new TEALElementType("ASSET_HOLDING_GET_OP");
@@ -213,6 +214,9 @@ public interface TEALTypes {
       }
       else if (type == APP_PARAMS_GET_OPERATION) {
         return new TEALAppParamsGetOperationImpl(node);
+      }
+      else if (type == ARGS_OPCODE) {
+        return new TEALArgsOpcodeImpl(node);
       }
       else if (type == ARG_OPERATION) {
         return new TEALArgOperationImpl(node);

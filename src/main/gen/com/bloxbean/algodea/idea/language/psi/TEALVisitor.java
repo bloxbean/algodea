@@ -7,6 +7,10 @@ import com.intellij.psi.PsiElement;
 
 public class TEALVisitor extends PsiElementVisitor {
 
+  public void visitArgsOpcode(@NotNull TEALArgsOpcode o) {
+    visitPsiElement(o);
+  }
+
   public void visitAssertOpcode(@NotNull TEALAssertOpcode o) {
     visitPsiElement(o);
   }

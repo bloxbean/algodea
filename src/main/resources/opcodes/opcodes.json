@@ -2569,6 +2569,28 @@
      "since": 5
    },
    {
+     "op": "args",
+     "opcode": "0xc3",
+     "pops": ["... stack", "uint64"],
+     "pushes": ["[]byte"],
+     "desc": "push Xth LogicSig argument to stack",
+     "error": "",
+     "metadata": {
+       "LogicSigVersion": ">=5"
+     },
+     "additionalDesc": "",
+     "params": [],
+     "costs": [
+       {
+         "cost": 1,
+         "filter": ""
+       }
+     ],
+     "mode": "Signature",
+     "anchor": "args",
+     "since": 5
+   },
+   {
      "op": "int",
      "opcode": "Pseudo opcode",
      "pops": [],

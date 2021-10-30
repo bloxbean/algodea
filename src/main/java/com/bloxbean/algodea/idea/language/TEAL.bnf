@@ -34,7 +34,7 @@
         l_integer="regexp:0|[1-9][0-9]*"
         l_string="regexp:('([^'\\]|\\.)*'|\"([^\"\\]|\\.)*\")"
 
-    LOADING_OP = "regexp:(intcblock|intc|intc_0|intc_1|intc_2|intc_3|bytecblock|bytec|bytec_0|bytec_1|bytec_2|bytec_3|arg|arg_0|arg_1|arg_2|arg_3|global|load|store|pushint|pushbytes|gload|gloads|gaid|gaids|loads|stores|bzero)"
+    LOADING_OP = "regexp:(intcblock|intc|intc_0|intc_1|intc_2|intc_3|bytecblock|bytec|bytec_0|bytec_1|bytec_2|bytec_3|arg|arg_0|arg_1|arg_2|arg_3|global|load|store|pushint|pushbytes|gload|gloads|gaid|gaids|loads|stores|bzero|args)"
     FLOWCONTROL_OP = "regexp:(err|return|pop|dup|dup2|bnz|bz|b|dig|swap|select|cover|uncover|assert)"
     STATEACCESS_OP = "regexp:(balance|app_opted_in|app_local_get|app_local_get_ex|app_global_get|app_global_get_ex|app_local_put|app_global_put|app_local_del|app_global_del|asset_holding_get|asset_params_get|app_params_get|min_balance|log)"
 
@@ -203,6 +203,8 @@ ITXNA_OPCODE ::= 'itxna'
 TXNAS_OPCODE ::= 'txnas'
 GTXNAS_OPCODE ::= 'gtxnas'
 GTXNSAS_OPCODE ::= 'gtxnsas'
+
+ARGS_OPCODE ::= 'args'
 //v5 opcodes end
 
 pragma ::= PRAGMA_KEYWORD VERSION pragma_version {pin=1 recoverWhile=statement_recover}
@@ -272,6 +274,7 @@ LoadingOperation ::=  intcblockOperation
                                   | 'arg_1'
                                   | 'arg_2'
                                   | 'arg_3'
+                                  | ARGS_OPCODE
                                   | globalOperation
                                   | loadOperation
                                   | storeOperation
