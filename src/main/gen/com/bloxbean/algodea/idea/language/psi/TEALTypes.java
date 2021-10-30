@@ -82,9 +82,11 @@ public interface TEALTypes {
   IElementType GTXNS_OPCODE = new TEALElementType("GTXNS_OPCODE");
   IElementType GTXN_LOADING_OPERATION = new TEALElementType("GTXN_LOADING_OPERATION");
   IElementType GTXN_OPCODE = new TEALElementType("GTXN_OPCODE");
+  IElementType INNER_TRANSACTION_OPERATION = new TEALElementType("INNER_TRANSACTION_OPERATION");
   IElementType INTCBLOCK_OPERATION = new TEALElementType("INTCBLOCK_OPERATION");
   IElementType INTC_OPERATION = new TEALElementType("INTC_OPERATION");
   IElementType INT_STATEMENT = new TEALElementType("INT_STATEMENT");
+  IElementType ITXN_BEGIN_OPCODE = new TEALElementType("ITXN_BEGIN_OPCODE");
   IElementType LOADING_OPERATION = new TEALElementType("LOADING_OPERATION");
   IElementType LOADS_OPCODE = new TEALElementType("LOADS_OPCODE");
   IElementType LOADS_OPERATION = new TEALElementType("LOADS_OPERATION");
@@ -148,6 +150,7 @@ public interface TEALTypes {
   IElementType GREATERTHANEQUAL = new TEALTokenType(">=");
   IElementType HEX = new TEALTokenType("HEX");
   IElementType ID = new TEALTokenType("ID");
+  IElementType INNER_TRANSACTION_OP = new TEALTokenType("INNER_TRANSACTION_OP");
   IElementType INT = new TEALTokenType("int");
   IElementType ITOB = new TEALTokenType("itob");
   IElementType KECCAK256 = new TEALTokenType("keccak256");
@@ -408,6 +411,9 @@ public interface TEALTypes {
       else if (type == GTXN_OPCODE) {
         return new TEALGtxnOpcodeImpl(node);
       }
+      else if (type == INNER_TRANSACTION_OPERATION) {
+        return new TEALInnerTransactionOperationImpl(node);
+      }
       else if (type == INTCBLOCK_OPERATION) {
         return new TEALIntcblockOperationImpl(node);
       }
@@ -416,6 +422,9 @@ public interface TEALTypes {
       }
       else if (type == INT_STATEMENT) {
         return new TEALIntStatementImpl(node);
+      }
+      else if (type == ITXN_BEGIN_OPCODE) {
+        return new TEALItxnBeginOpcodeImpl(node);
       }
       else if (type == LOADING_OPERATION) {
         return new TEALLoadingOperationImpl(node);

@@ -56,7 +56,8 @@ public class TEALDocumentationProvider extends AbstractDocumentationProvider  {
             TEALTypes.TXN_FIELD_ARG,
             TEALTypes.ASSET_PARAMS_GET_FIELD,
             TEALTypes.ASSET_HOLDING_GET_FIELD,
-            TEALTypes.APP_PARAMS_GET_FIELD
+            TEALTypes.APP_PARAMS_GET_FIELD,
+            TEALTypes.INNER_TRANSACTION_OP
     );
 
     static {
@@ -100,6 +101,7 @@ public class TEALDocumentationProvider extends AbstractDocumentationProvider  {
                 || TEALTypes.TXN_LOADING_OP.equals(element.getNode().getElementType())
                 || TEALTypes.FLOWCONTROL_OP.equals(element.getNode().getElementType())
                 || TEALTypes.STATEACCESS_OP.equals(element.getNode().getElementType())
+                || TEALTypes.INNER_TRANSACTION_OP.equals(element.getNode().getElementType())
                 || TEALKeywords.GENERAL_OPERATIONS_ELEMENTS.contains(element.getNode().getElementType()))
         {
             String value = element.getNode().getText();

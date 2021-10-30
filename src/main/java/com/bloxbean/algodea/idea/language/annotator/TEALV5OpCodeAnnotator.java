@@ -32,6 +32,7 @@ public class TEALV5OpCodeAnnotator implements Annotator {
                     || element instanceof TEALExtractUint32Opcode
                     || element instanceof TEALExtractUint64Opcode
                     || element instanceof TEALLogOpcode
+                    || element instanceof TEALItxnBeginOpcode
             ) {
                 holder.newAnnotation(HighlightSeverity.ERROR,
                         V5_SUPPORT_MSG).create();

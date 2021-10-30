@@ -26,6 +26,9 @@ public interface TEALStatement extends PsiElement {
   TEALBytesliceOperation getBytesliceOperation();
 
   @Nullable
+  TEALInnerTransactionOperation getInnerTransactionOperation();
+
+  @Nullable
   TEALPseudoOp getPseudoOp();
 
   @Nullable

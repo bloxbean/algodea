@@ -127,7 +127,7 @@ public final class TEALKeywords {
             EXTRACT_UINT_32_OPCODE,
             EXTRACT_UINT_64_OPCODE
 
-            //v4
+            //v5
     );
 
     //Lists needed for auto-completion

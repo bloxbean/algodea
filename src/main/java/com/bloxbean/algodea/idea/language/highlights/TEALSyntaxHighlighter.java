@@ -59,6 +59,7 @@ public class TEALSyntaxHighlighter extends SyntaxHighlighterBase {
         keys.put(LOADING_OP, TEALSyntaxColors.KEYWORD);
         keys.put(FLOWCONTROL_OP, TEALSyntaxColors.KEYWORD);
         keys.put(STATEACCESS_OP, TEALSyntaxColors.KEYWORD);
+        keys.put(INNER_TRANSACTION_OP, TEALSyntaxColors.KEYWORD);
 
         keys.put(VERSION, TEALSyntaxColors.KEYWORD);
         keys.put(PRAGMA_KEYWORD, TEALSyntaxColors.KEYWORD);

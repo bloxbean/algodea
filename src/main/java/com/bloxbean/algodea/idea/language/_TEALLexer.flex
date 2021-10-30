@@ -42,6 +42,7 @@ ASSET_HOLDING_GET_FIELD=(AssetBalance|AssetFrozen)
 ASSET_PARAMS_GET_FIELD=(AssetTotal|AssetDecimals|AssetDefaultFrozen|AssetUnitName|AssetName|AssetURL|AssetMetadataHash|AssetManager|AssetReserve|AssetFreeze|AssetClawback|AssetCreator)
 ECDSA_OP=(ecdsa_verify|ecdsa_pk_decompress|ecdsa_pk_recover)
 APP_PARAMS_GET_FIELD=(AppApprovalProgram|AppClearStateProgram|AppGlobalNumUint|AppGlobalNumByteSlice|AppLocalNumUint|AppLocalNumByteSlice|AppExtraProgramPages|AppCreator|AppAddress)
+INNER_TRANSACTION_OP=(itxn_begin)
 OCTAL=(0)[0-9]+
 HEX=(0x|0X)[a-fA-F0-9]*
 VAR_TMPL=(VAR_TMPL_)([a-zA-Z0-9_$.#@~?]+)
@@ -144,6 +145,7 @@ ID=([a-zA-Z0-9_$.#@~?=+-]+[a-zA-Z0-9_$.#@~?=+-]*)
   {ASSET_HOLDING_GET_FIELD}      { return ASSET_HOLDING_GET_FIELD; }
   {ASSET_PARAMS_GET_FIELD}       { return ASSET_PARAMS_GET_FIELD; }
   {APP_PARAMS_GET_FIELD}         { return APP_PARAMS_GET_FIELD; }
+  {INNER_TRANSACTION_OP}         { return INNER_TRANSACTION_OP; }
   {OCTAL}                        { return OCTAL; }
   {HEX}                          { return HEX; }
   {VAR_TMPL}                     { return VAR_TMPL; }

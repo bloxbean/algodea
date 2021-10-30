@@ -65,6 +65,12 @@ public class TEALStatementImpl extends ASTWrapperPsiElement implements TEALState
 
   @Override
   @Nullable
+  public TEALInnerTransactionOperation getInnerTransactionOperation() {
+    return findChildByClass(TEALInnerTransactionOperation.class);
+  }
+
+  @Override
+  @Nullable
   public TEALPseudoOp getPseudoOp() {
     return findChildByClass(TEALPseudoOp.class);
   }

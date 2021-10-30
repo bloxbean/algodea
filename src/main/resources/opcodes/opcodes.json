@@ -2397,6 +2397,27 @@
      "since": 5
    },
    {
+     "op": "itxn_begin",
+     "opcode": "0xb1",
+     "pops": [],
+     "pushes": [],
+     "desc": "Begin preparation of a new inner transaction",
+     "error": "",
+     "metadata": {
+       "LogicSigVersion": ">=5"
+     },
+     "additionalDesc": "itxn_begin initializes Sender to the application address; Fee to the minimum allowable, taking into account MinTxnFee and credit from overpaying in earlier transactions; FirstValid/LastValid to the values in the top-level transaction, and all other fields to zero values",
+     "params": [],
+     "mode": "Application",
+     "costs": [
+       {
+         "cost": 1,
+         "filter": ""
+       }
+     ],
+     "since": 5
+   },
+   {
      "op": "int",
      "opcode": "Pseudo opcode",
      "pops": [],

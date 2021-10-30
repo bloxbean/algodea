@@ -633,6 +633,17 @@ public class TEALParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // 'itxn_begin'
+  public static boolean ITXN_BEGIN_OPCODE(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "ITXN_BEGIN_OPCODE")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, ITXN_BEGIN_OPCODE, "<itxn begin opcode>");
+    r = consumeToken(b, "itxn_begin");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
   // 'loads'
   public static boolean LOADS_OPCODE(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "LOADS_OPCODE")) return false;
@@ -1889,6 +1900,17 @@ public class TEALParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // ITXN_BEGIN_OPCODE
+  public static boolean innerTransactionOperation(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "innerTransactionOperation")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, INNER_TRANSACTION_OPERATION, "<inner transaction operation>");
+    r = ITXN_BEGIN_OPCODE(b, l + 1);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
   // INT (HEX | OCTAL | unsignedInteger | NAMED_INTEGER_CONSTANT | TYPENUM_CONSTANT | VAR_TMPL)
   public static boolean int_statement(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "int_statement")) return false;
@@ -2161,6 +2183,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
   //                     | bytesliceOperation
   //                     | pseudo_op
   //                     | branch
+  //                     | innerTransactionOperation
   //                     | VAR_TMPL
   //                     | NL
   //                     | EOF
@@ -2176,6 +2199,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
     if (!r) r = bytesliceOperation(b, l + 1);
     if (!r) r = pseudo_op(b, l + 1);
     if (!r) r = branch(b, l + 1);
+    if (!r) r = innerTransactionOperation(b, l + 1);
     if (!r) r = consumeToken(b, VAR_TMPL);
     if (!r) r = consumeToken(b, NL);
     if (!r) r = consumeToken(b, EOF);
@@ -2193,6 +2217,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
   //                                         | bytesliceOperation
   //                                         | pseudo_op
   //                                         | branch
+  //                                         | innerTransactionOperation
   //                                         | VAR_TMPL
   //                                         | NL
   //                                         | EOF
@@ -2214,6 +2239,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
   //                                         | bytesliceOperation
   //                                         | pseudo_op
   //                                         | branch
+  //                                         | innerTransactionOperation
   //                                         | VAR_TMPL
   //                                         | NL
   //                                         | EOF
@@ -2228,6 +2254,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
     if (!r) r = bytesliceOperation(b, l + 1);
     if (!r) r = pseudo_op(b, l + 1);
     if (!r) r = branch(b, l + 1);
+    if (!r) r = innerTransactionOperation(b, l + 1);
     if (!r) r = consumeToken(b, VAR_TMPL);
     if (!r) r = consumeToken(b, NL);
     if (!r) r = consumeToken(b, EOF);
