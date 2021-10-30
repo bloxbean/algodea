@@ -24,26 +24,24 @@ package com.bloxbean.algodea.idea.language.completion.providers;
 
 import com.bloxbean.algodea.idea.language.TEALLanguage;
 import com.bloxbean.algodea.idea.language.TEALParserDefinition;
-import com.bloxbean.algodea.idea.language.completion.metadata.atoms.TEALKeywords;
+import com.bloxbean.algodea.idea.language.completion.metadata.TEALKeywordConstant;
 import com.bloxbean.algodea.idea.language.psi.TEALTypes;
 import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.codeInsight.completion.CompletionResultSet;
-import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.patterns.ElementPattern;
+import com.intellij.patterns.PatternCondition;
 import com.intellij.patterns.PlatformPatterns;
 import com.intellij.patterns.StandardPatterns;
 import com.intellij.psi.PsiElement;
 import com.intellij.util.ProcessingContext;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.stream.Collectors;
 
-import static com.bloxbean.algodea.idea.language.TEALUtil.getTEALVersion;
 import static com.intellij.patterns.PlatformPatterns.psiElement;
 
-public final class ItxnTxnArgsCompletionProvider extends BaseCompletionProvider {
+public final class ItxnTxnArgsCompletionProvider extends BaseTxnArgCompletionProvider {
+    private final static String ITXNA = "itxna";
 
     public static final ElementPattern<PsiElement> PATTERN = PlatformPatterns
             .psiElement()
@@ -55,7 +53,17 @@ public final class ItxnTxnArgsCompletionProvider extends BaseCompletionProvider 
                     psiElement().afterLeaf(
                             psiElement(TEALTypes.INNER_TRANSACTION_OP)
                                     .withParent(psiElement(TEALTypes.ITXN_OPCODE))
-                    )
+                    ),
+                    psiElement().afterLeaf(
+                            psiElement(TEALTypes.INNER_TRANSACTION_OP)
+                                    .withParent(psiElement(TEALTypes.ITXNA_OPCODE))
+                    ).with(new PatternCondition<PsiElement>("itxna") {
+                        @Override
+                        public boolean accepts(@NotNull PsiElement psiElement, ProcessingContext context) {
+                            context.put(ITXNA, ITXNA);
+                            return true;
+                        }
+                    })
             ))
             .withLanguage(TEALLanguage.INSTANCE)
             .andNot(psiElement(TEALParserDefinition.LINE_COMMENT))
@@ -66,27 +74,15 @@ public final class ItxnTxnArgsCompletionProvider extends BaseCompletionProvider 
                                   ProcessingContext context,
                                   @NotNull CompletionResultSet result) {
 
-        result.addAllElements(getTxnArgsLookupElements(parameters));
+        if (context.get(ITXNA) != null) {
+            result.addAllElements(getTxnArgsLookupElementsStream(parameters)
+                    .stream()
+                    .map(e -> e.getCompositeLookupElement(null, TEALKeywordConstant.UINT8_PLACEHOLDER))
+                    .collect(Collectors.toList()));
+        } else {
+            result.addAllElements(getTxnArgsLookupElements(parameters));
+        }
         result.stopHere();
     }
 
-    private Collection<LookupElement> getTxnArgsLookupElements(CompletionParameters parameters) {
-        Integer version = getTEALVersion(parameters.getOriginalFile());
-        List<LookupElement> txnFieldElements = new ArrayList<>();
-
-        txnFieldElements.addAll(TEALKeywords.TXNARGS_LOOKUP_ELEMENTS);
-        if(version != null) {
-            if (version >= 3) {
-                txnFieldElements.addAll(txnFieldElements.size() - 1, TEALKeywords.TXNARGS_LOOKUP_ELEMENTS_V3);
-            }
-            if (version >= 4) {
-                txnFieldElements.addAll(txnFieldElements.size() - 1, TEALKeywords.TXNARGS_LOOKUP_ELEMENTS_V4);
-            }
-            if (version >= 5) {
-                txnFieldElements.addAll(txnFieldElements.size() - 1, TEALKeywords.TXNARGS_LOOKUP_ELEMENTS_V5);
-            }
-        }
-
-        return txnFieldElements;
-    }
 }

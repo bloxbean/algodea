@@ -36,6 +36,7 @@ public class TEALV5OpCodeAnnotator implements Annotator {
                     || element instanceof TEALItxnFieldOpcode
                     || element instanceof TEALItxnSubmitOpcode
                     || element instanceof TEALItxnOpcode
+                    || element instanceof TEALItxnaOpcode
             ) {
                 holder.newAnnotation(HighlightSeverity.ERROR,
                         V5_SUPPORT_MSG).create();

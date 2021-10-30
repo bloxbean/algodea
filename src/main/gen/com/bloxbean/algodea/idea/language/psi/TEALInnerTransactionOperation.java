@@ -19,4 +19,7 @@ public interface TEALInnerTransactionOperation extends PsiElement {
   @Nullable
   TEALItxnOperation getItxnOperation();
 
+  @Nullable
+  TEALItxnaOperation getItxnaOperation();
+
 }

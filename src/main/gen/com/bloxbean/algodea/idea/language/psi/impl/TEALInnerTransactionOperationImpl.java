@@ -51,4 +51,10 @@ public class TEALInnerTransactionOperationImpl extends ASTWrapperPsiElement impl
     return findChildByClass(TEALItxnOperation.class);
   }
 
+  @Override
+  @Nullable
+  public TEALItxnaOperation getItxnaOperation() {
+    return findChildByClass(TEALItxnaOperation.class);
+  }
+
 }

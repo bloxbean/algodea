@@ -2484,6 +2484,28 @@
      "since": 5
    },
    {
+     "op": "itxna",
+     "opcode": "0xb5 {uint8 transaction field index} {uint8 transaction field array index}",
+     "pops": [],
+     "pushes": ["any"],
+     "desc": "push Ith value of the array field F of the last inner transaction to stack",
+     "error": "",
+     "metadata": {
+       "LogicSigVersion": ">=5"
+     },
+     "additionalDesc": "",
+     "params": ["txn_fields", "uint8"],
+     "mode": "Application",
+     "costs": [
+       {
+         "cost": 1,
+         "filter": ""
+       }
+     ],
+     "anchor": "itxna-f-i",
+     "since": 5
+   },
+   {
      "op": "int",
      "opcode": "Pseudo opcode",
      "pops": [],
