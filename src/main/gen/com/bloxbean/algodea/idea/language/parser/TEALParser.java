@@ -655,6 +655,17 @@ public class TEALParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // 'itxn'
+  public static boolean ITXN_OPCODE(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "ITXN_OPCODE")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, ITXN_OPCODE, "<itxn opcode>");
+    r = consumeToken(b, "itxn");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
   // 'itxn_submit'
   public static boolean ITXN_SUBMIT_OPCODE(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "ITXN_SUBMIT_OPCODE")) return false;
@@ -1924,6 +1935,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
   /* ********************************************************** */
   // ITXN_BEGIN_OPCODE | ITXN_SUBMIT_OPCODE
   //                                     | itxnFieldOperation
+  //                                     | itxnOperation
   public static boolean innerTransactionOperation(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "innerTransactionOperation")) return false;
     boolean r;
@@ -1931,6 +1943,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
     r = ITXN_BEGIN_OPCODE(b, l + 1);
     if (!r) r = ITXN_SUBMIT_OPCODE(b, l + 1);
     if (!r) r = itxnFieldOperation(b, l + 1);
+    if (!r) r = itxnOperation(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
@@ -2044,6 +2057,29 @@ public class TEALParser implements PsiParser, LightPsiParser {
   // unsignedInteger | TxnFieldArg | VAR_TMPL
   private static boolean itxnFieldOperation_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "itxnFieldOperation_1")) return false;
+    boolean r;
+    r = unsignedInteger(b, l + 1);
+    if (!r) r = TxnFieldArg(b, l + 1);
+    if (!r) r = consumeToken(b, VAR_TMPL);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // ITXN_OPCODE (unsignedInteger | TxnFieldArg | VAR_TMPL)
+  public static boolean itxnOperation(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "itxnOperation")) return false;
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, ITXN_OPERATION, "<itxn operation>");
+    r = ITXN_OPCODE(b, l + 1);
+    p = r; // pin = 1
+    r = r && itxnOperation_1(b, l + 1);
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
+  }
+
+  // unsignedInteger | TxnFieldArg | VAR_TMPL
+  private static boolean itxnOperation_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "itxnOperation_1")) return false;
     boolean r;
     r = unsignedInteger(b, l + 1);
     if (!r) r = TxnFieldArg(b, l + 1);

@@ -47,9 +47,14 @@ public final class ItxnTxnArgsCompletionProvider extends BaseCompletionProvider 
 
     public static final ElementPattern<PsiElement> PATTERN = PlatformPatterns
             .psiElement()
-            .andOr(StandardPatterns.or(psiElement().afterLeaf(
-                    psiElement(TEALTypes.INNER_TRANSACTION_OP)
+            .andOr(StandardPatterns.or(
+                    psiElement().afterLeaf(
+                        psiElement(TEALTypes.INNER_TRANSACTION_OP)
                             .withParent(psiElement(TEALTypes.ITXN_FIELD_OPCODE))
+                    ),
+                    psiElement().afterLeaf(
+                            psiElement(TEALTypes.INNER_TRANSACTION_OP)
+                                    .withParent(psiElement(TEALTypes.ITXN_OPCODE))
                     )
             ))
             .withLanguage(TEALLanguage.INSTANCE)

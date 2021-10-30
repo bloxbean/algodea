@@ -39,7 +39,7 @@
     STATEACCESS_OP = "regexp:(balance|app_opted_in|app_local_get|app_local_get_ex|app_global_get|app_global_get_ex|app_local_put|app_global_put|app_local_del|app_global_del|asset_holding_get|asset_params_get|app_params_get|min_balance|log)"
 
     TXN_LOADING_OP = 'regexp:(txn|gtxn|txna|gtxna|gtxns|gtxnsa)'
-    INNER_TRANSACTION_OP = 'regexp:(itxn_begin|itxn_field|itxn_submit)'
+    INNER_TRANSACTION_OP = 'regexp:(itxn_begin|itxn_field|itxn_submit|itxn)'
 
   //Operations
     SHA256              = 'sha256'
@@ -197,6 +197,7 @@ LOG_OPCODE ::= 'log'
 ITXN_BEGIN_OPCODE ::= 'itxn_begin'
 ITXN_FIELD_OPCODE ::= 'itxn_field'
 ITXN_SUBMIT_OPCODE ::= 'itxn_submit'
+ITXN_OPCODE ::= 'itxn'
 //v5 opcodes end
 
 pragma ::= PRAGMA_KEYWORD VERSION pragma_version {pin=1 recoverWhile=statement_recover}
@@ -436,5 +437,7 @@ uncoverOperation ::= UNCOVER_OPCODE (unsignedInteger | VAR_TMPL) {pin=1}
 extractOperation ::= EXTRACT_OPCODE (unsignedInteger | VAR_TMPL) (unsignedInteger | VAR_TMPL) {pin=1}
 
 innerTransactionOperation ::= ITXN_BEGIN_OPCODE | ITXN_SUBMIT_OPCODE
-                                    | itxnFieldOperation {pin=1}
+                                    | itxnFieldOperation
+                                    | itxnOperation {pin=1}
 itxnFieldOperation ::= ITXN_FIELD_OPCODE (unsignedInteger | TxnFieldArg | VAR_TMPL) {pin=1}
+itxnOperation ::= ITXN_OPCODE (unsignedInteger | TxnFieldArg | VAR_TMPL) {pin=1}

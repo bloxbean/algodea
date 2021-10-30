@@ -80,13 +80,13 @@ public class _TEALLexer implements FlexLexer {
     "\1\52\4\6\1\7\4\6\1\53\1\54\1\55\1\56"+
     "\1\6\1\57\1\60\5\6\1\61\1\6\1\62\12\6"+
     "\1\7\4\6\1\63\1\6\1\64\1\6\1\65\33\6"+
-    "\1\62\1\66\1\6\1\52\3\6\1\67\1\70\2\6"+
-    "\1\62\5\6\1\71\1\6\1\72\1\73\5\6\1\52"+
-    "\11\6\1\74\5\6\1\75\1\76\36\6\1\62\52\6"+
-    "\1\77\15\6\1\100\1\101\12\6\1\102\2\6\1\103"+
-    "\2\6\1\104\57\6\1\105\5\6\1\106\1\107\1\110"+
-    "\3\6\1\111\41\6\1\112\12\6\1\113\17\6\1\114"+
-    "\34\6\1\115\10\6\1\116\36\6\1\117\12\6\1\120"+
+    "\1\62\1\66\1\67\1\52\3\6\1\70\1\71\2\6"+
+    "\1\62\5\6\1\72\1\6\1\73\1\74\5\6\1\52"+
+    "\11\6\1\75\5\6\1\76\1\77\36\6\1\62\52\6"+
+    "\1\100\15\6\1\101\1\102\12\6\1\103\2\6\1\104"+
+    "\2\6\1\105\57\6\1\106\5\6\1\107\1\110\1\111"+
+    "\3\6\1\112\41\6\1\113\12\6\1\114\17\6\1\115"+
+    "\34\6\1\116\10\6\1\117\36\6\1\67\12\6\1\120"+
     "\1\121\16\6\1\122\6\6\1\123\21\6\1\124\14\6"+
     "\1\125\30\6\1\126\3\6\1\57\16\6\1\127\1\130"+
     "\1\131\50\6";
@@ -1827,127 +1827,127 @@ public class _TEALLexer implements FlexLexer {
             // fall through
           case 143: break;
           case 55: 
-            { return BTOI;
+            { return INNER_TRANSACTION_OP;
             } 
             // fall through
           case 144: break;
           case 56: 
-            { return BYTE;
+            { return BTOI;
             } 
             // fall through
           case 145: break;
           case 57: 
-            { return EXPW_OPCODE;
+            { return BYTE;
             } 
             // fall through
           case 146: break;
           case 58: 
-            { return ADDR;
+            { return EXPW_OPCODE;
             } 
             // fall through
           case 147: break;
           case 59: 
-            { return ADDW;
+            { return ADDR;
             } 
             // fall through
           case 148: break;
           case 60: 
-            { return SQRT_OPCODE;
+            { return ADDW;
             } 
             // fall through
           case 149: break;
           case 61: 
-            { return MULW;
+            { return SQRT_OPCODE;
             } 
             // fall through
           case 150: break;
           case 62: 
-            { return NAMED_INTEGER_CONSTANT;
+            { return MULW;
             } 
             // fall through
           case 151: break;
           case 63: 
-            { return GLOBAL_FIELD;
+            { return NAMED_INTEGER_CONSTANT;
             } 
             // fall through
           case 152: break;
           case 64: 
-            { return CONCAT;
+            { return GLOBAL_FIELD;
             } 
             // fall through
           case 153: break;
           case 65: 
-            { return BITLEN_OPCODE;
+            { return CONCAT;
             } 
             // fall through
           case 154: break;
           case 66: 
-            { return GETBIT;
+            { return BITLEN_OPCODE;
             } 
             // fall through
           case 155: break;
           case 67: 
-            { return SETBIT;
+            { return GETBIT;
             } 
             // fall through
           case 156: break;
           case 68: 
-            { return SHA256;
+            { return SETBIT;
             } 
             // fall through
           case 157: break;
           case 69: 
-            { return EXTRACT_OPCODE;
+            { return SHA256;
             } 
             // fall through
           case 158: break;
           case 70: 
-            { return GETBYTE;
+            { return EXTRACT_OPCODE;
             } 
             // fall through
           case 159: break;
           case 71: 
-            { return DIVMODW;
+            { return GETBYTE;
             } 
             // fall through
           case 160: break;
           case 72: 
-            { return SETBYTE;
+            { return DIVMODW;
             } 
             // fall through
           case 161: break;
           case 73: 
-            { return VERSION;
+            { return SETBYTE;
             } 
             // fall through
           case 162: break;
           case 74: 
-            { return PRAGMA_KEYWORD;
+            { return VERSION;
             } 
             // fall through
           case 163: break;
           case 75: 
-            { return EXTRACT_3_OPCODE;
+            { return PRAGMA_KEYWORD;
             } 
             // fall through
           case 164: break;
           case 76: 
-            { return ASSET_PARAMS_GET_FIELD;
+            { return EXTRACT_3_OPCODE;
             } 
             // fall through
           case 165: break;
           case 77: 
-            { return KECCAK256;
+            { return ASSET_PARAMS_GET_FIELD;
             } 
             // fall through
           case 166: break;
           case 78: 
-            { return SUBSTRING;
+            { return KECCAK256;
             } 
             // fall through
           case 167: break;
           case 79: 
-            { return INNER_TRANSACTION_OP;
+            { return SUBSTRING;
             } 
             // fall through
           case 168: break;
