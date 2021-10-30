@@ -267,6 +267,10 @@ public class TEALVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitTxnasOpcode(@NotNull TEALTxnasOpcode o) {
+    visitPsiElement(o);
+  }
+
   public void visitTxnaOpcode(@NotNull TEALTxnaOpcode o) {
     visitPsiElement(o);
   }
@@ -484,6 +488,10 @@ public class TEALVisitor extends PsiElementVisitor {
   }
 
   public void visitTxnaLoadingOperation(@NotNull TEALTxnaLoadingOperation o) {
+    visitPsiElement(o);
+  }
+
+  public void visitTxnasOperation(@NotNull TEALTxnasOperation o) {
     visitPsiElement(o);
   }
 

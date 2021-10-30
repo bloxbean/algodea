@@ -745,6 +745,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
   //                                   | loadsOperation
   //                                   | storesOperation
   //                                   | B_ZERO_OPCODE
+  //                                   | txnasOperation
   public static boolean LoadingOperation(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "LoadingOperation")) return false;
     boolean r;
@@ -784,6 +785,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
     if (!r) r = loadsOperation(b, l + 1);
     if (!r) r = storesOperation(b, l + 1);
     if (!r) r = B_ZERO_OPCODE(b, l + 1);
+    if (!r) r = txnasOperation(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
@@ -950,6 +952,17 @@ public class TEALParser implements PsiParser, LightPsiParser {
     if (!r) r = appParamsGetOperation(b, l + 1);
     if (!r) r = MIN_BALANCE_OPCODE(b, l + 1);
     if (!r) r = LOG_OPCODE(b, l + 1);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // 'txnas'
+  public static boolean TXNAS_OPCODE(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "TXNAS_OPCODE")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, TXNAS_OPCODE, "<txnas opcode>");
+    r = consumeToken(b, "txnas");
     exit_section_(b, l, m, r, false, null);
     return r;
   }
@@ -2532,6 +2545,29 @@ public class TEALParser implements PsiParser, LightPsiParser {
     if (!recursion_guard_(b, l, "txnaLoadingOperation_2")) return false;
     boolean r;
     r = unsignedInteger(b, l + 1);
+    if (!r) r = consumeToken(b, VAR_TMPL);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // TXNAS_OPCODE (unsignedInteger | TxnFieldArg | VAR_TMPL)
+  public static boolean txnasOperation(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "txnasOperation")) return false;
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, TXNAS_OPERATION, "<txnas operation>");
+    r = TXNAS_OPCODE(b, l + 1);
+    p = r; // pin = 1
+    r = r && txnasOperation_1(b, l + 1);
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
+  }
+
+  // unsignedInteger | TxnFieldArg | VAR_TMPL
+  private static boolean txnasOperation_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "txnasOperation_1")) return false;
+    boolean r;
+    r = unsignedInteger(b, l + 1);
+    if (!r) r = TxnFieldArg(b, l + 1);
     if (!r) r = consumeToken(b, VAR_TMPL);
     return r;
   }

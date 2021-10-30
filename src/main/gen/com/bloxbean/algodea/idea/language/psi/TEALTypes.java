@@ -122,6 +122,8 @@ public interface TEALTypes {
   IElementType STORE_OPERATION = new TEALElementType("STORE_OPERATION");
   IElementType SUBSTRING_OPERATION = new TEALElementType("SUBSTRING_OPERATION");
   IElementType SWAP_OPCODE = new TEALElementType("SWAP_OPCODE");
+  IElementType TXNAS_OPCODE = new TEALElementType("TXNAS_OPCODE");
+  IElementType TXNAS_OPERATION = new TEALElementType("TXNAS_OPERATION");
   IElementType TXNA_LOADING_OPERATION = new TEALElementType("TXNA_LOADING_OPERATION");
   IElementType TXNA_OPCODE = new TEALElementType("TXNA_OPCODE");
   IElementType TXN_FIELD_ARG = new TEALElementType("TXN_FIELD_ARG");
@@ -537,6 +539,12 @@ public interface TEALTypes {
       }
       else if (type == SWAP_OPCODE) {
         return new TEALSwapOpcodeImpl(node);
+      }
+      else if (type == TXNAS_OPCODE) {
+        return new TEALTxnasOpcodeImpl(node);
+      }
+      else if (type == TXNAS_OPERATION) {
+        return new TEALTxnasOperationImpl(node);
       }
       else if (type == TXNA_LOADING_OPERATION) {
         return new TEALTxnaLoadingOperationImpl(node);

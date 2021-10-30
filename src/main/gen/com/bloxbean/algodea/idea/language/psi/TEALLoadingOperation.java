@@ -76,4 +76,7 @@ public interface TEALLoadingOperation extends PsiElement {
   @Nullable
   TEALTxnaLoadingOperation getTxnaLoadingOperation();
 
+  @Nullable
+  TEALTxnasOperation getTxnasOperation();
+
 }

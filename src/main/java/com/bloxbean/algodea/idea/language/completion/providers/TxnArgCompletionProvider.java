@@ -81,7 +81,11 @@ public final class TxnArgCompletionProvider extends BaseCompletionProvider {
                             context.put(GTXNSA, GTXNSA);
                             return true;
                         }
-                    })
+                    }),
+                    psiElement().afterLeaf(
+                            psiElement(TEALTypes.TXN_LOADING_OP)
+                                    .withParent(psiElement(TEALTypes.TXNAS_OPCODE))
+                    )
 
             ))
             .withLanguage(TEALLanguage.INSTANCE)

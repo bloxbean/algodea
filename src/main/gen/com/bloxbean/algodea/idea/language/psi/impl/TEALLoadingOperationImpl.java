@@ -165,4 +165,10 @@ public class TEALLoadingOperationImpl extends ASTWrapperPsiElement implements TE
     return findChildByClass(TEALTxnaLoadingOperation.class);
   }
 
+  @Override
+  @Nullable
+  public TEALTxnasOperation getTxnasOperation() {
+    return findChildByClass(TEALTxnasOperation.class);
+  }
+
 }
