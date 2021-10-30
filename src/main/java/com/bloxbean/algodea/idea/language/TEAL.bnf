@@ -38,7 +38,7 @@
     FLOWCONTROL_OP = "regexp:(err|return|pop|dup|dup2|bnz|bz|b|dig|swap|select|cover|uncover|assert)"
     STATEACCESS_OP = "regexp:(balance|app_opted_in|app_local_get|app_local_get_ex|app_global_get|app_global_get_ex|app_local_put|app_global_put|app_local_del|app_global_del|asset_holding_get|asset_params_get|app_params_get|min_balance|log)"
 
-    TXN_LOADING_OP = 'regexp:(txn|gtxn|txna|gtxna|gtxns|gtxnsa|txnas)'
+    TXN_LOADING_OP = 'regexp:(txn|gtxn|txna|gtxna|gtxns|gtxnsa|txnas|gtxnas|gtxnsas)'
     INNER_TRANSACTION_OP = 'regexp:(itxn_begin|itxn_field|itxn_submit|itxn|itxna)'
 
   //Operations
@@ -201,6 +201,8 @@ ITXN_OPCODE ::= 'itxn'
 ITXNA_OPCODE ::= 'itxna'
 
 TXNAS_OPCODE ::= 'txnas'
+GTXNAS_OPCODE ::= 'gtxnas'
+GTXNSAS_OPCODE ::= 'gtxnsas'
 //v5 opcodes end
 
 pragma ::= PRAGMA_KEYWORD VERSION pragma_version {pin=1 recoverWhile=statement_recover}
@@ -289,7 +291,9 @@ LoadingOperation ::=  intcblockOperation
                                   | loadsOperation
                                   | storesOperation
                                   | B_ZERO_OPCODE
-                                  | txnasOperation {pin=1}
+                                  | txnasOperation
+                                  | gtxnasOperation
+                                  | gtxnsasOperation {pin=1}
 
 //TODO implement strict validation for both intcblockOperation and bytecblockOperation
 intcblockOperation ::= 'intcblock' (VAR_TMPL | (ID | l_integer)*) {pin=1}
@@ -449,3 +453,5 @@ itxnOperation ::= ITXN_OPCODE (unsignedInteger | TxnFieldArg | VAR_TMPL) {pin=1}
 itxnaOperation ::= ITXNA_OPCODE (unsignedInteger | TxnFieldArg | VAR_TMPL) (unsignedInteger | VAR_TMPL) {pin=1}
 
 txnasOperation ::= TXNAS_OPCODE (unsignedInteger | TxnFieldArg | VAR_TMPL) {pin=1}
+gtxnasOperation ::= GTXNAS_OPCODE (unsignedInteger | VAR_TMPL) (unsignedInteger | TxnFieldArg | VAR_TMPL) {pin=1}
+gtxnsasOperation ::= GTXNSAS_OPCODE (unsignedInteger | TxnFieldArg | VAR_TMPL) {pin=1}

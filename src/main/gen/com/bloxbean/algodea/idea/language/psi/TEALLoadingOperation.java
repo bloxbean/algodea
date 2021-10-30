@@ -41,10 +41,16 @@ public interface TEALLoadingOperation extends PsiElement {
   TEALGtxnaLoadingOperation getGtxnaLoadingOperation();
 
   @Nullable
+  TEALGtxnasOperation getGtxnasOperation();
+
+  @Nullable
   TEALGtxnsLoadingOperation getGtxnsLoadingOperation();
 
   @Nullable
   TEALGtxnsaLoadingOperation getGtxnsaLoadingOperation();
+
+  @Nullable
+  TEALGtxnsasOperation getGtxnsasOperation();
 
   @Nullable
   TEALIntcOperation getIntcOperation();

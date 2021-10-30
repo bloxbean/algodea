@@ -2527,6 +2527,48 @@
      "since": 5
    },
    {
+     "op": "gtxnas",
+     "opcode": "0xc1 {uint8 transaction group index} {uint8 transaction field index}",
+     "pops": ["... stack", "uint64"],
+     "pushes": ["any"],
+     "desc": "push Xth value of the array field F from the Tth transaction in the current group",
+     "error": "",
+     "metadata": {
+       "LogicSigVersion": ">=5"
+     },
+     "additionalDesc": "",
+     "params": ["uint8","txn_fields"],
+     "costs": [
+       {
+         "cost": 1,
+         "filter": ""
+       }
+     ],
+     "anchor": "gtxnas-t-f",
+     "since": 5
+   },
+   {
+     "op": "gtxnsas",
+     "opcode": "0xc2 {uint8 transaction field index}",
+     "pops": ["... stack", "{uint64 A}", "{uint64 B}"],
+     "pushes": ["any"],
+     "desc": "pop an index A and an index B. push Bth value of the array field F from the Ath transaction in the current group",
+     "error": "",
+     "metadata": {
+       "LogicSigVersion": ">=5"
+     },
+     "additionalDesc": "",
+     "params": ["txn_fields"],
+     "costs": [
+       {
+         "cost": 1,
+         "filter": ""
+       }
+     ],
+     "anchor": "gtxnsas-f",
+     "since": 5
+   },
+   {
      "op": "int",
      "opcode": "Pseudo opcode",
      "pops": [],

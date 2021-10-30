@@ -74,8 +74,12 @@ public interface TEALTypes {
   IElementType GLOAD_OPERATION = new TEALElementType("GLOAD_OPERATION");
   IElementType GLOBAL_OPERATION = new TEALElementType("GLOBAL_OPERATION");
   IElementType GLOBAL_OP_CODE = new TEALElementType("GLOBAL_OP_CODE");
+  IElementType GTXNAS_OPCODE = new TEALElementType("GTXNAS_OPCODE");
+  IElementType GTXNAS_OPERATION = new TEALElementType("GTXNAS_OPERATION");
   IElementType GTXNA_LOADING_OPERATION = new TEALElementType("GTXNA_LOADING_OPERATION");
   IElementType GTXNA_OPCODE = new TEALElementType("GTXNA_OPCODE");
+  IElementType GTXNSAS_OPCODE = new TEALElementType("GTXNSAS_OPCODE");
+  IElementType GTXNSAS_OPERATION = new TEALElementType("GTXNSAS_OPERATION");
   IElementType GTXNSA_LOADING_OPERATION = new TEALElementType("GTXNSA_LOADING_OPERATION");
   IElementType GTXNSA_OPCODE = new TEALElementType("GTXNSA_OPCODE");
   IElementType GTXNS_LOADING_OPERATION = new TEALElementType("GTXNS_LOADING_OPERATION");
@@ -396,11 +400,23 @@ public interface TEALTypes {
       else if (type == GLOBAL_OP_CODE) {
         return new TEALGlobalOpCodeImpl(node);
       }
+      else if (type == GTXNAS_OPCODE) {
+        return new TEALGtxnasOpcodeImpl(node);
+      }
+      else if (type == GTXNAS_OPERATION) {
+        return new TEALGtxnasOperationImpl(node);
+      }
       else if (type == GTXNA_LOADING_OPERATION) {
         return new TEALGtxnaLoadingOperationImpl(node);
       }
       else if (type == GTXNA_OPCODE) {
         return new TEALGtxnaOpcodeImpl(node);
+      }
+      else if (type == GTXNSAS_OPCODE) {
+        return new TEALGtxnsasOpcodeImpl(node);
+      }
+      else if (type == GTXNSAS_OPERATION) {
+        return new TEALGtxnsasOperationImpl(node);
       }
       else if (type == GTXNSA_LOADING_OPERATION) {
         return new TEALGtxnsaLoadingOperationImpl(node);
