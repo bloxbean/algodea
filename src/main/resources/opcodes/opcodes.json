@@ -2440,6 +2440,28 @@
      "since": 5
    },
    {
+     "op": "itxn_submit",
+     "opcode": "0xb3",
+     "pops": [],
+     "pushes": [],
+     "desc": "Execute the current inner transaction. Fail if 16 inner transactions have already been executed, or if the transaction itself fails",
+     "error": "",
+     "metadata": {
+       "LogicSigVersion": ">=5"
+     },
+     "additionalDesc": "",
+     "params": [],
+     "mode": "Application",
+     "costs": [
+       {
+         "cost": 1,
+         "filter": ""
+       }
+     ],
+     "anchor": "itxn_submit",
+     "since": 5
+   },
+   {
      "op": "int",
      "opcode": "Pseudo opcode",
      "pops": [],

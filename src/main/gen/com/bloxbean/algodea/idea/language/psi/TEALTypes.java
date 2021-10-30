@@ -89,6 +89,7 @@ public interface TEALTypes {
   IElementType ITXN_BEGIN_OPCODE = new TEALElementType("ITXN_BEGIN_OPCODE");
   IElementType ITXN_FIELD_OPCODE = new TEALElementType("ITXN_FIELD_OPCODE");
   IElementType ITXN_FIELD_OPERATION = new TEALElementType("ITXN_FIELD_OPERATION");
+  IElementType ITXN_SUBMIT_OPCODE = new TEALElementType("ITXN_SUBMIT_OPCODE");
   IElementType LOADING_OPERATION = new TEALElementType("LOADING_OPERATION");
   IElementType LOADS_OPCODE = new TEALElementType("LOADS_OPCODE");
   IElementType LOADS_OPERATION = new TEALElementType("LOADS_OPERATION");
@@ -433,6 +434,9 @@ public interface TEALTypes {
       }
       else if (type == ITXN_FIELD_OPERATION) {
         return new TEALItxnFieldOperationImpl(node);
+      }
+      else if (type == ITXN_SUBMIT_OPCODE) {
+        return new TEALItxnSubmitOpcodeImpl(node);
       }
       else if (type == LOADING_OPERATION) {
         return new TEALLoadingOperationImpl(node);

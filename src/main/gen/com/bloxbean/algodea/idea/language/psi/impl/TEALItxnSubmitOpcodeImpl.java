@@ -11,38 +11,20 @@ import static com.bloxbean.algodea.idea.language.psi.TEALTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.bloxbean.algodea.idea.language.psi.*;
 
-public class TEALInnerTransactionOperationImpl extends ASTWrapperPsiElement implements TEALInnerTransactionOperation {
+public class TEALItxnSubmitOpcodeImpl extends ASTWrapperPsiElement implements TEALItxnSubmitOpcode {
 
-  public TEALInnerTransactionOperationImpl(@NotNull ASTNode node) {
+  public TEALItxnSubmitOpcodeImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull TEALVisitor visitor) {
-    visitor.visitInnerTransactionOperation(this);
+    visitor.visitItxnSubmitOpcode(this);
   }
 
   @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof TEALVisitor) accept((TEALVisitor)visitor);
     else super.accept(visitor);
-  }
-
-  @Override
-  @Nullable
-  public TEALItxnBeginOpcode getItxnBeginOpcode() {
-    return findChildByClass(TEALItxnBeginOpcode.class);
-  }
-
-  @Override
-  @Nullable
-  public TEALItxnSubmitOpcode getItxnSubmitOpcode() {
-    return findChildByClass(TEALItxnSubmitOpcode.class);
-  }
-
-  @Override
-  @Nullable
-  public TEALItxnFieldOperation getItxnFieldOperation() {
-    return findChildByClass(TEALItxnFieldOperation.class);
   }
 
 }

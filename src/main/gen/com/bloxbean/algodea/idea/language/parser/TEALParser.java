@@ -655,6 +655,17 @@ public class TEALParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // 'itxn_submit'
+  public static boolean ITXN_SUBMIT_OPCODE(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "ITXN_SUBMIT_OPCODE")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, ITXN_SUBMIT_OPCODE, "<itxn submit opcode>");
+    r = consumeToken(b, "itxn_submit");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
   // 'loads'
   public static boolean LOADS_OPCODE(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "LOADS_OPCODE")) return false;
@@ -1911,12 +1922,14 @@ public class TEALParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // ITXN_BEGIN_OPCODE | itxnFieldOperation
+  // ITXN_BEGIN_OPCODE | ITXN_SUBMIT_OPCODE
+  //                                     | itxnFieldOperation
   public static boolean innerTransactionOperation(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "innerTransactionOperation")) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, INNER_TRANSACTION_OPERATION, "<inner transaction operation>");
     r = ITXN_BEGIN_OPCODE(b, l + 1);
+    if (!r) r = ITXN_SUBMIT_OPCODE(b, l + 1);
     if (!r) r = itxnFieldOperation(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
