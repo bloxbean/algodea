@@ -1,3 +1,5 @@
+### 0.8.0-beta
+  - AVM 1.0 Opcodes ecdsa_verify, ecdsa_pk_decompress, ecdsa_pk_recover
 ### 0.7.0
   - TEAL debug support
 ### 0.6.0

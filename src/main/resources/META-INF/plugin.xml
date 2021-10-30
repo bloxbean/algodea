@@ -39,6 +39,7 @@
         <annotator language="TEAL" implementationClass="com.bloxbean.algodea.idea.language.annotator.TEALFieldsAnnotator"/>
 
         <annotator language="TEAL" implementationClass="com.bloxbean.algodea.idea.language.annotator.TEALV4OpCodeAnnotator"/>
+        <annotator language="TEAL" implementationClass="com.bloxbean.algodea.idea.language.annotator.TEALV5OpCodeAnnotator"/>
         <lang.psiStructureViewFactory language="TEAL"
                                       implementationClass="com.bloxbean.algodea.idea.language.structureview.TEALStructureViewFactory"/>
         <!-- module extensions -->

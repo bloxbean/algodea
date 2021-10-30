@@ -29,6 +29,12 @@ public class TEALLoadingOperationImpl extends ASTWrapperPsiElement implements TE
 
   @Override
   @Nullable
+  public TEALArgsOpcode getArgsOpcode() {
+    return findChildByClass(TEALArgsOpcode.class);
+  }
+
+  @Override
+  @Nullable
   public TEALBZeroOpcode getBZeroOpcode() {
     return findChildByClass(TEALBZeroOpcode.class);
   }
@@ -95,6 +101,12 @@ public class TEALLoadingOperationImpl extends ASTWrapperPsiElement implements TE
 
   @Override
   @Nullable
+  public TEALGtxnasOperation getGtxnasOperation() {
+    return findChildByClass(TEALGtxnasOperation.class);
+  }
+
+  @Override
+  @Nullable
   public TEALGtxnsLoadingOperation getGtxnsLoadingOperation() {
     return findChildByClass(TEALGtxnsLoadingOperation.class);
   }
@@ -103,6 +115,12 @@ public class TEALLoadingOperationImpl extends ASTWrapperPsiElement implements TE
   @Nullable
   public TEALGtxnsaLoadingOperation getGtxnsaLoadingOperation() {
     return findChildByClass(TEALGtxnsaLoadingOperation.class);
+  }
+
+  @Override
+  @Nullable
+  public TEALGtxnsasOperation getGtxnsasOperation() {
+    return findChildByClass(TEALGtxnsasOperation.class);
   }
 
   @Override
@@ -125,6 +143,12 @@ public class TEALLoadingOperationImpl extends ASTWrapperPsiElement implements TE
 
   @Override
   @Nullable
+  public TEALLoadsOperation getLoadsOperation() {
+    return findChildByClass(TEALLoadsOperation.class);
+  }
+
+  @Override
+  @Nullable
   public TEALPushBytesOperation getPushBytesOperation() {
     return findChildByClass(TEALPushBytesOperation.class);
   }
@@ -143,6 +167,12 @@ public class TEALLoadingOperationImpl extends ASTWrapperPsiElement implements TE
 
   @Override
   @Nullable
+  public TEALStoresOperation getStoresOperation() {
+    return findChildByClass(TEALStoresOperation.class);
+  }
+
+  @Override
+  @Nullable
   public TEALTxnLoadingOperation getTxnLoadingOperation() {
     return findChildByClass(TEALTxnLoadingOperation.class);
   }
@@ -151,6 +181,12 @@ public class TEALLoadingOperationImpl extends ASTWrapperPsiElement implements TE
   @Nullable
   public TEALTxnaLoadingOperation getTxnaLoadingOperation() {
     return findChildByClass(TEALTxnaLoadingOperation.class);
+  }
+
+  @Override
+  @Nullable
+  public TEALTxnasOperation getTxnasOperation() {
+    return findChildByClass(TEALTxnasOperation.class);
   }
 
 }

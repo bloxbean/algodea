@@ -40,7 +40,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Optional;
 
-import static com.bloxbean.algodea.idea.language.completion.metadata.atoms.TEALKeywords.GENERAL_OPERATIONS_ELEMENTS;
+import static com.bloxbean.algodea.idea.language.completion.metadata.atoms.TEALKeywords.*;
 
 public class TEALDocumentationProvider extends AbstractDocumentationProvider  {
 
@@ -55,14 +55,10 @@ public class TEALDocumentationProvider extends AbstractDocumentationProvider  {
             TEALTypes.GLOBAL_FIELD,
             TEALTypes.TXN_FIELD_ARG,
             TEALTypes.ASSET_PARAMS_GET_FIELD,
-            TEALTypes.ASSET_HOLDING_GET_FIELD
+            TEALTypes.ASSET_HOLDING_GET_FIELD,
+            TEALTypes.APP_PARAMS_GET_FIELD,
+            TEALTypes.INNER_TRANSACTION_OP
     );
-    public static final String ONCOMPLETE = "oncomplete";
-    public static final String TYPEENUM_CONSTANTS = "typeenum_constants";
-    public static final String GLOBAL_FIELDS = "global_fields";
-    public static final String TXN_FIELDS = "txn_fields";
-    public static final String ASSET_PARAMS_GET_FIELDS = "asset_params_get_fields";
-    public static final String ASSET_HOLDING_GET_FIELDS = "asset_holding_get_fields";
 
     static {
         SEARCH_TYPES.addAll(GENERAL_OPERATIONS_ELEMENTS);
@@ -105,6 +101,7 @@ public class TEALDocumentationProvider extends AbstractDocumentationProvider  {
                 || TEALTypes.TXN_LOADING_OP.equals(element.getNode().getElementType())
                 || TEALTypes.FLOWCONTROL_OP.equals(element.getNode().getElementType())
                 || TEALTypes.STATEACCESS_OP.equals(element.getNode().getElementType())
+                || TEALTypes.INNER_TRANSACTION_OP.equals(element.getNode().getElementType())
                 || TEALKeywords.GENERAL_OPERATIONS_ELEMENTS.contains(element.getNode().getElementType()))
         {
             String value = element.getNode().getText();
@@ -116,10 +113,7 @@ public class TEALDocumentationProvider extends AbstractDocumentationProvider  {
             }
 
         }
-//        else if(element instanceof TEALGeneralOperation) {
-//            String value = element.getNode().getText();
-//            return TEALDocumentation.OPCODES.lookup(value);
-//        }
+
         return Optional.empty();
     }
 
@@ -128,12 +122,12 @@ public class TEALDocumentationProvider extends AbstractDocumentationProvider  {
 
         if (TEALTypes.NAMED_INTEGER_CONSTANT.equals(element.getNode().getElementType())) {
             String value = element.getNode().getText();
-            Field field = TEALOpCodeFactory.getInstance().getField(ONCOMPLETE, value);
+            Field field = TEALOpCodeFactory.getInstance().getField(ONCOMPLETE_CONSTANTS, value);
             if(field != null)
                 return field.formatHtml();
         } else if(TEALTypes.TYPENUM_CONSTANT.equals(element.getNode().getElementType())) {
             String value = element.getNode().getText();
-            Field field = TEALOpCodeFactory.getInstance().getField(TYPEENUM_CONSTANTS, value);
+            Field field = TEALOpCodeFactory.getInstance().getField(TYPE_ENUM_MAPPING, value);
             if(field != null)
                 return field.formatHtml();
         } else if(TEALTypes.GLOBAL_FIELD.equals(element.getNode().getElementType())) {
@@ -154,6 +148,11 @@ public class TEALDocumentationProvider extends AbstractDocumentationProvider  {
         } else if(TEALTypes.ASSET_HOLDING_GET_FIELD.equals(element.getNode().getElementType())) {
             String value = element.getNode().getText();
             Field field = TEALOpCodeFactory.getInstance().getField(ASSET_HOLDING_GET_FIELDS, value);
+            if(field != null)
+                return field.formatHtml();
+        } else if(TEALTypes.APP_PARAMS_GET_FIELD.equals(element.getNode().getElementType())) {
+            String value = element.getNode().getText();
+            Field field = TEALOpCodeFactory.getInstance().getField(APP_PARAMS_GET_FIELDS, value);
             if(field != null)
                 return field.formatHtml();
         }

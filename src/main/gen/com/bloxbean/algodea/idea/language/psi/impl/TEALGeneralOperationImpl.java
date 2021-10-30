@@ -53,6 +53,30 @@ public class TEALGeneralOperationImpl extends ASTWrapperPsiElement implements TE
 
   @Override
   @Nullable
+  public TEALExtract3Opcode getExtract3Opcode() {
+    return findChildByClass(TEALExtract3Opcode.class);
+  }
+
+  @Override
+  @Nullable
+  public TEALExtractUint16Opcode getExtractUint16Opcode() {
+    return findChildByClass(TEALExtractUint16Opcode.class);
+  }
+
+  @Override
+  @Nullable
+  public TEALExtractUint32Opcode getExtractUint32Opcode() {
+    return findChildByClass(TEALExtractUint32Opcode.class);
+  }
+
+  @Override
+  @Nullable
+  public TEALExtractUint64Opcode getExtractUint64Opcode() {
+    return findChildByClass(TEALExtractUint64Opcode.class);
+  }
+
+  @Override
+  @Nullable
   public TEALGetbitOpcode getGetbitOpcode() {
     return findChildByClass(TEALGetbitOpcode.class);
   }
@@ -91,6 +115,18 @@ public class TEALGeneralOperationImpl extends ASTWrapperPsiElement implements TE
   @Nullable
   public TEALSqrtOpcode getSqrtOpcode() {
     return findChildByClass(TEALSqrtOpcode.class);
+  }
+
+  @Override
+  @Nullable
+  public TEALEcdsaOp getEcdsaOp() {
+    return findChildByClass(TEALEcdsaOp.class);
+  }
+
+  @Override
+  @Nullable
+  public TEALExtractOperation getExtractOperation() {
+    return findChildByClass(TEALExtractOperation.class);
   }
 
   @Override

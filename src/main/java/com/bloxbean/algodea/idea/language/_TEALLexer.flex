@@ -31,15 +31,18 @@ SPACE=[ \t\n\x0B\f\r]+
 COMMENT="//".*
 L_INTEGER=0|[1-9][0-9]*
 L_STRING=('([^'\\]|\\.)*'|\"([^\"\\]|\\.)*\")
-LOADING_OP=(intcblock|intc|intc_0|intc_1|intc_2|intc_3|bytecblock|bytec|bytec_0|bytec_1|bytec_2|bytec_3|arg|arg_0|arg_1|arg_2|arg_3|global|load|store|pushint|pushbytes|gload|gloads|gaid|gaids|bzero)
-FLOWCONTROL_OP=(err|return|pop|dup|dup2|bnz|bz|b|dig|swap|select|assert|callsub|retsub)
-STATEACCESS_OP=(balance|app_opted_in|app_local_get|app_local_get_ex|app_global_get|app_global_get_ex|app_local_put|app_global_put|app_local_del|app_global_del|asset_holding_get|asset_params_get|min_balance)
-TXN_LOADING_OP=(txn|gtxn|txna|gtxna|gtxns|gtxnsa)
+LOADING_OP=(intcblock|intc|intc_0|intc_1|intc_2|intc_3|bytecblock|bytec|bytec_0|bytec_1|bytec_2|bytec_3|arg|arg_0|arg_1|arg_2|arg_3|global|load|store|pushint|pushbytes|gload|gloads|gaid|gaids|loads|stores|bzero|args)
+FLOWCONTROL_OP=(err|return|pop|dup|dup2|bnz|bz|b|dig|swap|select|cover|uncover|assert|callsub|retsub)
+STATEACCESS_OP=(balance|app_opted_in|app_local_get|app_local_get_ex|app_global_get|app_global_get_ex|app_local_put|app_global_put|app_local_del|app_global_del|asset_holding_get|asset_params_get|app_params_get|min_balance|log)
+TXN_LOADING_OP=(txn|gtxn|txna|gtxna|gtxns|gtxnsa|txnas|gtxnas|gtxnsas)
 NAMED_INTEGER_CONSTANT=(NoOp|OptIn|CloseOut|ClearState|UpdateApplication|DeleteApplication)
 TYPENUM_CONSTANT=(unknown|pay|keyreg|acfg|axfer|afrz|appl|Unknown|Payment|KeyRegistration|AssetConfig|AssetTransfer|AssetFreeze|ApplicationCall)
-GLOBAL_FIELD=(MinTxnFee|MinBalance|MaxTxnLife|ZeroAddress|GroupSize|LogicSigVersion|Round|LatestTimestamp|CurrentApplicationID|CreatorAddress)
+GLOBAL_FIELD=(MinTxnFee|MinBalance|MaxTxnLife|ZeroAddress|GroupSize|LogicSigVersion|Round|LatestTimestamp|CurrentApplicationID|CreatorAddress|CurrentApplicationAddress|GroupID)
 ASSET_HOLDING_GET_FIELD=(AssetBalance|AssetFrozen)
-ASSET_PARAMS_GET_FIELD=(AssetTotal|AssetDecimals|AssetDefaultFrozen|AssetUnitName|AssetName|AssetURL|AssetMetadataHash|AssetManager|AssetReserve|AssetFreeze|AssetClawback)
+ASSET_PARAMS_GET_FIELD=(AssetTotal|AssetDecimals|AssetDefaultFrozen|AssetUnitName|AssetName|AssetURL|AssetMetadataHash|AssetManager|AssetReserve|AssetFreeze|AssetClawback|AssetCreator)
+ECDSA_OP=(ecdsa_verify|ecdsa_pk_decompress|ecdsa_pk_recover)
+APP_PARAMS_GET_FIELD=(AppApprovalProgram|AppClearStateProgram|AppGlobalNumUint|AppGlobalNumByteSlice|AppLocalNumUint|AppLocalNumByteSlice|AppExtraProgramPages|AppCreator|AppAddress)
+INNER_TRANSACTION_OP=(itxn_begin|itxn_field|itxn_submit|itxn|itxna)
 OCTAL=(0)[0-9]+
 HEX=(0x|0X)[a-fA-F0-9]*
 VAR_TMPL=(VAR_TMPL_)([a-zA-Z0-9_$.#@~?]+)
@@ -93,6 +96,11 @@ ID=([a-zA-Z0-9_$.#@~?=+-]+[a-zA-Z0-9_$.#@~?=+-]*)
   "setbit"                       { return SETBIT; }
   "getbyte"                      { return GETBYTE; }
   "setbyte"                      { return SETBYTE; }
+  "extract"                      { return EXTRACT_OPCODE; }
+  "extract3"                     { return EXTRACT_3_OPCODE; }
+  "extract_uint16"               { return EXTRACT_UINT_16_OPCODE; }
+  "extract_uint32"               { return EXTRACT_UINT_32_OPCODE; }
+  "extract_uint64"               { return EXTRACT_UINT_64_OPCODE; }
   "concat"                       { return CONCAT; }
   "substring"                    { return SUBSTRING; }
   "substring3"                   { return SUBSTRING3; }
@@ -119,6 +127,8 @@ ID=([a-zA-Z0-9_$.#@~?=+-]+[a-zA-Z0-9_$.#@~?=+-]*)
   "b^"                           { return B_BITWISE_XOR_OPCODE; }
   "b~"                           { return B_INVERT_OPCODE; }
 
+  {ECDSA_OP}                     { return ECDSA_OP;}
+
   {NL}                           { return NL; }
   {EOF}                          { return EOF; }
   {SPACE}                        { return SPACE; }
@@ -134,6 +144,8 @@ ID=([a-zA-Z0-9_$.#@~?=+-]+[a-zA-Z0-9_$.#@~?=+-]*)
   {GLOBAL_FIELD}                 { return GLOBAL_FIELD; }
   {ASSET_HOLDING_GET_FIELD}      { return ASSET_HOLDING_GET_FIELD; }
   {ASSET_PARAMS_GET_FIELD}       { return ASSET_PARAMS_GET_FIELD; }
+  {APP_PARAMS_GET_FIELD}         { return APP_PARAMS_GET_FIELD; }
+  {INNER_TRANSACTION_OP}         { return INNER_TRANSACTION_OP; }
   {OCTAL}                        { return OCTAL; }
   {HEX}                          { return HEX; }
   {VAR_TMPL}                     { return VAR_TMPL; }

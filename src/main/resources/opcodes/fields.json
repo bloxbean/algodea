@@ -350,6 +350,41 @@
       "type": "uint64",
       "note": "Number of additional pages for each of the application's approval and clear state programs. An ExtraProgramPages of 1 means 2048 more total bytes, or 1024 for each program. LogicSigVersion >= 4.",
       "since": 4
+    },
+    {
+      "index": 57,
+      "name": "Nonparticipation",
+      "type": "uint64",
+      "note": "Marks an account nonparticipating for rewards. LogicSigVersion >= 5.",
+      "since": 5
+    },
+    {
+      "index": 58,
+      "name": "Logs",
+      "type": "[]byte",
+      "note": "Log messages emitted by an application call (itxn only). LogicSigVersion >= 5.",
+      "since": 5
+    },
+    {
+      "index": 59,
+      "name": "NumLogs",
+      "type": "uint64",
+      "note": "Number of Logs (itxn only). LogicSigVersion >= 5.",
+      "since": 5
+    },
+    {
+      "index": 60,
+      "name": "CreatedAssetID",
+      "type": "uint64",
+      "note": "Asset ID allocated by the creation of an ASA (itxn only). LogicSigVersion >= 5.",
+      "since": 5
+    },
+    {
+      "index": 61,
+      "name": "CreatedApplicationID",
+      "type": "uint64",
+      "note": "ApplicationID allocated by the creation of an application (itxn only). LogicSigVersion >= 5.",
+      "since": 5
     }
   ],
   "oncomplete": [
@@ -495,6 +530,20 @@
       "type": "[]byte",
       "note": "Address of the creator of the current application. Fails if no such application is executing. LogicSigVersion >= 3.",
       "since": 3
+    },
+    {
+      "index": 10,
+      "name": "CurrentApplicationAddress",
+      "type": "[]byte",
+      "note": "Address that the current application controls. Fails in LogicSigs. LogicSigVersion >= 5.",
+      "since": 5
+    },
+    {
+      "index": 11,
+      "name": "GroupID",
+      "type": "[]byte",
+      "note": "ID of the transaction group. 32 zero bytes if the transaction is not part of a group. LogicSigVersion >= 5.",
+      "since": 5
     }
   ],
   "asset_holding_get_fields": [
@@ -577,6 +626,78 @@
       "name": "AssetClawback",
       "type": "[]byte",
       "note": "Clawback address"
+    },
+    {
+      "index": 11,
+      "name": "AssetCreator",
+      "type": "[]byte",
+      "note": "Creator address. LogicSigVersion >= 5.",
+      "since": 5
+    }
+  ],
+  "app_params_get_fields": [
+    {
+      "index": 0,
+      "name": "AppApprovalProgram",
+      "type": "[]byte",
+      "note": "Bytecode of Approval Program",
+      "since": 5
+    },
+    {
+      "index": 1,
+      "name": "AppClearStateProgram",
+      "type": "[]byte",
+      "note": "Bytecode of Clear State Program",
+      "since": 5
+    },
+    {
+      "index": 2,
+      "name": "AppGlobalNumUint",
+      "type": "uint64",
+      "note": "Number of uint64 values allowed in Global State",
+      "since": 5
+    },
+    {
+      "index": 3,
+      "name": "AppGlobalNumByteSlice",
+      "type": "uint64",
+      "note": "Number of byte array values allowed in Global State",
+      "since": 5
+    },
+    {
+      "index": 4,
+      "name": "AppLocalNumUint",
+      "type": "uint64",
+      "note": "Number of uint64 values allowed in Local State",
+      "since": 5
+    },
+    {
+      "index": 5,
+      "name": "AppLocalNumByteSlice",
+      "type": "uint64",
+      "note": "Number of byte array values allowed in Local State",
+      "since": 5
+    },
+    {
+      "index": 6,
+      "name": "AppExtraProgramPages",
+      "type": "uint64",
+      "note": "Number of Extra Program Pages of code space",
+      "since": 5
+    },
+    {
+      "index": 7,
+      "name": "AppCreator",
+      "type": "[]byte",
+      "note": "Creator address",
+      "since": 5
+    },
+    {
+      "index": 8,
+      "name": "AppAddress",
+      "type": "[]byte",
+      "note": "Address for which this application has authority",
+      "since": 5
     }
   ]
 }

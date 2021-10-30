@@ -65,8 +65,20 @@ public class TEALFlowControlOperationImpl extends ASTWrapperPsiElement implement
 
   @Override
   @Nullable
+  public TEALCoverOperation getCoverOperation() {
+    return findChildByClass(TEALCoverOperation.class);
+  }
+
+  @Override
+  @Nullable
   public TEALDigOperation getDigOperation() {
     return findChildByClass(TEALDigOperation.class);
+  }
+
+  @Override
+  @Nullable
+  public TEALUncoverOperation getUncoverOperation() {
+    return findChildByClass(TEALUncoverOperation.class);
   }
 
 }

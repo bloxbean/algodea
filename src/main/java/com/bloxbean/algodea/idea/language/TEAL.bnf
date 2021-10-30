@@ -34,11 +34,12 @@
         l_integer="regexp:0|[1-9][0-9]*"
         l_string="regexp:('([^'\\]|\\.)*'|\"([^\"\\]|\\.)*\")"
 
-    LOADING_OP = "regexp:(intcblock|intc|intc_0|intc_1|intc_2|intc_3|bytecblock|bytec|bytec_0|bytec_1|bytec_2|bytec_3|arg|arg_0|arg_1|arg_2|arg_3|global|load|store|pushint|pushbytes|gload|gloads|gaid|gaids|bzero)"
-    FLOWCONTROL_OP = "regexp:(err|return|pop|dup|dup2|bnz|bz|b|dig|swap|select|assert)"
-    STATEACCESS_OP = "regexp:(balance|app_opted_in|app_local_get|app_local_get_ex|app_global_get|app_global_get_ex|app_local_put|app_global_put|app_local_del|app_global_del|asset_holding_get|asset_params_get|min_balance)"
+    LOADING_OP = "regexp:(intcblock|intc|intc_0|intc_1|intc_2|intc_3|bytecblock|bytec|bytec_0|bytec_1|bytec_2|bytec_3|arg|arg_0|arg_1|arg_2|arg_3|global|load|store|pushint|pushbytes|gload|gloads|gaid|gaids|loads|stores|bzero|args)"
+    FLOWCONTROL_OP = "regexp:(err|return|pop|dup|dup2|bnz|bz|b|dig|swap|select|cover|uncover|assert)"
+    STATEACCESS_OP = "regexp:(balance|app_opted_in|app_local_get|app_local_get_ex|app_global_get|app_global_get_ex|app_local_put|app_global_put|app_local_del|app_global_del|asset_holding_get|asset_params_get|app_params_get|min_balance|log)"
 
-    TXN_LOADING_OP = 'regexp:(txn|gtxn|txna|gtxna|gtxns|gtxnsa)'
+    TXN_LOADING_OP = 'regexp:(txn|gtxn|txna|gtxna|gtxns|gtxnsa|txnas|gtxnas|gtxnsas)'
+    INNER_TRANSACTION_OP = 'regexp:(itxn_begin|itxn_field|itxn_submit|itxn|itxna)'
 
   //Operations
     SHA256              = 'sha256'
@@ -88,11 +89,12 @@
     TYPENUM_CONSTANT = 'regexp:(unknown|pay|keyreg|acfg|axfer|afrz|appl|Unknown|Payment|KeyRegistration|AssetConfig|AssetTransfer|AssetFreeze|ApplicationCall)'
 
     //Global Fields
-    GLOBAL_FIELD        = 'regexp:(MinTxnFee|MinBalance|MaxTxnLife|ZeroAddress|GroupSize|LogicSigVersion|Round|LatestTimestamp|CurrentApplicationID|CreatorAddress)'
+    GLOBAL_FIELD        = 'regexp:(MinTxnFee|MinBalance|MaxTxnLife|ZeroAddress|GroupSize|LogicSigVersion|Round|LatestTimestamp|CurrentApplicationID|CreatorAddress|CurrentApplicationAddress|GroupID)'
 
     //Asset Fields
     ASSET_HOLDING_GET_FIELD      = 'regexp:(AssetBalance|AssetFrozen)'
-    ASSET_PARAMS_GET_FIELD       = 'regexp:(AssetTotal|AssetDecimals|AssetDefaultFrozen|AssetUnitName|AssetName|AssetURL|AssetMetadataHash|AssetManager|AssetReserve|AssetFreeze|AssetClawback)'
+    ASSET_PARAMS_GET_FIELD       = 'regexp:(AssetTotal|AssetDecimals|AssetDefaultFrozen|AssetUnitName|AssetName|AssetURL|AssetMetadataHash|AssetManager|AssetReserve|AssetFreeze|AssetClawback|AssetCreator)'
+    APP_PARAMS_GET_FIELD         = 'regexp:(AppApprovalProgram|AppClearStateProgram|AppGlobalNumUint|AppGlobalNumByteSlice|AppLocalNumUint|AppLocalNumByteSlice|AppExtraProgramPages|AppCreator|AppAddress)'
 
     VERSION = "version"
 
@@ -174,6 +176,37 @@ B_INVERT_OPCODE ::= 'b~'
 B_ZERO_OPCODE ::= 'bzero'
 //v4 opcodes end
 
+//v5 opcodes start
+ECDSA_VERIFY_OPCODE  ::= 'ecdsa_verify'
+ECDSA_PK_DECOMPRESS_OPCODE  ::= 'ecdsa_pk_decompress'
+ECDSA_PK_RECOVER_OPCODE     ::= 'ecdsa_pk_recover'
+
+LOADS_OPCODE ::= 'loads'
+STORES_OPCODE ::= 'stores'
+COVER_OPCODE ::= 'cover'
+UNCOVER_OPCODE ::= 'uncover'
+
+EXTRACT_OPCODE ::= 'extract'
+EXTRACT3_OPCODE ::= 'extract3'
+EXTRACT_UINT16_OPCODE ::= 'extract_uint16'
+EXTRACT_UINT32_OPCODE ::= 'extract_uint32'
+EXTRACT_UINT64_OPCODE ::= 'extract_uint64'
+
+LOG_OPCODE ::= 'log'
+
+ITXN_BEGIN_OPCODE ::= 'itxn_begin'
+ITXN_FIELD_OPCODE ::= 'itxn_field'
+ITXN_SUBMIT_OPCODE ::= 'itxn_submit'
+ITXN_OPCODE ::= 'itxn'
+ITXNA_OPCODE ::= 'itxna'
+
+TXNAS_OPCODE ::= 'txnas'
+GTXNAS_OPCODE ::= 'gtxnas'
+GTXNSAS_OPCODE ::= 'gtxnsas'
+
+ARGS_OPCODE ::= 'args'
+//v5 opcodes end
+
 pragma ::= PRAGMA_KEYWORD VERSION pragma_version {pin=1 recoverWhile=statement_recover}
 pragma_version ::= unsignedInteger
 statement ::= COMMENT
@@ -184,6 +217,7 @@ statement ::= COMMENT
                     | bytesliceOperation
                     | pseudo_op
                     | branch
+                    | innerTransactionOperation
                     | VAR_TMPL
                     | NL
                     | EOF {name= "TEAL OpCode" recoverWhile=statement_recover }
@@ -197,6 +231,7 @@ private statement_recover ::= !(
                                         | bytesliceOperation
                                         | pseudo_op
                                         | branch
+                                        | innerTransactionOperation
                                         | VAR_TMPL
                                         | NL
                                         | EOF
@@ -239,6 +274,7 @@ LoadingOperation ::=  intcblockOperation
                                   | 'arg_1'
                                   | 'arg_2'
                                   | 'arg_3'
+                                  | ARGS_OPCODE
                                   | globalOperation
                                   | loadOperation
                                   | storeOperation
@@ -255,7 +291,12 @@ LoadingOperation ::=  intcblockOperation
                                   | gloadsOperation
                                   | gaidOperation
                                   | gaidsOperation
-                                  | B_ZERO_OPCODE {pin=1}
+                                  | loadsOperation
+                                  | storesOperation
+                                  | B_ZERO_OPCODE
+                                  | txnasOperation
+                                  | gtxnasOperation
+                                  | gtxnsasOperation {pin=1}
 
 //TODO implement strict validation for both intcblockOperation and bytecblockOperation
 intcblockOperation ::= 'intcblock' (VAR_TMPL | (ID | l_integer)*) {pin=1}
@@ -304,12 +345,14 @@ TxnFieldArg ::= 'Sender'| 'Fee'| 'FirstValid'| 'FirstValidTime'| 'LastValid'| 'N
                        | 'ConfigAssetManager'|'ConfigAssetReserve'|'ConfigAssetFreeze'|'ConfigAssetClawback'|'FreezeAsset'
                        | 'FreezeAssetAccount'|'FreezeAssetFrozen' | 'Assets' | 'NumAssets' | 'Applications' | 'NumApplications'
                        | 'GlobalNumUint' | 'GlobalNumByteSlice' | 'LocalNumUint' | 'LocalNumByteSlice' | 'ExtraProgramPages'
+                       | 'Nonparticipation' | 'Logs' | 'NumLogs' | 'CreatedAssetID' | 'CreatedApplicationID'
 
 //Follow same sequence in https://developer.algorand.org/docs/reference/teal/specification/#arithmetic-logic-and-cryptographic-operations
 GeneralOperation                   ::= SHA256
                                      | KECCAK256
                                      | SHA512_256
                                      | ED25519VERIFY
+                                     | ecdsaOp
                                      | PLUS
                                      | MINUS
                                      | DIVIDE
@@ -347,10 +390,17 @@ GeneralOperation                   ::= SHA256
                                      | CONCAT
                                      | substringOperation
                                      | SUBSTRING3
+                                     | extractOperation
+                                     | EXTRACT3_OPCODE
+                                     | EXTRACT_UINT16_OPCODE
+                                     | EXTRACT_UINT32_OPCODE
+                                     | EXTRACT_UINT64_OPCODE
 
 substringOperation ::= SUBSTRING (unsignedInteger | VAR_TMPL) (unsignedInteger | VAR_TMPL) {pin=1}
 
 FlowControlOperation ::= 'err' | 'return' | 'pop' | 'dup' | 'dup2' | SWAP_OPCODE | SELECT_OPCODE | ASSERT_OPCODE | digOperation
+                                | coverOperation
+                                | uncoverOperation
                                 | branchOperation
                                 | callSubroutineOperation
                                 | RETSUB_OPCODE {pin=1}
@@ -364,7 +414,9 @@ StateAccessOperation ::=  'balance' | 'app_opted_in' | 'app_local_get'| 'app_loc
                             | 'app_global_del'
                             | assetHoldingGetOperation
                             | assetParamsGetOperation
+                            | appParamsGetOperation
                             | MIN_BALANCE_OPCODE
+                            | LOG_OPCODE
 
 assetHoldingGetOperation ::= assetHoldingGetOP (unsignedInteger | ASSET_HOLDING_GET_FIELD | VAR_TMPL) {pin=1}
 assetParamsGetOperation ::=  assetParamsGetOp (unsignedInteger | ASSET_PARAMS_GET_FIELD | 'AssetFreeze' | VAR_TMPL) {pin=1}
@@ -379,3 +431,30 @@ bytesliceOperation ::= B_PLUS_OPCODE | B_MINUS_OPCODE | B_DIV_OPCODE | B_TIMES_O
                                   | B_EQUAL_OPCODE | B_NOT_EQUAL_OPCODE | B_MODULO_OPCODE
                                   | B_BITWISE_OR_OPCODE | B_BITWISE_AND_OPCODE | B_BITWISE_XOR_OPCODE
                                   | B_INVERT_OPCODE
+
+//In v5
+ecdsaOp ::= ECDSA_VERIFY_OPCODE (unsignedInteger | VAR_TMPL)
+                | ECDSA_PK_DECOMPRESS_OPCODE (unsignedInteger | VAR_TMPL)
+                | ECDSA_PK_RECOVER_OPCODE (unsignedInteger | VAR_TMPL) {pin=1}
+
+appParamsGetOp     ::= 'app_params_get'
+appParamsGetOperation ::=  appParamsGetOp (unsignedInteger | APP_PARAMS_GET_FIELD | VAR_TMPL) {pin=1}
+
+loadsOperation ::= LOADS_OPCODE
+storesOperation ::= STORES_OPCODE
+coverOperation ::= COVER_OPCODE (unsignedInteger | VAR_TMPL) {pin=1}
+uncoverOperation ::= UNCOVER_OPCODE (unsignedInteger | VAR_TMPL) {pin=1}
+
+extractOperation ::= EXTRACT_OPCODE (unsignedInteger | VAR_TMPL) (unsignedInteger | VAR_TMPL) {pin=1}
+
+innerTransactionOperation ::= ITXN_BEGIN_OPCODE | ITXN_SUBMIT_OPCODE
+                                    | itxnFieldOperation
+                                    | itxnOperation
+                                    | itxnaOperation {pin=1}
+itxnFieldOperation ::= ITXN_FIELD_OPCODE (unsignedInteger | TxnFieldArg | VAR_TMPL) {pin=1}
+itxnOperation ::= ITXN_OPCODE (unsignedInteger | TxnFieldArg | VAR_TMPL) {pin=1}
+itxnaOperation ::= ITXNA_OPCODE (unsignedInteger | TxnFieldArg | VAR_TMPL) (unsignedInteger | VAR_TMPL) {pin=1}
+
+txnasOperation ::= TXNAS_OPCODE (unsignedInteger | TxnFieldArg | VAR_TMPL) {pin=1}
+gtxnasOperation ::= GTXNAS_OPCODE (unsignedInteger | VAR_TMPL) (unsignedInteger | TxnFieldArg | VAR_TMPL) {pin=1}
+gtxnsasOperation ::= GTXNSAS_OPCODE (unsignedInteger | TxnFieldArg | VAR_TMPL) {pin=1}

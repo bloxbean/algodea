@@ -31,20 +31,20 @@ import com.google.common.collect.Sets;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.psi.tree.IElementType;
 
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.bloxbean.algodea.idea.language.psi.TEALTypes.*;
 
 public final class TEALKeywords {
-    public final static LookupElement PRAGMA_LINE = new TEALKeywordElement("#pragma version 4").getLookupElement();
+    public final static LookupElement PRAGMA_LINE = new TEALKeywordElement("#pragma version 5").getLookupElement();
 
     public final static String TXN_FIELDS = "txn_fields";
     public final static String TYPE_ENUM_MAPPING = "typeenum_constants";
     public final static String GLOBAL_FIELDS = "global_fields";
     public final static String ASSET_HOLDING_GET_FIELDS = "asset_holding_get_fields";
     public final static String ASSET_PARAMS_GET_FIELDS = "asset_params_get_fields";
+    public final static String APP_PARAMS_GET_FIELDS = "app_params_get_fields";
     public final static String ONCOMPLETE_CONSTANTS = "oncomplete";
 
     //https://developer.algorand.org/docs/reference/teal/specification/#arithmetic-logic-and-cryptographic-operations
@@ -53,6 +53,7 @@ public final class TEALKeywords {
             KECCAK256,
             SHA512_256,
             ED25519VERIFY,
+            ECDSA_OP,
             PLUS,
             MINUS,
             DIVIDE,
@@ -116,8 +117,17 @@ public final class TEALKeywords {
             B_BITWISE_OR_OPCODE,
             B_BITWISE_AND_OPCODE,
             B_BITWISE_XOR_OPCODE,
-            B_INVERT_OPCODE
+            B_INVERT_OPCODE,
             //v4
+
+            //v5
+            EXTRACT_OPCODE,
+            EXTRACT_3_OPCODE,
+            EXTRACT_UINT_16_OPCODE,
+            EXTRACT_UINT_32_OPCODE,
+            EXTRACT_UINT_64_OPCODE
+
+            //v5
     );
 
     //Lists needed for auto-completion
@@ -151,6 +161,16 @@ public final class TEALKeywords {
             .map(TEALKeywordElement::getLookupElement)
             .collect(Collectors.toList());
 
+    public static final List<LookupElement> KEYWORD_LOOKUP_ELEMENTS_V5 = TEALOpCodeFactory.getInstance()
+            //.getOps().stream()
+            .getOpCodes().stream()
+            .filter(opc -> opc.getSince() == 5)
+            .map(opc -> opc.getOp())
+            .sorted()
+            .map(TEALKeywordElement::new)
+            .map(TEALKeywordElement::getLookupElement)
+            .collect(Collectors.toList());
+
     private static final Collection<Field> txnFieldsList = TEALOpCodeFactory.getInstance().getFields(TXN_FIELDS);
     //V2
     public static final List<LookupElement> TXNARGS_LOOKUP_ELEMENTS = txnFieldsList
@@ -176,6 +196,14 @@ public final class TEALKeywords {
             .map(TEALFieldElement::getLookupElement)
             .collect(Collectors.toList());
 
+    //V5
+    public static final List<LookupElement> TXNARGS_LOOKUP_ELEMENTS_V5 = txnFieldsList
+            .stream()
+            .filter(f -> f.getSince() == 5)
+            .map(f -> new TEALFieldElement(f))
+            .map(TEALFieldElement::getLookupElement)
+            .collect(Collectors.toList());
+
     //V2
     public static final List<TEALFieldElement> TXNARGS_LOOKUP_ELEMENTS_STREAM = txnFieldsList
             .stream()
@@ -194,6 +222,13 @@ public final class TEALKeywords {
     public static final List<TEALFieldElement> TXNARGS_LOOKUP_ELEMENTS_STREAM_V4 = txnFieldsList
             .stream()
             .filter(f -> f.getSince() == 4)
+            .map(f -> new TEALFieldElement(f))
+            .collect(Collectors.toList());
+
+    //V5
+    public static final List<TEALFieldElement> TXNARGS_LOOKUP_ELEMENTS_STREAM_V5 = txnFieldsList
+            .stream()
+            .filter(f -> f.getSince() == 5)
             .map(f -> new TEALFieldElement(f))
             .collect(Collectors.toList());
 
@@ -221,6 +256,14 @@ public final class TEALKeywords {
             .map(TEALFieldElement::getLookupElement)
             .collect(Collectors.toList());
 
+    //since V5
+    public static final List<LookupElement> GLOBAL_FIELDS_ELEMENTS_V5 = gloablFields
+            .stream()
+            .filter(f -> f.getSince() == 5)
+            .map(f -> new TEALFieldElement(f))
+            .map(TEALFieldElement::getLookupElement)
+            .collect(Collectors.toList());
+
     public static final List<LookupElement> ASSET_HOLDING_GET_FIELDS_ELEMENTS = TEALOpCodeFactory.getInstance()
             .getFields(ASSET_HOLDING_GET_FIELDS)
             .stream()
@@ -228,12 +271,9 @@ public final class TEALKeywords {
             .map(TEALFieldElement::getLookupElement)
             .collect(Collectors.toList());
 
-    public static final List<LookupElement> ASSET_PARAMS_GET_FIELDS_ELEMENTS = TEALOpCodeFactory.getInstance()
-            .getFields(ASSET_PARAMS_GET_FIELDS)
-            .stream()
-            .map(f -> new TEALFieldElement(f))
-            .map(TEALFieldElement::getLookupElement)
-            .collect(Collectors.toList());
+    public static final Map<Integer, List<LookupElement>> ASSET_PARAMS_GET_FIELDS_ELEMENTS_MAP = createFieldMapForType(ASSET_PARAMS_GET_FIELDS);
+
+    public static final Map<Integer, List<LookupElement>> APP_PARAMS_GET_FIELDS_ELEMENTS_MAP = createFieldMapForType(APP_PARAMS_GET_FIELDS);
 
     public static final List<LookupElement> ONCOMPLETE_CONSTANT_ELEMENTS = TEALOpCodeFactory.getInstance()
             .getFields(ONCOMPLETE_CONSTANTS)
@@ -241,5 +281,30 @@ public final class TEALKeywords {
             .map(f -> new TEALConstantElement(f))
             .map(TEALConstantElement::getLookupElement)
             .collect(Collectors.toList());
+
+
+    private static Map<Integer, List<LookupElement>> createFieldMapForType(String fieldType) {
+        Collection<Field> fields = TEALOpCodeFactory.getInstance().getFields(fieldType);
+        Map<Integer, List<LookupElement>> map = new HashMap<>();
+
+        fields.forEach(field -> {
+            Integer since = field.getSince();
+            TEALConstantElement constantElement = new TEALConstantElement(field);
+            LookupElement lookupElement = constantElement.getLookupElement();
+
+            if(since == null)
+                since = 0;
+
+            List<LookupElement> lookupElements = map.get(since);
+            if(lookupElements == null) {
+                lookupElements = new ArrayList<>();
+                map.put(since, lookupElements);
+            }
+
+            lookupElements.add(lookupElement);
+        });
+
+        return map;
+    }
 
 }

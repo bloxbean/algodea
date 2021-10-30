@@ -10,6 +10,9 @@ public interface TEALTypes {
 
   IElementType ADDR_PARAM = new TEALElementType("ADDR_PARAM");
   IElementType ADDR_STATEMENT = new TEALElementType("ADDR_STATEMENT");
+  IElementType APP_PARAMS_GET_OP = new TEALElementType("APP_PARAMS_GET_OP");
+  IElementType APP_PARAMS_GET_OPERATION = new TEALElementType("APP_PARAMS_GET_OPERATION");
+  IElementType ARGS_OPCODE = new TEALElementType("ARGS_OPCODE");
   IElementType ARG_OPERATION = new TEALElementType("ARG_OPERATION");
   IElementType ASSERT_OPCODE = new TEALElementType("ASSERT_OPCODE");
   IElementType ASSET_HOLDING_GET_OP = new TEALElementType("ASSET_HOLDING_GET_OP");
@@ -41,11 +44,23 @@ public interface TEALTypes {
   IElementType B_ZERO_OPCODE = new TEALElementType("B_ZERO_OPCODE");
   IElementType CALLSUB_OPCODE = new TEALElementType("CALLSUB_OPCODE");
   IElementType CALL_SUBROUTINE_OPERATION = new TEALElementType("CALL_SUBROUTINE_OPERATION");
+  IElementType COVER_OPCODE = new TEALElementType("COVER_OPCODE");
+  IElementType COVER_OPERATION = new TEALElementType("COVER_OPERATION");
   IElementType DIG_OPCODE = new TEALElementType("DIG_OPCODE");
   IElementType DIG_OPERATION = new TEALElementType("DIG_OPERATION");
   IElementType DIVMODW_OPCODE = new TEALElementType("DIVMODW_OPCODE");
+  IElementType ECDSA_OP = new TEALElementType("ECDSA_OP");
+  IElementType ECDSA_PK_DECOMPRESS_OPCODE = new TEALElementType("ECDSA_PK_DECOMPRESS_OPCODE");
+  IElementType ECDSA_PK_RECOVER_OPCODE = new TEALElementType("ECDSA_PK_RECOVER_OPCODE");
+  IElementType ECDSA_VERIFY_OPCODE = new TEALElementType("ECDSA_VERIFY_OPCODE");
   IElementType EXPW_OPCODE = new TEALElementType("EXPW_OPCODE");
   IElementType EXP_OPCODE = new TEALElementType("EXP_OPCODE");
+  IElementType EXTRACT_3_OPCODE = new TEALElementType("EXTRACT_3_OPCODE");
+  IElementType EXTRACT_OPCODE = new TEALElementType("EXTRACT_OPCODE");
+  IElementType EXTRACT_OPERATION = new TEALElementType("EXTRACT_OPERATION");
+  IElementType EXTRACT_UINT_16_OPCODE = new TEALElementType("EXTRACT_UINT_16_OPCODE");
+  IElementType EXTRACT_UINT_32_OPCODE = new TEALElementType("EXTRACT_UINT_32_OPCODE");
+  IElementType EXTRACT_UINT_64_OPCODE = new TEALElementType("EXTRACT_UINT_64_OPCODE");
   IElementType FLOW_CONTROL_OPERATION = new TEALElementType("FLOW_CONTROL_OPERATION");
   IElementType GAIDS_OPCODE = new TEALElementType("GAIDS_OPCODE");
   IElementType GAIDS_OPERATION = new TEALElementType("GAIDS_OPERATION");
@@ -60,19 +75,35 @@ public interface TEALTypes {
   IElementType GLOAD_OPERATION = new TEALElementType("GLOAD_OPERATION");
   IElementType GLOBAL_OPERATION = new TEALElementType("GLOBAL_OPERATION");
   IElementType GLOBAL_OP_CODE = new TEALElementType("GLOBAL_OP_CODE");
+  IElementType GTXNAS_OPCODE = new TEALElementType("GTXNAS_OPCODE");
+  IElementType GTXNAS_OPERATION = new TEALElementType("GTXNAS_OPERATION");
   IElementType GTXNA_LOADING_OPERATION = new TEALElementType("GTXNA_LOADING_OPERATION");
   IElementType GTXNA_OPCODE = new TEALElementType("GTXNA_OPCODE");
+  IElementType GTXNSAS_OPCODE = new TEALElementType("GTXNSAS_OPCODE");
+  IElementType GTXNSAS_OPERATION = new TEALElementType("GTXNSAS_OPERATION");
   IElementType GTXNSA_LOADING_OPERATION = new TEALElementType("GTXNSA_LOADING_OPERATION");
   IElementType GTXNSA_OPCODE = new TEALElementType("GTXNSA_OPCODE");
   IElementType GTXNS_LOADING_OPERATION = new TEALElementType("GTXNS_LOADING_OPERATION");
   IElementType GTXNS_OPCODE = new TEALElementType("GTXNS_OPCODE");
   IElementType GTXN_LOADING_OPERATION = new TEALElementType("GTXN_LOADING_OPERATION");
   IElementType GTXN_OPCODE = new TEALElementType("GTXN_OPCODE");
+  IElementType INNER_TRANSACTION_OPERATION = new TEALElementType("INNER_TRANSACTION_OPERATION");
   IElementType INTCBLOCK_OPERATION = new TEALElementType("INTCBLOCK_OPERATION");
   IElementType INTC_OPERATION = new TEALElementType("INTC_OPERATION");
   IElementType INT_STATEMENT = new TEALElementType("INT_STATEMENT");
+  IElementType ITXNA_OPCODE = new TEALElementType("ITXNA_OPCODE");
+  IElementType ITXNA_OPERATION = new TEALElementType("ITXNA_OPERATION");
+  IElementType ITXN_BEGIN_OPCODE = new TEALElementType("ITXN_BEGIN_OPCODE");
+  IElementType ITXN_FIELD_OPCODE = new TEALElementType("ITXN_FIELD_OPCODE");
+  IElementType ITXN_FIELD_OPERATION = new TEALElementType("ITXN_FIELD_OPERATION");
+  IElementType ITXN_OPCODE = new TEALElementType("ITXN_OPCODE");
+  IElementType ITXN_OPERATION = new TEALElementType("ITXN_OPERATION");
+  IElementType ITXN_SUBMIT_OPCODE = new TEALElementType("ITXN_SUBMIT_OPCODE");
   IElementType LOADING_OPERATION = new TEALElementType("LOADING_OPERATION");
+  IElementType LOADS_OPCODE = new TEALElementType("LOADS_OPCODE");
+  IElementType LOADS_OPERATION = new TEALElementType("LOADS_OPERATION");
   IElementType LOAD_OPERATION = new TEALElementType("LOAD_OPERATION");
+  IElementType LOG_OPCODE = new TEALElementType("LOG_OPCODE");
   IElementType MIN_BALANCE_OPCODE = new TEALElementType("MIN_BALANCE_OPCODE");
   IElementType PRAGMA = new TEALElementType("PRAGMA");
   IElementType PRAGMA_VERSION = new TEALElementType("PRAGMA_VERSION");
@@ -91,18 +122,25 @@ public interface TEALTypes {
   IElementType SQRT_OPCODE = new TEALElementType("SQRT_OPCODE");
   IElementType STATEMENT = new TEALElementType("STATEMENT");
   IElementType STATE_ACCESS_OPERATION = new TEALElementType("STATE_ACCESS_OPERATION");
+  IElementType STORES_OPCODE = new TEALElementType("STORES_OPCODE");
+  IElementType STORES_OPERATION = new TEALElementType("STORES_OPERATION");
   IElementType STORE_OPERATION = new TEALElementType("STORE_OPERATION");
   IElementType SUBSTRING_OPERATION = new TEALElementType("SUBSTRING_OPERATION");
   IElementType SWAP_OPCODE = new TEALElementType("SWAP_OPCODE");
+  IElementType TXNAS_OPCODE = new TEALElementType("TXNAS_OPCODE");
+  IElementType TXNAS_OPERATION = new TEALElementType("TXNAS_OPERATION");
   IElementType TXNA_LOADING_OPERATION = new TEALElementType("TXNA_LOADING_OPERATION");
   IElementType TXNA_OPCODE = new TEALElementType("TXNA_OPCODE");
   IElementType TXN_FIELD_ARG = new TEALElementType("TXN_FIELD_ARG");
   IElementType TXN_LOADING_OPERATION = new TEALElementType("TXN_LOADING_OPERATION");
   IElementType TXN_OPCODE = new TEALElementType("TXN_OPCODE");
+  IElementType UNCOVER_OPCODE = new TEALElementType("UNCOVER_OPCODE");
+  IElementType UNCOVER_OPERATION = new TEALElementType("UNCOVER_OPERATION");
   IElementType UNSIGNED_INTEGER = new TEALElementType("UNSIGNED_INTEGER");
 
   IElementType ADDR = new TEALTokenType("addr");
   IElementType ADDW = new TEALTokenType("addw");
+  IElementType APP_PARAMS_GET_FIELD = new TEALTokenType("APP_PARAMS_GET_FIELD");
   IElementType ASSET_HOLDING_GET_FIELD = new TEALTokenType("ASSET_HOLDING_GET_FIELD");
   IElementType ASSET_PARAMS_GET_FIELD = new TEALTokenType("ASSET_PARAMS_GET_FIELD");
   IElementType BITWISE_AND = new TEALTokenType("&");
@@ -126,6 +164,7 @@ public interface TEALTypes {
   IElementType GREATERTHANEQUAL = new TEALTokenType(">=");
   IElementType HEX = new TEALTokenType("HEX");
   IElementType ID = new TEALTokenType("ID");
+  IElementType INNER_TRANSACTION_OP = new TEALTokenType("INNER_TRANSACTION_OP");
   IElementType INT = new TEALTokenType("int");
   IElementType ITOB = new TEALTokenType("itob");
   IElementType KECCAK256 = new TEALTokenType("keccak256");
@@ -169,6 +208,15 @@ public interface TEALTypes {
       }
       else if (type == ADDR_STATEMENT) {
         return new TEALAddrStatementImpl(node);
+      }
+      else if (type == APP_PARAMS_GET_OP) {
+        return new TEALAppParamsGetOpImpl(node);
+      }
+      else if (type == APP_PARAMS_GET_OPERATION) {
+        return new TEALAppParamsGetOperationImpl(node);
+      }
+      else if (type == ARGS_OPCODE) {
+        return new TEALArgsOpcodeImpl(node);
       }
       else if (type == ARG_OPERATION) {
         return new TEALArgOperationImpl(node);
@@ -263,6 +311,12 @@ public interface TEALTypes {
       else if (type == CALL_SUBROUTINE_OPERATION) {
         return new TEALCallSubroutineOperationImpl(node);
       }
+      else if (type == COVER_OPCODE) {
+        return new TEALCoverOpcodeImpl(node);
+      }
+      else if (type == COVER_OPERATION) {
+        return new TEALCoverOperationImpl(node);
+      }
       else if (type == DIG_OPCODE) {
         return new TEALDigOpcodeImpl(node);
       }
@@ -272,11 +326,41 @@ public interface TEALTypes {
       else if (type == DIVMODW_OPCODE) {
         return new TEALDivmodwOpcodeImpl(node);
       }
+      else if (type == ECDSA_OP) {
+        return new TEALEcdsaOpImpl(node);
+      }
+      else if (type == ECDSA_PK_DECOMPRESS_OPCODE) {
+        return new TEALEcdsaPkDecompressOpcodeImpl(node);
+      }
+      else if (type == ECDSA_PK_RECOVER_OPCODE) {
+        return new TEALEcdsaPkRecoverOpcodeImpl(node);
+      }
+      else if (type == ECDSA_VERIFY_OPCODE) {
+        return new TEALEcdsaVerifyOpcodeImpl(node);
+      }
       else if (type == EXPW_OPCODE) {
         return new TEALExpwOpcodeImpl(node);
       }
       else if (type == EXP_OPCODE) {
         return new TEALExpOpcodeImpl(node);
+      }
+      else if (type == EXTRACT_3_OPCODE) {
+        return new TEALExtract3OpcodeImpl(node);
+      }
+      else if (type == EXTRACT_OPCODE) {
+        return new TEALExtractOpcodeImpl(node);
+      }
+      else if (type == EXTRACT_OPERATION) {
+        return new TEALExtractOperationImpl(node);
+      }
+      else if (type == EXTRACT_UINT_16_OPCODE) {
+        return new TEALExtractUint16OpcodeImpl(node);
+      }
+      else if (type == EXTRACT_UINT_32_OPCODE) {
+        return new TEALExtractUint32OpcodeImpl(node);
+      }
+      else if (type == EXTRACT_UINT_64_OPCODE) {
+        return new TEALExtractUint64OpcodeImpl(node);
       }
       else if (type == FLOW_CONTROL_OPERATION) {
         return new TEALFlowControlOperationImpl(node);
@@ -320,11 +404,23 @@ public interface TEALTypes {
       else if (type == GLOBAL_OP_CODE) {
         return new TEALGlobalOpCodeImpl(node);
       }
+      else if (type == GTXNAS_OPCODE) {
+        return new TEALGtxnasOpcodeImpl(node);
+      }
+      else if (type == GTXNAS_OPERATION) {
+        return new TEALGtxnasOperationImpl(node);
+      }
       else if (type == GTXNA_LOADING_OPERATION) {
         return new TEALGtxnaLoadingOperationImpl(node);
       }
       else if (type == GTXNA_OPCODE) {
         return new TEALGtxnaOpcodeImpl(node);
+      }
+      else if (type == GTXNSAS_OPCODE) {
+        return new TEALGtxnsasOpcodeImpl(node);
+      }
+      else if (type == GTXNSAS_OPERATION) {
+        return new TEALGtxnsasOperationImpl(node);
       }
       else if (type == GTXNSA_LOADING_OPERATION) {
         return new TEALGtxnsaLoadingOperationImpl(node);
@@ -344,6 +440,9 @@ public interface TEALTypes {
       else if (type == GTXN_OPCODE) {
         return new TEALGtxnOpcodeImpl(node);
       }
+      else if (type == INNER_TRANSACTION_OPERATION) {
+        return new TEALInnerTransactionOperationImpl(node);
+      }
       else if (type == INTCBLOCK_OPERATION) {
         return new TEALIntcblockOperationImpl(node);
       }
@@ -353,11 +452,44 @@ public interface TEALTypes {
       else if (type == INT_STATEMENT) {
         return new TEALIntStatementImpl(node);
       }
+      else if (type == ITXNA_OPCODE) {
+        return new TEALItxnaOpcodeImpl(node);
+      }
+      else if (type == ITXNA_OPERATION) {
+        return new TEALItxnaOperationImpl(node);
+      }
+      else if (type == ITXN_BEGIN_OPCODE) {
+        return new TEALItxnBeginOpcodeImpl(node);
+      }
+      else if (type == ITXN_FIELD_OPCODE) {
+        return new TEALItxnFieldOpcodeImpl(node);
+      }
+      else if (type == ITXN_FIELD_OPERATION) {
+        return new TEALItxnFieldOperationImpl(node);
+      }
+      else if (type == ITXN_OPCODE) {
+        return new TEALItxnOpcodeImpl(node);
+      }
+      else if (type == ITXN_OPERATION) {
+        return new TEALItxnOperationImpl(node);
+      }
+      else if (type == ITXN_SUBMIT_OPCODE) {
+        return new TEALItxnSubmitOpcodeImpl(node);
+      }
       else if (type == LOADING_OPERATION) {
         return new TEALLoadingOperationImpl(node);
       }
+      else if (type == LOADS_OPCODE) {
+        return new TEALLoadsOpcodeImpl(node);
+      }
+      else if (type == LOADS_OPERATION) {
+        return new TEALLoadsOperationImpl(node);
+      }
       else if (type == LOAD_OPERATION) {
         return new TEALLoadOperationImpl(node);
+      }
+      else if (type == LOG_OPCODE) {
+        return new TEALLogOpcodeImpl(node);
       }
       else if (type == MIN_BALANCE_OPCODE) {
         return new TEALMinBalanceOpcodeImpl(node);
@@ -413,6 +545,12 @@ public interface TEALTypes {
       else if (type == STATE_ACCESS_OPERATION) {
         return new TEALStateAccessOperationImpl(node);
       }
+      else if (type == STORES_OPCODE) {
+        return new TEALStoresOpcodeImpl(node);
+      }
+      else if (type == STORES_OPERATION) {
+        return new TEALStoresOperationImpl(node);
+      }
       else if (type == STORE_OPERATION) {
         return new TEALStoreOperationImpl(node);
       }
@@ -421,6 +559,12 @@ public interface TEALTypes {
       }
       else if (type == SWAP_OPCODE) {
         return new TEALSwapOpcodeImpl(node);
+      }
+      else if (type == TXNAS_OPCODE) {
+        return new TEALTxnasOpcodeImpl(node);
+      }
+      else if (type == TXNAS_OPERATION) {
+        return new TEALTxnasOperationImpl(node);
       }
       else if (type == TXNA_LOADING_OPERATION) {
         return new TEALTxnaLoadingOperationImpl(node);
@@ -436,6 +580,12 @@ public interface TEALTypes {
       }
       else if (type == TXN_OPCODE) {
         return new TEALTxnOpcodeImpl(node);
+      }
+      else if (type == UNCOVER_OPCODE) {
+        return new TEALUncoverOpcodeImpl(node);
+      }
+      else if (type == UNCOVER_OPERATION) {
+        return new TEALUncoverOperationImpl(node);
       }
       else if (type == UNSIGNED_INTEGER) {
         return new TEALUnsignedIntegerImpl(node);

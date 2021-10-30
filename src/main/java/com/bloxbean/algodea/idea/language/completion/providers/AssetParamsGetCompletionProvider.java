@@ -2,7 +2,6 @@ package com.bloxbean.algodea.idea.language.completion.providers;
 
 import com.bloxbean.algodea.idea.language.TEALLanguage;
 import com.bloxbean.algodea.idea.language.TEALParserDefinition;
-import com.bloxbean.algodea.idea.language.completion.metadata.atoms.TEALKeywords;
 import com.bloxbean.algodea.idea.language.psi.TEALTypes;
 import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.codeInsight.completion.CompletionResultSet;
@@ -12,6 +11,8 @@ import com.intellij.psi.PsiElement;
 import com.intellij.util.ProcessingContext;
 import org.jetbrains.annotations.NotNull;
 
+import static com.bloxbean.algodea.idea.language.TEALUtil.getTEALVersion;
+import static com.bloxbean.algodea.idea.language.completion.metadata.atoms.TEALKeywords.ASSET_PARAMS_GET_FIELDS_ELEMENTS_MAP;
 import static com.intellij.patterns.PlatformPatterns.psiElement;
 
 public class AssetParamsGetCompletionProvider extends BaseCompletionProvider{
@@ -24,7 +25,9 @@ public class AssetParamsGetCompletionProvider extends BaseCompletionProvider{
 
     @Override
     protected void addCompletions(@NotNull CompletionParameters parameters, @NotNull ProcessingContext context, @NotNull CompletionResultSet result) {
-        result.addAllElements(TEALKeywords.ASSET_PARAMS_GET_FIELDS_ELEMENTS);
+        Integer version = getTEALVersion(parameters.getOriginalFile());
+        selectFieldsByVersion(ASSET_PARAMS_GET_FIELDS_ELEMENTS_MAP, result, version);
+
         result.stopHere();
     }
 }

@@ -69,13 +69,69 @@
       "error": "",
       "desc": "for (data A, signature B, pubkey C) verify the signature of (\"ProgData\" || program_hash || data) against the pubkey => {0 or 1}",
       "additionalDesc": "The 32 byte public key is the last element on the stack, preceded by the 64 byte signature at the second-to-last element on the stack, preceded by the data which was signed at the third-to-last element on the stack.\n",
-      "mode": "Signature",
       "costs": [
         {
           "cost": 1900,
           "filter": ""
         }
       ]
+    },{
+     "op": "ecdsa_verify",
+     "opcode": "0x05 {uint8 curve index}",
+     "pops": ["stack", "{[]byte A}, {[]byte B}, {[]byte C}, {[]byte D}, {[]byte E}"],
+     "pushes": ["uint64"],
+     "error": "",
+     "desc": "for (data A, signature B, C and pubkey D, E) verify the signature of the data against the pubkey => {0 or 1}",
+     "additionalDesc": "The 32 byte Y-component of a public key is the last element on the stack, preceded by X-component of a pubkey, preceded by S and R components of a signature, preceded by the data that is fifth element on the stack. All values are big-endian encoded. The signed data must be 32 bytes long, and signatures in lower-S form are only accepted.\n",
+     "metadata": {
+       "LogicSigVersion": ">=5"
+     },
+     "costs": [
+       {
+         "cost": 1700,
+         "filter": ""
+       }
+     ],
+     "since": 5,
+     "anchor": "ecdsa_verify-v"
+    },{
+     "op": "ecdsa_pk_decompress",
+     "opcode": "0x06 {uint8 curve index}",
+     "pops": ["stack", "[]byte"],
+     "pushes": ["[]byte", "[]byte"],
+     "error": "",
+     "desc": "decompress pubkey A into components X, Y => [... stack, X, Y]",
+     "additionalDesc": "The 33 byte public key in a compressed form to be decompressed into X and Y (top) components. All values are big-endian encoded.\n",
+     "metadata": {
+       "LogicSigVersion": ">=5"
+     },
+     "costs": [
+       {
+         "cost": 650,
+         "filter": ""
+       }
+     ],
+     "since": 5,
+     "anchor": "ecdsa_pk_decompress-v"
+    },{
+     "op": "ecdsa_pk_recover",
+     "opcode": "0x07 {uint8 curve index}",
+     "pops": ["stack", "{[]byte A}, {uint64 B}, {[]byte C}, {[]byte D}"],
+     "pushes": ["[]byte", "[]byte"],
+     "error": "",
+     "desc": "for (data A, recovery id B, signature C, D) recover a public key => [... stack, X, Y]",
+     "additionalDesc": "S (top) and R elements of a signature, recovery id and data (bottom) are expected on the stack and used to deriver a public key. All values are big-endian encoded. The signed data must be 32 bytes long.\n",
+     "metadata": {
+       "LogicSigVersion": ">=5"
+     },
+     "costs": [
+       {
+         "cost": 2000,
+         "filter": ""
+       }
+     ],
+     "since": 5,
+     "anchor": "ecdsa_pk_recover-v"
     },{
       "op": "+",
       "opcode": "0x08",
@@ -955,7 +1011,7 @@
    {
      "op": "gaids",
      "opcode": "0x3d",
-     "pops": ["...stacke", "uint64"],
+     "pops": ["...stack", "uint64"],
      "pushes": ["uint64"],
      "desc": "push the ID of the asset or application created in the Xth transaction of the current group",
      "error": "",
@@ -973,6 +1029,48 @@
      ],
      "anchor": "gaids",
      "since": 4
+   },
+   {
+     "op": "loads",
+     "opcode": "0x3e",
+     "pops": ["...stack", "uint64"],
+     "pushes": ["any"],
+     "desc": "copy a value from the Xth scratch space to the stack. All scratch spaces are 0 at program start",
+     "error": "",
+     "additionalDesc": "",
+     "params": [],
+     "metadata": {
+       "LogicSigVersion": ">=5"
+     },
+     "costs": [
+       {
+         "cost": 1,
+         "filter": ""
+       }
+     ],
+     "anchor": "loads",
+     "since": 5
+   },
+   {
+     "op": "stores",
+     "opcode": "0x3f",
+     "pops": ["...stack", "{uint64 A}", "{any B}"],
+     "pushes": [],
+     "desc": "pop indexes A and B. store B to the Ath scratch space",
+     "error": "",
+     "additionalDesc": "",
+     "params": [],
+     "metadata": {
+       "LogicSigVersion": ">=5"
+     },
+     "costs": [
+       {
+         "cost": 1,
+         "filter": ""
+       }
+     ],
+     "anchor": "stores",
+     "since": 5
    },
     {
       "op": "bnz",
@@ -1177,6 +1275,48 @@
      ],
      "since": 3
    },
+   {
+     "op": "cover",
+     "opcode": "0x4e {uint8 depth}",
+     "pops": ["... stack", "any"],
+     "pushes": ["any"],
+     "desc": "remove top of stack, and place it deeper in the stack such that N elements are above it. Fails if stack depth &lt;= N",
+     "error": "",
+     "additionalDesc": "",
+     "params": ["uint8"],
+     "metadata": {
+       "LogicSigVersion": ">=5"
+     },
+     "costs": [
+       {
+         "cost": 1,
+         "filter": ""
+       }
+     ],
+     "anchor": "cover-n",
+     "since": 5
+   },
+   {
+     "op": "uncover",
+     "opcode": "0x4f {uint8 depth}",
+     "pops": ["... stack", "any"],
+     "pushes": ["any"],
+     "desc": "remove the value at depth N in the stack and shift above items down so the Nth deep value is on top of the stack. Fails if stack depth &lt;= N",
+     "error": "",
+     "additionalDesc": "",
+     "params": ["uint8"],
+     "metadata": {
+       "LogicSigVersion": ">=5"
+     },
+     "costs": [
+       {
+         "cost": 1,
+         "filter": ""
+       }
+     ],
+     "anchor": "uncover-n",
+     "since": 5
+   },
     {
       "op": "concat",
       "opcode": "0x50",
@@ -1308,6 +1448,111 @@
        }
      ],
      "since": 3
+   },
+   {
+     "op": "extract",
+     "opcode": "0x57 {uint8 start position} {uint8 length}",
+     "pops": ["... stack", "[]byte"],
+     "pushes": ["[]byte"],
+     "desc": "pop a byte-array A. For immediate values in 0..255 S and L: extract a range of bytes from A starting at S up to but not including S+L, push the substring result. If L is 0, then extract to the end of the string. If S or S+L is larger than the array length, the program fails",
+     "error": "",
+     "additionalDesc": "",
+     "metadata": {
+       "LogicSigVersion": ">=5"
+     },
+     "params": ["uint8", "uint8"],
+     "costs": [
+       {
+         "cost": 1,
+         "filter": ""
+       }
+     ],
+     "anchor": "extract-s-l",
+     "since": 5
+   },
+   {
+     "op": "extract3",
+     "opcode": "0x58",
+     "pops": ["... stack", "{[]byte A}", "{uint64 B}", "{uint64 C}"],
+     "pushes": ["[]byte"],
+     "desc": "pop a byte-array A and two integers B and C. Extract a range of bytes from A starting at B up to but not including B+C, push the substring result. If B+C is larger than the array length, the program fails",
+     "error": "",
+     "additionalDesc": "",
+     "metadata": {
+       "LogicSigVersion": ">=5"
+     },
+     "params": [],
+     "costs": [
+       {
+         "cost": 1,
+         "filter": ""
+       }
+     ],
+     "anchor": "extract3",
+     "since": 5
+   },
+   {
+     "op": "extract_uint16",
+     "opcode": "0x59",
+     "pops": ["... stack", "{[]byte A}", "{uint64 B}"],
+     "pushes": ["uint64"],
+     "desc": "pop a byte-array A and integer B. Extract a range of bytes from A starting at B up to but not including B+2, convert bytes as big endian and push the uint64 result. If B+2 is larger than the array length, the program fails",
+     "error": "",
+     "additionalDesc": "",
+     "metadata": {
+       "LogicSigVersion": ">=5"
+     },
+     "params": [],
+     "costs": [
+       {
+         "cost": 1,
+         "filter": ""
+       }
+     ],
+     "anchor": "extract_uint16",
+     "since": 5
+   },
+   {
+     "op": "extract_uint32",
+     "opcode": "0x5a",
+     "pops": ["... stack", "{[]byte A}", "{uint64 B}"],
+     "pushes": ["uint64"],
+     "desc": "pop a byte-array A and integer B. Extract a range of bytes from A starting at B up to but not including B+4, convert bytes as big endian and push the uint64 result. If B+4 is larger than the array length, the program fails",
+     "error": "",
+     "additionalDesc": "",
+     "metadata": {
+       "LogicSigVersion": ">=5"
+     },
+     "params": [],
+     "costs": [
+       {
+         "cost": 1,
+         "filter": ""
+       }
+     ],
+     "anchor": "extract_uint32",
+     "since": 5
+   },
+   {
+     "op": "extract_uint64",
+     "opcode": "0x5b",
+     "pops": ["... stack", "{[]byte A}", "{uint64 B}"],
+     "pushes": ["uint64"],
+     "desc": "pop a byte-array A and integer B. Extract a range of bytes from A starting at B up to but not including B+8, convert bytes as big endian and push the uint64 result. If B+8 is larger than the array length, the program fails",
+     "error": "",
+     "additionalDesc": "",
+     "metadata": {
+       "LogicSigVersion": ">=5"
+     },
+     "params": [],
+     "costs": [
+       {
+         "cost": 1,
+         "filter": ""
+       }
+     ],
+     "anchor": "extract_uint64",
+     "since": 5
    },
     {
       "op": "balance",
@@ -1541,6 +1786,27 @@
       ],
       "anchor": "asset_params_get-i"
     },
+   {
+     "op": "app_params_get",
+     "opcode": "0x72 {uint8 app params field index}",
+     "pops": ["... stack", "uint64"],
+     "pushes": ["... stack", "any", "uint64"],
+     "desc": "read from app A params field X (imm arg) => {0 or 1 (top), value}",
+     "error": "",
+     "metadata": {
+       "LogicSigVersion": ">=5"
+     },
+     "mode": "Application",
+     "additionalDesc": "params: Txn.ForeignApps offset or an app id that appears in Txn.ForeignApps. Return: did_exist flag (1 if the application existed and 0 otherwise), value.",
+     "params": ["app_params_get_fields"],
+     "costs": [
+       {
+         "cost": 1,
+         "filter": ""
+       }
+     ],
+     "anchor": "app_params_get-i"
+   },
    {
      "op": "min_balance",
      "opcode": "0x78",
@@ -2107,6 +2373,222 @@
      ],
      "anchor": "bzero",
      "since": 4
+   },
+   {
+     "op": "log",
+     "opcode": "0xb0",
+     "pops": ["... stack", "[]byte"],
+     "pushes": [],
+     "desc": "write bytes to log state of the current application",
+     "error": "",
+     "metadata": {
+       "LogicSigVersion": ">=5"
+     },
+     "additionalDesc": "log fails if called more than MaxLogCalls times in a program, or if the sum of logged bytes exceeds 1024 bytes",
+     "params": [],
+     "mode": "Application",
+     "costs": [
+       {
+         "cost": 1,
+         "filter": ""
+       }
+     ],
+     "anchor": "log",
+     "since": 5
+   },
+   {
+     "op": "itxn_begin",
+     "opcode": "0xb1",
+     "pops": [],
+     "pushes": [],
+     "desc": "Begin preparation of a new inner transaction",
+     "error": "",
+     "metadata": {
+       "LogicSigVersion": ">=5"
+     },
+     "additionalDesc": "itxn_begin initializes Sender to the application address; Fee to the minimum allowable, taking into account MinTxnFee and credit from overpaying in earlier transactions; FirstValid/LastValid to the values in the top-level transaction, and all other fields to zero values",
+     "params": [],
+     "mode": "Application",
+     "costs": [
+       {
+         "cost": 1,
+         "filter": ""
+       }
+     ],
+     "since": 5
+   },
+   {
+     "op": "itxn_field",
+     "opcode": "0xb2 {uint8 transaction field index}",
+     "pops": ["... stack", "any"],
+     "pushes": [],
+     "desc": "Set field F of the current inner transaction to X",
+     "error": "",
+     "metadata": {
+       "LogicSigVersion": ">=5"
+     },
+     "additionalDesc": "itxn_field fails if X is of the wrong type for F, including a byte array of the wrong size for use as an address when F is an address field. itxn_field also fails if X is an account or asset that does not appear in txn.Accounts or txn.ForeignAssets of the top-level transaction. (Setting addresses in asset creation are exempted from this requirement.)",
+     "params": ["txn_fields"],
+     "mode": "Application",
+     "costs": [
+       {
+         "cost": 1,
+         "filter": ""
+       }
+     ],
+     "anchor": "itxn_field-f",
+     "since": 5
+   },
+   {
+     "op": "itxn_submit",
+     "opcode": "0xb3",
+     "pops": [],
+     "pushes": [],
+     "desc": "Execute the current inner transaction. Fail if 16 inner transactions have already been executed, or if the transaction itself fails",
+     "error": "",
+     "metadata": {
+       "LogicSigVersion": ">=5"
+     },
+     "additionalDesc": "",
+     "params": [],
+     "mode": "Application",
+     "costs": [
+       {
+         "cost": 1,
+         "filter": ""
+       }
+     ],
+     "anchor": "itxn_submit",
+     "since": 5
+   },
+   {
+     "op": "itxn",
+     "opcode": "0xb4 {uint8 transaction field index}",
+     "pops": [],
+     "pushes": ["any"],
+     "desc": "push field F of the last inner transaction to stack",
+     "error": "",
+     "metadata": {
+       "LogicSigVersion": ">=5"
+     },
+     "additionalDesc": "",
+     "params": ["txn_fields"],
+     "mode": "Application",
+     "costs": [
+       {
+         "cost": 1,
+         "filter": ""
+       }
+     ],
+     "anchor": "itxn-f",
+     "since": 5
+   },
+   {
+     "op": "itxna",
+     "opcode": "0xb5 {uint8 transaction field index} {uint8 transaction field array index}",
+     "pops": [],
+     "pushes": ["any"],
+     "desc": "push Ith value of the array field F of the last inner transaction to stack",
+     "error": "",
+     "metadata": {
+       "LogicSigVersion": ">=5"
+     },
+     "additionalDesc": "",
+     "params": ["txn_fields", "uint8"],
+     "mode": "Application",
+     "costs": [
+       {
+         "cost": 1,
+         "filter": ""
+       }
+     ],
+     "anchor": "itxna-f-i",
+     "since": 5
+   },
+   {
+     "op": "txnas",
+     "opcode": "0xc0 {uint8 transaction field index}",
+     "pops": ["... stack", "uint64"],
+     "pushes": ["any"],
+     "desc": "push Xth value of the array field F of the current transaction",
+     "error": "",
+     "metadata": {
+       "LogicSigVersion": ">=5"
+     },
+     "additionalDesc": "",
+     "params": ["txn_fields"],
+     "costs": [
+       {
+         "cost": 1,
+         "filter": ""
+       }
+     ],
+     "anchor": "txnas-f",
+     "since": 5
+   },
+   {
+     "op": "gtxnas",
+     "opcode": "0xc1 {uint8 transaction group index} {uint8 transaction field index}",
+     "pops": ["... stack", "uint64"],
+     "pushes": ["any"],
+     "desc": "push Xth value of the array field F from the Tth transaction in the current group",
+     "error": "",
+     "metadata": {
+       "LogicSigVersion": ">=5"
+     },
+     "additionalDesc": "",
+     "params": ["uint8","txn_fields"],
+     "costs": [
+       {
+         "cost": 1,
+         "filter": ""
+       }
+     ],
+     "anchor": "gtxnas-t-f",
+     "since": 5
+   },
+   {
+     "op": "gtxnsas",
+     "opcode": "0xc2 {uint8 transaction field index}",
+     "pops": ["... stack", "{uint64 A}", "{uint64 B}"],
+     "pushes": ["any"],
+     "desc": "pop an index A and an index B. push Bth value of the array field F from the Ath transaction in the current group",
+     "error": "",
+     "metadata": {
+       "LogicSigVersion": ">=5"
+     },
+     "additionalDesc": "",
+     "params": ["txn_fields"],
+     "costs": [
+       {
+         "cost": 1,
+         "filter": ""
+       }
+     ],
+     "anchor": "gtxnsas-f",
+     "since": 5
+   },
+   {
+     "op": "args",
+     "opcode": "0xc3",
+     "pops": ["... stack", "uint64"],
+     "pushes": ["[]byte"],
+     "desc": "push Xth LogicSig argument to stack",
+     "error": "",
+     "metadata": {
+       "LogicSigVersion": ">=5"
+     },
+     "additionalDesc": "",
+     "params": [],
+     "costs": [
+       {
+         "cost": 1,
+         "filter": ""
+       }
+     ],
+     "mode": "Signature",
+     "anchor": "args",
+     "since": 5
    },
    {
      "op": "int",

@@ -203,6 +203,10 @@ public class OpCode {
                     });
         }
 
+        if(mode != null && !mode.isEmpty()) {
+            createLiTag(sb, "Mode", mode);
+        }
+
         if(costs != null && costs.length > 0) {
             sb.append("<li>Cost:");
             sb.append("<ul>");

@@ -8,6 +8,9 @@ import com.intellij.psi.PsiElement;
 public interface TEALLoadingOperation extends PsiElement {
 
   @Nullable
+  TEALArgsOpcode getArgsOpcode();
+
+  @Nullable
   TEALBZeroOpcode getBZeroOpcode();
 
   @Nullable
@@ -41,10 +44,16 @@ public interface TEALLoadingOperation extends PsiElement {
   TEALGtxnaLoadingOperation getGtxnaLoadingOperation();
 
   @Nullable
+  TEALGtxnasOperation getGtxnasOperation();
+
+  @Nullable
   TEALGtxnsLoadingOperation getGtxnsLoadingOperation();
 
   @Nullable
   TEALGtxnsaLoadingOperation getGtxnsaLoadingOperation();
+
+  @Nullable
+  TEALGtxnsasOperation getGtxnsasOperation();
 
   @Nullable
   TEALIntcOperation getIntcOperation();
@@ -56,6 +65,9 @@ public interface TEALLoadingOperation extends PsiElement {
   TEALLoadOperation getLoadOperation();
 
   @Nullable
+  TEALLoadsOperation getLoadsOperation();
+
+  @Nullable
   TEALPushBytesOperation getPushBytesOperation();
 
   @Nullable
@@ -65,9 +77,15 @@ public interface TEALLoadingOperation extends PsiElement {
   TEALStoreOperation getStoreOperation();
 
   @Nullable
+  TEALStoresOperation getStoresOperation();
+
+  @Nullable
   TEALTxnLoadingOperation getTxnLoadingOperation();
 
   @Nullable
   TEALTxnaLoadingOperation getTxnaLoadingOperation();
+
+  @Nullable
+  TEALTxnasOperation getTxnasOperation();
 
 }
