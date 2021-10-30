@@ -29,6 +29,12 @@ public class TEALStateAccessOperationImpl extends ASTWrapperPsiElement implement
 
   @Override
   @Nullable
+  public TEALLogOpcode getLogOpcode() {
+    return findChildByClass(TEALLogOpcode.class);
+  }
+
+  @Override
+  @Nullable
   public TEALMinBalanceOpcode getMinBalanceOpcode() {
     return findChildByClass(TEALMinBalanceOpcode.class);
   }

@@ -8,6 +8,9 @@ import com.intellij.psi.PsiElement;
 public interface TEALStateAccessOperation extends PsiElement {
 
   @Nullable
+  TEALLogOpcode getLogOpcode();
+
+  @Nullable
   TEALMinBalanceOpcode getMinBalanceOpcode();
 
   @Nullable

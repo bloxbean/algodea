@@ -644,6 +644,17 @@ public class TEALParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // 'log'
+  public static boolean LOG_OPCODE(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "LOG_OPCODE")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, LOG_OPCODE, "<log opcode>");
+    r = consumeToken(b, "log");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
   // intcblockOperation
   //                                   | intcOperation
   //                                   | 'intc_0'
@@ -864,6 +875,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
   //                             | assetParamsGetOperation
   //                             | appParamsGetOperation
   //                             | MIN_BALANCE_OPCODE
+  //                             | LOG_OPCODE
   public static boolean StateAccessOperation(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "StateAccessOperation")) return false;
     boolean r;
@@ -882,6 +894,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
     if (!r) r = assetParamsGetOperation(b, l + 1);
     if (!r) r = appParamsGetOperation(b, l + 1);
     if (!r) r = MIN_BALANCE_OPCODE(b, l + 1);
+    if (!r) r = LOG_OPCODE(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
   }

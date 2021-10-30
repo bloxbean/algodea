@@ -2375,6 +2375,28 @@
      "since": 4
    },
    {
+     "op": "log",
+     "opcode": "0xb0",
+     "pops": ["... stack", "[]byte"],
+     "pushes": [],
+     "desc": "write bytes to log state of the current application",
+     "error": "",
+     "metadata": {
+       "LogicSigVersion": ">=5"
+     },
+     "additionalDesc": "log fails if called more than MaxLogCalls times in a program, or if the sum of logged bytes exceeds 1024 bytes",
+     "params": [],
+     "mode": "Application",
+     "costs": [
+       {
+         "cost": 1,
+         "filter": ""
+       }
+     ],
+     "anchor": "log",
+     "since": 5
+   },
+   {
      "op": "int",
      "opcode": "Pseudo opcode",
      "pops": [],
