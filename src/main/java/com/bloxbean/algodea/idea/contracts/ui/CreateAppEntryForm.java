@@ -23,6 +23,7 @@ package com.bloxbean.algodea.idea.contracts.ui;
 
 import com.algorand.algosdk.account.Account;
 import com.algorand.algosdk.crypto.Address;
+import com.algorand.algosdk.transaction.Transaction;
 import com.bloxbean.algodea.idea.account.model.AlgoAccount;
 import com.bloxbean.algodea.idea.account.model.AlgoMultisigAccount;
 import com.bloxbean.algodea.idea.account.service.AccountChooser;
@@ -37,7 +38,6 @@ import com.bloxbean.algodea.idea.toolwindow.AlgoConsole;
 import com.bloxbean.algodea.idea.util.IdeaUtil;
 import com.intellij.notification.NotificationType;
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.project.Project;
@@ -70,6 +70,7 @@ public class CreateAppEntryForm {
     private JButton senderChooser;
     private JButton senderMultiSigChooser;
     private JTextField extraPagesTf;
+    private JComboBox onCompletionCB;
     private List<AlgoPackageJson.StatefulContract> contracts;
     private AlgoPkgJsonService pkgJsonService;
     private AlgoPackageJson.StatefulContract selectedContract;
@@ -234,9 +235,20 @@ public class CreateAppEntryForm {
                     contractCB.setSelectedIndex(0);
             }
 
+            initializeOnCompletionCB();
+
         } catch (PackageJsonException e) {
             IdeaUtil.showNotification(project, "Create App", "algo-package.json could not be read", NotificationType.ERROR, null);
         }
+    }
+
+    private void initializeOnCompletionCB() {
+        onCompletionCB.addItem(Transaction.OnCompletion.NoOpOC);
+        onCompletionCB.addItem(Transaction.OnCompletion.OptInOC);
+        onCompletionCB.addItem(Transaction.OnCompletion.DeleteApplicationOC);
+        onCompletionCB.addItem(Transaction.OnCompletion.UpdateApplicationOC);
+        onCompletionCB.addItem(Transaction.OnCompletion.CloseOutOC);
+        onCompletionCB.addItem(Transaction.OnCompletion.ClearStateOC);
     }
 
     private void setAuthAddress(Project project, AlgoAccount sender) {
@@ -329,6 +341,10 @@ public class CreateAppEntryForm {
 
     public int getExtraPages() {
         return Integer.parseInt(extraPagesTf.getText());
+    }
+
+    public Transaction.OnCompletion getOnCompletion() {
+        return (Transaction.OnCompletion) onCompletionCB.getSelectedItem();
     }
 
     public Account getAuthorizedAccount() {

@@ -1,6 +1,7 @@
 package com.bloxbean.algodea.idea.nodeint.model;
 
 import com.algorand.algosdk.crypto.Address;
+import com.algorand.algosdk.transaction.Transaction;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -19,6 +20,9 @@ public class TxnDetailsParameters {
     private List<Address> accounts;
     private List<Long> foreignApps;
     private List<Long> foreignAssets;
+
+    //Only used from create app operation.
+    private Transaction.OnCompletion onCompletion;
 
     public List<byte[]> getAppArgs() {
         return appArgs;
@@ -114,5 +118,13 @@ public class TxnDetailsParameters {
 
     public void setForeignAssets(List<Long> foreignAssets) {
         this.foreignAssets = foreignAssets;
+    }
+
+    public Transaction.OnCompletion getOnCompletion() {
+        return onCompletion;
+    }
+
+    public void setOnCompletion(Transaction.OnCompletion onCompletion) {
+        this.onCompletion = onCompletion;
     }
 }

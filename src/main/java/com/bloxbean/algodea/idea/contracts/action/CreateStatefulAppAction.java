@@ -23,6 +23,7 @@ package com.bloxbean.algodea.idea.contracts.action;
 
 import com.algorand.algosdk.account.Account;
 import com.algorand.algosdk.crypto.Address;
+import com.algorand.algosdk.transaction.Transaction;
 import com.bloxbean.algodea.idea.account.model.AlgoAccount;
 import com.bloxbean.algodea.idea.account.service.AccountService;
 import com.bloxbean.algodea.idea.configuration.service.AlgoProjectState;
@@ -164,6 +165,7 @@ public class CreateStatefulAppAction extends BaseTxnAction {
             int localByteslices = createForm.getLocalByteslices();
             int localInts = createForm.getLocalInts();
             int extraPages = createForm.getExtraPages();
+            Transaction.OnCompletion onCompletion = createForm.getOnCompletion();
 
             List<byte[]> appArgs = appTxnDetailsEntryForm.getArgsAsBytes();
             List<Address> accounts = appTxnDetailsEntryForm.getAccounts();
@@ -177,6 +179,8 @@ public class CreateStatefulAppAction extends BaseTxnAction {
             generalTxnDetailsParams.setForeignApps(foreignApps);
             generalTxnDetailsParams.setForeignAssets(foreignAssets);
 
+            //set oncompletion
+            generalTxnDetailsParams.setOnCompletion(onCompletion);
 
             //update cache
             if(!StringUtil.isEmpty(contractName))

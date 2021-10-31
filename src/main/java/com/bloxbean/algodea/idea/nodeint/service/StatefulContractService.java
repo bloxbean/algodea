@@ -302,6 +302,11 @@ public class StatefulContractService extends AlgoBaseService {
 
         Transaction txn = populateBaseAppTransaction(transactionBuilder, null, sender, txnDetailsParameters);
 
+        if(txnDetailsParameters.getOnCompletion() != null
+                && txnDetailsParameters.getOnCompletion() != Transaction.OnCompletion.NoOpOC) { //If any non-default oncompletion from UI
+            txn.onCompletion = txnDetailsParameters.getOnCompletion();
+        }
+
         //If export unsigned, return txn
         if (requestMode.equals(RequestMode.EXPORT_UNSIGNED)) {
             return Result.success(JsonUtil.getPrettyJson(txn));
