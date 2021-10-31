@@ -1805,7 +1805,8 @@
          "filter": ""
        }
      ],
-     "anchor": "app_params_get-i"
+     "anchor": "app_params_get-i",
+     "since": 5
    },
    {
      "op": "min_balance",
