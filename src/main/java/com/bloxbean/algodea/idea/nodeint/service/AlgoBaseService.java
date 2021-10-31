@@ -513,6 +513,7 @@ public class AlgoBaseService {
                     break;
                 }
                 lastRound++;
+                logListener.printWait("Waiting for transaction to be included in a block ...");
                 client.WaitForBlock(lastRound).execute(getHeaders()._1(), getHeaders()._2());
             } catch (Exception e) {
                 throw (e);

@@ -291,7 +291,6 @@ public class StatefulContractService extends AlgoBaseService {
 
         logListener.info("Signing transaction ...");
         // create unsigned transaction
-//        ApplicationCreateTransactionBuilderTransaction.ApplicationCreateTransactionBuilder();
         ApplicationCreateTransactionBuilder transactionBuilder = Transaction.ApplicationCreateTransactionBuilder()
                 .sender(sender)
                 .suggestedParams(params)
@@ -300,7 +299,6 @@ public class StatefulContractService extends AlgoBaseService {
                 .globalStateSchema(new StateSchema(globalInts, globalBytes))
                 .localStateSchema(new StateSchema(localInts, localBytes))
                 .extraPages(extraPages);
-        //.build();
 
         Transaction txn = populateBaseAppTransaction(transactionBuilder, null, sender, txnDetailsParameters);
 
@@ -319,6 +317,10 @@ public class StatefulContractService extends AlgoBaseService {
             if (transactionResponse == null) return Result.error();
             else {
                 logListener.info("Created new app-id: " + transactionResponse.applicationIndex);
+                if(transactionResponse.applicationIndex != null) {
+                    Address appAddress = Address.forApplication(transactionResponse.applicationIndex);
+                    logListener.info("App address: " + appAddress);
+                }
                 return Result.success(JsonUtil.getPrettyJson(transactionResponse)).withValue(transactionResponse.applicationIndex);
             }
         } else if (requestMode.equals(RequestMode.EXPORT_SIGNED)) {
@@ -328,47 +330,6 @@ public class StatefulContractService extends AlgoBaseService {
         } else {
             return Result.error("Invalid request mode : " + requestMode);
         }
-        /**
-        // send to network
-        byte[] encodedTxBytes = Encoder.encodeToMsgPack(signedTxn);
-        logListener.info(String.format("Posting transaction to the network (%s) ...", client.getHost()));
-
-        Tuple<String[], String[]> headers = algoConnectionFactory.getHeadersForBinaryContent();
-
-        Response<PostTransactionsResponse> postTransactionsResponse = client.RawTransaction().rawtxn(encodedTxBytes).execute(headers._1(), headers._2());
-        if(!postTransactionsResponse.isSuccessful()) {
-            printErrorMessage("Transaction could not be posted to the network", postTransactionsResponse);
-            return null;
-        }
-
-        String id = postTransactionsResponse.body().txId;
-        logListener.info("Successfully sent tx with ID: " + id);
-
-        // await confirmation
-        waitForConfirmation(id);
-
-        // display results
-        Response<PendingTransactionResponse> pendingTransactionResponse
-                = client.PendingTransactionInformation(id).execute(getHeaders()._1(), getHeaders()._2());
-        if(!pendingTransactionResponse.isSuccessful()) {
-            printErrorMessage("Unable to get pending transaction info", pendingTransactionResponse);
-            return null;
-        }
-
-        if(pendingTransactionResponse.body() != null) {
-            logListener.info("\nTransaction Info :-");
-            logListener.info(JsonUtil.getPrettyJson(pendingTransactionResponse.body().toString()));
-
-            if(NetworkHelper.getInstance().getExplorerBaseUrl(getNetworkGenesisHash()) != null)
-                logListener.info("Check transaction details here : "
-                        + NetworkHelper.getInstance().getTxnHashUrl(getNetworkGenesisHash(), id));
-        }
-
-        PendingTransactionResponse pTrx = pendingTransactionResponse.body();
-        Long appId = pTrx.applicationIndex;
-        logListener.info("Created new app-id: " + appId);
-
-        return appId;**/
     }
 
     public List<Application> getApplication(List<Long> appIds) throws Exception {

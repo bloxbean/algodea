@@ -69,6 +69,12 @@ public class ReadStatefulAppAction extends AlgoBaseAction {
                 public void run(@NotNull ProgressIndicator indicator) {
                     try {
                         console.showInfoMessage("App Id      : " + appId);
+                        if(appId != null) {
+                            try {
+                                Address address = Address.forApplication(appId);
+                                console.showInfoMessage("App address : " + address);
+                            } catch (Exception e) {}
+                        }
                         if(fromAddress != null) {
                             console.showInfoMessage("Account     : " + fromAddress.toString());
                         }

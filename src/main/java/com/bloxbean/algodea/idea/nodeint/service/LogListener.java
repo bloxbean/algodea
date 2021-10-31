@@ -23,13 +23,15 @@
 package com.bloxbean.algodea.idea.nodeint.service;
 
 public interface LogListener {
-    public void info(String msg);
-    public void error(String msg);
-    public void warn(String msg);
-    default public void error(String msg, Throwable t) {
+    void info(String msg);
+    void error(String msg);
+    void warn(String msg);
+    default void error(String msg, Throwable t) {
 
     }
-    default public void warn(String msg, Throwable t) {
+    default void warn(String msg, Throwable t) {
+    }
 
+    default void printWait(String msg) {
     }
 }

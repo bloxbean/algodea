@@ -50,4 +50,9 @@ public class LogListenerAdapter implements LogListener {
         console.showErrorMessage(msg);
         console.showWarningMessage(t.getMessage());
     }
+
+    @Override
+    public void printWait(String msg) {
+        console.printWait(msg);
+    }
 }

@@ -21,7 +21,6 @@
  */
 package com.bloxbean.algodea.idea.toolwindow;
 
-import com.intellij.execution.filters.HyperlinkInfo;
 import com.intellij.execution.filters.TextConsoleBuilderFactory;
 import com.intellij.execution.ui.ConsoleView;
 import com.intellij.execution.ui.ConsoleViewContentType;
@@ -41,6 +40,7 @@ public class AlgoConsole {
     private ConsoleView view;
 
     private Project project;
+    private LoadingConsoleHelper loadingConsole;
 
     public static AlgoConsole getConsole(Project project) {
         if(project == null)
@@ -145,31 +145,6 @@ public class AlgoConsole {
         showMessage(message, ConsoleViewContentType.ERROR_OUTPUT);
     }
 
-//    public void printHyperLink(String hyperLinkText, String url) {
-//        ApplicationManager.getApplication().invokeLater(new Runnable() {
-//            @Override
-//            public void run() {
-//                if(view == null) {
-//                    view = createAlgorandConsoleView(CONSOLE_VIEW);
-//                }
-//
-//                if(view == null) {
-//                    LOG.error("Console view could not be created.");
-//                    return;
-//                }
-//
-//                HyperlinkInfo hyperlinkInfo = new HyperlinkInfo() {
-//                    @Override
-//                    public void navigate(Project project) {
-//
-//                    }
-//                };
-//
-//                view.printHyperlink(hyperLinkText, hyperlinkInfo);
-//            }
-//        });
-//    }
-
     private void showMessage(String message, ConsoleViewContentType type) {
         ApplicationManager.getApplication().invokeLater(new Runnable() {
             @Override
@@ -186,6 +161,35 @@ public class AlgoConsole {
                 }
 
                 view.print(message + "\n", type);
+            }
+        });
+    }
+
+    public void printWait(String message) {
+        animate(message, ConsoleViewContentType.NORMAL_OUTPUT);
+    }
+
+    private void animate(String message, ConsoleViewContentType type) {
+        ApplicationManager.getApplication().invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                if(view == null) {
+                    view = createAlgorandConsoleView(CONSOLE_VIEW);
+                }
+
+                if(view == null) {
+                    if(LOG.isDebugEnabled()) {
+                        LOG.error("Console view could not be created.");
+                    }
+                    return;
+                }
+
+                if(loadingConsole == null) {
+                    loadingConsole = new LoadingConsoleHelper(view);
+                }
+
+                loadingConsole.animate(message);
+
             }
         });
     }
