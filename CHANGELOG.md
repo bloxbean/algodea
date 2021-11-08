@@ -1,4 +1,4 @@
-### 0.8.0-beta
+### 0.8.0
   - AVM 1.0 Opcodes support (TEAL v5)
   - On-Completion option during stateful contract creation
 ### 0.7.0
