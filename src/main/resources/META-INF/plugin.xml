@@ -8,7 +8,7 @@
     Intellij IDEA plugin for Smart Contract development on Algorand blockchain
     ]]></description>
 
-    <idea-version since-build="202"/>
+    <idea-version since-build="211"/>
 
     <depends>com.intellij.modules.platform</depends>
     <depends optional="true" config-file="java.xml">com.intellij.modules.java</depends>

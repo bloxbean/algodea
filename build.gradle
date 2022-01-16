@@ -8,12 +8,6 @@ buildscript {
     repositories {
         mavenLocal()
         mavenCentral()
-        maven{
-            url 'https://jetbrains.bintray.com/intellij-plugin-service'
-        }
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
     }
     dependencies {
         classpath group: 'com.vladsch.flexmark', name: 'flexmark', version: '0.28.12'
@@ -23,18 +17,17 @@ buildscript {
 plugins {
     id 'java'
     id 'idea'
-    id 'org.jetbrains.intellij' version '0.6.5'
-    id "org.jetbrains.kotlin.jvm" version "1.4.10"
+    id 'org.jetbrains.intellij' version '1.3.0'
+    id "org.jetbrains.kotlin.jvm" version "1.6.10"
 }
 
 apply plugin: "kotlin"
-apply plugin: "org.jetbrains.intellij"
 
 group 'com.bloxbean'
-version '0.8.0'
+version '0.9.0-SNAPSHOT'
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = 11
+targetCompatibility = 11
 
 repositories {
     mavenCentral()
@@ -59,7 +52,6 @@ dependencies {
 }
 
 sourceSets.main.java.srcDirs('src/main/gen', 'src/main/idea')
-//sourceSets.main.java.srcDirs('src/main/gen')
 
 String changeLogAsHtml() {
     Parser parser = Parser.builder().build()
@@ -69,17 +61,12 @@ String changeLogAsHtml() {
 }
 
 intellij {
-    version '2020.2'
-//    type = 'PY'
+    version = '2021.1'
+    //type = 'IC'
     plugins = ['java']
 
-    publishPlugin {
-        username System.getProperty('ij_plugin_portal_login')
-        password System.getProperty('ij_plugin_portal_password')
-    }
-
-    updateSinceUntilBuild false
+    updateSinceUntilBuild = false
 }
 patchPluginXml {
-    changeNotes changeLogAsHtml()
+    changeNotes = changeLogAsHtml()
 }
