@@ -344,8 +344,8 @@
             <add-to-group group-id="AlgoActionGroup.Assets"/>
         </action>
         <action id="com.bloxbean.algodea.idea.assets.action.DestroyAssetAction"
-                class="com.bloxbean.algodea.idea.assets.action.DestroyAssetAction" text="Destory"
-                description="Destory Asset">
+                class="com.bloxbean.algodea.idea.assets.action.DestroyAssetAction" text="Destroy"
+                description="Destroy Asset">
             <add-to-group group-id="AlgoActionGroup.Assets"/>
         </action>
         <!-- Assets actions end here-->
