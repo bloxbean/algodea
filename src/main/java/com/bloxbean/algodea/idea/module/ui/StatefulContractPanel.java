@@ -73,7 +73,7 @@ public class StatefulContractPanel {
     private void createUIComponents() {
         // TODO: place custom component creation code here
         statefulContractTf = new JBTextField("SfContract-1");
-        approvalProgramTf = new JBTextField("approval_progam.teal");
+        approvalProgramTf = new JBTextField("approval_program.teal");
         clearStateProgramTf = new JBTextField("clear_state_program.teal");
 
        // if(!enableCreateStatefulContractSelection) { //Only in IDEA ide
