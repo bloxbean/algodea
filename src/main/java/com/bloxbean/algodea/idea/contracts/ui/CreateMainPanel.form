@@ -6,7 +6,7 @@
       <xy x="20" y="20" width="928" height="993"/>
     </constraints>
     <properties>
-      <minimumSize width="850" height="650"/>
+      <minimumSize width="850" height="150"/>
       <preferredSize width="850" height="650"/>
     </properties>
     <border type="none"/>
@@ -28,14 +28,21 @@
             <properties/>
             <border type="none"/>
             <children>
-              <nested-form id="37c79" form-file="com/bloxbean/algodea/idea/contracts/ui/CreateAppEntryForm.form" binding="createAppEntryForm" custom-create="true">
+              <scrollpane id="916f2">
                 <constraints>
-                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="1" fill="1" indent="0" use-parent-layout="false"/>
+                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                 </constraints>
-              </nested-form>
+                <properties/>
+                <border type="empty"/>
+                <children>
+                  <nested-form id="37c79" form-file="com/bloxbean/algodea/idea/contracts/ui/CreateAppEntryForm.form" binding="createAppEntryForm" custom-create="true">
+                    <constraints/>
+                  </nested-form>
+                </children>
+              </scrollpane>
             </children>
           </grid>
-          <grid id="c81b3" layout-manager="GridLayoutManager" row-count="2" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+          <grid id="c81b3" layout-manager="GridLayoutManager" row-count="1" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
             <margin top="0" left="0" bottom="0" right="0"/>
             <constraints>
               <tabbedpane title="App Txn Details"/>
@@ -43,19 +50,18 @@
             <properties/>
             <border type="none"/>
             <children>
-              <nested-form id="25360" form-file="com/bloxbean/algodea/idea/contracts/ui/AppTxnDetailsEntryForm.form" binding="appTxnDetailsEntryForm" custom-create="true">
+              <scrollpane id="31cfe">
                 <constraints>
-                  <grid row="1" column="0" row-span="1" col-span="2" vsize-policy="3" hsize-policy="3" anchor="1" fill="1" indent="0" use-parent-layout="false"/>
+                  <grid row="0" column="0" row-span="1" col-span="2" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                 </constraints>
-              </nested-form>
-              <component id="2bd6e" class="javax.swing.JLabel">
-                <constraints>
-                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties>
-                  <text value="  "/>
-                </properties>
-              </component>
+                <properties/>
+                <border type="empty"/>
+                <children>
+                  <nested-form id="25360" form-file="com/bloxbean/algodea/idea/contracts/ui/AppTxnDetailsEntryForm.form" binding="appTxnDetailsEntryForm" custom-create="true">
+                    <constraints/>
+                  </nested-form>
+                </children>
+              </scrollpane>
             </children>
           </grid>
           <grid id="23d5c" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
@@ -66,11 +72,18 @@
             <properties/>
             <border type="none"/>
             <children>
-              <nested-form id="d336a" form-file="com/bloxbean/algodea/idea/transaction/ui/TransactionDtlsEntryForm.form" binding="txnDtlEntryForm" custom-create="true">
+              <scrollpane id="a65cb">
                 <constraints>
-                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                 </constraints>
-              </nested-form>
+                <properties/>
+                <border type="empty"/>
+                <children>
+                  <nested-form id="d336a" form-file="com/bloxbean/algodea/idea/transaction/ui/TransactionDtlsEntryForm.form" binding="txnDtlEntryForm" custom-create="true">
+                    <constraints/>
+                  </nested-form>
+                </children>
+              </scrollpane>
             </children>
           </grid>
         </children>
