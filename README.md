@@ -6,7 +6,7 @@ algoDEA - Algorand Plugin for Intellij
 
 [algoDEA Documents](https://algodea-docs.bloxbean.com)
 
-Latest Version : [v0.8.0](https://github.com/bloxbean/algodea/releases/tag/v0.8.0) (TEAL Debugger Support)
+Latest Version : [v0.8.0](https://github.com/bloxbean/algodea/releases/tag/v0.8.0)
 
 
 ## Features
