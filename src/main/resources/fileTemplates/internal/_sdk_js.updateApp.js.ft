@@ -1,0 +1,80 @@
+const algosdk = require('algosdk');
+
+// user declared account mnemonics
+senderMnemonic = "${SIGNER_MNEMONIC}"
+
+// user declared algod connection parameters
+algodServer = "${ALGOD_SERVER}";
+algodPort = "${ALGOD_PORT}";
+algodToken = "${ALGOD_TOKEN}";
+
+appId = ${APP_ID}
+
+async function updateApp(client, creatorAccount, index, approvalProgram, clearProgram) {
+    // define sender as creator
+    sender = creatorAccount.addr;
+
+    // get node suggested parameters
+    let params = await client.getTransactionParams().do();
+    // comment out the next two lines to use suggested fee
+    params.fee = 1000;
+    params.flatFee = true;
+
+    // create unsigned transaction
+    let txn = algosdk.makeApplicationUpdateTxn(sender, params, index, approvalProgram, clearProgram);
+    let txId = txn.txID().toString();
+
+    // Sign the transaction
+    let signedTxn = txn.signTxn(creatorAccount.sk);
+    console.log("Signed transaction with txID: %s", txId);
+
+    // Submit the transaction
+    await client.sendRawTransaction(signedTxn).do();
+
+    // Wait for confirmation
+    await waitForConfirmation(client, txId);
+
+    // display results
+    let transactionResponse = await client.pendingTransactionInformation(txId).do();
+    let appId = transactionResponse['txn']['txn'].apid;
+    console.log("Updated app-id: ",appId);
+    return appId;
+}
+
+
+// helper function to await transaction confirmation
+// Function used to wait for a tx confirmation
+const waitForConfirmation = async function (algodclient, txId) {
+    let status = (await algodclient.status().do());
+    let lastRound = status["last-round"];
+    while (true) {
+        const pendingInfo = await algodclient.pendingTransactionInformation(txId).do();
+        if (pendingInfo["confirmed-round"] !== null && pendingInfo["confirmed-round"] > 0) {
+            //Got the completed Transaction
+            console.log("Transaction " + txId + " confirmed in round " + pendingInfo["confirmed-round"]);
+            break;
+        }
+        lastRound++;
+        await algodclient.statusAfterBlock(lastRound).do();
+    }
+};
+
+async function main() {
+    try {
+        // initialize an algodClient
+        let algodClient = new algosdk.Algodv2(algodToken, algodServer, algodPort);
+
+        // get accounts from mnemonic
+        let senderAccount = algosdk.mnemonicToSecretKey(senderMnemonic);
+
+        // update application
+        approvalProgram = await compileProgram(algodClient, approvalProgramSourceRefactored);
+        await updateApp(algodClient, creatorAccount, appId, approvalProgram, clearProgram);
+
+
+    } catch (err) {
+        console.log("err", err);
+    }
+}
+
+main();

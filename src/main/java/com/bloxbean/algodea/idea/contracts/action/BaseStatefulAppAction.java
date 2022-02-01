@@ -164,6 +164,11 @@ public abstract class  BaseStatefulAppAction extends BaseTxnAction {
                     if(callRequestMode.equals(RequestMode.DEBUG)) {
                         callRequestMode = RequestMode.DRYRUN_DUMP;
                     }
+
+                    if(callRequestMode.equals(RequestMode.CODE_GENERATE)) {
+                        callRequestMode = RequestMode.EXPORT_SIGNED;
+                    }
+
                     try {
                         Result result = invokeTransaction(sfService, appId, signerAccount, senderAddress, generalTxnDetailsParam, callRequestMode);
 
@@ -187,6 +192,8 @@ public abstract class  BaseStatefulAppAction extends BaseTxnAction {
                                 }
 
                                 debugHandler.startStatefulCallDebugger(project, sourceFiles, console, result.getResponse());
+                            } if (originalReqMode.equals(RequestMode.CODE_GENERATE)) {
+                                processCodeGeneration(project, module, signerAccount, result, logListener);
                             } else {
                                 processResult(project, module, result, requestMode, logListener);
                             }

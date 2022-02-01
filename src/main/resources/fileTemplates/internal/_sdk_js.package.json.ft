@@ -1,0 +1,12 @@
+{
+  "name": "algosdk-js-client",
+  "version": "0.0.1",
+  "description": "Javascript client code",
+  "main": "${TARGET_JS_FILE}",
+  "scripts": {
+    "start": "node ${TARGET_JS_FILE}"
+  },
+  "dependencies": {
+    "algosdk": "^1.13.1"
+  }
+}

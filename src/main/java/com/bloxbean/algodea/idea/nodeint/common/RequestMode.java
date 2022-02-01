@@ -1,5 +1,5 @@
 package com.bloxbean.algodea.idea.nodeint.common;
 
 public enum RequestMode {
-    TRANSACTION, EXPORT_UNSIGNED, EXPORT_SIGNED, DRY_RUN, DRYRUN_DUMP, DEBUG
+    TRANSACTION, EXPORT_UNSIGNED, EXPORT_SIGNED, DRY_RUN, DRYRUN_DUMP, DEBUG, CODE_GENERATE
 }

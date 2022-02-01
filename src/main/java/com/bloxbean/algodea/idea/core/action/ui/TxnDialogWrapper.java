@@ -18,10 +18,12 @@ public abstract class TxnDialogWrapper extends DialogWrapper {
     protected Action dryRunAction;
     protected Action debugAction;
     protected Action dryrunDumpAction;
+    protected Action codegenAction;
 
     private boolean enableDryRun;
     private boolean enableDryRunDump;
     private boolean enableDebug;
+    private boolean enableCodegen;
 
     protected TxnDialogWrapper(@Nullable Project project, boolean canBeParent) {
         super(project, canBeParent);
@@ -35,6 +37,8 @@ public abstract class TxnDialogWrapper extends DialogWrapper {
 
         dryrunDumpAction = new RequestAction("Dry Run Dump", RequestMode.DRYRUN_DUMP);
         dryrunDumpAction.setEnabled(false);
+
+        codegenAction = new RequestAction("Generate Code", RequestMode.CODE_GENERATE);
     }
 
     protected TxnDialogWrapper(@Nullable Project project) {
@@ -45,6 +49,7 @@ public abstract class TxnDialogWrapper extends DialogWrapper {
     protected @NotNull Action[] createLeftSideActions() {
 
         return new Action[]{
+                codegenAction,
                 exportUnsignedAction,
                 exportSignedAction,
                 dryRunAction,

@@ -27,4 +27,15 @@ public class JsonUtil {
             return jsonStr;
         }
     }
+
+    public static <T> T parseJson(String json, Class<T> clazz) {
+        if (json == null)
+            return null;
+
+        try {
+            return mapper.readValue(json, clazz);
+        } catch (JsonProcessingException e) {
+            return null;
+        }
+    }
 }

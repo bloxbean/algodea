@@ -1,6 +1,8 @@
 package com.bloxbean.algodea.idea.core.action;
 
+import com.algorand.algosdk.account.Account;
 import com.algorand.algosdk.crypto.Address;
+import com.bloxbean.algodea.idea.codegen.service.SdkCodeGenerationActionHandler;
 import com.bloxbean.algodea.idea.core.action.util.ExporterUtil;
 import com.bloxbean.algodea.idea.dryrun.ui.DryRunContextEntryDialog;
 import com.bloxbean.algodea.idea.nodeint.common.RequestMode;
@@ -233,6 +235,11 @@ public abstract class BaseTxnAction extends AlgoBaseAction {
 
     protected DryRunContext captureDryRunContext(Project project, List<Long> appIds, List<Address> accounts, List<Long> foreignApps) {
         return captureDryRunContext(project, appIds, accounts, foreignApps, true, true, true);
+    }
+
+    protected void processCodeGeneration(Project project, Module module, Account signerAccount, Result result, LogListener logListener) {
+        SdkCodeGenerationActionHandler actionHandler = new SdkCodeGenerationActionHandler(project,  module);
+        actionHandler.handleCodeGeneration(result.getResponse(), signerAccount, logListener);
     }
 
     protected abstract String getTitle();
