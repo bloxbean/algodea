@@ -26,11 +26,13 @@ apply plugin: "kotlin"
 group 'com.bloxbean'
 version '0.9.0-SNAPSHOT'
 
-sourceCompatibility = 11
-targetCompatibility = 11
-
 repositories {
     mavenCentral()
+}
+
+compileJava {
+    sourceCompatibility = '11'
+    targetCompatibility = '11'
 }
 
 compileKotlin {
@@ -42,7 +44,7 @@ compileTestKotlin {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'lib')
-    compile group: 'com.algorand', name: 'algosdk', version: '1.10.0'
+    compile group: 'com.algorand', name: 'algosdk', version: '1.13.0'
     compile('com.github.kklisura.cdt:cdt-java-client:4.0.0')  {
         exclude group: 'org.slf4j', module: 'slf4j-api'
     }
