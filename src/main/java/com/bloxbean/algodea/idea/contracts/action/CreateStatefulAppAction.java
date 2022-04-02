@@ -245,6 +245,14 @@ public class CreateStatefulAppAction extends BaseTxnAction {
 
             RequestMode requestMode = createDialog.getRequestMode();
 
+            RequestMode originalReqMode = requestMode;
+            RequestMode callRequestMode;
+            if(originalReqMode.equals(RequestMode.CODE_GENERATE)) { //For code_generate. It has to go through export_signed
+                callRequestMode = RequestMode.EXPORT_SIGNED;
+            } else {
+                callRequestMode = originalReqMode;
+            }
+
             Task.Backgroundable task = new Task.Backgroundable(project, "Creating Stateful Smart Contract app") {
 
                 @Override
@@ -254,7 +262,7 @@ public class CreateStatefulAppAction extends BaseTxnAction {
                     try {
                         result = sfService.createApp(appProgText, clearProgText, signerAccount, senderAddress,
                                 globalByteslices, globalInts, localByteslices, localInts, extraPages,
-                                generalTxnDetailsParams, requestMode);
+                                generalTxnDetailsParams, callRequestMode);
                     } catch (Exception exception) {
                         if(LOG.isDebugEnabled()) {
                             LOG.warn(exception);
@@ -262,7 +270,7 @@ public class CreateStatefulAppAction extends BaseTxnAction {
                         console.showErrorMessage("Error creating the app", exception);
                     }
 
-                    if(requestMode == null || requestMode.equals(RequestMode.TRANSACTION)) {
+                    if(callRequestMode == null || callRequestMode.equals(RequestMode.TRANSACTION)) {
                         if (result != null && result.getValue() != null) {
                             Long appId = result.getValue();
                             String genesisHash = sfService.getNetworkGenesisHash();
@@ -277,7 +285,11 @@ public class CreateStatefulAppAction extends BaseTxnAction {
                             IdeaUtil.showNotification(project, "Create App", "Create App failed", NotificationType.ERROR, null);
                         }
                     } else {
-                        processResult(project, module, result, requestMode, logListener);
+                        if (originalReqMode.equals(RequestMode.CODE_GENERATE)) {
+                            processCodeGeneration(project, module, signerAccount, result, logListener);
+                        } else {
+                            processResult(project, module, result, requestMode, logListener);
+                        }
                     }
                 }
             };

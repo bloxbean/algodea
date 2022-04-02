@@ -1,0 +1,113 @@
+const algosdk = require('algosdk');
+
+// user declared account mnemonics
+senderMnemonic = "${SIGNER_MNEMONIC}"
+
+// user declared algod connection parameters
+algodServer = "${ALGOD_SERVER}";
+algodPort = "${ALGOD_PORT}";
+algodToken = "${ALGOD_TOKEN}";
+
+// declare application state storage (immutable)
+localInts = ${LOCAL_INTS};
+localBytes = ${LOCAL_BYTES};
+globalInts = ${GLOBAL_INTS};
+globalBytes = ${GLOBAL_BYTES};
+
+// compiled approval program
+var approvalProgramCompiled = "${APPROVAL_PROG_COMPILED}";
+
+// compiled clear state program
+var clearProgramCompiled = "${CLEAR_STATE_PROG_COMPILED}";
+
+// create new application
+async function createApp(client, creatorAccount, approvalProgram, clearProgram, localInts, localBytes, globalInts, globalBytes) {
+    // define sender as creator
+    sender = creatorAccount.addr;
+
+    // declare onComplete as NoOp
+    onComplete = algosdk.OnApplicationComplete.NoOpOC;
+
+    // get node suggested parameters
+    let params = await client.getTransactionParams().do();
+    // comment out the next two lines to use suggested fee
+    params.fee = ${FEE};
+    params.flatFee = true;
+
+    // create unsigned transaction
+    let txn = algosdk.makeApplicationCreateTxn(sender, params, onComplete,
+        approvalProgram, clearProgram,
+        localInts, localBytes, globalInts, globalBytes,);
+    let txId = txn.txID().toString();
+
+    // Sign the transaction
+    let signedTxn = txn.signTxn(creatorAccount.sk);
+    console.log("Signed transaction with txID: %s", txId);
+
+    // Submit the transaction
+    await client.sendRawTransaction(signedTxn).do();
+
+    // Wait for confirmation
+    await waitForConfirmation(client, txId);
+
+    // display results
+    let transactionResponse = await client.pendingTransactionInformation(txId).do();
+    let appId = transactionResponse['application-index'];
+    console.log("Created new app-id: ", appId);
+    return appId;
+}
+
+
+// helper function to compile program source
+/* async function compileProgram(client, programSource) {
+    let encoder = new TextEncoder();
+    let programBytes = encoder.encode(programSource);
+    let compileResponse = await client.compile(programBytes).do();
+    let compiledBytes = new Uint8Array(Buffer.from(compileResponse.result, "base64"));
+    return compiledBytes;
+}*/
+
+// helper function to await transaction confirmation
+// Function used to wait for a tx confirmation
+const waitForConfirmation = async function (algodclient, txId) {
+    let status = (await algodclient.status().do());
+    let lastRound = status["last-round"];
+    while (true) {
+        const pendingInfo = await algodclient.pendingTransactionInformation(txId).do();
+        if (pendingInfo["confirmed-round"] !== null && pendingInfo["confirmed-round"] > 0) {
+            //Got the completed Transaction
+            console.log("Transaction " + txId + " confirmed in round " + pendingInfo["confirmed-round"]);
+            break;
+        }
+        lastRound++;
+        await algodclient.statusAfterBlock(lastRound).do();
+    }
+};
+
+async function main() {
+    try {
+        // initialize an algodClient
+        let algodClient = new algosdk.Algodv2(algodToken, algodServer, algodPort);
+
+        // get accounts from mnemonic
+        let senderAccount = algosdk.mnemonicToSecretKey(senderMnemonic);
+
+        // compile programs if your have source
+        //let approvalProgram = await compileProgram(algodClient, approvalProgramSourceInitial);
+        //let clearProgram = await compileProgram(algodClient, clearProgramSource);
+
+        let approvalCompiledBytes = new Uint8Array(Buffer.from(approvalProgramCompiled, "base64"));
+        let clearStateCompiledBytes = new Uint8Array(Buffer.from(clearProgramCompiled, "base64"));
+
+        // create new application
+        let appId = await createApp(algodClient, senderAccount, approvalCompiledBytes, clearStateCompiledBytes,
+            localInts, localBytes, globalInts, globalBytes);
+
+        console.log("App Id : " + appId);
+
+    } catch (err) {
+        console.log("err", err);
+    }
+}
+
+main();

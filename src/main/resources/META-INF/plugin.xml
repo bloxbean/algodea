@@ -97,6 +97,7 @@
         <projectService serviceImplementation="com.bloxbean.algodea.idea.core.service.AlgoCacheService"/>
 
         <projectService serviceImplementation="com.bloxbean.algodea.idea.debugger.service.DebugService"/>
+        <projectService serviceImplementation="com.bloxbean.algodea.idea.codegen.service.SdkCodeGeneratorFactory"/>
     </extensions>
     <actions>
         <action id="Algorand.NewTEALFile" class="com.bloxbean.algodea.idea.core.action.NewTEALFileAction"
@@ -190,6 +191,14 @@
                 description="Execute Algorand Transaction">
             <add-to-group group-id="ProjectViewPopupMenu" relative-to-action="com.bloxbean.algodea.idea.core.action.AlgoActionGroup"  anchor="before"/>
             <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl T" second-keystroke="E"/>
+        </action>
+
+        <action id="com.bloxbean.algodea.idea.codegen.action.TxnCodeGenAction" class="com.bloxbean.algodea.idea.codegen.action.TxnCodeGenAction"
+                text="Generate code (Algorand sdk)"
+                popup="true"
+                description="Generate code (Algorand sdk)">
+            <add-to-group group-id="ProjectViewPopupMenu" relative-to-action="com.bloxbean.algodea.idea.core.action.AlgoActionGroup"  anchor="before"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl T" second-keystroke="G"/>
         </action>
 
         <!-- Stateless contract actions -->

@@ -23,6 +23,7 @@ public class ShowTxnDetailsDialog extends DialogWrapper {
 
     protected ShowTxnDetailsDialog(@Nullable Project project, Transaction transaction, String content) {
         super(project, true);
+        createCustomActions();
         init();
         setTitle("Transaction Details");
         editorField.setContentType("application/json");
@@ -30,6 +31,9 @@ public class ShowTxnDetailsDialog extends DialogWrapper {
 
         this.emptyAddressString = new Address().toString();
         initializeData(transaction);
+    }
+
+    protected void createCustomActions() {
     }
 
     private void initializeData(Transaction transaction) {
