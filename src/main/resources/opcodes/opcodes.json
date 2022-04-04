@@ -1809,6 +1809,28 @@
      "since": 5
    },
    {
+     "op": "acct_params_get",
+     "opcode": "0x73 {uint8 account params field index}",
+     "pops": ["... stack", "A"],
+     "pushes": ["... stack", "X: any", " Y: uint64"],
+     "desc": "X is field F from account A. Y is 1 if A owns positive algos, else 0",
+     "error": "",
+     "metadata": {
+       "LogicSigVersion": ">=6"
+     },
+     "mode": "Application",
+     "additionalDesc": "",
+     "params": ["acct_params_get_fields"],
+     "costs": [
+       {
+         "cost": 1,
+         "filter": ""
+       }
+     ],
+     "anchor": "acct_params_get-f",
+     "since": 6
+   },
+   {
      "op": "min_balance",
      "opcode": "0x78",
      "pops": ["... stack", "any"],
@@ -2038,6 +2060,48 @@
      ],
      "anchor": "expw",
      "since": 4
+   },
+   {
+     "op": "bsqrt",
+     "opcode": "0x96",
+     "pops": ["... stack", "A: []byte"],
+     "pushes": ["... stack", "[]byte"],
+     "desc": "The largest integer I such that I^2 <= A. A and I are interpreted as big-endian unsigned integers",
+     "error": "",
+     "metadata": {
+       "LogicSigVersion": ">=6"
+     },
+     "additionalDesc": "",
+     "params": [],
+     "costs": [
+       {
+         "cost": 40,
+         "filter": ""
+       }
+     ],
+     "anchor": "bsqrt",
+     "since": 6
+   },
+   {
+     "op": "divw",
+     "opcode": "0x97",
+     "pops": ["... stack", "A: uint64", "B: uint64", "C: uint64"],
+     "pushes": ["... stack", "uint64"],
+     "desc": "A,B / C. Fail if C == 0 or if result overflows",
+     "error": "",
+     "metadata": {
+       "LogicSigVersion": ">=6"
+     },
+     "additionalDesc": "The notation A,B indicates that A and B are interpreted as a uint128 value, with A as the high uint64 and B the low",
+     "params": [],
+     "costs": [
+       {
+         "cost": 1,
+         "filter": ""
+       }
+     ],
+     "anchor": "divw",
+     "since": 6
    },
    {
      "op": "b+",
@@ -2507,6 +2571,72 @@
      "since": 5
    },
    {
+     "op": "itxn_next",
+     "opcode": "0xb6",
+     "pops": [],
+     "pushes": [],
+     "desc": "begin preparation of a new inner transaction in the same transaction group",
+     "error": "",
+     "metadata": {
+       "LogicSigVersion": ">=6"
+     },
+     "additionalDesc": "itxn_next initializes the transaction exactly as itxn_begin does",
+     "params": [],
+     "mode": "Application",
+     "costs": [
+       {
+         "cost": 1,
+         "filter": ""
+       }
+     ],
+     "anchor": "itxn_next",
+     "since": 6
+   },
+   {
+     "op": "gitxn",
+     "opcode": "0xb7 {uint8 transaction group index} {uint8 transaction field index}",
+     "pops": [],
+     "pushes": ["any"],
+     "desc": "field F of the Tth transaction in the last inner group submitted",
+     "error": "",
+     "metadata": {
+       "LogicSigVersion": ">=6"
+     },
+     "additionalDesc": "",
+     "params": [],
+     "mode": "Application",
+     "costs": [
+       {
+         "cost": 1,
+         "filter": ""
+       }
+     ],
+     "anchor": "gitxn-t-f",
+     "since": 6
+   },
+   {
+     "op": "gitxna",
+     "opcode": "0xb8 {uint8 transaction group index} {uint8 transaction field index} {uint8 transaction field array index}",
+     "pops": [],
+     "pushes": ["any"],
+     "desc": "Ith value of the array field F from the Tth transaction in the last inner group submitted",
+     "error": "",
+     "metadata": {
+       "LogicSigVersion": ">=6"
+     },
+     "additionalDesc": "",
+     "params": [],
+     "mode": "Application",
+     "costs": [
+       {
+         "cost": 1,
+         "filter": ""
+       }
+     ],
+     "anchor": "gitxna-t-f-i",
+     "since": 6
+   },
+   {
      "op": "txnas",
      "opcode": "0xc0 {uint8 transaction field index}",
      "pops": ["... stack", "uint64"],
@@ -2590,6 +2720,72 @@
      "mode": "Signature",
      "anchor": "args",
      "since": 5
+   },
+   {
+     "op": "gloadss",
+     "opcode": "0xc4",
+     "pops": ["... stack", "A: uint64", "B: uint64"],
+     "pushes": ["any"],
+     "desc": "Bth scratch space value of the Ath transaction in the current group",
+     "error": "",
+     "metadata": {
+       "LogicSigVersion": ">=6"
+     },
+     "additionalDesc": "",
+     "params": [],
+     "costs": [
+       {
+         "cost": 1,
+         "filter": ""
+       }
+     ],
+     "mode": "Application",
+     "anchor": "gloadss",
+     "since": 6
+   },
+   {
+     "op": "itxnas",
+     "opcode": "0xc5 {uint8 transaction field index}",
+     "pops": ["... stack", "A: uint64"],
+     "pushes": ["any"],
+     "desc": "Ath value of the array field F of the last inner transaction",
+     "error": "",
+     "metadata": {
+       "LogicSigVersion": ">=6"
+     },
+     "additionalDesc": "",
+     "params": [],
+     "costs": [
+       {
+         "cost": 1,
+         "filter": ""
+       }
+     ],
+     "mode": "Application",
+     "anchor": "itxnas-f",
+     "since": 6
+   },
+   {
+     "op": "gitxnas",
+     "opcode": "0xc6 {uint8 transaction group index} {uint8 transaction field index}",
+     "pops": ["... stack", "A: uint64"],
+     "pushes": ["any"],
+     "desc": "Ath value of the array field F from the Tth transaction in the last inner group submitted",
+     "error": "",
+     "metadata": {
+       "LogicSigVersion": ">=6"
+     },
+     "additionalDesc": "",
+     "params": [],
+     "costs": [
+       {
+         "cost": 1,
+         "filter": ""
+       }
+     ],
+     "mode": "Application",
+     "anchor": "gitxnas-t-f",
+     "since": 6
    },
    {
      "op": "int",
