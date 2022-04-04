@@ -385,6 +385,20 @@
       "type": "uint64",
       "note": "ApplicationID allocated by the creation of an application (itxn only). LogicSigVersion >= 5.",
       "since": 5
+    },
+    {
+      "index": 62,
+      "name": "LastLog",
+      "type": "[]byte",
+      "note": "The last message emitted. Empty bytes if none were emitted. Application mode only",
+      "since": 6
+    },
+    {
+      "index": 63,
+      "name": "StateProofPK",
+      "type": "[]byte",
+      "note": "64 byte state proof public key commitment",
+      "since": 6
     }
   ],
   "oncomplete": [
@@ -544,6 +558,27 @@
       "type": "[]byte",
       "note": "ID of the transaction group. 32 zero bytes if the transaction is not part of a group. LogicSigVersion >= 5.",
       "since": 5
+    },
+    {
+      "index": 12,
+      "name": "OpcodeBudget",
+      "type": "uint64",
+      "note": "The remaining cost that can be spent by opcodes in this program.",
+      "since": 6
+    },
+    {
+      "index": 13,
+      "name": "CallerApplicationID",
+      "type": "uint64",
+      "note": "The application ID of the application that called this application. 0 if this application is at the top-level. Application mode only.",
+      "since": 6
+    },
+    {
+      "index": 14,
+      "name": "CallerApplicationAddress",
+      "type": "[]byte",
+      "note": "The application address of the application that called this application. ZeroAddress if this application is at the top-level. Application mode only.",
+      "since": 6
     }
   ],
   "asset_holding_get_fields": [
@@ -698,6 +733,29 @@
       "type": "[]byte",
       "note": "Address for which this application has authority",
       "since": 5
+    }
+  ],
+  "acct_params_get_fields": [
+    {
+      "index": 0,
+      "name": "AcctBalance",
+      "type": "uint64",
+      "note": "Account balance in microalgos",
+      "since": 6
+    },
+    {
+      "index": 1,
+      "name": "AcctMinBalance",
+      "type": "uint64",
+      "note": "Minimum required blance for account, in microalgos",
+      "since": 6
+    },
+    {
+      "index": 2,
+      "name": "AcctAuthAddr",
+      "type": "[]byte",
+      "note": "Address the account is rekeyed to",
+      "since": 6
     }
   ]
 }

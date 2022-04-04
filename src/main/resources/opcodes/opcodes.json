@@ -1,2618 +1,2814 @@
- [
-    {
-      "op": "err",
-      "opcode": "0x00",
-      "pops": [],
-      "pushes": [],
-      "desc": "",
-      "error": "Panic immediately. This is primarily a fencepost against accidental zero bytes getting compiled into programs.",
-      "costs": []
-    },
-    {
-      "op": "sha256",
-      "opcode": "0x01",
-      "pops": ["stack", "[]byte"],
-      "pushes": ["[]byte"],
-      "desc": "SHA256 hash of value X, yields [32]byte",
-      "error": "",
-      "costs": [
-        {
-          "cost": 7,
-          "filter": "LogicSigVersion = 1"
-        },
-        {
-          "cost": 35,
-          "filter": "LogicSigVersion = 2"
-        }
-      ]
-    },
-    {
-      "op": "keccak256",
-      "opcode": "0x02",
-      "pops": ["stack", "[]byte"],
-      "pushes": ["[]byte"],
-      "desc": "Keccak256 hash of value X, yields [32]byte",
-      "error": "",
-      "costs": [
-        {
-          "cost": 26,
-          "filter": "LogicSigVersion = 1"
-        },
-        {
-          "cost": 130,
-          "filter": "LogicSigVersion = 2"
-        }
-      ]
-    },
-    {
-      "op": "sha512_256",
-      "opcode": "0x03",
-      "pops": ["stack", "[]byte"],
-      "pushes": ["[]byte"],
-      "desc": "SHA512_256 hash of value X, yields [32]byte",
-      "error": "",
-      "costs": [
-        {
-          "cost": 9,
-          "filter": "LogicSigVersion = 1"
-        },
-        {
-          "cost": 45,
-          "filter": "LogicSigVersion = 2"
-        }
-      ]
-    },{
-      "op": "ed25519verify",
-      "opcode": "0x04",
-      "pops": ["stack", "{[]byte A}", "{[]byte B}", "{[]byte C}"],
-      "pushes": ["uint64"],
-      "error": "",
-      "desc": "for (data A, signature B, pubkey C) verify the signature of (\"ProgData\" || program_hash || data) against the pubkey => {0 or 1}",
-      "additionalDesc": "The 32 byte public key is the last element on the stack, preceded by the 64 byte signature at the second-to-last element on the stack, preceded by the data which was signed at the third-to-last element on the stack.\n",
-      "costs": [
-        {
-          "cost": 1900,
-          "filter": ""
-        }
-      ]
-    },{
-     "op": "ecdsa_verify",
-     "opcode": "0x05 {uint8 curve index}",
-     "pops": ["stack", "{[]byte A}, {[]byte B}, {[]byte C}, {[]byte D}, {[]byte E}"],
-     "pushes": ["uint64"],
-     "error": "",
-     "desc": "for (data A, signature B, C and pubkey D, E) verify the signature of the data against the pubkey => {0 or 1}",
-     "additionalDesc": "The 32 byte Y-component of a public key is the last element on the stack, preceded by X-component of a pubkey, preceded by S and R components of a signature, preceded by the data that is fifth element on the stack. All values are big-endian encoded. The signed data must be 32 bytes long, and signatures in lower-S form are only accepted.\n",
-     "metadata": {
-       "LogicSigVersion": ">=5"
-     },
-     "costs": [
-       {
-         "cost": 1700,
-         "filter": ""
-       }
-     ],
-     "since": 5,
-     "anchor": "ecdsa_verify-v"
-    },{
-     "op": "ecdsa_pk_decompress",
-     "opcode": "0x06 {uint8 curve index}",
-     "pops": ["stack", "[]byte"],
-     "pushes": ["[]byte", "[]byte"],
-     "error": "",
-     "desc": "decompress pubkey A into components X, Y => [... stack, X, Y]",
-     "additionalDesc": "The 33 byte public key in a compressed form to be decompressed into X and Y (top) components. All values are big-endian encoded.\n",
-     "metadata": {
-       "LogicSigVersion": ">=5"
-     },
-     "costs": [
-       {
-         "cost": 650,
-         "filter": ""
-       }
-     ],
-     "since": 5,
-     "anchor": "ecdsa_pk_decompress-v"
-    },{
-     "op": "ecdsa_pk_recover",
-     "opcode": "0x07 {uint8 curve index}",
-     "pops": ["stack", "{[]byte A}, {uint64 B}, {[]byte C}, {[]byte D}"],
-     "pushes": ["[]byte", "[]byte"],
-     "error": "",
-     "desc": "for (data A, recovery id B, signature C, D) recover a public key => [... stack, X, Y]",
-     "additionalDesc": "S (top) and R elements of a signature, recovery id and data (bottom) are expected on the stack and used to deriver a public key. All values are big-endian encoded. The signed data must be 32 bytes long.\n",
-     "metadata": {
-       "LogicSigVersion": ">=5"
-     },
-     "costs": [
-       {
-         "cost": 2000,
-         "filter": ""
-       }
-     ],
-     "since": 5,
-     "anchor": "ecdsa_pk_recover-v"
-    },{
-      "op": "+",
-      "opcode": "0x08",
-      "pops": ["stack", "{uint64 A}", "{uint64 B}"],
-      "pushes": ["uint64"],
-      "desc": "A plus B. Panic on overflow.",
-      "error": "",
-      "additionalDesc": "Overflow is an error condition which halts execution and fails the transaction. Full precision is available from addw.",
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ],
-      "anchor": "_1"
-    },{
-      "op": "-",
-      "opcode": "0x09",
-      "pops": ["stack", "{uint64 A}", "{uint64 B}"],
-      "pushes": ["uint64"],
-      "desc": "A minus B. Panic if B > A.",
-      "error": "",
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ],
-      "anchor": "-"
-    },{
-      "op": "/",
-      "opcode": "0x0a",
-      "pops": ["stack", "{uint64 A}", "{uint64 B}"],
-      "pushes": ["uint64"],
-      "desc": "A divided by B. Panic if B == 0.",
-      "error": "",
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ],
-      "anchor": "_2"
-    },{
-      "op": "*",
-      "opcode": "0x0b",
-      "pops": ["stack", "{uint64 A}", "{uint64 B}"],
-      "pushes": ["uint64"],
-      "desc": "A times B. Panic on overflow.",
-      "error": "",
-      "additionalDesc": "Overflow is an error condition which halts execution and fails the transaction. Full precision is available from mulw.",
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ],
-      "anchor": "_3"
-    },
-    {
-      "op": "<",
-      "opcode": "0x0c",
-      "pops": ["stack", "{uint64 A}", "{uint64 B}"],
-      "pushes": ["uint64"],
-      "desc": "A less than B => {0 or 1}",
-      "error": "",
-      "additionalDesc": "",
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ],
-      "anchor": "_4"
-    },
-    {
-      "op": ">",
-      "opcode": "0x0d",
-      "pops": ["stack", "{uint64 A}", "{uint64 B}"],
-      "pushes": ["uint64"],
-      "desc": "A greater than B => {0 or 1}",
-      "error": "",
-      "additionalDesc": "",
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ],
-      "anchor": "_5"
-    },
-    {
-      "op": "<=",
-      "opcode": "0x0e",
-      "pops": ["stack", "{uint64 A}", "{uint64 B}"],
-      "pushes": ["uint64"],
-      "desc": "A less than or equal to B => {0 or 1}",
-      "error": "",
-      "additionalDesc": "",
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ],
-      "anchor": "_6"
-    },
-    {
-      "op": ">=",
-      "opcode": "0x0f",
-      "pops": ["stack", "{uint64 A}", "{uint64 B}"],
-      "pushes": ["uint64"],
-      "desc": "A greater than or equal to B => {0 or 1}",
-      "error": "",
-      "additionalDesc": "",
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ],
-      "anchor": "_7"
-    },
-    {
-      "op": "&&",
-      "opcode": "0x10",
-      "pops": ["stack", "{uint64 A}", "{uint64 B}"],
-      "pushes": ["uint64"],
-      "desc": "A is not zero and B is not zero => {0 or 1}",
-      "error": "",
-      "additionalDesc": "",
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ],
-      "anchor": "_8"
-    },
-    {
-      "op": "||",
-      "opcode": "0x11",
-      "pops": ["stack", "{uint64 A}", "{uint64 B}"],
-      "pushes": ["uint64"],
-      "desc": "A is not zero or B is not zero => {0 or 1}",
-      "error": "",
-      "additionalDesc": "",
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ],
-      "anchor": "_9"
-    },
-    {
-      "op": "==",
-      "opcode": "0x12",
-      "pops": ["stack", "{any A}", "{any B}"],
-      "pushes": ["uint64"],
-      "desc": "A is equal to B => {0 or 1}",
-      "error": "",
-      "additionalDesc": "",
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ],
-      "anchor": "_10"
-    },{
-      "op": "!=",
-      "opcode": "0x13",
-      "pops": ["stack", "{any A}", "{any B}"],
-      "pushes": ["uint64"],
-      "desc": "A is not equal to B => {0 or 1}",
-      "error": "",
-      "additionalDesc": "",
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ],
-      "anchor": "_11"
-    },{
-      "op": "!",
-      "opcode": "0x14",
-      "pops": ["stack", "uint64"],
-      "pushes": ["uint64"],
-      "desc": "X == 0 yields 1; else 0",
-      "error": "",
-      "additionalDesc": "",
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ],
-      "anchor": "_12"
-    },
-    {
-      "op": "len",
-      "opcode": "0x15",
-      "pops": ["stack", "[]byte"],
-      "pushes": ["uint64"],
-      "desc": "yields length of byte value X",
-      "error": "",
-      "additionalDesc": "",
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ]
-    },
-    {
-      "op": "itob",
-      "opcode": "0x16",
-      "pops": ["stack", "uint64"],
-      "pushes": ["[]byte"],
-      "desc": "converts uint64 X to big endian bytes",
-      "error": "",
-      "additionalDesc": "",
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ]
-    },
-    {
-      "op": "btoi",
-      "opcode": "0x17",
-      "pops": ["stack", "[]byte"],
-      "pushes": ["uint64"],
-      "desc": "converts bytes X as big endian to uint64",
-      "error": "",
-      "additionalDesc": "btoi panics if the input is longer than 8 bytes.",
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ]
-    },
-    {
-      "op": "%",
-      "opcode": "0x18",
-      "pops": ["stack", "{uint64 A}", "{uint64 B}"],
-      "pushes": ["uint64"],
-      "desc": "A modulo B. Panic if B == 0.",
-      "error": "",
-      "additionalDesc": "",
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ],
-      "anchor": "_13"
-    },
-    {
-      "op": "|",
-      "opcode": "0x19",
-      "pops": ["stack", "{uint64 A}", "{uint64 B}"],
-      "pushes": ["uint64"],
-      "desc": "A bitwise-or B",
-      "error": "",
-      "additionalDesc": "",
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ],
-      "anchor": "_14"
-    },{
-      "op": "&",
-      "opcode": "0x1a",
-      "pops": ["stack", "{uint64 A}", "{uint64 B}"],
-      "pushes": ["uint64"],
-      "desc": "A bitwise-and B",
-      "error": "",
-      "additionalDesc": "",
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ],
-      "anchor": "_15"
-    },{
-      "op": "^",
-      "opcode": "0x1b",
-      "pops": ["stack", "{uint64 A}", "{uint64 B}"],
-      "pushes": ["uint64"],
-      "desc": "A bitwise-xor B",
-      "error": "",
-      "additionalDesc": "",
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ],
-      "anchor": "_16"
-    },
-    {
-      "op": "~",
-      "opcode": "0x1c",
-      "pops": ["stack", "uint64"],
-      "pushes": ["uint64"],
-      "desc": "bitwise invert value X",
-      "error": "",
-      "additionalDesc": "",
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ],
-      "anchor": "_17"
-    },
-    {
-      "op": "mulw",
-      "opcode": "0x1d",
-      "pops": ["stack", "{uint64 A}", "{uint64 B}"],
-      "pushes": ["uint64", "uint64"],
-      "desc": "A times B out to 128-bit long result as low (top) and high uint64 values on the stack",
-      "error": "",
-      "additionalDesc": "",
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ]
-    },
-    {
-      "op": "addw",
-      "opcode": "0x1e",
-      "pops": ["stack", "{uint64 A}", "{uint64 B}"],
-      "pushes": ["uint64", "uint64"],
-      "desc": "A plus B out to 128-bit long result as sum (top) and carry-bit uint64 values on the stack",
-      "error": "",
-      "additionalDesc": "",
-      "metadata" : {
-        "LogicSigVersion":  ">=2"
+[
+  {
+    "op": "err",
+    "opcode": "0x00",
+    "pops": [],
+    "pushes": [],
+    "desc": "",
+    "error": "Panic immediately. This is primarily a fencepost against accidental zero bytes getting compiled into programs.",
+    "costs": []
+  },
+  {
+    "op": "sha256",
+    "opcode": "0x01",
+    "pops": ["stack", "[]byte"],
+    "pushes": ["[]byte"],
+    "desc": "SHA256 hash of value X, yields [32]byte",
+    "error": "",
+    "costs": [
+      {
+        "cost": 7,
+        "filter": "LogicSigVersion = 1"
       },
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ]
-    },
-   {
-     "op": "divmodw",
-     "opcode": "0x1f",
-     "pops": ["...stack", "{uint64 A}", "{uint64 B}", "{uint64 C}", "{uint64 D}"],
-     "pushes": ["...stack", "uint64", "uint64", "uint64", "uint64"],
-     "desc": "Pop four uint64 values. The deepest two are interpreted as a uint128 dividend (deepest value is high word), the top two are interpreted as a uint128 divisor. Four uint64 values are pushed to the stack. The deepest two are the quotient (deeper value is the high uint64). The top two are the remainder, low bits on top",
-     "error": "",
-     "additionalDesc": "",
-     "metadata" : {
-       "LogicSigVersion":  ">=4"
-     },
-     "costs": [
-       {
-         "cost": 20,
-         "filter": ""
-       }
-     ],
-     "since": 4
-   },
-    {
-      "op": "intcblock",
-      "opcode": "0x20 {varuint length} [{varuint value}, ...]",
-      "pops": [],
-      "pushes": [],
-      "desc": "load block of uint64 constants",
-      "error": "",
-      "additionalDesc": "intcblock loads following program bytes into an array of integer constants in the evaluator. These integer constants can be referred to by intc and intc_* which will push the value onto the stack. Subsequent calls to intcblock reset and replace the integer constants available to the script.",
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ],
-      "anchor": "intcblock-uint"
-    },
-    {
-      "op": "intc",
-      "opcode": "0x21 {uint8 int constant index}",
-      "pops": [],
-      "pushes": ["uint64"],
-      "desc": "push value from uint64 constants to stack by index into constants",
-      "error": "",
-      "additionalDesc": "",
-      "params": ["uint8"],
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ]
-    },
-    {
-      "op": "intc_0",
-      "opcode": "0x22",
-      "pops": [],
-      "pushes": ["uint64"],
-      "desc": "push constant 0 from intcblock to stack",
-      "error": "",
-      "additionalDesc": "",
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ]
-    },
-    {
-      "op": "intc_1",
-      "opcode": "0x23",
-      "pops": [],
-      "pushes": ["uint64"],
-      "desc": "push constant 1 from intcblock to stack",
-      "error": "",
-      "additionalDesc": "",
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ]
-    },
-    {
-      "op": "intc_2",
-      "opcode": "0x24",
-      "pops": [],
-      "pushes": ["uint64"],
-      "desc": "push constant 2 from intcblock to stack",
-      "error": "",
-      "additionalDesc": "",
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ]
-    },
-    {
-      "op": "intc_3",
-      "opcode": "0x25",
-      "pops": [],
-      "pushes": ["uint64"],
-      "desc": "push constant 3 from intcblock to stack",
-      "error": "",
-      "additionalDesc": "",
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ]
-    },
-    {
-      "op": "bytecblock",
-      "opcode": "0x26 {varuint length} [({varuint value length} bytes), ...]",
-      "pops": [],
-      "pushes": [],
-      "desc": "load block of byte-array constants",
-      "error": "",
-      "additionalDesc": "<code>bytecblock</code> loads the following program bytes into an array of byte string constants in the evaluator. These constants can be referred to by <code>bytec</code> and <code>bytec_*</code> which will push the value onto the stack. Subsequent calls to bytecblock reset and replace the bytes constants available to the script.",
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ],
-      "anchor": "bytecblock-bytes"
-    },
-    {
-      "op": "bytec",
-      "opcode": "0x27 {uint8 byte constant index}",
-      "pops": [],
-      "pushes": ["[]byte"],
-      "desc": "push bytes constant to stack by index into constants",
-      "error": "",
-      "additionalDesc": "",
-      "params": ["uint8"],
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ],
-      "anchor": "bytec-i"
-    },
-    {
-      "op": "bytec_0",
-      "opcode": "0x28",
-      "pops": [],
-      "pushes": ["[]byte"],
-      "desc": "push constant 0 from bytecblock to stack",
-      "error": "",
-      "additionalDesc": "",
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ]
-    },
-    {
-      "op": "bytec_1",
-      "opcode": "0x29",
-      "pops": [],
-      "pushes": ["[]byte"],
-      "desc": "push constant 1 from bytecblock to stack",
-      "error": "",
-      "additionalDesc": "",
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ]
-    },
-    {
-      "op": "bytec_2",
-      "opcode": "0x2a",
-      "pops": [],
-      "pushes": ["[]byte"],
-      "desc": "push constant 2 from bytecblock to stack",
-      "error": "",
-      "additionalDesc": "",
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ]
-    },
-    {
-      "op": "bytec_3",
-      "opcode": "0x2b",
-      "pops": [],
-      "pushes": ["[]byte"],
-      "desc": "push constant 3 from bytecblock to stack",
-      "error": "",
-      "additionalDesc": "",
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ]
-    },
-    {
-      "op": "arg",
-      "opcode": "0x2c {uint8 arg index N}",
-      "pops": [],
-      "pushes": ["[]byte"],
-      "desc": "push Args[N] value to stack by index",
-      "error": "",
-      "additionalDesc": "",
-      "mode": "Signature",
-      "params": ["uint8"],
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ],
-      "anchor": "arg-n"
-    },
-    {
-      "op": "arg_0",
-      "opcode": "0x2d",
-      "pops": [],
-      "pushes": ["[]byte"],
-      "desc": "push Args[0] to stack",
-      "error": "",
-      "additionalDesc": "",
-      "mode": "Signature",
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ]
-    },
-    {
-      "op": "arg_1",
-      "opcode": "0x2e",
-      "pops": [],
-      "pushes": ["[]byte"],
-      "desc": "push Args[1] to stack",
-      "error": "",
-      "additionalDesc": "",
-      "mode": "Signature",
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ]
-    },
-    {
-      "op": "arg_2",
-      "opcode": "0x2f",
-      "pops": [],
-      "pushes": ["[]byte"],
-      "desc": "push Args[2] to stack",
-      "error": "",
-      "additionalDesc": "",
-      "mode": "Signature",
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ]
-    },
-    {
-      "op": "arg_3",
-      "opcode": "0x30",
-      "pops": [],
-      "pushes": ["[]byte"],
-      "desc": "push Args[3] to stack",
-      "error": "",
-      "additionalDesc": "",
-      "mode": "Signature",
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ]
-    },
-    {
-      "op": "txn",
-      "opcode": "0x31 {uint8 transaction field index}",
-      "pops": [],
-      "pushes": ["any"],
-      "desc": "push field from current transaction to stack",
-      "error": "",
-      "additionalDesc": "",
-      "params": ["txn_fields"],
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ],
-      "anchor": "txn-f"
-    },
-    {
-      "op": "global",
-      "opcode": "0x32 {uint8 global field index}",
-      "pops": [],
-      "pushes": ["any"],
-      "desc": "push value from globals to stack",
-      "error": "",
-      "additionalDesc": "",
-      "params": ["global_fields"],
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ],
-      "anchor": "global-f"
-    },
-    {
-      "op": "gtxn",
-      "opcode": "0x33 {uint8 transaction group index}{uint8 transaction field index}",
-      "pops": [],
-      "pushes": ["any"],
-      "desc": "push field to the stack from a transaction in the current transaction group",
-      "error": "",
-      "additionalDesc": "for notes on transaction fields available, see <code>txn</code>. If this transaction is <em>i</em> in the group, <code>gtxn i field</code> is equivalent to <code>txn field</code>.",
-      "params": ["uint8", "txn_fields"],
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ],
-      "anchor": "gtxn-t-f"
-    },
-    {
-      "op": "load",
-      "opcode": "0x34 {uint8 position in scratch space to load from}",
-      "pops": [],
-      "pushes": ["any"],
-      "desc": "copy a value from scratch space to the stack",
-      "error": "",
-      "additionalDesc": "",
-      "params": ["uint8"],
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ],
-      "anchor": "load-i"
-    },
-    {
-      "op": "store",
-      "opcode": "0x35 {uint8 position in scratch space to store to}",
-      "pops": ["... stack", "any"],
-      "pushes": [],
-      "desc": "pop a value from the stack and store to scratch space",
-      "error": "",
-      "additionalDesc": "",
-      "params": ["uint8"],
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ],
-      "anchor": "store-i"
-    },
-    {
-      "op": "txna",
-      "opcode": "0x36 {uint8 transaction field index}{uint8 transaction field array index}",
-      "pops": [],
-      "pushes": ["any"],
-      "desc": "push value of an array field from current transaction to stack",
-      "error": "",
-      "additionalDesc": "",
-      "params": ["txn_fields", "uint8"],
-      "metadata": {
-        "LogicSigVersion": ">=2"
+      {
+        "cost": 35,
+        "filter": "LogicSigVersion = 2"
+      }
+    ]
+  },
+  {
+    "op": "keccak256",
+    "opcode": "0x02",
+    "pops": ["stack", "[]byte"],
+    "pushes": ["[]byte"],
+    "desc": "Keccak256 hash of value X, yields [32]byte",
+    "error": "",
+    "costs": [
+      {
+        "cost": 26,
+        "filter": "LogicSigVersion = 1"
       },
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ],
-      "anchor": "txna-f-i"
-    },
-    {
-      "op": "gtxna",
-      "opcode": "0x37 {uint8 transaction group index}{uint8 transaction field index}{uint8 transaction field array index}",
-      "pops": [],
-      "pushes": ["any"],
-      "desc": "push value of a field to the stack from a transaction in the current transaction group",
-      "error": "",
-      "additionalDesc": "",
-      "params": ["uint8", "txn_fields", "uint8"],
-      "metadata": {
-        "LogicSigVersion": ">=2"
+      {
+        "cost": 130,
+        "filter": "LogicSigVersion = 2"
+      }
+    ]
+  },
+  {
+    "op": "sha512_256",
+    "opcode": "0x03",
+    "pops": ["stack", "[]byte"],
+    "pushes": ["[]byte"],
+    "desc": "SHA512_256 hash of value X, yields [32]byte",
+    "error": "",
+    "costs": [
+      {
+        "cost": 9,
+        "filter": "LogicSigVersion = 1"
       },
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ],
-      "anchor": "gtxna-t-f-i"
-    },
-   {
-     "op": "gtxns",
-     "opcode": "0x38 {uint8 transaction field index}",
-     "pops": ["... stack", "uint64"],
-     "pushes": ["any"],
-     "desc": "push field F of the Ath transaction in the current group",
-     "error": "",
-     "additionalDesc": "for notes on transaction fields available, see txn. If top of stack is i, gtxns field is equivalent to gtxn _i_ field. gtxns exists so that i can be calculated, often based on the index of the current transaction",
-     "params": [],
-     "metadata": {
-       "LogicSigVersion": ">=3"
-     },
-     "costs": [
-       {
-         "cost": 1,
-         "filter": ""
-       }
-     ],
-     "anchor": "gtxns-f",
-     "since": 3
-   },
-   {
-     "op": "gtxnsa",
-     "opcode": "0x39 {uint8 transaction field index} {uint8 transaction field array index}",
-     "pops": ["... stack", "uint64"],
-     "pushes": ["any"],
-     "desc": "push Ith value of the array field F from the Ath transaction in the current group",
-     "error": "",
-     "additionalDesc": "",
-     "params": [],
-     "metadata": {
-       "LogicSigVersion": ">=3"
-     },
-     "costs": [
-       {
-         "cost": 1,
-         "filter": ""
-       }
-     ],
-     "anchor": "gtxnsa-f-i",
-     "since": 3
-   },
-   {
-     "op": "gload",
-     "opcode": "0x3a {uint8 transaction group index} {uint8 position in scratch space to load from}",
-     "pops": [],
-     "pushes": ["any"],
-     "desc": "push Ith scratch space index of the Tth transaction in the current group",
-     "error": "",
-     "additionalDesc": "gload fails unless the requested transaction is an ApplicationCall and T < GroupIndex",
-     "params": [],
-     "metadata": {
-       "LogicSigVersion": ">=4"
-     },
-     "mode": "Application",
-     "costs": [
-       {
-         "cost": 1,
-         "filter": ""
-       }
-     ],
-     "anchor": "gload-t-i",
-     "since": 4
-   },
-   {
-     "op": "gloads",
-     "opcode": "0x3b {uint8 position in scratch space to load from}",
-     "pops": ["... stack", "uint64"],
-     "pushes": ["any"],
-     "desc": "push Ith scratch space index of the Xth transaction in the current group",
-     "error": "",
-     "additionalDesc": "gloads fails unless the requested transaction is an ApplicationCall and X < GroupIndex",
-     "params": [],
-     "metadata": {
-       "LogicSigVersion": ">=4"
-     },
-     "mode": "Application",
-     "costs": [
-       {
-         "cost": 1,
-         "filter": ""
-       }
-     ],
-     "anchor": "gloads-i",
-     "since": 4
-   },
-   {
-     "op": "gaid",
-     "opcode": "0x3c",
-     "pops": [],
-     "pushes": ["uint64"],
-     "desc": "push the ID of the asset or application created in the Tth transaction of the current group",
-     "error": "",
-     "additionalDesc": "gaid fails unless the requested transaction created an asset or application and T < GroupIndex",
-     "params": [],
-     "metadata": {
-       "LogicSigVersion": ">=4"
-     },
-     "mode": "Application",
-     "costs": [
-       {
-         "cost": 1,
-         "filter": ""
-       }
-     ],
-     "anchor": "gaid-t",
-     "since": 4
-   },
-   {
-     "op": "gaids",
-     "opcode": "0x3d",
-     "pops": ["...stack", "uint64"],
-     "pushes": ["uint64"],
-     "desc": "push the ID of the asset or application created in the Xth transaction of the current group",
-     "error": "",
-     "additionalDesc": "gaids fails unless the requested transaction created an asset or application and X < GroupIndex",
-     "params": [],
-     "metadata": {
-       "LogicSigVersion": ">=4"
-     },
-     "mode": "Application",
-     "costs": [
-       {
-         "cost": 1,
-         "filter": ""
-       }
-     ],
-     "anchor": "gaids",
-     "since": 4
-   },
-   {
-     "op": "loads",
-     "opcode": "0x3e",
-     "pops": ["...stack", "uint64"],
-     "pushes": ["any"],
-     "desc": "copy a value from the Xth scratch space to the stack. All scratch spaces are 0 at program start",
-     "error": "",
-     "additionalDesc": "",
-     "params": [],
-     "metadata": {
-       "LogicSigVersion": ">=5"
-     },
-     "costs": [
-       {
-         "cost": 1,
-         "filter": ""
-       }
-     ],
-     "anchor": "loads",
-     "since": 5
-   },
-   {
-     "op": "stores",
-     "opcode": "0x3f",
-     "pops": ["...stack", "{uint64 A}", "{any B}"],
-     "pushes": [],
-     "desc": "pop indexes A and B. store B to the Ath scratch space",
-     "error": "",
-     "additionalDesc": "",
-     "params": [],
-     "metadata": {
-       "LogicSigVersion": ">=5"
-     },
-     "costs": [
-       {
-         "cost": 1,
-         "filter": ""
-       }
-     ],
-     "anchor": "stores",
-     "since": 5
-   },
+      {
+        "cost": 45,
+        "filter": "LogicSigVersion = 2"
+      }
+    ]
+  },{
+  "op": "ed25519verify",
+  "opcode": "0x04",
+  "pops": ["stack", "{[]byte A}", "{[]byte B}", "{[]byte C}"],
+  "pushes": ["uint64"],
+  "error": "",
+  "desc": "for (data A, signature B, pubkey C) verify the signature of (\"ProgData\" || program_hash || data) against the pubkey => {0 or 1}",
+  "additionalDesc": "The 32 byte public key is the last element on the stack, preceded by the 64 byte signature at the second-to-last element on the stack, preceded by the data which was signed at the third-to-last element on the stack.\n",
+  "costs": [
     {
-      "op": "bnz",
-      "opcode": "0x40 {0..0x7fff forward branch offset, big endian}",
-      "pops": ["... stack", "uint64"],
-      "pushes": [],
-      "desc": "branch if value X is not zero",
-      "error": "",
-      "additionalDesc": "The bnz instruction opcode 0x40 is followed by two immediate data bytes which are a high byte first and low byte second which together form a 16 bit offset which the instruction may branch to. For a bnz instruction at pc, if the last element of the stack is not zero then branch to instruction at pc + 3 + N, else proceed to next instruction at pc + 3. Branch targets must be aligned instructions. (e.g. Branching to the second byte of a 2 byte op will be rejected.) Starting at v4, the offset is treated as a signed 16 bit integer allowing for backward branches and looping. In prior version (v1 to v3), branch offsets are limited to forward branches only, 0-0x7fff. <br/><br/>At v2 it became allowed to branch to the end of the program exactly after the last instruction: bnz to byte N (with 0-indexing) was illegal for a TEAL program with N bytes before v2, and is legal after it. This change eliminates the need for a last instruction of no-op as a branch target at the end. (Branching beyond the end--in other words, to a byte larger than N--is still illegal and will cause the program to fail.)",
-      "params": ["string"],
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ],
-      "anchor": "bnz-target"
-    },
+      "cost": 1900,
+      "filter": ""
+    }
+  ]
+},{
+  "op": "ecdsa_verify",
+  "opcode": "0x05 {uint8 curve index}",
+  "pops": ["stack", "{[]byte A}, {[]byte B}, {[]byte C}, {[]byte D}, {[]byte E}"],
+  "pushes": ["uint64"],
+  "error": "",
+  "desc": "for (data A, signature B, C and pubkey D, E) verify the signature of the data against the pubkey => {0 or 1}",
+  "additionalDesc": "The 32 byte Y-component of a public key is the last element on the stack, preceded by X-component of a pubkey, preceded by S and R components of a signature, preceded by the data that is fifth element on the stack. All values are big-endian encoded. The signed data must be 32 bytes long, and signatures in lower-S form are only accepted.\n",
+  "metadata": {
+    "LogicSigVersion": ">=5"
+  },
+  "costs": [
     {
-      "op": "bz",
-      "opcode": "0x41 {0..0x7fff forward branch offset, big endian}",
-      "pops": ["... stack", "uint64"],
-      "pushes": [],
-      "desc": "branch if value X is zero",
-      "error": "",
-      "additionalDesc": "See <code>bnz</code> for details on how branches work. <code>bz</code> inverts the behavior of <code>bnz</code>.",
-      "params": ["string"],
-      "metadata": {
-        "LogicSigVersion": ">=2"
-      },
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ],
-      "anchor": "bz-target"
-    },
+      "cost": 1700,
+      "filter": ""
+    }
+  ],
+  "since": 5,
+  "anchor": "ecdsa_verify-v"
+},{
+  "op": "ecdsa_pk_decompress",
+  "opcode": "0x06 {uint8 curve index}",
+  "pops": ["stack", "[]byte"],
+  "pushes": ["[]byte", "[]byte"],
+  "error": "",
+  "desc": "decompress pubkey A into components X, Y => [... stack, X, Y]",
+  "additionalDesc": "The 33 byte public key in a compressed form to be decompressed into X and Y (top) components. All values are big-endian encoded.\n",
+  "metadata": {
+    "LogicSigVersion": ">=5"
+  },
+  "costs": [
     {
-      "op": "b",
-      "opcode": "0x42 {0..0x7fff forward branch offset, big endian}",
-      "pops": [],
-      "pushes": [],
-      "desc": "branch unconditionally to offset",
-      "metadata": {
-        "LogicSigVersion": ">=2"
-      },
-      "error": "",
-      "additionalDesc": "See <code>bnz</code> for details on how branches work. <code>b</code> always jumps to the offset.",
-      "params": ["string"],
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ],
-      "anchor": "b-target"
-    },
+      "cost": 650,
+      "filter": ""
+    }
+  ],
+  "since": 5,
+  "anchor": "ecdsa_pk_decompress-v"
+},{
+  "op": "ecdsa_pk_recover",
+  "opcode": "0x07 {uint8 curve index}",
+  "pops": ["stack", "{[]byte A}, {uint64 B}, {[]byte C}, {[]byte D}"],
+  "pushes": ["[]byte", "[]byte"],
+  "error": "",
+  "desc": "for (data A, recovery id B, signature C, D) recover a public key => [... stack, X, Y]",
+  "additionalDesc": "S (top) and R elements of a signature, recovery id and data (bottom) are expected on the stack and used to deriver a public key. All values are big-endian encoded. The signed data must be 32 bytes long.\n",
+  "metadata": {
+    "LogicSigVersion": ">=5"
+  },
+  "costs": [
     {
-      "op": "return",
-      "opcode": "0x43",
-      "pops": [ "... stack", "uint64"],
-      "pushes": [],
-      "desc": "use last value on stack as success value; end",
-      "error": "",
-      "additionalDesc": "",
-      "metadata": {
-        "LogicSigVersion": ">=2"
-      },
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ]
-    },
-   {
-     "op": "assert",
-     "opcode": "0x44",
-     "pops": [ "... stack", "uint64"],
-     "pushes": [],
-     "desc": "immediately fail unless value X is a non-zero number",
-     "error": "",
-     "additionalDesc": "",
-     "metadata": {
-       "LogicSigVersion": ">=3"
-     },
-     "costs": [
-       {
-         "cost": 1,
-         "filter": ""
-       }
-     ],
-     "since": 3
-    },
+      "cost": 2000,
+      "filter": ""
+    }
+  ],
+  "since": 5,
+  "anchor": "ecdsa_pk_recover-v"
+},{
+  "op": "+",
+  "opcode": "0x08",
+  "pops": ["stack", "{uint64 A}", "{uint64 B}"],
+  "pushes": ["uint64"],
+  "desc": "A plus B. Panic on overflow.",
+  "error": "",
+  "additionalDesc": "Overflow is an error condition which halts execution and fails the transaction. Full precision is available from addw.",
+  "costs": [
     {
-      "op": "pop",
-      "opcode": "0x48",
-      "pops": [ "... stack", "any"],
-      "pushes": [],
-      "desc": "discard value X from stack",
-      "error": "",
-      "additionalDesc": "",
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ]
-    },
+      "cost": 1,
+      "filter": ""
+    }
+  ],
+  "anchor": "_1"
+},{
+  "op": "-",
+  "opcode": "0x09",
+  "pops": ["stack", "{uint64 A}", "{uint64 B}"],
+  "pushes": ["uint64"],
+  "desc": "A minus B. Panic if B > A.",
+  "error": "",
+  "costs": [
     {
-      "op": "dup",
-      "opcode": "0x49",
-      "pops": ["... stack", "any"],
-      "pushes": ["... stack","any", "any"],
-      "desc": "duplicate last value on stack",
-      "error": "",
-      "additionalDesc": "",
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ]
-    },
+      "cost": 1,
+      "filter": ""
+    }
+  ],
+  "anchor": "-"
+},{
+  "op": "/",
+  "opcode": "0x0a",
+  "pops": ["stack", "{uint64 A}", "{uint64 B}"],
+  "pushes": ["uint64"],
+  "desc": "A divided by B. Panic if B == 0.",
+  "error": "",
+  "costs": [
     {
-      "op": "dup2",
-      "opcode": "0x4a",
-      "pops": ["... stack", "{any A}", "{any B}"],
-      "pushes": ["... stack","any", "any", "any", "any"],
-      "desc": "duplicate two last values on stack: A, B -> A, B, A, B",
-      "error": "",
-      "additionalDesc": "",
-      "metadata": {
-        "LogicSigVersion": ">=2"
-      },
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ]
-    },
+      "cost": 1,
+      "filter": ""
+    }
+  ],
+  "anchor": "_2"
+},{
+  "op": "*",
+  "opcode": "0x0b",
+  "pops": ["stack", "{uint64 A}", "{uint64 B}"],
+  "pushes": ["uint64"],
+  "desc": "A times B. Panic on overflow.",
+  "error": "",
+  "additionalDesc": "Overflow is an error condition which halts execution and fails the transaction. Full precision is available from mulw.",
+  "costs": [
     {
-       "op": "dig",
-       "opcode": "0x4b {uint8 depth}",
-       "pops": ["... stack", "any"],
-       "pushes": ["... stack","any", "any"],
-       "desc": "push the Nth value from the top of the stack. dig 0 is equivalent to dup",
-       "error": "",
-       "additionalDesc": "",
-       "params": ["uint8"],
-       "metadata": {
-         "LogicSigVersion": ">=3"
-       },
-       "costs": [
-         {
-           "cost": 1,
-           "filter": ""
-         }
-       ],
-      "anchor": "dig-n",
-      "since": 3
-    },
-     {
-       "op": "swap",
-       "opcode": "0x4c",
-       "pops": ["... stack", "{any A}", "{any B}"],
-       "pushes": ["... stack","any", "any"],
-       "desc": "swaps two last values on stack: A, B -> B, A",
-       "error": "",
-       "additionalDesc": "",
-       "params": [],
-       "metadata": {
-         "LogicSigVersion": ">=3"
-       },
-       "costs": [
-         {
-           "cost": 1,
-           "filter": ""
-         }
-       ],
-       "since": 3
-     },
-   {
-     "op": "select",
-     "opcode": "0x4d",
-     "pops": ["... stack", "{any A}", "{any B}", "{uint64 C}"],
-     "pushes": ["any"],
-     "desc": "selects one of two values based on top-of-stack: A, B, C -> (if C != 0 then B else A)",
-     "error": "",
-     "additionalDesc": "",
-     "params": [],
-     "metadata": {
-       "LogicSigVersion": ">=3"
-     },
-     "costs": [
-       {
-         "cost": 1,
-         "filter": ""
-       }
-     ],
-     "since": 3
-   },
-   {
-     "op": "cover",
-     "opcode": "0x4e {uint8 depth}",
-     "pops": ["... stack", "any"],
-     "pushes": ["any"],
-     "desc": "remove top of stack, and place it deeper in the stack such that N elements are above it. Fails if stack depth &lt;= N",
-     "error": "",
-     "additionalDesc": "",
-     "params": ["uint8"],
-     "metadata": {
-       "LogicSigVersion": ">=5"
-     },
-     "costs": [
-       {
-         "cost": 1,
-         "filter": ""
-       }
-     ],
-     "anchor": "cover-n",
-     "since": 5
-   },
-   {
-     "op": "uncover",
-     "opcode": "0x4f {uint8 depth}",
-     "pops": ["... stack", "any"],
-     "pushes": ["any"],
-     "desc": "remove the value at depth N in the stack and shift above items down so the Nth deep value is on top of the stack. Fails if stack depth &lt;= N",
-     "error": "",
-     "additionalDesc": "",
-     "params": ["uint8"],
-     "metadata": {
-       "LogicSigVersion": ">=5"
-     },
-     "costs": [
-       {
-         "cost": 1,
-         "filter": ""
-       }
-     ],
-     "anchor": "uncover-n",
-     "since": 5
-   },
+      "cost": 1,
+      "filter": ""
+    }
+  ],
+  "anchor": "_3"
+},
+  {
+    "op": "<",
+    "opcode": "0x0c",
+    "pops": ["stack", "{uint64 A}", "{uint64 B}"],
+    "pushes": ["uint64"],
+    "desc": "A less than B => {0 or 1}",
+    "error": "",
+    "additionalDesc": "",
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "_4"
+  },
+  {
+    "op": ">",
+    "opcode": "0x0d",
+    "pops": ["stack", "{uint64 A}", "{uint64 B}"],
+    "pushes": ["uint64"],
+    "desc": "A greater than B => {0 or 1}",
+    "error": "",
+    "additionalDesc": "",
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "_5"
+  },
+  {
+    "op": "<=",
+    "opcode": "0x0e",
+    "pops": ["stack", "{uint64 A}", "{uint64 B}"],
+    "pushes": ["uint64"],
+    "desc": "A less than or equal to B => {0 or 1}",
+    "error": "",
+    "additionalDesc": "",
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "_6"
+  },
+  {
+    "op": ">=",
+    "opcode": "0x0f",
+    "pops": ["stack", "{uint64 A}", "{uint64 B}"],
+    "pushes": ["uint64"],
+    "desc": "A greater than or equal to B => {0 or 1}",
+    "error": "",
+    "additionalDesc": "",
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "_7"
+  },
+  {
+    "op": "&&",
+    "opcode": "0x10",
+    "pops": ["stack", "{uint64 A}", "{uint64 B}"],
+    "pushes": ["uint64"],
+    "desc": "A is not zero and B is not zero => {0 or 1}",
+    "error": "",
+    "additionalDesc": "",
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "_8"
+  },
+  {
+    "op": "||",
+    "opcode": "0x11",
+    "pops": ["stack", "{uint64 A}", "{uint64 B}"],
+    "pushes": ["uint64"],
+    "desc": "A is not zero or B is not zero => {0 or 1}",
+    "error": "",
+    "additionalDesc": "",
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "_9"
+  },
+  {
+    "op": "==",
+    "opcode": "0x12",
+    "pops": ["stack", "{any A}", "{any B}"],
+    "pushes": ["uint64"],
+    "desc": "A is equal to B => {0 or 1}",
+    "error": "",
+    "additionalDesc": "",
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "_10"
+  },{
+  "op": "!=",
+  "opcode": "0x13",
+  "pops": ["stack", "{any A}", "{any B}"],
+  "pushes": ["uint64"],
+  "desc": "A is not equal to B => {0 or 1}",
+  "error": "",
+  "additionalDesc": "",
+  "costs": [
     {
-      "op": "concat",
-      "opcode": "0x50",
-      "pops": ["... stack", "{[]byte A}", "{[]byte B}"],
-      "pushes": ["[]byte"],
-      "desc": "pop two byte strings A and B and join them, push the result\n",
-      "error": "",
-      "additionalDesc": "<code>concat</code> panics if the result would be greater than 4096 bytes.",
-      "metadata": {
-        "LogicSigVersion": ">=2"
-      },
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ]
-    },
+      "cost": 1,
+      "filter": ""
+    }
+  ],
+  "anchor": "_11"
+},{
+  "op": "!",
+  "opcode": "0x14",
+  "pops": ["stack", "uint64"],
+  "pushes": ["uint64"],
+  "desc": "X == 0 yields 1; else 0",
+  "error": "",
+  "additionalDesc": "",
+  "costs": [
     {
-      "op": "substring",
-      "opcode": "0x51 {uint8 start position}{uint8 end position}",
-      "pops": ["... stack", "[]byte"],
-      "pushes": ["[]byte"],
-      "desc": "pop a byte string X. For immediate values in 0..255 M and N: extract a range of bytes from it starting at M up to but not including N, push the substring result. If N &lt; M, or either is larger than the string length, the program fails",
-      "error": "",
-      "additionalDesc": "",
-      "params": ["uint8", "uint8"],
-      "metadata": {
-        "LogicSigVersion": ">=2"
-      },
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ],
-      "anchor": "substring-s-e"
-    },
+      "cost": 1,
+      "filter": ""
+    }
+  ],
+  "anchor": "_12"
+},
+  {
+    "op": "len",
+    "opcode": "0x15",
+    "pops": ["stack", "[]byte"],
+    "pushes": ["uint64"],
+    "desc": "yields length of byte value X",
+    "error": "",
+    "additionalDesc": "",
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ]
+  },
+  {
+    "op": "itob",
+    "opcode": "0x16",
+    "pops": ["stack", "uint64"],
+    "pushes": ["[]byte"],
+    "desc": "converts uint64 X to big endian bytes",
+    "error": "",
+    "additionalDesc": "",
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ]
+  },
+  {
+    "op": "btoi",
+    "opcode": "0x17",
+    "pops": ["stack", "[]byte"],
+    "pushes": ["uint64"],
+    "desc": "converts bytes X as big endian to uint64",
+    "error": "",
+    "additionalDesc": "btoi panics if the input is longer than 8 bytes.",
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ]
+  },
+  {
+    "op": "%",
+    "opcode": "0x18",
+    "pops": ["stack", "{uint64 A}", "{uint64 B}"],
+    "pushes": ["uint64"],
+    "desc": "A modulo B. Panic if B == 0.",
+    "error": "",
+    "additionalDesc": "",
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "_13"
+  },
+  {
+    "op": "|",
+    "opcode": "0x19",
+    "pops": ["stack", "{uint64 A}", "{uint64 B}"],
+    "pushes": ["uint64"],
+    "desc": "A bitwise-or B",
+    "error": "",
+    "additionalDesc": "",
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "_14"
+  },{
+  "op": "&",
+  "opcode": "0x1a",
+  "pops": ["stack", "{uint64 A}", "{uint64 B}"],
+  "pushes": ["uint64"],
+  "desc": "A bitwise-and B",
+  "error": "",
+  "additionalDesc": "",
+  "costs": [
     {
-      "op": "substring3",
-      "opcode": "0x52",
-      "pops": ["... stack", "{[]byte A}", "{uint64 B}", "{uint64 C}"],
-      "pushes": ["[]byte"],
-      "desc": "pop a byte string A and two integers B and C. Extract a range of bytes from A starting at B up to but not including C, push the substring result. If C &lt; B, or either is larger than the string length, the program fails",
-      "error": "",
-      "additionalDesc": "",
-      "metadata": {
-        "LogicSigVersion": ">=2"
-      },
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ]
-    },
-   {
-     "op": "getbit",
-     "opcode": "0x53",
-     "pops": ["... stack", "{any A}", "{uint64 B}"],
-     "pushes": ["uint64"],
-     "desc": "pop a target A (integer or byte-array), and index B. Push the Bth bit of A",
-     "error": "",
-     "additionalDesc": "",
-     "metadata": {
-       "LogicSigVersion": ">=3"
-     },
-     "costs": [
-       {
-         "cost": 1,
-         "filter": ""
-       }
-     ],
-     "since": 3
-   },
-   {
-     "op": "setbit",
-     "opcode": "0x54",
-     "pops": ["... stack", "{any A}", "{uint64 B}", "{uint64 C}"],
-     "pushes": ["uint64"],
-     "desc": "pop a target A, index B, and bit C. Set the Bth bit of A to C, and push the result",
-     "error": "",
-     "additionalDesc": "bit indexing begins with low-order bits in integers. Setting bit 4 to 1 on the integer 0 yields 16 (int 0x0010, or 2^4). Indexing begins in the first bytes of a byte-string (as seen in getbyte and substring). Setting bits 0 through 11 to 1 in a 4 byte-array of 0s yields byte 0xfff00000",
-     "metadata": {
-       "LogicSigVersion": ">=3"
-     },
-     "costs": [
-       {
-         "cost": 1,
-         "filter": ""
-       }
-     ],
-     "since": 3
-   },
-   {
-     "op": "getbyte",
-     "opcode": "0x55",
-     "pops": ["... stack", "{[]byte A}", "{uint64 B}"],
-     "pushes": ["uint64"],
-     "desc": "pop a byte-array A and integer B. Extract the Bth byte of A and push it as an integer",
-     "error": "",
-     "additionalDesc": "",
-     "metadata": {
-       "LogicSigVersion": ">=3"
-     },
-     "costs": [
-       {
-         "cost": 1,
-         "filter": ""
-       }
-     ],
-     "since": 3
-   },
-   {
-     "op": "setbyte",
-     "opcode": "0x56",
-     "pops": ["... stack", "{[]byte A}", "{uint64 B}", "{uint64 C}"],
-     "pushes": ["[]byte"],
-     "desc": "pop a byte-array A, integer B, and small integer C (between 0..255). Set the Bth byte of A to C, and push the result",
-     "error": "",
-     "additionalDesc": "",
-     "metadata": {
-       "LogicSigVersion": ">=3"
-     },
-     "costs": [
-       {
-         "cost": 1,
-         "filter": ""
-       }
-     ],
-     "since": 3
-   },
-   {
-     "op": "extract",
-     "opcode": "0x57 {uint8 start position} {uint8 length}",
-     "pops": ["... stack", "[]byte"],
-     "pushes": ["[]byte"],
-     "desc": "pop a byte-array A. For immediate values in 0..255 S and L: extract a range of bytes from A starting at S up to but not including S+L, push the substring result. If L is 0, then extract to the end of the string. If S or S+L is larger than the array length, the program fails",
-     "error": "",
-     "additionalDesc": "",
-     "metadata": {
-       "LogicSigVersion": ">=5"
-     },
-     "params": ["uint8", "uint8"],
-     "costs": [
-       {
-         "cost": 1,
-         "filter": ""
-       }
-     ],
-     "anchor": "extract-s-l",
-     "since": 5
-   },
-   {
-     "op": "extract3",
-     "opcode": "0x58",
-     "pops": ["... stack", "{[]byte A}", "{uint64 B}", "{uint64 C}"],
-     "pushes": ["[]byte"],
-     "desc": "pop a byte-array A and two integers B and C. Extract a range of bytes from A starting at B up to but not including B+C, push the substring result. If B+C is larger than the array length, the program fails",
-     "error": "",
-     "additionalDesc": "",
-     "metadata": {
-       "LogicSigVersion": ">=5"
-     },
-     "params": [],
-     "costs": [
-       {
-         "cost": 1,
-         "filter": ""
-       }
-     ],
-     "anchor": "extract3",
-     "since": 5
-   },
-   {
-     "op": "extract_uint16",
-     "opcode": "0x59",
-     "pops": ["... stack", "{[]byte A}", "{uint64 B}"],
-     "pushes": ["uint64"],
-     "desc": "pop a byte-array A and integer B. Extract a range of bytes from A starting at B up to but not including B+2, convert bytes as big endian and push the uint64 result. If B+2 is larger than the array length, the program fails",
-     "error": "",
-     "additionalDesc": "",
-     "metadata": {
-       "LogicSigVersion": ">=5"
-     },
-     "params": [],
-     "costs": [
-       {
-         "cost": 1,
-         "filter": ""
-       }
-     ],
-     "anchor": "extract_uint16",
-     "since": 5
-   },
-   {
-     "op": "extract_uint32",
-     "opcode": "0x5a",
-     "pops": ["... stack", "{[]byte A}", "{uint64 B}"],
-     "pushes": ["uint64"],
-     "desc": "pop a byte-array A and integer B. Extract a range of bytes from A starting at B up to but not including B+4, convert bytes as big endian and push the uint64 result. If B+4 is larger than the array length, the program fails",
-     "error": "",
-     "additionalDesc": "",
-     "metadata": {
-       "LogicSigVersion": ">=5"
-     },
-     "params": [],
-     "costs": [
-       {
-         "cost": 1,
-         "filter": ""
-       }
-     ],
-     "anchor": "extract_uint32",
-     "since": 5
-   },
-   {
-     "op": "extract_uint64",
-     "opcode": "0x5b",
-     "pops": ["... stack", "{[]byte A}", "{uint64 B}"],
-     "pushes": ["uint64"],
-     "desc": "pop a byte-array A and integer B. Extract a range of bytes from A starting at B up to but not including B+8, convert bytes as big endian and push the uint64 result. If B+8 is larger than the array length, the program fails",
-     "error": "",
-     "additionalDesc": "",
-     "metadata": {
-       "LogicSigVersion": ">=5"
-     },
-     "params": [],
-     "costs": [
-       {
-         "cost": 1,
-         "filter": ""
-       }
-     ],
-     "anchor": "extract_uint64",
-     "since": 5
-   },
+      "cost": 1,
+      "filter": ""
+    }
+  ],
+  "anchor": "_15"
+},{
+  "op": "^",
+  "opcode": "0x1b",
+  "pops": ["stack", "{uint64 A}", "{uint64 B}"],
+  "pushes": ["uint64"],
+  "desc": "A bitwise-xor B",
+  "error": "",
+  "additionalDesc": "",
+  "costs": [
     {
-      "op": "balance",
-      "opcode": "0x60",
-      "pops": ["... stack", "any"],
-      "pushes": ["uint64"],
-      "desc": "get balance for account A, in microalgos. The balance is observed after the effects of previous transactions in the group, and after the fee for the current transaction is deducted",
-      "error": "",
-      "additionalDesc": "params: Before v4, Txn.Accounts offset. Since v4, Txn.Accounts offset or an account address that appears in Txn.Accounts or is Txn.Sender). Return: value",
-      "metadata": {
-        "LogicSigVersion": ">=2"
-      },
-      "mode": "Application",
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ]
+      "cost": 1,
+      "filter": ""
+    }
+  ],
+  "anchor": "_16"
+},
+  {
+    "op": "~",
+    "opcode": "0x1c",
+    "pops": ["stack", "uint64"],
+    "pushes": ["uint64"],
+    "desc": "bitwise invert value X",
+    "error": "",
+    "additionalDesc": "",
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "_17"
+  },
+  {
+    "op": "mulw",
+    "opcode": "0x1d",
+    "pops": ["stack", "{uint64 A}", "{uint64 B}"],
+    "pushes": ["uint64", "uint64"],
+    "desc": "A times B out to 128-bit long result as low (top) and high uint64 values on the stack",
+    "error": "",
+    "additionalDesc": "",
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ]
+  },
+  {
+    "op": "addw",
+    "opcode": "0x1e",
+    "pops": ["stack", "{uint64 A}", "{uint64 B}"],
+    "pushes": ["uint64", "uint64"],
+    "desc": "A plus B out to 128-bit long result as sum (top) and carry-bit uint64 values on the stack",
+    "error": "",
+    "additionalDesc": "",
+    "metadata" : {
+      "LogicSigVersion":  ">=2"
     },
-    {
-      "op": "app_opted_in",
-      "opcode": "0x61",
-      "pops": ["... stack", "{any A}", "{uint64 B}"],
-      "pushes": ["uint64"],
-      "desc": "check if account A opted in for the application B => {0 or 1}",
-      "error": "",
-      "additionalDesc": "params: Txn.Accounts offset (or, since v4, an account address that appears in Txn.Accounts or is Txn.Sender), application id (or, since v4, a Txn.ForeignApps offset). Return: 1 if opted in and 0 otherwise",
-      "metadata": {
-        "LogicSigVersion": ">=2"
-      },
-      "mode": "Application",
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ]
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ]
+  },
+  {
+    "op": "divmodw",
+    "opcode": "0x1f",
+    "pops": ["...stack", "{uint64 A}", "{uint64 B}", "{uint64 C}", "{uint64 D}"],
+    "pushes": ["...stack", "uint64", "uint64", "uint64", "uint64"],
+    "desc": "Pop four uint64 values. The deepest two are interpreted as a uint128 dividend (deepest value is high word), the top two are interpreted as a uint128 divisor. Four uint64 values are pushed to the stack. The deepest two are the quotient (deeper value is the high uint64). The top two are the remainder, low bits on top",
+    "error": "",
+    "additionalDesc": "",
+    "metadata" : {
+      "LogicSigVersion":  ">=4"
     },
-    {
-      "op": "app_local_get",
-      "opcode": "0x62",
-      "pops": ["... stack", "{any A}", "{[]byte B}"],
-      "pushes": ["any"],
-      "desc": "read from account A from local state of the current application key B => value",
-      "error": "",
-      "additionalDesc": "params: Txn.Accounts offset (or, since v4, an account address that appears in Txn.Accounts or is Txn.Sender), state key. Return: value. The value is zero (of type uint64) if the key does not exist",
-      "metadata": {
-        "LogicSigVersion": ">=2"
-      },
-      "mode": "Application",
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ]
+    "costs": [
+      {
+        "cost": 20,
+        "filter": ""
+      }
+    ],
+    "since": 4
+  },
+  {
+    "op": "intcblock",
+    "opcode": "0x20 {varuint length} [{varuint value}, ...]",
+    "pops": [],
+    "pushes": [],
+    "desc": "load block of uint64 constants",
+    "error": "",
+    "additionalDesc": "intcblock loads following program bytes into an array of integer constants in the evaluator. These integer constants can be referred to by intc and intc_* which will push the value onto the stack. Subsequent calls to intcblock reset and replace the integer constants available to the script.",
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "intcblock-uint"
+  },
+  {
+    "op": "intc",
+    "opcode": "0x21 {uint8 int constant index}",
+    "pops": [],
+    "pushes": ["uint64"],
+    "desc": "push value from uint64 constants to stack by index into constants",
+    "error": "",
+    "additionalDesc": "",
+    "params": ["uint8"],
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ]
+  },
+  {
+    "op": "intc_0",
+    "opcode": "0x22",
+    "pops": [],
+    "pushes": ["uint64"],
+    "desc": "push constant 0 from intcblock to stack",
+    "error": "",
+    "additionalDesc": "",
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ]
+  },
+  {
+    "op": "intc_1",
+    "opcode": "0x23",
+    "pops": [],
+    "pushes": ["uint64"],
+    "desc": "push constant 1 from intcblock to stack",
+    "error": "",
+    "additionalDesc": "",
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ]
+  },
+  {
+    "op": "intc_2",
+    "opcode": "0x24",
+    "pops": [],
+    "pushes": ["uint64"],
+    "desc": "push constant 2 from intcblock to stack",
+    "error": "",
+    "additionalDesc": "",
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ]
+  },
+  {
+    "op": "intc_3",
+    "opcode": "0x25",
+    "pops": [],
+    "pushes": ["uint64"],
+    "desc": "push constant 3 from intcblock to stack",
+    "error": "",
+    "additionalDesc": "",
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ]
+  },
+  {
+    "op": "bytecblock",
+    "opcode": "0x26 {varuint length} [({varuint value length} bytes), ...]",
+    "pops": [],
+    "pushes": [],
+    "desc": "load block of byte-array constants",
+    "error": "",
+    "additionalDesc": "<code>bytecblock</code> loads the following program bytes into an array of byte string constants in the evaluator. These constants can be referred to by <code>bytec</code> and <code>bytec_*</code> which will push the value onto the stack. Subsequent calls to bytecblock reset and replace the bytes constants available to the script.",
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "bytecblock-bytes"
+  },
+  {
+    "op": "bytec",
+    "opcode": "0x27 {uint8 byte constant index}",
+    "pops": [],
+    "pushes": ["[]byte"],
+    "desc": "push bytes constant to stack by index into constants",
+    "error": "",
+    "additionalDesc": "",
+    "params": ["uint8"],
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "bytec-i"
+  },
+  {
+    "op": "bytec_0",
+    "opcode": "0x28",
+    "pops": [],
+    "pushes": ["[]byte"],
+    "desc": "push constant 0 from bytecblock to stack",
+    "error": "",
+    "additionalDesc": "",
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ]
+  },
+  {
+    "op": "bytec_1",
+    "opcode": "0x29",
+    "pops": [],
+    "pushes": ["[]byte"],
+    "desc": "push constant 1 from bytecblock to stack",
+    "error": "",
+    "additionalDesc": "",
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ]
+  },
+  {
+    "op": "bytec_2",
+    "opcode": "0x2a",
+    "pops": [],
+    "pushes": ["[]byte"],
+    "desc": "push constant 2 from bytecblock to stack",
+    "error": "",
+    "additionalDesc": "",
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ]
+  },
+  {
+    "op": "bytec_3",
+    "opcode": "0x2b",
+    "pops": [],
+    "pushes": ["[]byte"],
+    "desc": "push constant 3 from bytecblock to stack",
+    "error": "",
+    "additionalDesc": "",
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ]
+  },
+  {
+    "op": "arg",
+    "opcode": "0x2c {uint8 arg index N}",
+    "pops": [],
+    "pushes": ["[]byte"],
+    "desc": "push Args[N] value to stack by index",
+    "error": "",
+    "additionalDesc": "",
+    "mode": "Signature",
+    "params": ["uint8"],
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "arg-n"
+  },
+  {
+    "op": "arg_0",
+    "opcode": "0x2d",
+    "pops": [],
+    "pushes": ["[]byte"],
+    "desc": "push Args[0] to stack",
+    "error": "",
+    "additionalDesc": "",
+    "mode": "Signature",
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ]
+  },
+  {
+    "op": "arg_1",
+    "opcode": "0x2e",
+    "pops": [],
+    "pushes": ["[]byte"],
+    "desc": "push Args[1] to stack",
+    "error": "",
+    "additionalDesc": "",
+    "mode": "Signature",
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ]
+  },
+  {
+    "op": "arg_2",
+    "opcode": "0x2f",
+    "pops": [],
+    "pushes": ["[]byte"],
+    "desc": "push Args[2] to stack",
+    "error": "",
+    "additionalDesc": "",
+    "mode": "Signature",
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ]
+  },
+  {
+    "op": "arg_3",
+    "opcode": "0x30",
+    "pops": [],
+    "pushes": ["[]byte"],
+    "desc": "push Args[3] to stack",
+    "error": "",
+    "additionalDesc": "",
+    "mode": "Signature",
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ]
+  },
+  {
+    "op": "txn",
+    "opcode": "0x31 {uint8 transaction field index}",
+    "pops": [],
+    "pushes": ["any"],
+    "desc": "push field from current transaction to stack",
+    "error": "",
+    "additionalDesc": "",
+    "params": ["txn_fields"],
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "txn-f"
+  },
+  {
+    "op": "global",
+    "opcode": "0x32 {uint8 global field index}",
+    "pops": [],
+    "pushes": ["any"],
+    "desc": "push value from globals to stack",
+    "error": "",
+    "additionalDesc": "",
+    "params": ["global_fields"],
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "global-f"
+  },
+  {
+    "op": "gtxn",
+    "opcode": "0x33 {uint8 transaction group index}{uint8 transaction field index}",
+    "pops": [],
+    "pushes": ["any"],
+    "desc": "push field to the stack from a transaction in the current transaction group",
+    "error": "",
+    "additionalDesc": "for notes on transaction fields available, see <code>txn</code>. If this transaction is <em>i</em> in the group, <code>gtxn i field</code> is equivalent to <code>txn field</code>.",
+    "params": ["uint8", "txn_fields"],
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "gtxn-t-f"
+  },
+  {
+    "op": "load",
+    "opcode": "0x34 {uint8 position in scratch space to load from}",
+    "pops": [],
+    "pushes": ["any"],
+    "desc": "copy a value from scratch space to the stack",
+    "error": "",
+    "additionalDesc": "",
+    "params": ["uint8"],
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "load-i"
+  },
+  {
+    "op": "store",
+    "opcode": "0x35 {uint8 position in scratch space to store to}",
+    "pops": ["... stack", "any"],
+    "pushes": [],
+    "desc": "pop a value from the stack and store to scratch space",
+    "error": "",
+    "additionalDesc": "",
+    "params": ["uint8"],
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "store-i"
+  },
+  {
+    "op": "txna",
+    "opcode": "0x36 {uint8 transaction field index}{uint8 transaction field array index}",
+    "pops": [],
+    "pushes": ["any"],
+    "desc": "push value of an array field from current transaction to stack",
+    "error": "",
+    "additionalDesc": "",
+    "params": ["txn_fields", "uint8"],
+    "metadata": {
+      "LogicSigVersion": ">=2"
     },
-    {
-      "op": "app_local_get_ex",
-      "opcode": "0x63",
-      "pops": ["... stack", "{any A}", "{uint64 B}", "{[]byte C}"],
-      "pushes": ["... stack", "any", "uint64"],
-      "desc": "read from account A from local state of the application B key C => [... stack, value, 0 or 1]",
-      "error": "",
-      "metadata": {
-        "LogicSigVersion": ">=2"
-      },
-      "mode": "Application",
-      "additionalDesc": "params: Txn.Accounts offset (or, since v4, an account address that appears in Txn.Accounts or is Txn.Sender), application id (or, since v4, a Txn.ForeignApps offset), state key. Return: did_exist flag (top of the stack, 1 if exist and 0 otherwise), value. The value is zero (of type uint64) if the key does not exist",
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ]
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "txna-f-i"
+  },
+  {
+    "op": "gtxna",
+    "opcode": "0x37 {uint8 transaction group index}{uint8 transaction field index}{uint8 transaction field array index}",
+    "pops": [],
+    "pushes": ["any"],
+    "desc": "push value of a field to the stack from a transaction in the current transaction group",
+    "error": "",
+    "additionalDesc": "",
+    "params": ["uint8", "txn_fields", "uint8"],
+    "metadata": {
+      "LogicSigVersion": ">=2"
     },
-    {
-      "op": "app_global_get",
-      "opcode": "0x64",
-      "pops": ["... stack", "[]byte"],
-      "pushes": ["any"],
-      "desc": "read key A from global state of a current application => value",
-      "error": "",
-      "metadata": {
-        "LogicSigVersion": ">=2"
-      },
-      "mode": "Application",
-      "additionalDesc": "params: state key. Return: value. The value is zero if the key does not exist.",
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ]
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "gtxna-t-f-i"
+  },
+  {
+    "op": "gtxns",
+    "opcode": "0x38 {uint8 transaction field index}",
+    "pops": ["... stack", "uint64"],
+    "pushes": ["any"],
+    "desc": "push field F of the Ath transaction in the current group",
+    "error": "",
+    "additionalDesc": "for notes on transaction fields available, see txn. If top of stack is i, gtxns field is equivalent to gtxn _i_ field. gtxns exists so that i can be calculated, often based on the index of the current transaction",
+    "params": [],
+    "metadata": {
+      "LogicSigVersion": ">=3"
     },
-    {
-      "op": "app_global_get_ex",
-      "opcode": "0x65",
-      "pops": ["... stack", "{uint64 A}", "{[]byte B}"],
-      "pushes": ["... stack", "any", "uint64"],
-      "desc": "read from application A global state key B => [... stack, value, 0 or 1]",
-      "error": "",
-      "metadata": {
-        "LogicSigVersion": ">=2"
-      },
-      "mode": "Application",
-      "additionalDesc": "params: Txn.ForeignApps offset (or, since v4, an application id that appears in Txn.ForeignApps or is the CurrentApplicationID), state key. Return: did_exist flag (top of the stack, 1 if exist and 0 otherwise), value. The value is zero (of type uint64) if the key does not exist",
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ]
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "gtxns-f",
+    "since": 3
+  },
+  {
+    "op": "gtxnsa",
+    "opcode": "0x39 {uint8 transaction field index} {uint8 transaction field array index}",
+    "pops": ["... stack", "uint64"],
+    "pushes": ["any"],
+    "desc": "push Ith value of the array field F from the Ath transaction in the current group",
+    "error": "",
+    "additionalDesc": "",
+    "params": [],
+    "metadata": {
+      "LogicSigVersion": ">=3"
     },
-    {
-      "op": "app_local_put",
-      "opcode": "0x66",
-      "pops": ["... stack", "{any A}", "{[]byte B}", "{any C}"],
-      "pushes": [],
-      "desc": "write to account specified by A to local state of a current application key B with value C",
-      "error": "",
-      "metadata": {
-        "LogicSigVersion": ">=2"
-      },
-      "mode": "Application",
-      "additionalDesc": "params: Txn.Accounts offset (or, since v4, an account address that appears in Txn.Accounts or is Txn.Sender), state key, value",
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ]
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "gtxnsa-f-i",
+    "since": 3
+  },
+  {
+    "op": "gload",
+    "opcode": "0x3a {uint8 transaction group index} {uint8 position in scratch space to load from}",
+    "pops": [],
+    "pushes": ["any"],
+    "desc": "push Ith scratch space index of the Tth transaction in the current group",
+    "error": "",
+    "additionalDesc": "gload fails unless the requested transaction is an ApplicationCall and T < GroupIndex",
+    "params": [],
+    "metadata": {
+      "LogicSigVersion": ">=4"
     },
-    {
-      "op": "app_global_put",
-      "opcode": "0x67",
-      "pops": ["... stack", "{[]byte A}", "{any B}"],
-      "pushes": [],
-      "desc": "write key A and value B to global state of the current application",
-      "error": "",
-      "metadata": {
-        "LogicSigVersion": ">=2"
-      },
-      "mode": "Application",
-      "additionalDesc": "",
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ]
+    "mode": "Application",
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "gload-t-i",
+    "since": 4
+  },
+  {
+    "op": "gloads",
+    "opcode": "0x3b {uint8 position in scratch space to load from}",
+    "pops": ["... stack", "uint64"],
+    "pushes": ["any"],
+    "desc": "push Ith scratch space index of the Xth transaction in the current group",
+    "error": "",
+    "additionalDesc": "gloads fails unless the requested transaction is an ApplicationCall and X < GroupIndex",
+    "params": [],
+    "metadata": {
+      "LogicSigVersion": ">=4"
     },
-    {
-      "op": "app_local_del",
-      "opcode": "0x68",
-      "pops": ["... stack", "{any A}", "{[]byte B}"],
-      "pushes": [],
-      "desc": "delete from account A local state key B of the current application",
-      "error": "",
-      "metadata": {
-        "LogicSigVersion": ">=2"
-      },
-      "mode": "Application",
-      "additionalDesc": "params: Txn.Accounts offset (or, since v4, an account address that appears in Txn.Accounts or is Txn.Sender), state key<br/>Deleting a key which is already absent has no effect on the application local state. (In particular, it does not cause the program to fail.)",
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ]
+    "mode": "Application",
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "gloads-i",
+    "since": 4
+  },
+  {
+    "op": "gaid",
+    "opcode": "0x3c",
+    "pops": [],
+    "pushes": ["uint64"],
+    "desc": "push the ID of the asset or application created in the Tth transaction of the current group",
+    "error": "",
+    "additionalDesc": "gaid fails unless the requested transaction created an asset or application and T < GroupIndex",
+    "params": [],
+    "metadata": {
+      "LogicSigVersion": ">=4"
     },
-    {
-      "op": "app_global_del",
-      "opcode": "0x69",
-      "pops": ["... stack", "[]byte"],
-      "pushes": [],
-      "desc": "delete key A from a global state of the current application",
-      "error": "",
-      "metadata": {
-        "LogicSigVersion": ">=2"
-      },
-      "mode": "Application",
-      "additionalDesc": "params: state key.\n\nDeleting a key which is already absent has no effect on the application global state. (In particular, it does not cause the program to fail.)",
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ]
+    "mode": "Application",
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "gaid-t",
+    "since": 4
+  },
+  {
+    "op": "gaids",
+    "opcode": "0x3d",
+    "pops": ["...stack", "uint64"],
+    "pushes": ["uint64"],
+    "desc": "push the ID of the asset or application created in the Xth transaction of the current group",
+    "error": "",
+    "additionalDesc": "gaids fails unless the requested transaction created an asset or application and X < GroupIndex",
+    "params": [],
+    "metadata": {
+      "LogicSigVersion": ">=4"
     },
-    {
-      "op": "asset_holding_get",
-      "opcode": "0x70 {uint8 asset holding field index}",
-      "pops": ["... stack", "{any A}", "{uint64 B}"],
-      "pushes": ["... stack", "any","uint64"],
-      "desc": "read from account A and asset B holding field X (imm arg) => {0 or 1 (top), value}",
-      "error": "",
-      "metadata": {
-        "LogicSigVersion": ">=2"
-      },
-      "mode": "Application",
-      "additionalDesc": "params: Txn.Accounts offset (or, since v4, an account address that appears in Txn.Accounts or is Txn.Sender), asset id (or, since v4, a Txn.ForeignAssets offset). Return: did_exist flag (1 if exist and 0 otherwise), value",
-      "params": ["asset_holding_get_fields"],
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ],
-      "anchor": "asset_holding_get-i"
+    "mode": "Application",
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "gaids",
+    "since": 4
+  },
+  {
+    "op": "loads",
+    "opcode": "0x3e",
+    "pops": ["...stack", "uint64"],
+    "pushes": ["any"],
+    "desc": "copy a value from the Xth scratch space to the stack. All scratch spaces are 0 at program start",
+    "error": "",
+    "additionalDesc": "",
+    "params": [],
+    "metadata": {
+      "LogicSigVersion": ">=5"
     },
-    {
-      "op": "asset_params_get",
-      "opcode": "0x71 {uint8 asset params field index}",
-      "pops": ["... stack", "uint64"],
-      "pushes": ["... stack", "uint64", "any"],
-      "desc": "read from asset A params field X (imm arg) => {0 or 1 (top), value}",
-      "error": "",
-      "metadata": {
-        "LogicSigVersion": ">=2"
-      },
-      "mode": "Application",
-      "additionalDesc": "params: Before v4, Txn.ForeignAssets offset. Since v4, Txn.ForeignAssets offset or an asset id that appears in Txn.ForeignAssets. Return: did_exist flag (1 if exist and 0 otherwise), value",
-      "params": ["asset_params_get_fields"],
-      "costs": [
-        {
-          "cost": 1,
-          "filter": ""
-        }
-      ],
-      "anchor": "asset_params_get-i"
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "loads",
+    "since": 5
+  },
+  {
+    "op": "stores",
+    "opcode": "0x3f",
+    "pops": ["...stack", "{uint64 A}", "{any B}"],
+    "pushes": [],
+    "desc": "pop indexes A and B. store B to the Ath scratch space",
+    "error": "",
+    "additionalDesc": "",
+    "params": [],
+    "metadata": {
+      "LogicSigVersion": ">=5"
     },
-   {
-     "op": "app_params_get",
-     "opcode": "0x72 {uint8 app params field index}",
-     "pops": ["... stack", "uint64"],
-     "pushes": ["... stack", "any", "uint64"],
-     "desc": "read from app A params field X (imm arg) => {0 or 1 (top), value}",
-     "error": "",
-     "metadata": {
-       "LogicSigVersion": ">=5"
-     },
-     "mode": "Application",
-     "additionalDesc": "params: Txn.ForeignApps offset or an app id that appears in Txn.ForeignApps. Return: did_exist flag (1 if the application existed and 0 otherwise), value.",
-     "params": ["app_params_get_fields"],
-     "costs": [
-       {
-         "cost": 1,
-         "filter": ""
-       }
-     ],
-     "anchor": "app_params_get-i",
-     "since": 5
-   },
-   {
-     "op": "min_balance",
-     "opcode": "0x78",
-     "pops": ["... stack", "any"],
-     "pushes": ["uint64"],
-     "desc": "get minimum required balance for account A, in microalgos. Required balance is affected by ASA and App usage. When creating or opting into an app, the minimum balance grows before the app code runs, therefore the increase is visible there. When deleting or closing out, the minimum balance decreases after the app executes",
-     "error": "",
-     "metadata": {
-       "LogicSigVersion": ">=3"
-     },
-     "mode": "Application",
-     "additionalDesc": "params: Before v4, Txn.Accounts offset. Since v4, Txn.Accounts offset or an account address that appears in Txn.Accounts or is Txn.Sender). Return: value",
-     "params": [],
-     "costs": [
-       {
-         "cost": 1,
-         "filter": ""
-       }
-     ],
-     "since": 3
-   },
-   {
-     "op": "pushbytes",
-     "opcode": "0x80 {varuint length} {bytes}",
-     "pops": [],
-     "pushes": ["[]byte"],
-     "desc": "push the following program bytes to the stack",
-     "error": "",
-     "metadata": {
-       "LogicSigVersion": ">=3"
-     },
-     "additionalDesc": "pushbytes args are not added to the bytecblock during assembly processes",
-     "params": [],
-     "costs": [
-       {
-         "cost": 1,
-         "filter": ""
-       }
-     ],
-     "anchor": "pushbytes-bytes",
-     "since": 3
-   },
-   {
-     "op": "pushint",
-     "opcode": "0x81 {varuint int}",
-     "pops": [],
-     "pushes": ["uint64"],
-     "desc": "push immediate UINT to the stack as an integer",
-     "error": "",
-     "metadata": {
-       "LogicSigVersion": ">=3"
-     },
-     "additionalDesc": "pushint args are not added to the intcblock during assembly processes",
-     "params": [],
-     "costs": [
-       {
-         "cost": 1,
-         "filter": ""
-       }
-     ],
-     "anchor": "pushint-uint",
-     "since": 3
-   },
-   {
-     "op": "callsub",
-     "opcode": "0x88",
-     "pops": [],
-     "pushes": [],
-     "desc": "branch unconditionally to TARGET, saving the next instruction on the call stack",
-     "error": "",
-     "metadata": {
-       "LogicSigVersion": ">=4"
-     },
-     "additionalDesc": "The call stack is separate from the data stack. Only callsub and retsub manipulate it",
-     "params": ["string"],
-     "costs": [
-       {
-         "cost": 1,
-         "filter": ""
-       }
-     ],
-     "anchor": "callsub-target",
-     "since": 4
-   },
-   {
-     "op": "retsub",
-     "opcode": "0x89",
-     "pops": [],
-     "pushes": [],
-     "desc": "pop the top instruction from the call stack and branch to it",
-     "error": "",
-     "metadata": {
-       "LogicSigVersion": ">=4"
-     },
-     "additionalDesc": "The call stack is separate from the data stack. Only callsub and retsub manipulate it",
-     "params": [],
-     "costs": [
-       {
-         "cost": 1,
-         "filter": ""
-       }
-     ],
-     "anchor": "retsub",
-     "since": 4
-   },
-   {
-     "op": "shl",
-     "opcode": "0x90",
-     "pops": ["... stack", "{uint64 A}", "{uint64 B}"],
-     "pushes": ["uint64"],
-     "desc": "A times 2^B, modulo 2^64",
-     "error": "",
-     "metadata": {
-       "LogicSigVersion": ">=4"
-     },
-     "additionalDesc": "",
-     "params": [],
-     "costs": [
-       {
-         "cost": 1,
-         "filter": ""
-       }
-     ],
-     "anchor": "shl",
-     "since": 4
-   },
-   {
-     "op": "shr",
-     "opcode": "0x91",
-     "pops": ["... stack", "{uint64 A}", "{uint64 B}"],
-     "pushes": ["uint64"],
-     "desc": "A divided by 2^B",
-     "error": "",
-     "metadata": {
-       "LogicSigVersion": ">=4"
-     },
-     "additionalDesc": "",
-     "params": [],
-     "costs": [
-       {
-         "cost": 1,
-         "filter": ""
-       }
-     ],
-     "anchor": "shr",
-     "since": 4
-   },
-   {
-     "op": "sqrt",
-     "opcode": "0x92",
-     "pops": ["... stack", "uint64"],
-     "pushes": ["uint64"],
-     "desc": "The largest integer B such that B^2 <= X",
-     "error": "",
-     "metadata": {
-       "LogicSigVersion": ">=4"
-     },
-     "additionalDesc": "",
-     "params": [],
-     "costs": [
-       {
-         "cost": 4,
-         "filter": ""
-       }
-     ],
-     "anchor": "sqrt",
-     "since": 4
-   },
-   {
-     "op": "bitlen",
-     "opcode": "0x93",
-     "pops": ["... stack", "any"],
-     "pushes": ["uint64"],
-     "desc": "The highest set bit in X. If X is a byte-array, it is interpreted as a big-endian unsigned integer. bitlen of 0 is 0, bitlen of 8 is 4",
-     "error": "",
-     "metadata": {
-       "LogicSigVersion": ">=4"
-     },
-     "additionalDesc": "bitlen interprets arrays as big-endian integers, unlike setbit/getbit",
-     "params": [],
-     "costs": [
-       {
-         "cost": 1,
-         "filter": ""
-       }
-     ],
-     "anchor": "bitlen",
-     "since": 4
-   },
-   {
-     "op": "exp",
-     "opcode": "0x94",
-     "pops": ["... stack", "{uint64 A}", "{uint64 B}"],
-     "pushes": ["uint64"],
-     "desc": "A raised to the Bth power. Panic if A == B == 0 and on overflow",
-     "error": "",
-     "metadata": {
-       "LogicSigVersion": ">=4"
-     },
-     "additionalDesc": "",
-     "params": [],
-     "costs": [
-       {
-         "cost": 1,
-         "filter": ""
-       }
-     ],
-     "anchor": "exp",
-     "since": 4
-   },
-   {
-     "op": "expw",
-     "opcode": "0x95",
-     "pops": ["... stack", "{uint64 A}", "{uint64 B}"],
-     "pushes": ["... stack", "uint64", "uint64"],
-     "desc": "A raised to the Bth power as a 128-bit long result as low (top) and high uint64 values on the stack. Panic if A == B == 0 or if the results exceeds 2^128-1",
-     "error": "",
-     "metadata": {
-       "LogicSigVersion": ">=4"
-     },
-     "additionalDesc": "",
-     "params": [],
-     "costs": [
-       {
-         "cost": 10,
-         "filter": ""
-       }
-     ],
-     "anchor": "expw",
-     "since": 4
-   },
-   {
-     "op": "b+",
-     "opcode": "0xa0",
-     "pops": ["... stack", "{[]byte A}", "{[]byte B}"],
-     "pushes": ["[]byte"],
-     "desc": "A plus B, where A and B are byte-arrays interpreted as big-endian unsigned integers",
-     "error": "",
-     "metadata": {
-       "LogicSigVersion": ">=4"
-     },
-     "additionalDesc": "",
-     "params": [],
-     "costs": [
-       {
-         "cost": 10,
-         "filter": ""
-       }
-     ],
-     "anchor": "b",
-     "since": 4
-   },
-   {
-     "op": "b-",
-     "opcode": "0xa1",
-     "pops": ["... stack", "{[]byte A}", "{[]byte B}"],
-     "pushes": ["[]byte"],
-     "desc": "A minus B, where A and B are byte-arrays interpreted as big-endian unsigned integers. Panic on underflow",
-     "error": "",
-     "metadata": {
-       "LogicSigVersion": ">=4"
-     },
-     "additionalDesc": "",
-     "params": [],
-     "costs": [
-       {
-         "cost": 10,
-         "filter": ""
-       }
-     ],
-     "anchor": "b-",
-     "since": 4
-   },
-   {
-     "op": "b/",
-     "opcode": "0xa2",
-     "pops": ["... stack", "{[]byte A}", "{[]byte B}"],
-     "pushes": ["[]byte"],
-     "desc": "A divided by B, where A and B are byte-arrays interpreted as big-endian unsigned integers. Panic if B is zero",
-     "error": "",
-     "metadata": {
-       "LogicSigVersion": ">=4"
-     },
-     "additionalDesc": "",
-     "params": [],
-     "costs": [
-       {
-         "cost": 20,
-         "filter": ""
-       }
-     ],
-     "anchor": "b_1",
-     "since": 4
-   },
-   {
-     "op": "b*",
-     "opcode": "0xa3",
-     "pops": ["... stack", "{[]byte A}", "{[]byte B}"],
-     "pushes": ["[]byte"],
-     "desc": "A times B, where A and B are byte-arrays interpreted as big-endian unsigned integers",
-     "error": "",
-     "metadata": {
-       "LogicSigVersion": ">=4"
-     },
-     "additionalDesc": "",
-     "params": [],
-     "costs": [
-       {
-         "cost": 20,
-         "filter": ""
-       }
-     ],
-     "anchor": "b_2",
-     "since": 4
-   },
-   {
-     "op": "b<",
-     "opcode": "0xa4",
-     "pops": ["... stack", "{[]byte A}", "{[]byte B}"],
-     "pushes": ["uint64"],
-     "desc": "A is less than B, where A and B are byte-arrays interpreted as big-endian unsigned integers => { 0 or 1}",
-     "error": "",
-     "metadata": {
-       "LogicSigVersion": ">=4"
-     },
-     "additionalDesc": "",
-     "params": [],
-     "costs": [
-       {
-         "cost": 1,
-         "filter": ""
-       }
-     ],
-     "anchor": "b_3",
-     "since": 4
-   },
-   {
-     "op": "b>",
-     "opcode": "0xa5",
-     "pops": ["... stack", "{[]byte A}", "{[]byte B}"],
-     "pushes": ["uint64"],
-     "desc": "A is greater than B, where A and B are byte-arrays interpreted as big-endian unsigned integers => { 0 or 1}",
-     "error": "",
-     "metadata": {
-       "LogicSigVersion": ">=4"
-     },
-     "additionalDesc": "",
-     "params": [],
-     "costs": [
-       {
-         "cost": 1,
-         "filter": ""
-       }
-     ],
-     "anchor": "b_4",
-     "since": 4
-   },
-   {
-     "op": "b<=",
-     "opcode": "0xa6",
-     "pops": ["... stack", "{[]byte A}", "{[]byte B}"],
-     "pushes": ["uint64"],
-     "desc": "A is less than or equal to B, where A and B are byte-arrays interpreted as big-endian unsigned integers => { 0 or 1}",
-     "error": "",
-     "metadata": {
-       "LogicSigVersion": ">=4"
-     },
-     "additionalDesc": "",
-     "params": [],
-     "costs": [
-       {
-         "cost": 1,
-         "filter": ""
-       }
-     ],
-     "anchor": "b_5",
-     "since": 4
-   },
-   {
-     "op": "b>=",
-     "opcode": "0xa7",
-     "pops": ["... stack", "{[]byte A}", "{[]byte B}"],
-     "pushes": ["uint64"],
-     "desc": "A is greater than or equal to B, where A and B are byte-arrays interpreted as big-endian unsigned integers => { 0 or 1}",
-     "error": "",
-     "metadata": {
-       "LogicSigVersion": ">=4"
-     },
-     "additionalDesc": "",
-     "params": [],
-     "costs": [
-       {
-         "cost": 1,
-         "filter": ""
-       }
-     ],
-     "anchor": "b_6",
-     "since": 4
-   },
-   {
-     "op": "b==",
-     "opcode": "0xa8",
-     "pops": ["... stack", "{[]byte A}", "{[]byte B}"],
-     "pushes": ["uint64"],
-     "desc": "A is equals to B, where A and B are byte-arrays interpreted as big-endian unsigned integers => { 0 or 1}",
-     "error": "",
-     "metadata": {
-       "LogicSigVersion": ">=4"
-     },
-     "additionalDesc": "",
-     "params": [],
-     "costs": [
-       {
-         "cost": 1,
-         "filter": ""
-       }
-     ],
-     "anchor": "b_7",
-     "since": 4
-   },
-   {
-     "op": "b!=",
-     "opcode": "0xa9",
-     "pops": ["... stack", "{[]byte A}", "{[]byte B}"],
-     "pushes": ["uint64"],
-     "desc": "A is not equal to B, where A and B are byte-arrays interpreted as big-endian unsigned integers => { 0 or 1}",
-     "error": "",
-     "metadata": {
-       "LogicSigVersion": ">=4"
-     },
-     "additionalDesc": "",
-     "params": [],
-     "costs": [
-       {
-         "cost": 1,
-         "filter": ""
-       }
-     ],
-     "anchor": "b_8",
-     "since": 4
-   },
-   {
-     "op": "b%",
-     "opcode": "0xaa",
-     "pops": ["... stack", "{[]byte A}", "{[]byte B}"],
-     "pushes": ["[]byte"],
-     "desc": "A modulo B, where A and B are byte-arrays interpreted as big-endian unsigned integers. Panic if B is zero",
-     "error": "",
-     "metadata": {
-       "LogicSigVersion": ">=4"
-     },
-     "additionalDesc": "",
-     "params": [],
-     "costs": [
-       {
-         "cost": 20,
-         "filter": ""
-       }
-     ],
-     "anchor": "b_9",
-     "since": 4
-   },
-   {
-     "op": "b|",
-     "opcode": "0xab",
-     "pops": ["... stack", "{[]byte A}", "{[]byte B}"],
-     "pushes": ["[]byte"],
-     "desc": "A bitwise-or B, where A and B are byte-arrays, zero-left extended to the greater of their lengths",
-     "error": "",
-     "metadata": {
-       "LogicSigVersion": ">=4"
-     },
-     "additionalDesc": "",
-     "params": [],
-     "costs": [
-       {
-         "cost": 6,
-         "filter": ""
-       }
-     ],
-     "anchor": "b_10",
-     "since": 4
-   },
-   {
-     "op": "b&",
-     "opcode": "0xac",
-     "pops": ["... stack", "{[]byte A}", "{[]byte B}"],
-     "pushes": ["[]byte"],
-     "desc": "A bitwise-and B, where A and B are byte-arrays, zero-left extended to the greater of their lengths",
-     "error": "",
-     "metadata": {
-       "LogicSigVersion": ">=4"
-     },
-     "additionalDesc": "",
-     "params": [],
-     "costs": [
-       {
-         "cost": 6,
-         "filter": ""
-       }
-     ],
-     "anchor": "b_11",
-     "since": 4
-   },
-   {
-     "op": "b^",
-     "opcode": "0xad",
-     "pops": ["... stack", "{[]byte A}", "{[]byte B}"],
-     "pushes": ["[]byte"],
-     "desc": "A bitwise-xor B, where A and B are byte-arrays, zero-left extended to the greater of their lengths",
-     "error": "",
-     "metadata": {
-       "LogicSigVersion": ">=4"
-     },
-     "additionalDesc": "",
-     "params": [],
-     "costs": [
-       {
-         "cost": 6,
-         "filter": ""
-       }
-     ],
-     "anchor": "b_12",
-     "since": 4
-   },
-   {
-     "op": "b~",
-     "opcode": "0xae",
-     "pops": ["... stack", "[]byte"],
-     "pushes": ["[]byte"],
-     "desc": "X with all bits inverted",
-     "error": "",
-     "metadata": {
-       "LogicSigVersion": ">=4"
-     },
-     "additionalDesc": "",
-     "params": [],
-     "costs": [
-       {
-         "cost": 4,
-         "filter": ""
-       }
-     ],
-     "anchor": "b_13",
-     "since": 4
-   },
-   {
-     "op": "bzero",
-     "opcode": "0xaf",
-     "pops": ["... stack", "uint64"],
-     "pushes": ["[]byte"],
-     "desc": "push a byte-array of length X, containing all zero bytes",
-     "error": "",
-     "metadata": {
-       "LogicSigVersion": ">=4"
-     },
-     "additionalDesc": "",
-     "params": [],
-     "costs": [
-       {
-         "cost": 1,
-         "filter": ""
-       }
-     ],
-     "anchor": "bzero",
-     "since": 4
-   },
-   {
-     "op": "log",
-     "opcode": "0xb0",
-     "pops": ["... stack", "[]byte"],
-     "pushes": [],
-     "desc": "write bytes to log state of the current application",
-     "error": "",
-     "metadata": {
-       "LogicSigVersion": ">=5"
-     },
-     "additionalDesc": "log fails if called more than MaxLogCalls times in a program, or if the sum of logged bytes exceeds 1024 bytes",
-     "params": [],
-     "mode": "Application",
-     "costs": [
-       {
-         "cost": 1,
-         "filter": ""
-       }
-     ],
-     "anchor": "log",
-     "since": 5
-   },
-   {
-     "op": "itxn_begin",
-     "opcode": "0xb1",
-     "pops": [],
-     "pushes": [],
-     "desc": "Begin preparation of a new inner transaction",
-     "error": "",
-     "metadata": {
-       "LogicSigVersion": ">=5"
-     },
-     "additionalDesc": "itxn_begin initializes Sender to the application address; Fee to the minimum allowable, taking into account MinTxnFee and credit from overpaying in earlier transactions; FirstValid/LastValid to the values in the top-level transaction, and all other fields to zero values",
-     "params": [],
-     "mode": "Application",
-     "costs": [
-       {
-         "cost": 1,
-         "filter": ""
-       }
-     ],
-     "since": 5
-   },
-   {
-     "op": "itxn_field",
-     "opcode": "0xb2 {uint8 transaction field index}",
-     "pops": ["... stack", "any"],
-     "pushes": [],
-     "desc": "Set field F of the current inner transaction to X",
-     "error": "",
-     "metadata": {
-       "LogicSigVersion": ">=5"
-     },
-     "additionalDesc": "itxn_field fails if X is of the wrong type for F, including a byte array of the wrong size for use as an address when F is an address field. itxn_field also fails if X is an account or asset that does not appear in txn.Accounts or txn.ForeignAssets of the top-level transaction. (Setting addresses in asset creation are exempted from this requirement.)",
-     "params": ["txn_fields"],
-     "mode": "Application",
-     "costs": [
-       {
-         "cost": 1,
-         "filter": ""
-       }
-     ],
-     "anchor": "itxn_field-f",
-     "since": 5
-   },
-   {
-     "op": "itxn_submit",
-     "opcode": "0xb3",
-     "pops": [],
-     "pushes": [],
-     "desc": "Execute the current inner transaction. Fail if 16 inner transactions have already been executed, or if the transaction itself fails",
-     "error": "",
-     "metadata": {
-       "LogicSigVersion": ">=5"
-     },
-     "additionalDesc": "",
-     "params": [],
-     "mode": "Application",
-     "costs": [
-       {
-         "cost": 1,
-         "filter": ""
-       }
-     ],
-     "anchor": "itxn_submit",
-     "since": 5
-   },
-   {
-     "op": "itxn",
-     "opcode": "0xb4 {uint8 transaction field index}",
-     "pops": [],
-     "pushes": ["any"],
-     "desc": "push field F of the last inner transaction to stack",
-     "error": "",
-     "metadata": {
-       "LogicSigVersion": ">=5"
-     },
-     "additionalDesc": "",
-     "params": ["txn_fields"],
-     "mode": "Application",
-     "costs": [
-       {
-         "cost": 1,
-         "filter": ""
-       }
-     ],
-     "anchor": "itxn-f",
-     "since": 5
-   },
-   {
-     "op": "itxna",
-     "opcode": "0xb5 {uint8 transaction field index} {uint8 transaction field array index}",
-     "pops": [],
-     "pushes": ["any"],
-     "desc": "push Ith value of the array field F of the last inner transaction to stack",
-     "error": "",
-     "metadata": {
-       "LogicSigVersion": ">=5"
-     },
-     "additionalDesc": "",
-     "params": ["txn_fields", "uint8"],
-     "mode": "Application",
-     "costs": [
-       {
-         "cost": 1,
-         "filter": ""
-       }
-     ],
-     "anchor": "itxna-f-i",
-     "since": 5
-   },
-   {
-     "op": "txnas",
-     "opcode": "0xc0 {uint8 transaction field index}",
-     "pops": ["... stack", "uint64"],
-     "pushes": ["any"],
-     "desc": "push Xth value of the array field F of the current transaction",
-     "error": "",
-     "metadata": {
-       "LogicSigVersion": ">=5"
-     },
-     "additionalDesc": "",
-     "params": ["txn_fields"],
-     "costs": [
-       {
-         "cost": 1,
-         "filter": ""
-       }
-     ],
-     "anchor": "txnas-f",
-     "since": 5
-   },
-   {
-     "op": "gtxnas",
-     "opcode": "0xc1 {uint8 transaction group index} {uint8 transaction field index}",
-     "pops": ["... stack", "uint64"],
-     "pushes": ["any"],
-     "desc": "push Xth value of the array field F from the Tth transaction in the current group",
-     "error": "",
-     "metadata": {
-       "LogicSigVersion": ">=5"
-     },
-     "additionalDesc": "",
-     "params": ["uint8","txn_fields"],
-     "costs": [
-       {
-         "cost": 1,
-         "filter": ""
-       }
-     ],
-     "anchor": "gtxnas-t-f",
-     "since": 5
-   },
-   {
-     "op": "gtxnsas",
-     "opcode": "0xc2 {uint8 transaction field index}",
-     "pops": ["... stack", "{uint64 A}", "{uint64 B}"],
-     "pushes": ["any"],
-     "desc": "pop an index A and an index B. push Bth value of the array field F from the Ath transaction in the current group",
-     "error": "",
-     "metadata": {
-       "LogicSigVersion": ">=5"
-     },
-     "additionalDesc": "",
-     "params": ["txn_fields"],
-     "costs": [
-       {
-         "cost": 1,
-         "filter": ""
-       }
-     ],
-     "anchor": "gtxnsas-f",
-     "since": 5
-   },
-   {
-     "op": "args",
-     "opcode": "0xc3",
-     "pops": ["... stack", "uint64"],
-     "pushes": ["[]byte"],
-     "desc": "push Xth LogicSig argument to stack",
-     "error": "",
-     "metadata": {
-       "LogicSigVersion": ">=5"
-     },
-     "additionalDesc": "",
-     "params": [],
-     "costs": [
-       {
-         "cost": 1,
-         "filter": ""
-       }
-     ],
-     "mode": "Signature",
-     "anchor": "args",
-     "since": 5
-   },
-   {
-     "op": "int",
-     "opcode": "Pseudo opcode",
-     "pops": [],
-     "pushes": [],
-     "desc":"int pseudo opcode",
-     "additionalDesc" : "int constants may be 0x prefixed for hex, 0 prefixed for octal, or decimal numbers."
-   },
-   {
-     "op": "byte",
-     "opcode": "Pseudo opcode",
-     "pops": [],
-     "pushes": [],
-     "desc":"byte pseudo opcode",
-     "additionalDesc" : "byte base64 AAAA...<br>byte b64 AAAA...<br>byte base64(AAAA...)<br>byte b64(AAAA...)<br>byte base32 AAAA...<br>byte b32 AAAA...<br>byte base32(AAAA...)<br>byte b32(AAAA...)<br>byte 0x0123456789abcdef...<br>byte \"\\x01\\x02\"<br>byte \"string literal\""
-   },
-   {
-     "op": "addr",
-     "opcode": "Pseudo opcode",
-     "pops": [],
-     "pushes": [],
-     "desc":"addr pseudo opcode",
-     "additionalDesc" : "addr {address}"
-   }
- ]
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "stores",
+    "since": 5
+  },
+  {
+    "op": "bnz",
+    "opcode": "0x40 {0..0x7fff forward branch offset, big endian}",
+    "pops": ["... stack", "uint64"],
+    "pushes": [],
+    "desc": "branch if value X is not zero",
+    "error": "",
+    "additionalDesc": "The bnz instruction opcode 0x40 is followed by two immediate data bytes which are a high byte first and low byte second which together form a 16 bit offset which the instruction may branch to. For a bnz instruction at pc, if the last element of the stack is not zero then branch to instruction at pc + 3 + N, else proceed to next instruction at pc + 3. Branch targets must be aligned instructions. (e.g. Branching to the second byte of a 2 byte op will be rejected.) Starting at v4, the offset is treated as a signed 16 bit integer allowing for backward branches and looping. In prior version (v1 to v3), branch offsets are limited to forward branches only, 0-0x7fff. <br/><br/>At v2 it became allowed to branch to the end of the program exactly after the last instruction: bnz to byte N (with 0-indexing) was illegal for a TEAL program with N bytes before v2, and is legal after it. This change eliminates the need for a last instruction of no-op as a branch target at the end. (Branching beyond the end--in other words, to a byte larger than N--is still illegal and will cause the program to fail.)",
+    "params": ["string"],
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "bnz-target"
+  },
+  {
+    "op": "bz",
+    "opcode": "0x41 {0..0x7fff forward branch offset, big endian}",
+    "pops": ["... stack", "uint64"],
+    "pushes": [],
+    "desc": "branch if value X is zero",
+    "error": "",
+    "additionalDesc": "See <code>bnz</code> for details on how branches work. <code>bz</code> inverts the behavior of <code>bnz</code>.",
+    "params": ["string"],
+    "metadata": {
+      "LogicSigVersion": ">=2"
+    },
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "bz-target"
+  },
+  {
+    "op": "b",
+    "opcode": "0x42 {0..0x7fff forward branch offset, big endian}",
+    "pops": [],
+    "pushes": [],
+    "desc": "branch unconditionally to offset",
+    "metadata": {
+      "LogicSigVersion": ">=2"
+    },
+    "error": "",
+    "additionalDesc": "See <code>bnz</code> for details on how branches work. <code>b</code> always jumps to the offset.",
+    "params": ["string"],
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "b-target"
+  },
+  {
+    "op": "return",
+    "opcode": "0x43",
+    "pops": [ "... stack", "uint64"],
+    "pushes": [],
+    "desc": "use last value on stack as success value; end",
+    "error": "",
+    "additionalDesc": "",
+    "metadata": {
+      "LogicSigVersion": ">=2"
+    },
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ]
+  },
+  {
+    "op": "assert",
+    "opcode": "0x44",
+    "pops": [ "... stack", "uint64"],
+    "pushes": [],
+    "desc": "immediately fail unless value X is a non-zero number",
+    "error": "",
+    "additionalDesc": "",
+    "metadata": {
+      "LogicSigVersion": ">=3"
+    },
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "since": 3
+  },
+  {
+    "op": "pop",
+    "opcode": "0x48",
+    "pops": [ "... stack", "any"],
+    "pushes": [],
+    "desc": "discard value X from stack",
+    "error": "",
+    "additionalDesc": "",
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ]
+  },
+  {
+    "op": "dup",
+    "opcode": "0x49",
+    "pops": ["... stack", "any"],
+    "pushes": ["... stack","any", "any"],
+    "desc": "duplicate last value on stack",
+    "error": "",
+    "additionalDesc": "",
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ]
+  },
+  {
+    "op": "dup2",
+    "opcode": "0x4a",
+    "pops": ["... stack", "{any A}", "{any B}"],
+    "pushes": ["... stack","any", "any", "any", "any"],
+    "desc": "duplicate two last values on stack: A, B -> A, B, A, B",
+    "error": "",
+    "additionalDesc": "",
+    "metadata": {
+      "LogicSigVersion": ">=2"
+    },
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ]
+  },
+  {
+    "op": "dig",
+    "opcode": "0x4b {uint8 depth}",
+    "pops": ["... stack", "any"],
+    "pushes": ["... stack","any", "any"],
+    "desc": "push the Nth value from the top of the stack. dig 0 is equivalent to dup",
+    "error": "",
+    "additionalDesc": "",
+    "params": ["uint8"],
+    "metadata": {
+      "LogicSigVersion": ">=3"
+    },
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "dig-n",
+    "since": 3
+  },
+  {
+    "op": "swap",
+    "opcode": "0x4c",
+    "pops": ["... stack", "{any A}", "{any B}"],
+    "pushes": ["... stack","any", "any"],
+    "desc": "swaps two last values on stack: A, B -> B, A",
+    "error": "",
+    "additionalDesc": "",
+    "params": [],
+    "metadata": {
+      "LogicSigVersion": ">=3"
+    },
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "since": 3
+  },
+  {
+    "op": "select",
+    "opcode": "0x4d",
+    "pops": ["... stack", "{any A}", "{any B}", "{uint64 C}"],
+    "pushes": ["any"],
+    "desc": "selects one of two values based on top-of-stack: A, B, C -> (if C != 0 then B else A)",
+    "error": "",
+    "additionalDesc": "",
+    "params": [],
+    "metadata": {
+      "LogicSigVersion": ">=3"
+    },
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "since": 3
+  },
+  {
+    "op": "cover",
+    "opcode": "0x4e {uint8 depth}",
+    "pops": ["... stack", "any"],
+    "pushes": ["any"],
+    "desc": "remove top of stack, and place it deeper in the stack such that N elements are above it. Fails if stack depth &lt;= N",
+    "error": "",
+    "additionalDesc": "",
+    "params": ["uint8"],
+    "metadata": {
+      "LogicSigVersion": ">=5"
+    },
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "cover-n",
+    "since": 5
+  },
+  {
+    "op": "uncover",
+    "opcode": "0x4f {uint8 depth}",
+    "pops": ["... stack", "any"],
+    "pushes": ["any"],
+    "desc": "remove the value at depth N in the stack and shift above items down so the Nth deep value is on top of the stack. Fails if stack depth &lt;= N",
+    "error": "",
+    "additionalDesc": "",
+    "params": ["uint8"],
+    "metadata": {
+      "LogicSigVersion": ">=5"
+    },
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "uncover-n",
+    "since": 5
+  },
+  {
+    "op": "concat",
+    "opcode": "0x50",
+    "pops": ["... stack", "{[]byte A}", "{[]byte B}"],
+    "pushes": ["[]byte"],
+    "desc": "pop two byte strings A and B and join them, push the result\n",
+    "error": "",
+    "additionalDesc": "<code>concat</code> panics if the result would be greater than 4096 bytes.",
+    "metadata": {
+      "LogicSigVersion": ">=2"
+    },
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ]
+  },
+  {
+    "op": "substring",
+    "opcode": "0x51 {uint8 start position}{uint8 end position}",
+    "pops": ["... stack", "[]byte"],
+    "pushes": ["[]byte"],
+    "desc": "pop a byte string X. For immediate values in 0..255 M and N: extract a range of bytes from it starting at M up to but not including N, push the substring result. If N &lt; M, or either is larger than the string length, the program fails",
+    "error": "",
+    "additionalDesc": "",
+    "params": ["uint8", "uint8"],
+    "metadata": {
+      "LogicSigVersion": ">=2"
+    },
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "substring-s-e"
+  },
+  {
+    "op": "substring3",
+    "opcode": "0x52",
+    "pops": ["... stack", "{[]byte A}", "{uint64 B}", "{uint64 C}"],
+    "pushes": ["[]byte"],
+    "desc": "pop a byte string A and two integers B and C. Extract a range of bytes from A starting at B up to but not including C, push the substring result. If C &lt; B, or either is larger than the string length, the program fails",
+    "error": "",
+    "additionalDesc": "",
+    "metadata": {
+      "LogicSigVersion": ">=2"
+    },
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ]
+  },
+  {
+    "op": "getbit",
+    "opcode": "0x53",
+    "pops": ["... stack", "{any A}", "{uint64 B}"],
+    "pushes": ["uint64"],
+    "desc": "pop a target A (integer or byte-array), and index B. Push the Bth bit of A",
+    "error": "",
+    "additionalDesc": "",
+    "metadata": {
+      "LogicSigVersion": ">=3"
+    },
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "since": 3
+  },
+  {
+    "op": "setbit",
+    "opcode": "0x54",
+    "pops": ["... stack", "{any A}", "{uint64 B}", "{uint64 C}"],
+    "pushes": ["uint64"],
+    "desc": "pop a target A, index B, and bit C. Set the Bth bit of A to C, and push the result",
+    "error": "",
+    "additionalDesc": "bit indexing begins with low-order bits in integers. Setting bit 4 to 1 on the integer 0 yields 16 (int 0x0010, or 2^4). Indexing begins in the first bytes of a byte-string (as seen in getbyte and substring). Setting bits 0 through 11 to 1 in a 4 byte-array of 0s yields byte 0xfff00000",
+    "metadata": {
+      "LogicSigVersion": ">=3"
+    },
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "since": 3
+  },
+  {
+    "op": "getbyte",
+    "opcode": "0x55",
+    "pops": ["... stack", "{[]byte A}", "{uint64 B}"],
+    "pushes": ["uint64"],
+    "desc": "pop a byte-array A and integer B. Extract the Bth byte of A and push it as an integer",
+    "error": "",
+    "additionalDesc": "",
+    "metadata": {
+      "LogicSigVersion": ">=3"
+    },
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "since": 3
+  },
+  {
+    "op": "setbyte",
+    "opcode": "0x56",
+    "pops": ["... stack", "{[]byte A}", "{uint64 B}", "{uint64 C}"],
+    "pushes": ["[]byte"],
+    "desc": "pop a byte-array A, integer B, and small integer C (between 0..255). Set the Bth byte of A to C, and push the result",
+    "error": "",
+    "additionalDesc": "",
+    "metadata": {
+      "LogicSigVersion": ">=3"
+    },
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "since": 3
+  },
+  {
+    "op": "extract",
+    "opcode": "0x57 {uint8 start position} {uint8 length}",
+    "pops": ["... stack", "[]byte"],
+    "pushes": ["[]byte"],
+    "desc": "pop a byte-array A. For immediate values in 0..255 S and L: extract a range of bytes from A starting at S up to but not including S+L, push the substring result. If L is 0, then extract to the end of the string. If S or S+L is larger than the array length, the program fails",
+    "error": "",
+    "additionalDesc": "",
+    "metadata": {
+      "LogicSigVersion": ">=5"
+    },
+    "params": ["uint8", "uint8"],
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "extract-s-l",
+    "since": 5
+  },
+  {
+    "op": "extract3",
+    "opcode": "0x58",
+    "pops": ["... stack", "{[]byte A}", "{uint64 B}", "{uint64 C}"],
+    "pushes": ["[]byte"],
+    "desc": "pop a byte-array A and two integers B and C. Extract a range of bytes from A starting at B up to but not including B+C, push the substring result. If B+C is larger than the array length, the program fails",
+    "error": "",
+    "additionalDesc": "",
+    "metadata": {
+      "LogicSigVersion": ">=5"
+    },
+    "params": [],
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "extract3",
+    "since": 5
+  },
+  {
+    "op": "extract_uint16",
+    "opcode": "0x59",
+    "pops": ["... stack", "{[]byte A}", "{uint64 B}"],
+    "pushes": ["uint64"],
+    "desc": "pop a byte-array A and integer B. Extract a range of bytes from A starting at B up to but not including B+2, convert bytes as big endian and push the uint64 result. If B+2 is larger than the array length, the program fails",
+    "error": "",
+    "additionalDesc": "",
+    "metadata": {
+      "LogicSigVersion": ">=5"
+    },
+    "params": [],
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "extract_uint16",
+    "since": 5
+  },
+  {
+    "op": "extract_uint32",
+    "opcode": "0x5a",
+    "pops": ["... stack", "{[]byte A}", "{uint64 B}"],
+    "pushes": ["uint64"],
+    "desc": "pop a byte-array A and integer B. Extract a range of bytes from A starting at B up to but not including B+4, convert bytes as big endian and push the uint64 result. If B+4 is larger than the array length, the program fails",
+    "error": "",
+    "additionalDesc": "",
+    "metadata": {
+      "LogicSigVersion": ">=5"
+    },
+    "params": [],
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "extract_uint32",
+    "since": 5
+  },
+  {
+    "op": "extract_uint64",
+    "opcode": "0x5b",
+    "pops": ["... stack", "{[]byte A}", "{uint64 B}"],
+    "pushes": ["uint64"],
+    "desc": "pop a byte-array A and integer B. Extract a range of bytes from A starting at B up to but not including B+8, convert bytes as big endian and push the uint64 result. If B+8 is larger than the array length, the program fails",
+    "error": "",
+    "additionalDesc": "",
+    "metadata": {
+      "LogicSigVersion": ">=5"
+    },
+    "params": [],
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "extract_uint64",
+    "since": 5
+  },
+  {
+    "op": "balance",
+    "opcode": "0x60",
+    "pops": ["... stack", "any"],
+    "pushes": ["uint64"],
+    "desc": "get balance for account A, in microalgos. The balance is observed after the effects of previous transactions in the group, and after the fee for the current transaction is deducted",
+    "error": "",
+    "additionalDesc": "params: Before v4, Txn.Accounts offset. Since v4, Txn.Accounts offset or an account address that appears in Txn.Accounts or is Txn.Sender). Return: value",
+    "metadata": {
+      "LogicSigVersion": ">=2"
+    },
+    "mode": "Application",
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ]
+  },
+  {
+    "op": "app_opted_in",
+    "opcode": "0x61",
+    "pops": ["... stack", "{any A}", "{uint64 B}"],
+    "pushes": ["uint64"],
+    "desc": "check if account A opted in for the application B => {0 or 1}",
+    "error": "",
+    "additionalDesc": "params: Txn.Accounts offset (or, since v4, an account address that appears in Txn.Accounts or is Txn.Sender), application id (or, since v4, a Txn.ForeignApps offset). Return: 1 if opted in and 0 otherwise",
+    "metadata": {
+      "LogicSigVersion": ">=2"
+    },
+    "mode": "Application",
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ]
+  },
+  {
+    "op": "app_local_get",
+    "opcode": "0x62",
+    "pops": ["... stack", "{any A}", "{[]byte B}"],
+    "pushes": ["any"],
+    "desc": "read from account A from local state of the current application key B => value",
+    "error": "",
+    "additionalDesc": "params: Txn.Accounts offset (or, since v4, an account address that appears in Txn.Accounts or is Txn.Sender), state key. Return: value. The value is zero (of type uint64) if the key does not exist",
+    "metadata": {
+      "LogicSigVersion": ">=2"
+    },
+    "mode": "Application",
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ]
+  },
+  {
+    "op": "app_local_get_ex",
+    "opcode": "0x63",
+    "pops": ["... stack", "{any A}", "{uint64 B}", "{[]byte C}"],
+    "pushes": ["... stack", "any", "uint64"],
+    "desc": "read from account A from local state of the application B key C => [... stack, value, 0 or 1]",
+    "error": "",
+    "metadata": {
+      "LogicSigVersion": ">=2"
+    },
+    "mode": "Application",
+    "additionalDesc": "params: Txn.Accounts offset (or, since v4, an account address that appears in Txn.Accounts or is Txn.Sender), application id (or, since v4, a Txn.ForeignApps offset), state key. Return: did_exist flag (top of the stack, 1 if exist and 0 otherwise), value. The value is zero (of type uint64) if the key does not exist",
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ]
+  },
+  {
+    "op": "app_global_get",
+    "opcode": "0x64",
+    "pops": ["... stack", "[]byte"],
+    "pushes": ["any"],
+    "desc": "read key A from global state of a current application => value",
+    "error": "",
+    "metadata": {
+      "LogicSigVersion": ">=2"
+    },
+    "mode": "Application",
+    "additionalDesc": "params: state key. Return: value. The value is zero if the key does not exist.",
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ]
+  },
+  {
+    "op": "app_global_get_ex",
+    "opcode": "0x65",
+    "pops": ["... stack", "{uint64 A}", "{[]byte B}"],
+    "pushes": ["... stack", "any", "uint64"],
+    "desc": "read from application A global state key B => [... stack, value, 0 or 1]",
+    "error": "",
+    "metadata": {
+      "LogicSigVersion": ">=2"
+    },
+    "mode": "Application",
+    "additionalDesc": "params: Txn.ForeignApps offset (or, since v4, an application id that appears in Txn.ForeignApps or is the CurrentApplicationID), state key. Return: did_exist flag (top of the stack, 1 if exist and 0 otherwise), value. The value is zero (of type uint64) if the key does not exist",
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ]
+  },
+  {
+    "op": "app_local_put",
+    "opcode": "0x66",
+    "pops": ["... stack", "{any A}", "{[]byte B}", "{any C}"],
+    "pushes": [],
+    "desc": "write to account specified by A to local state of a current application key B with value C",
+    "error": "",
+    "metadata": {
+      "LogicSigVersion": ">=2"
+    },
+    "mode": "Application",
+    "additionalDesc": "params: Txn.Accounts offset (or, since v4, an account address that appears in Txn.Accounts or is Txn.Sender), state key, value",
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ]
+  },
+  {
+    "op": "app_global_put",
+    "opcode": "0x67",
+    "pops": ["... stack", "{[]byte A}", "{any B}"],
+    "pushes": [],
+    "desc": "write key A and value B to global state of the current application",
+    "error": "",
+    "metadata": {
+      "LogicSigVersion": ">=2"
+    },
+    "mode": "Application",
+    "additionalDesc": "",
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ]
+  },
+  {
+    "op": "app_local_del",
+    "opcode": "0x68",
+    "pops": ["... stack", "{any A}", "{[]byte B}"],
+    "pushes": [],
+    "desc": "delete from account A local state key B of the current application",
+    "error": "",
+    "metadata": {
+      "LogicSigVersion": ">=2"
+    },
+    "mode": "Application",
+    "additionalDesc": "params: Txn.Accounts offset (or, since v4, an account address that appears in Txn.Accounts or is Txn.Sender), state key<br/>Deleting a key which is already absent has no effect on the application local state. (In particular, it does not cause the program to fail.)",
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ]
+  },
+  {
+    "op": "app_global_del",
+    "opcode": "0x69",
+    "pops": ["... stack", "[]byte"],
+    "pushes": [],
+    "desc": "delete key A from a global state of the current application",
+    "error": "",
+    "metadata": {
+      "LogicSigVersion": ">=2"
+    },
+    "mode": "Application",
+    "additionalDesc": "params: state key.\n\nDeleting a key which is already absent has no effect on the application global state. (In particular, it does not cause the program to fail.)",
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ]
+  },
+  {
+    "op": "asset_holding_get",
+    "opcode": "0x70 {uint8 asset holding field index}",
+    "pops": ["... stack", "{any A}", "{uint64 B}"],
+    "pushes": ["... stack", "any","uint64"],
+    "desc": "read from account A and asset B holding field X (imm arg) => {0 or 1 (top), value}",
+    "error": "",
+    "metadata": {
+      "LogicSigVersion": ">=2"
+    },
+    "mode": "Application",
+    "additionalDesc": "params: Txn.Accounts offset (or, since v4, an account address that appears in Txn.Accounts or is Txn.Sender), asset id (or, since v4, a Txn.ForeignAssets offset). Return: did_exist flag (1 if exist and 0 otherwise), value",
+    "params": ["asset_holding_get_fields"],
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "asset_holding_get-i"
+  },
+  {
+    "op": "asset_params_get",
+    "opcode": "0x71 {uint8 asset params field index}",
+    "pops": ["... stack", "uint64"],
+    "pushes": ["... stack", "uint64", "any"],
+    "desc": "read from asset A params field X (imm arg) => {0 or 1 (top), value}",
+    "error": "",
+    "metadata": {
+      "LogicSigVersion": ">=2"
+    },
+    "mode": "Application",
+    "additionalDesc": "params: Before v4, Txn.ForeignAssets offset. Since v4, Txn.ForeignAssets offset or an asset id that appears in Txn.ForeignAssets. Return: did_exist flag (1 if exist and 0 otherwise), value",
+    "params": ["asset_params_get_fields"],
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "asset_params_get-i"
+  },
+  {
+    "op": "app_params_get",
+    "opcode": "0x72 {uint8 app params field index}",
+    "pops": ["... stack", "uint64"],
+    "pushes": ["... stack", "any", "uint64"],
+    "desc": "read from app A params field X (imm arg) => {0 or 1 (top), value}",
+    "error": "",
+    "metadata": {
+      "LogicSigVersion": ">=5"
+    },
+    "mode": "Application",
+    "additionalDesc": "params: Txn.ForeignApps offset or an app id that appears in Txn.ForeignApps. Return: did_exist flag (1 if the application existed and 0 otherwise), value.",
+    "params": ["app_params_get_fields"],
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "app_params_get-i",
+    "since": 5
+  },
+  {
+    "op": "acct_params_get",
+    "opcode": "0x73 {uint8 account params field index}",
+    "pops": ["... stack", "A"],
+    "pushes": ["... stack", "X: any", " Y: uint64"],
+    "desc": "X is field F from account A. Y is 1 if A owns positive algos, else 0",
+    "error": "",
+    "metadata": {
+      "LogicSigVersion": ">=6"
+    },
+    "mode": "Application",
+    "additionalDesc": "",
+    "params": ["acct_params_get_fields"],
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "acct_params_get-f",
+    "since": 6
+  },
+  {
+    "op": "min_balance",
+    "opcode": "0x78",
+    "pops": ["... stack", "any"],
+    "pushes": ["uint64"],
+    "desc": "get minimum required balance for account A, in microalgos. Required balance is affected by ASA and App usage. When creating or opting into an app, the minimum balance grows before the app code runs, therefore the increase is visible there. When deleting or closing out, the minimum balance decreases after the app executes",
+    "error": "",
+    "metadata": {
+      "LogicSigVersion": ">=3"
+    },
+    "mode": "Application",
+    "additionalDesc": "params: Before v4, Txn.Accounts offset. Since v4, Txn.Accounts offset or an account address that appears in Txn.Accounts or is Txn.Sender). Return: value",
+    "params": [],
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "since": 3
+  },
+  {
+    "op": "pushbytes",
+    "opcode": "0x80 {varuint length} {bytes}",
+    "pops": [],
+    "pushes": ["[]byte"],
+    "desc": "push the following program bytes to the stack",
+    "error": "",
+    "metadata": {
+      "LogicSigVersion": ">=3"
+    },
+    "additionalDesc": "pushbytes args are not added to the bytecblock during assembly processes",
+    "params": [],
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "pushbytes-bytes",
+    "since": 3
+  },
+  {
+    "op": "pushint",
+    "opcode": "0x81 {varuint int}",
+    "pops": [],
+    "pushes": ["uint64"],
+    "desc": "push immediate UINT to the stack as an integer",
+    "error": "",
+    "metadata": {
+      "LogicSigVersion": ">=3"
+    },
+    "additionalDesc": "pushint args are not added to the intcblock during assembly processes",
+    "params": [],
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "pushint-uint",
+    "since": 3
+  },
+  {
+    "op": "callsub",
+    "opcode": "0x88",
+    "pops": [],
+    "pushes": [],
+    "desc": "branch unconditionally to TARGET, saving the next instruction on the call stack",
+    "error": "",
+    "metadata": {
+      "LogicSigVersion": ">=4"
+    },
+    "additionalDesc": "The call stack is separate from the data stack. Only callsub and retsub manipulate it",
+    "params": ["string"],
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "callsub-target",
+    "since": 4
+  },
+  {
+    "op": "retsub",
+    "opcode": "0x89",
+    "pops": [],
+    "pushes": [],
+    "desc": "pop the top instruction from the call stack and branch to it",
+    "error": "",
+    "metadata": {
+      "LogicSigVersion": ">=4"
+    },
+    "additionalDesc": "The call stack is separate from the data stack. Only callsub and retsub manipulate it",
+    "params": [],
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "retsub",
+    "since": 4
+  },
+  {
+    "op": "shl",
+    "opcode": "0x90",
+    "pops": ["... stack", "{uint64 A}", "{uint64 B}"],
+    "pushes": ["uint64"],
+    "desc": "A times 2^B, modulo 2^64",
+    "error": "",
+    "metadata": {
+      "LogicSigVersion": ">=4"
+    },
+    "additionalDesc": "",
+    "params": [],
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "shl",
+    "since": 4
+  },
+  {
+    "op": "shr",
+    "opcode": "0x91",
+    "pops": ["... stack", "{uint64 A}", "{uint64 B}"],
+    "pushes": ["uint64"],
+    "desc": "A divided by 2^B",
+    "error": "",
+    "metadata": {
+      "LogicSigVersion": ">=4"
+    },
+    "additionalDesc": "",
+    "params": [],
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "shr",
+    "since": 4
+  },
+  {
+    "op": "sqrt",
+    "opcode": "0x92",
+    "pops": ["... stack", "uint64"],
+    "pushes": ["uint64"],
+    "desc": "The largest integer B such that B^2 <= X",
+    "error": "",
+    "metadata": {
+      "LogicSigVersion": ">=4"
+    },
+    "additionalDesc": "",
+    "params": [],
+    "costs": [
+      {
+        "cost": 4,
+        "filter": ""
+      }
+    ],
+    "anchor": "sqrt",
+    "since": 4
+  },
+  {
+    "op": "bitlen",
+    "opcode": "0x93",
+    "pops": ["... stack", "any"],
+    "pushes": ["uint64"],
+    "desc": "The highest set bit in X. If X is a byte-array, it is interpreted as a big-endian unsigned integer. bitlen of 0 is 0, bitlen of 8 is 4",
+    "error": "",
+    "metadata": {
+      "LogicSigVersion": ">=4"
+    },
+    "additionalDesc": "bitlen interprets arrays as big-endian integers, unlike setbit/getbit",
+    "params": [],
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "bitlen",
+    "since": 4
+  },
+  {
+    "op": "exp",
+    "opcode": "0x94",
+    "pops": ["... stack", "{uint64 A}", "{uint64 B}"],
+    "pushes": ["uint64"],
+    "desc": "A raised to the Bth power. Panic if A == B == 0 and on overflow",
+    "error": "",
+    "metadata": {
+      "LogicSigVersion": ">=4"
+    },
+    "additionalDesc": "",
+    "params": [],
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "exp",
+    "since": 4
+  },
+  {
+    "op": "expw",
+    "opcode": "0x95",
+    "pops": ["... stack", "{uint64 A}", "{uint64 B}"],
+    "pushes": ["... stack", "uint64", "uint64"],
+    "desc": "A raised to the Bth power as a 128-bit long result as low (top) and high uint64 values on the stack. Panic if A == B == 0 or if the results exceeds 2^128-1",
+    "error": "",
+    "metadata": {
+      "LogicSigVersion": ">=4"
+    },
+    "additionalDesc": "",
+    "params": [],
+    "costs": [
+      {
+        "cost": 10,
+        "filter": ""
+      }
+    ],
+    "anchor": "expw",
+    "since": 4
+  },
+  {
+    "op": "bsqrt",
+    "opcode": "0x96",
+    "pops": ["... stack", "A: []byte"],
+    "pushes": ["... stack", "[]byte"],
+    "desc": "The largest integer I such that I^2 <= A. A and I are interpreted as big-endian unsigned integers",
+    "error": "",
+    "metadata": {
+      "LogicSigVersion": ">=6"
+    },
+    "additionalDesc": "",
+    "params": [],
+    "costs": [
+      {
+        "cost": 40,
+        "filter": ""
+      }
+    ],
+    "anchor": "bsqrt",
+    "since": 6
+  },
+  {
+    "op": "divw",
+    "opcode": "0x97",
+    "pops": ["... stack", "A: uint64", "B: uint64", "C: uint64"],
+    "pushes": ["... stack", "uint64"],
+    "desc": "A,B / C. Fail if C == 0 or if result overflows",
+    "error": "",
+    "metadata": {
+      "LogicSigVersion": ">=6"
+    },
+    "additionalDesc": "The notation A,B indicates that A and B are interpreted as a uint128 value, with A as the high uint64 and B the low",
+    "params": [],
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "divw",
+    "since": 6
+  },
+  {
+    "op": "b+",
+    "opcode": "0xa0",
+    "pops": ["... stack", "{[]byte A}", "{[]byte B}"],
+    "pushes": ["[]byte"],
+    "desc": "A plus B, where A and B are byte-arrays interpreted as big-endian unsigned integers",
+    "error": "",
+    "metadata": {
+      "LogicSigVersion": ">=4"
+    },
+    "additionalDesc": "",
+    "params": [],
+    "costs": [
+      {
+        "cost": 10,
+        "filter": ""
+      }
+    ],
+    "anchor": "b",
+    "since": 4
+  },
+  {
+    "op": "b-",
+    "opcode": "0xa1",
+    "pops": ["... stack", "{[]byte A}", "{[]byte B}"],
+    "pushes": ["[]byte"],
+    "desc": "A minus B, where A and B are byte-arrays interpreted as big-endian unsigned integers. Panic on underflow",
+    "error": "",
+    "metadata": {
+      "LogicSigVersion": ">=4"
+    },
+    "additionalDesc": "",
+    "params": [],
+    "costs": [
+      {
+        "cost": 10,
+        "filter": ""
+      }
+    ],
+    "anchor": "b-",
+    "since": 4
+  },
+  {
+    "op": "b/",
+    "opcode": "0xa2",
+    "pops": ["... stack", "{[]byte A}", "{[]byte B}"],
+    "pushes": ["[]byte"],
+    "desc": "A divided by B, where A and B are byte-arrays interpreted as big-endian unsigned integers. Panic if B is zero",
+    "error": "",
+    "metadata": {
+      "LogicSigVersion": ">=4"
+    },
+    "additionalDesc": "",
+    "params": [],
+    "costs": [
+      {
+        "cost": 20,
+        "filter": ""
+      }
+    ],
+    "anchor": "b_1",
+    "since": 4
+  },
+  {
+    "op": "b*",
+    "opcode": "0xa3",
+    "pops": ["... stack", "{[]byte A}", "{[]byte B}"],
+    "pushes": ["[]byte"],
+    "desc": "A times B, where A and B are byte-arrays interpreted as big-endian unsigned integers",
+    "error": "",
+    "metadata": {
+      "LogicSigVersion": ">=4"
+    },
+    "additionalDesc": "",
+    "params": [],
+    "costs": [
+      {
+        "cost": 20,
+        "filter": ""
+      }
+    ],
+    "anchor": "b_2",
+    "since": 4
+  },
+  {
+    "op": "b<",
+    "opcode": "0xa4",
+    "pops": ["... stack", "{[]byte A}", "{[]byte B}"],
+    "pushes": ["uint64"],
+    "desc": "A is less than B, where A and B are byte-arrays interpreted as big-endian unsigned integers => { 0 or 1}",
+    "error": "",
+    "metadata": {
+      "LogicSigVersion": ">=4"
+    },
+    "additionalDesc": "",
+    "params": [],
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "b_3",
+    "since": 4
+  },
+  {
+    "op": "b>",
+    "opcode": "0xa5",
+    "pops": ["... stack", "{[]byte A}", "{[]byte B}"],
+    "pushes": ["uint64"],
+    "desc": "A is greater than B, where A and B are byte-arrays interpreted as big-endian unsigned integers => { 0 or 1}",
+    "error": "",
+    "metadata": {
+      "LogicSigVersion": ">=4"
+    },
+    "additionalDesc": "",
+    "params": [],
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "b_4",
+    "since": 4
+  },
+  {
+    "op": "b<=",
+    "opcode": "0xa6",
+    "pops": ["... stack", "{[]byte A}", "{[]byte B}"],
+    "pushes": ["uint64"],
+    "desc": "A is less than or equal to B, where A and B are byte-arrays interpreted as big-endian unsigned integers => { 0 or 1}",
+    "error": "",
+    "metadata": {
+      "LogicSigVersion": ">=4"
+    },
+    "additionalDesc": "",
+    "params": [],
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "b_5",
+    "since": 4
+  },
+  {
+    "op": "b>=",
+    "opcode": "0xa7",
+    "pops": ["... stack", "{[]byte A}", "{[]byte B}"],
+    "pushes": ["uint64"],
+    "desc": "A is greater than or equal to B, where A and B are byte-arrays interpreted as big-endian unsigned integers => { 0 or 1}",
+    "error": "",
+    "metadata": {
+      "LogicSigVersion": ">=4"
+    },
+    "additionalDesc": "",
+    "params": [],
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "b_6",
+    "since": 4
+  },
+  {
+    "op": "b==",
+    "opcode": "0xa8",
+    "pops": ["... stack", "{[]byte A}", "{[]byte B}"],
+    "pushes": ["uint64"],
+    "desc": "A is equals to B, where A and B are byte-arrays interpreted as big-endian unsigned integers => { 0 or 1}",
+    "error": "",
+    "metadata": {
+      "LogicSigVersion": ">=4"
+    },
+    "additionalDesc": "",
+    "params": [],
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "b_7",
+    "since": 4
+  },
+  {
+    "op": "b!=",
+    "opcode": "0xa9",
+    "pops": ["... stack", "{[]byte A}", "{[]byte B}"],
+    "pushes": ["uint64"],
+    "desc": "A is not equal to B, where A and B are byte-arrays interpreted as big-endian unsigned integers => { 0 or 1}",
+    "error": "",
+    "metadata": {
+      "LogicSigVersion": ">=4"
+    },
+    "additionalDesc": "",
+    "params": [],
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "b_8",
+    "since": 4
+  },
+  {
+    "op": "b%",
+    "opcode": "0xaa",
+    "pops": ["... stack", "{[]byte A}", "{[]byte B}"],
+    "pushes": ["[]byte"],
+    "desc": "A modulo B, where A and B are byte-arrays interpreted as big-endian unsigned integers. Panic if B is zero",
+    "error": "",
+    "metadata": {
+      "LogicSigVersion": ">=4"
+    },
+    "additionalDesc": "",
+    "params": [],
+    "costs": [
+      {
+        "cost": 20,
+        "filter": ""
+      }
+    ],
+    "anchor": "b_9",
+    "since": 4
+  },
+  {
+    "op": "b|",
+    "opcode": "0xab",
+    "pops": ["... stack", "{[]byte A}", "{[]byte B}"],
+    "pushes": ["[]byte"],
+    "desc": "A bitwise-or B, where A and B are byte-arrays, zero-left extended to the greater of their lengths",
+    "error": "",
+    "metadata": {
+      "LogicSigVersion": ">=4"
+    },
+    "additionalDesc": "",
+    "params": [],
+    "costs": [
+      {
+        "cost": 6,
+        "filter": ""
+      }
+    ],
+    "anchor": "b_10",
+    "since": 4
+  },
+  {
+    "op": "b&",
+    "opcode": "0xac",
+    "pops": ["... stack", "{[]byte A}", "{[]byte B}"],
+    "pushes": ["[]byte"],
+    "desc": "A bitwise-and B, where A and B are byte-arrays, zero-left extended to the greater of their lengths",
+    "error": "",
+    "metadata": {
+      "LogicSigVersion": ">=4"
+    },
+    "additionalDesc": "",
+    "params": [],
+    "costs": [
+      {
+        "cost": 6,
+        "filter": ""
+      }
+    ],
+    "anchor": "b_11",
+    "since": 4
+  },
+  {
+    "op": "b^",
+    "opcode": "0xad",
+    "pops": ["... stack", "{[]byte A}", "{[]byte B}"],
+    "pushes": ["[]byte"],
+    "desc": "A bitwise-xor B, where A and B are byte-arrays, zero-left extended to the greater of their lengths",
+    "error": "",
+    "metadata": {
+      "LogicSigVersion": ">=4"
+    },
+    "additionalDesc": "",
+    "params": [],
+    "costs": [
+      {
+        "cost": 6,
+        "filter": ""
+      }
+    ],
+    "anchor": "b_12",
+    "since": 4
+  },
+  {
+    "op": "b~",
+    "opcode": "0xae",
+    "pops": ["... stack", "[]byte"],
+    "pushes": ["[]byte"],
+    "desc": "X with all bits inverted",
+    "error": "",
+    "metadata": {
+      "LogicSigVersion": ">=4"
+    },
+    "additionalDesc": "",
+    "params": [],
+    "costs": [
+      {
+        "cost": 4,
+        "filter": ""
+      }
+    ],
+    "anchor": "b_13",
+    "since": 4
+  },
+  {
+    "op": "bzero",
+    "opcode": "0xaf",
+    "pops": ["... stack", "uint64"],
+    "pushes": ["[]byte"],
+    "desc": "push a byte-array of length X, containing all zero bytes",
+    "error": "",
+    "metadata": {
+      "LogicSigVersion": ">=4"
+    },
+    "additionalDesc": "",
+    "params": [],
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "bzero",
+    "since": 4
+  },
+  {
+    "op": "log",
+    "opcode": "0xb0",
+    "pops": ["... stack", "[]byte"],
+    "pushes": [],
+    "desc": "write bytes to log state of the current application",
+    "error": "",
+    "metadata": {
+      "LogicSigVersion": ">=5"
+    },
+    "additionalDesc": "log fails if called more than MaxLogCalls times in a program, or if the sum of logged bytes exceeds 1024 bytes",
+    "params": [],
+    "mode": "Application",
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "log",
+    "since": 5
+  },
+  {
+    "op": "itxn_begin",
+    "opcode": "0xb1",
+    "pops": [],
+    "pushes": [],
+    "desc": "Begin preparation of a new inner transaction",
+    "error": "",
+    "metadata": {
+      "LogicSigVersion": ">=5"
+    },
+    "additionalDesc": "itxn_begin initializes Sender to the application address; Fee to the minimum allowable, taking into account MinTxnFee and credit from overpaying in earlier transactions; FirstValid/LastValid to the values in the top-level transaction, and all other fields to zero values",
+    "params": [],
+    "mode": "Application",
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "since": 5
+  },
+  {
+    "op": "itxn_field",
+    "opcode": "0xb2 {uint8 transaction field index}",
+    "pops": ["... stack", "any"],
+    "pushes": [],
+    "desc": "Set field F of the current inner transaction to X",
+    "error": "",
+    "metadata": {
+      "LogicSigVersion": ">=5"
+    },
+    "additionalDesc": "itxn_field fails if X is of the wrong type for F, including a byte array of the wrong size for use as an address when F is an address field. itxn_field also fails if X is an account or asset that does not appear in txn.Accounts or txn.ForeignAssets of the top-level transaction. (Setting addresses in asset creation are exempted from this requirement.)",
+    "params": ["txn_fields"],
+    "mode": "Application",
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "itxn_field-f",
+    "since": 5
+  },
+  {
+    "op": "itxn_submit",
+    "opcode": "0xb3",
+    "pops": [],
+    "pushes": [],
+    "desc": "Execute the current inner transaction. Fail if 16 inner transactions have already been executed, or if the transaction itself fails",
+    "error": "",
+    "metadata": {
+      "LogicSigVersion": ">=5"
+    },
+    "additionalDesc": "",
+    "params": [],
+    "mode": "Application",
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "itxn_submit",
+    "since": 5
+  },
+  {
+    "op": "itxn",
+    "opcode": "0xb4 {uint8 transaction field index}",
+    "pops": [],
+    "pushes": ["any"],
+    "desc": "push field F of the last inner transaction to stack",
+    "error": "",
+    "metadata": {
+      "LogicSigVersion": ">=5"
+    },
+    "additionalDesc": "",
+    "params": ["txn_fields"],
+    "mode": "Application",
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "itxn-f",
+    "since": 5
+  },
+  {
+    "op": "itxna",
+    "opcode": "0xb5 {uint8 transaction field index} {uint8 transaction field array index}",
+    "pops": [],
+    "pushes": ["any"],
+    "desc": "push Ith value of the array field F of the last inner transaction to stack",
+    "error": "",
+    "metadata": {
+      "LogicSigVersion": ">=5"
+    },
+    "additionalDesc": "",
+    "params": ["txn_fields", "uint8"],
+    "mode": "Application",
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "itxna-f-i",
+    "since": 5
+  },
+  {
+    "op": "itxn_next",
+    "opcode": "0xb6",
+    "pops": [],
+    "pushes": [],
+    "desc": "begin preparation of a new inner transaction in the same transaction group",
+    "error": "",
+    "metadata": {
+      "LogicSigVersion": ">=6"
+    },
+    "additionalDesc": "itxn_next initializes the transaction exactly as itxn_begin does",
+    "params": [],
+    "mode": "Application",
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "itxn_next",
+    "since": 6
+  },
+  {
+    "op": "gitxn",
+    "opcode": "0xb7 {uint8 transaction group index} {uint8 transaction field index}",
+    "pops": [],
+    "pushes": ["any"],
+    "desc": "field F of the Tth transaction in the last inner group submitted",
+    "error": "",
+    "metadata": {
+      "LogicSigVersion": ">=6"
+    },
+    "additionalDesc": "",
+    "params": [],
+    "mode": "Application",
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "gitxn-t-f",
+    "since": 6
+  },
+  {
+    "op": "gitxna",
+    "opcode": "0xb8 {uint8 transaction group index} {uint8 transaction field index} {uint8 transaction field array index}",
+    "pops": [],
+    "pushes": ["any"],
+    "desc": "Ith value of the array field F from the Tth transaction in the last inner group submitted",
+    "error": "",
+    "metadata": {
+      "LogicSigVersion": ">=6"
+    },
+    "additionalDesc": "",
+    "params": [],
+    "mode": "Application",
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "gitxna-t-f-i",
+    "since": 6
+  },
+  {
+    "op": "txnas",
+    "opcode": "0xc0 {uint8 transaction field index}",
+    "pops": ["... stack", "uint64"],
+    "pushes": ["any"],
+    "desc": "push Xth value of the array field F of the current transaction",
+    "error": "",
+    "metadata": {
+      "LogicSigVersion": ">=5"
+    },
+    "additionalDesc": "",
+    "params": ["txn_fields"],
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "txnas-f",
+    "since": 5
+  },
+  {
+    "op": "gtxnas",
+    "opcode": "0xc1 {uint8 transaction group index} {uint8 transaction field index}",
+    "pops": ["... stack", "uint64"],
+    "pushes": ["any"],
+    "desc": "push Xth value of the array field F from the Tth transaction in the current group",
+    "error": "",
+    "metadata": {
+      "LogicSigVersion": ">=5"
+    },
+    "additionalDesc": "",
+    "params": ["uint8","txn_fields"],
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "gtxnas-t-f",
+    "since": 5
+  },
+  {
+    "op": "gtxnsas",
+    "opcode": "0xc2 {uint8 transaction field index}",
+    "pops": ["... stack", "{uint64 A}", "{uint64 B}"],
+    "pushes": ["any"],
+    "desc": "pop an index A and an index B. push Bth value of the array field F from the Ath transaction in the current group",
+    "error": "",
+    "metadata": {
+      "LogicSigVersion": ">=5"
+    },
+    "additionalDesc": "",
+    "params": ["txn_fields"],
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "anchor": "gtxnsas-f",
+    "since": 5
+  },
+  {
+    "op": "args",
+    "opcode": "0xc3",
+    "pops": ["... stack", "uint64"],
+    "pushes": ["[]byte"],
+    "desc": "push Xth LogicSig argument to stack",
+    "error": "",
+    "metadata": {
+      "LogicSigVersion": ">=5"
+    },
+    "additionalDesc": "",
+    "params": [],
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "mode": "Signature",
+    "anchor": "args",
+    "since": 5
+  },
+  {
+    "op": "gloadss",
+    "opcode": "0xc4",
+    "pops": ["... stack", "A: uint64", "B: uint64"],
+    "pushes": ["any"],
+    "desc": "Bth scratch space value of the Ath transaction in the current group",
+    "error": "",
+    "metadata": {
+      "LogicSigVersion": ">=6"
+    },
+    "additionalDesc": "",
+    "params": [],
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "mode": "Application",
+    "anchor": "gloadss",
+    "since": 6
+  },
+  {
+    "op": "itxnas",
+    "opcode": "0xc5 {uint8 transaction field index}",
+    "pops": ["... stack", "A: uint64"],
+    "pushes": ["any"],
+    "desc": "Ath value of the array field F of the last inner transaction",
+    "error": "",
+    "metadata": {
+      "LogicSigVersion": ">=6"
+    },
+    "additionalDesc": "",
+    "params": [],
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "mode": "Application",
+    "anchor": "itxnas-f",
+    "since": 6
+  },
+  {
+    "op": "gitxnas",
+    "opcode": "0xc6 {uint8 transaction group index} {uint8 transaction field index}",
+    "pops": ["... stack", "A: uint64"],
+    "pushes": ["any"],
+    "desc": "Ath value of the array field F from the Tth transaction in the last inner group submitted",
+    "error": "",
+    "metadata": {
+      "LogicSigVersion": ">=6"
+    },
+    "additionalDesc": "",
+    "params": [],
+    "costs": [
+      {
+        "cost": 1,
+        "filter": ""
+      }
+    ],
+    "mode": "Application",
+    "anchor": "gitxnas-t-f",
+    "since": 6
+  },
+  {
+    "op": "int",
+    "opcode": "Pseudo opcode",
+    "pops": [],
+    "pushes": [],
+    "desc":"int pseudo opcode",
+    "additionalDesc" : "int constants may be 0x prefixed for hex, 0 prefixed for octal, or decimal numbers."
+  },
+  {
+    "op": "byte",
+    "opcode": "Pseudo opcode",
+    "pops": [],
+    "pushes": [],
+    "desc":"byte pseudo opcode",
+    "additionalDesc" : "byte base64 AAAA...<br>byte b64 AAAA...<br>byte base64(AAAA...)<br>byte b64(AAAA...)<br>byte base32 AAAA...<br>byte b32 AAAA...<br>byte base32(AAAA...)<br>byte b32(AAAA...)<br>byte 0x0123456789abcdef...<br>byte \"\\x01\\x02\"<br>byte \"string literal\""
+  },
+  {
+    "op": "addr",
+    "opcode": "Pseudo opcode",
+    "pops": [],
+    "pushes": [],
+    "desc":"addr pseudo opcode",
+    "additionalDesc" : "addr {address}"
+  }
+]
