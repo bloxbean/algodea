@@ -114,6 +114,7 @@ public final class TEALKeywords {
             B_EQUAL_OPCODE,
             B_NOT_EQUAL_OPCODE,
             B_MODULO_OPCODE,
+            B_SQRT_OPCODE, //v6
 
             B_BITWISE_OR_OPCODE,
             B_BITWISE_AND_OPCODE,

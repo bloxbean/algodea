@@ -209,6 +209,10 @@ GTXNSAS_OPCODE ::= 'gtxnsas'
 ARGS_OPCODE ::= 'args'
 //v5 opcodes end
 
+//v6 opcodes start
+B_SQRT_OPCODE ::= 'bsqrt'
+//v6 opcodes
+
 pragma ::= PRAGMA_KEYWORD VERSION pragma_version {pin=1 recoverWhile=statement_recover}
 pragma_version ::= unsignedInteger
 statement ::= COMMENT
@@ -434,6 +438,7 @@ bytesliceOperation ::= B_PLUS_OPCODE | B_MINUS_OPCODE | B_DIV_OPCODE | B_TIMES_O
                                   | B_EQUAL_OPCODE | B_NOT_EQUAL_OPCODE | B_MODULO_OPCODE
                                   | B_BITWISE_OR_OPCODE | B_BITWISE_AND_OPCODE | B_BITWISE_XOR_OPCODE
                                   | B_INVERT_OPCODE
+                                  | B_SQRT_OPCODE //v6
 
 //In v5
 ecdsaOp ::= ECDSA_VERIFY_OPCODE (unsignedInteger | VAR_TMPL)

@@ -123,6 +123,7 @@ ID=([a-zA-Z0-9_$.#@~?=+-]+[a-zA-Z0-9_$.#@~?=+-]*)
   "b=="                          { return B_EQUAL_OPCODE; }
   "b!="                          { return B_NOT_EQUAL_OPCODE; }
   "b%"                           { return B_MODULO_OPCODE; }
+  "bsqrt"                        { return B_SQRT_OPCODE; }
   "b|"                           { return B_BITWISE_OR_OPCODE; }
   "b&"                           { return B_BITWISE_AND_OPCODE; }
   "b^"                           { return B_BITWISE_XOR_OPCODE; }

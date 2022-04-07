@@ -21,7 +21,7 @@ public class TEALV6OpCodeAnnotator implements Annotator {
 
         if(versionInt < 6) {
             if(element instanceof TEALAcctParamsGetOp
-//                    || element instanceof TEALAppParamsGetOp
+                    || element instanceof TEALBSqrtOpcode
             ) {
                 holder.newAnnotation(HighlightSeverity.ERROR,
                         V6_SUPPORT_MSG).create();

@@ -75,6 +75,10 @@ public class TEALVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitBSqrtOpcode(@NotNull TEALBSqrtOpcode o) {
+    visitPsiElement(o);
+  }
+
   public void visitBTimesOpcode(@NotNull TEALBTimesOpcode o) {
     visitPsiElement(o);
   }

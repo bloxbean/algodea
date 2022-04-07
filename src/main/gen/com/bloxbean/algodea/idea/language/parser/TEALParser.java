@@ -223,6 +223,17 @@ public class TEALParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // 'bsqrt'
+  public static boolean B_SQRT_OPCODE(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "B_SQRT_OPCODE")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, B_SQRT_OPCODE, "<b sqrt opcode>");
+    r = consumeToken(b, "bsqrt");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
   // 'b*'
   public static boolean B_TIMES_OPCODE(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "B_TIMES_OPCODE")) return false;
@@ -1567,6 +1578,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
   //                                   | B_EQUAL_OPCODE | B_NOT_EQUAL_OPCODE | B_MODULO_OPCODE
   //                                   | B_BITWISE_OR_OPCODE | B_BITWISE_AND_OPCODE | B_BITWISE_XOR_OPCODE
   //                                   | B_INVERT_OPCODE
+  //                                   | B_SQRT_OPCODE
   public static boolean bytesliceOperation(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "bytesliceOperation")) return false;
     boolean r;
@@ -1586,6 +1598,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
     if (!r) r = B_BITWISE_AND_OPCODE(b, l + 1);
     if (!r) r = B_BITWISE_XOR_OPCODE(b, l + 1);
     if (!r) r = B_INVERT_OPCODE(b, l + 1);
+    if (!r) r = B_SQRT_OPCODE(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
   }

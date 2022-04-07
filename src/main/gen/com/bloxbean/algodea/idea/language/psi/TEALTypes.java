@@ -42,6 +42,7 @@ public interface TEALTypes {
   IElementType B_MODULO_OPCODE = new TEALElementType("B_MODULO_OPCODE");
   IElementType B_NOT_EQUAL_OPCODE = new TEALElementType("B_NOT_EQUAL_OPCODE");
   IElementType B_PLUS_OPCODE = new TEALElementType("B_PLUS_OPCODE");
+  IElementType B_SQRT_OPCODE = new TEALElementType("B_SQRT_OPCODE");
   IElementType B_TIMES_OPCODE = new TEALElementType("B_TIMES_OPCODE");
   IElementType B_ZERO_OPCODE = new TEALElementType("B_ZERO_OPCODE");
   IElementType CALLSUB_OPCODE = new TEALElementType("CALLSUB_OPCODE");
@@ -307,6 +308,9 @@ public interface TEALTypes {
       }
       else if (type == B_PLUS_OPCODE) {
         return new TEALBPlusOpcodeImpl(node);
+      }
+      else if (type == B_SQRT_OPCODE) {
+        return new TEALBSqrtOpcodeImpl(node);
       }
       else if (type == B_TIMES_OPCODE) {
         return new TEALBTimesOpcodeImpl(node);

@@ -113,6 +113,12 @@ public class TEALBytesliceOperationImpl extends ASTWrapperPsiElement implements 
 
   @Override
   @Nullable
+  public TEALBSqrtOpcode getBSqrtOpcode() {
+    return findChildByClass(TEALBSqrtOpcode.class);
+  }
+
+  @Override
+  @Nullable
   public TEALBTimesOpcode getBTimesOpcode() {
     return findChildByClass(TEALBTimesOpcode.class);
   }
