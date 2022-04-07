@@ -33,15 +33,16 @@ L_INTEGER=0|[1-9][0-9]*
 L_STRING=('([^'\\]|\\.)*'|\"([^\"\\]|\\.)*\")
 LOADING_OP=(intcblock|intc|intc_0|intc_1|intc_2|intc_3|bytecblock|bytec|bytec_0|bytec_1|bytec_2|bytec_3|arg|arg_0|arg_1|arg_2|arg_3|global|load|store|pushint|pushbytes|gload|gloads|gaid|gaids|loads|stores|bzero|args)
 FLOWCONTROL_OP=(err|return|pop|dup|dup2|bnz|bz|b|dig|swap|select|cover|uncover|assert|callsub|retsub)
-STATEACCESS_OP=(balance|app_opted_in|app_local_get|app_local_get_ex|app_global_get|app_global_get_ex|app_local_put|app_global_put|app_local_del|app_global_del|asset_holding_get|asset_params_get|app_params_get|min_balance|log)
+STATEACCESS_OP=(balance|app_opted_in|app_local_get|app_local_get_ex|app_global_get|app_global_get_ex|app_local_put|app_global_put|app_local_del|app_global_del|asset_holding_get|asset_params_get|app_params_get|acct_params_get|min_balance|log)
 TXN_LOADING_OP=(txn|gtxn|txna|gtxna|gtxns|gtxnsa|txnas|gtxnas|gtxnsas)
 NAMED_INTEGER_CONSTANT=(NoOp|OptIn|CloseOut|ClearState|UpdateApplication|DeleteApplication)
 TYPENUM_CONSTANT=(unknown|pay|keyreg|acfg|axfer|afrz|appl|Unknown|Payment|KeyRegistration|AssetConfig|AssetTransfer|AssetFreeze|ApplicationCall)
-GLOBAL_FIELD=(MinTxnFee|MinBalance|MaxTxnLife|ZeroAddress|GroupSize|LogicSigVersion|Round|LatestTimestamp|CurrentApplicationID|CreatorAddress|CurrentApplicationAddress|GroupID)
+GLOBAL_FIELD=(MinTxnFee|MinBalance|MaxTxnLife|ZeroAddress|GroupSize|LogicSigVersion|Round|LatestTimestamp|CurrentApplicationID|CreatorAddress|CurrentApplicationAddress|GroupID|OpcodeBudget|CallerApplicationID|CallerApplicationAddress)
 ASSET_HOLDING_GET_FIELD=(AssetBalance|AssetFrozen)
 ASSET_PARAMS_GET_FIELD=(AssetTotal|AssetDecimals|AssetDefaultFrozen|AssetUnitName|AssetName|AssetURL|AssetMetadataHash|AssetManager|AssetReserve|AssetFreeze|AssetClawback|AssetCreator)
 ECDSA_OP=(ecdsa_verify|ecdsa_pk_decompress|ecdsa_pk_recover)
 APP_PARAMS_GET_FIELD=(AppApprovalProgram|AppClearStateProgram|AppGlobalNumUint|AppGlobalNumByteSlice|AppLocalNumUint|AppLocalNumByteSlice|AppExtraProgramPages|AppCreator|AppAddress)
+ACCT_PARAMS_GET_FIELD=(AcctBalance|AcctMinBalance|AcctAuthAddr)
 INNER_TRANSACTION_OP=(itxn_begin|itxn_field|itxn_submit|itxn|itxna)
 OCTAL=(0)[0-9]+
 HEX=(0x|0X)[a-fA-F0-9]*
@@ -145,6 +146,7 @@ ID=([a-zA-Z0-9_$.#@~?=+-]+[a-zA-Z0-9_$.#@~?=+-]*)
   {ASSET_HOLDING_GET_FIELD}      { return ASSET_HOLDING_GET_FIELD; }
   {ASSET_PARAMS_GET_FIELD}       { return ASSET_PARAMS_GET_FIELD; }
   {APP_PARAMS_GET_FIELD}         { return APP_PARAMS_GET_FIELD; }
+  {ACCT_PARAMS_GET_FIELD}        { return ACCT_PARAMS_GET_FIELD; }
   {INNER_TRANSACTION_OP}         { return INNER_TRANSACTION_OP; }
   {OCTAL}                        { return OCTAL; }
   {HEX}                          { return HEX; }

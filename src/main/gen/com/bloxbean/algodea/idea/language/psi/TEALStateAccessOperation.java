@@ -14,6 +14,9 @@ public interface TEALStateAccessOperation extends PsiElement {
   TEALMinBalanceOpcode getMinBalanceOpcode();
 
   @Nullable
+  TEALAcctParamsGetOperation getAcctParamsGetOperation();
+
+  @Nullable
   TEALAppParamsGetOperation getAppParamsGetOperation();
 
   @Nullable

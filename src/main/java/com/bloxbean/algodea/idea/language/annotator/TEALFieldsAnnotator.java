@@ -17,6 +17,7 @@ public class TEALFieldsAnnotator implements Annotator {
     private static String  V3_SUPPORT_MSG = "Supported in TEAL v3 or later";
     private static String  V4_SUPPORT_MSG = "Supported in TEAL v4 or later";
     private static String  V5_SUPPORT_MSG = "Supported in TEAL v5 or later";
+    private static String  V6_SUPPORT_MSG = "Supported in TEAL v6 or later";
 
     @Override
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
@@ -27,6 +28,7 @@ public class TEALFieldsAnnotator implements Annotator {
         createErrorIfRequired(3, element, versionInt,  holder, V3_SUPPORT_MSG);
         createErrorIfRequired(4, element, versionInt,  holder, V4_SUPPORT_MSG);
         createErrorIfRequired(5, element, versionInt, holder, V5_SUPPORT_MSG);
+        createErrorIfRequired(6, element, versionInt, holder, V6_SUPPORT_MSG);
     }
 
     private void createErrorIfRequired(int tealSpecVersion, @NotNull PsiElement element,
@@ -54,6 +56,12 @@ public class TEALFieldsAnnotator implements Annotator {
             } else if (TEALTypes.APP_PARAMS_GET_FIELD.equals(element.getNode().getElementType())) {
                 String value = element.getNode().getText();
                 Field field = TEALOpCodeFactory.getInstance().getField(APP_PARAMS_GET_FIELDS, value);
+                if (field != null && field.getSince() == tealSpecVersion) {
+                    createError(holder, errorMsg);
+                }
+            } else if (TEALTypes.ACCT_PARAMS_GET_FIELD.equals(element.getNode().getElementType())) {
+                String value = element.getNode().getText();
+                Field field = TEALOpCodeFactory.getInstance().getField(ACCT_PARAMS_GET_FIELDS, value);
                 if (field != null && field.getSince() == tealSpecVersion) {
                     createError(holder, errorMsg);
                 }

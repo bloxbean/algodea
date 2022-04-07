@@ -45,6 +45,7 @@ public final class TEALKeywords {
     public final static String ASSET_HOLDING_GET_FIELDS = "asset_holding_get_fields";
     public final static String ASSET_PARAMS_GET_FIELDS = "asset_params_get_fields";
     public final static String APP_PARAMS_GET_FIELDS = "app_params_get_fields";
+    public final static String ACCT_PARAMS_GET_FIELDS = "acct_params_get_fields";
     public final static String ONCOMPLETE_CONSTANTS = "oncomplete";
 
     //https://developer.algorand.org/docs/reference/teal/specification/#arithmetic-logic-and-cryptographic-operations
@@ -171,6 +172,16 @@ public final class TEALKeywords {
             .map(TEALKeywordElement::getLookupElement)
             .collect(Collectors.toList());
 
+    public static final List<LookupElement> KEYWORD_LOOKUP_ELEMENTS_V6 = TEALOpCodeFactory.getInstance()
+            //.getOps().stream()
+            .getOpCodes().stream()
+            .filter(opc -> opc.getSince() == 6)
+            .map(opc -> opc.getOp())
+            .sorted()
+            .map(TEALKeywordElement::new)
+            .map(TEALKeywordElement::getLookupElement)
+            .collect(Collectors.toList());
+
     private static final Collection<Field> txnFieldsList = TEALOpCodeFactory.getInstance().getFields(TXN_FIELDS);
     //V2
     public static final List<LookupElement> TXNARGS_LOOKUP_ELEMENTS = txnFieldsList
@@ -204,6 +215,14 @@ public final class TEALKeywords {
             .map(TEALFieldElement::getLookupElement)
             .collect(Collectors.toList());
 
+    //V6
+    public static final List<LookupElement> TXNARGS_LOOKUP_ELEMENTS_V6 = txnFieldsList
+            .stream()
+            .filter(f -> f.getSince() == 6)
+            .map(f -> new TEALFieldElement(f))
+            .map(TEALFieldElement::getLookupElement)
+            .collect(Collectors.toList());
+
     //V2
     public static final List<TEALFieldElement> TXNARGS_LOOKUP_ELEMENTS_STREAM = txnFieldsList
             .stream()
@@ -227,6 +246,13 @@ public final class TEALKeywords {
 
     //V5
     public static final List<TEALFieldElement> TXNARGS_LOOKUP_ELEMENTS_STREAM_V5 = txnFieldsList
+            .stream()
+            .filter(f -> f.getSince() == 5)
+            .map(f -> new TEALFieldElement(f))
+            .collect(Collectors.toList());
+
+    //V6
+    public static final List<TEALFieldElement> TXNARGS_LOOKUP_ELEMENTS_STREAM_V6 = txnFieldsList
             .stream()
             .filter(f -> f.getSince() == 5)
             .map(f -> new TEALFieldElement(f))
@@ -264,6 +290,14 @@ public final class TEALKeywords {
             .map(TEALFieldElement::getLookupElement)
             .collect(Collectors.toList());
 
+    //since V6
+    public static final List<LookupElement> GLOBAL_FIELDS_ELEMENTS_V6 = gloablFields
+            .stream()
+            .filter(f -> f.getSince() == 6)
+            .map(f -> new TEALFieldElement(f))
+            .map(TEALFieldElement::getLookupElement)
+            .collect(Collectors.toList());
+
     public static final List<LookupElement> ASSET_HOLDING_GET_FIELDS_ELEMENTS = TEALOpCodeFactory.getInstance()
             .getFields(ASSET_HOLDING_GET_FIELDS)
             .stream()
@@ -274,6 +308,8 @@ public final class TEALKeywords {
     public static final Map<Integer, List<LookupElement>> ASSET_PARAMS_GET_FIELDS_ELEMENTS_MAP = createFieldMapForType(ASSET_PARAMS_GET_FIELDS);
 
     public static final Map<Integer, List<LookupElement>> APP_PARAMS_GET_FIELDS_ELEMENTS_MAP = createFieldMapForType(APP_PARAMS_GET_FIELDS);
+
+    public static final Map<Integer, List<LookupElement>> ACCT_PARAMS_GET_FIELDS_ELEMENTS_MAP = createFieldMapForType(ACCT_PARAMS_GET_FIELDS);
 
     public static final List<LookupElement> ONCOMPLETE_CONSTANT_ELEMENTS = TEALOpCodeFactory.getInstance()
             .getFields(ONCOMPLETE_CONSTANTS)

@@ -28,6 +28,9 @@ public abstract class BaseTxnArgCompletionProvider extends BaseCompletionProvide
             if (version >= 5) {
                 txnFieldElements.addAll(txnFieldElements.size() - 1, TEALKeywords.TXNARGS_LOOKUP_ELEMENTS_STREAM_V5);
             }
+            if (version >= 6) {
+                txnFieldElements.addAll(txnFieldElements.size() - 1, TEALKeywords.TXNARGS_LOOKUP_ELEMENTS_STREAM_V6);
+            }
         }
 
         return txnFieldElements;
@@ -47,6 +50,9 @@ public abstract class BaseTxnArgCompletionProvider extends BaseCompletionProvide
             }
             if (version >= 5) {
                 txnFieldElements.addAll(txnFieldElements.size() - 1, TEALKeywords.TXNARGS_LOOKUP_ELEMENTS_V5);
+            }
+            if (version >= 6) {
+                txnFieldElements.addAll(txnFieldElements.size() - 1, TEALKeywords.TXNARGS_LOOKUP_ELEMENTS_V6);
             }
         }
 

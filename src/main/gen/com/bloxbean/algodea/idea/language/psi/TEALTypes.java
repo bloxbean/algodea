@@ -8,6 +8,8 @@ import com.bloxbean.algodea.idea.language.psi.impl.*;
 
 public interface TEALTypes {
 
+  IElementType ACCT_PARAMS_GET_OP = new TEALElementType("ACCT_PARAMS_GET_OP");
+  IElementType ACCT_PARAMS_GET_OPERATION = new TEALElementType("ACCT_PARAMS_GET_OPERATION");
   IElementType ADDR_PARAM = new TEALElementType("ADDR_PARAM");
   IElementType ADDR_STATEMENT = new TEALElementType("ADDR_STATEMENT");
   IElementType APP_PARAMS_GET_OP = new TEALElementType("APP_PARAMS_GET_OP");
@@ -138,6 +140,7 @@ public interface TEALTypes {
   IElementType UNCOVER_OPERATION = new TEALElementType("UNCOVER_OPERATION");
   IElementType UNSIGNED_INTEGER = new TEALElementType("UNSIGNED_INTEGER");
 
+  IElementType ACCT_PARAMS_GET_FIELD = new TEALTokenType("ACCT_PARAMS_GET_FIELD");
   IElementType ADDR = new TEALTokenType("addr");
   IElementType ADDW = new TEALTokenType("addw");
   IElementType APP_PARAMS_GET_FIELD = new TEALTokenType("APP_PARAMS_GET_FIELD");
@@ -203,7 +206,13 @@ public interface TEALTypes {
   class Factory {
     public static PsiElement createElement(ASTNode node) {
       IElementType type = node.getElementType();
-      if (type == ADDR_PARAM) {
+      if (type == ACCT_PARAMS_GET_OP) {
+        return new TEALAcctParamsGetOpImpl(node);
+      }
+      else if (type == ACCT_PARAMS_GET_OPERATION) {
+        return new TEALAcctParamsGetOperationImpl(node);
+      }
+      else if (type == ADDR_PARAM) {
         return new TEALAddrParamImpl(node);
       }
       else if (type == ADDR_STATEMENT) {

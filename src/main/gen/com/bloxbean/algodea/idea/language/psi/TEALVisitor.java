@@ -299,6 +299,14 @@ public class TEALVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitAcctParamsGetOp(@NotNull TEALAcctParamsGetOp o) {
+    visitPsiElement(o);
+  }
+
+  public void visitAcctParamsGetOperation(@NotNull TEALAcctParamsGetOperation o) {
+    visitPsiElement(o);
+  }
+
   public void visitAddrParam(@NotNull TEALAddrParam o) {
     visitPsiElement(o);
   }

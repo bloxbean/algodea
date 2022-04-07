@@ -89,12 +89,14 @@
     TYPENUM_CONSTANT = 'regexp:(unknown|pay|keyreg|acfg|axfer|afrz|appl|Unknown|Payment|KeyRegistration|AssetConfig|AssetTransfer|AssetFreeze|ApplicationCall)'
 
     //Global Fields
-    GLOBAL_FIELD        = 'regexp:(MinTxnFee|MinBalance|MaxTxnLife|ZeroAddress|GroupSize|LogicSigVersion|Round|LatestTimestamp|CurrentApplicationID|CreatorAddress|CurrentApplicationAddress|GroupID)'
+    GLOBAL_FIELD        = 'regexp:(MinTxnFee|MinBalance|MaxTxnLife|ZeroAddress|GroupSize|LogicSigVersion|Round|LatestTimestamp|CurrentApplicationID|CreatorAddress|CurrentApplicationAddress|GroupID|OpcodeBudget|CallerApplicationID|CallerApplicationAddress)'
 
     //Asset Fields
     ASSET_HOLDING_GET_FIELD      = 'regexp:(AssetBalance|AssetFrozen)'
     ASSET_PARAMS_GET_FIELD       = 'regexp:(AssetTotal|AssetDecimals|AssetDefaultFrozen|AssetUnitName|AssetName|AssetURL|AssetMetadataHash|AssetManager|AssetReserve|AssetFreeze|AssetClawback|AssetCreator)'
+
     APP_PARAMS_GET_FIELD         = 'regexp:(AppApprovalProgram|AppClearStateProgram|AppGlobalNumUint|AppGlobalNumByteSlice|AppLocalNumUint|AppLocalNumByteSlice|AppExtraProgramPages|AppCreator|AppAddress)'
+    ACCT_PARAMS_GET_FIELD        = 'regexp:(AcctBalance|AcctMinBalance|AcctAuthAddr)'
 
     VERSION = "version"
 
@@ -345,7 +347,7 @@ TxnFieldArg ::= 'Sender'| 'Fee'| 'FirstValid'| 'FirstValidTime'| 'LastValid'| 'N
                        | 'ConfigAssetManager'|'ConfigAssetReserve'|'ConfigAssetFreeze'|'ConfigAssetClawback'|'FreezeAsset'
                        | 'FreezeAssetAccount'|'FreezeAssetFrozen' | 'Assets' | 'NumAssets' | 'Applications' | 'NumApplications'
                        | 'GlobalNumUint' | 'GlobalNumByteSlice' | 'LocalNumUint' | 'LocalNumByteSlice' | 'ExtraProgramPages'
-                       | 'Nonparticipation' | 'Logs' | 'NumLogs' | 'CreatedAssetID' | 'CreatedApplicationID'
+                       | 'Nonparticipation' | 'Logs' | 'NumLogs' | 'CreatedAssetID' | 'CreatedApplicationID' | 'LastLog' | 'StateProofPK'
 
 //Follow same sequence in https://developer.algorand.org/docs/reference/teal/specification/#arithmetic-logic-and-cryptographic-operations
 GeneralOperation                   ::= SHA256
@@ -415,6 +417,7 @@ StateAccessOperation ::=  'balance' | 'app_opted_in' | 'app_local_get'| 'app_loc
                             | assetHoldingGetOperation
                             | assetParamsGetOperation
                             | appParamsGetOperation
+                            | acctParamsGetOperation
                             | MIN_BALANCE_OPCODE
                             | LOG_OPCODE
 
@@ -458,3 +461,7 @@ itxnaOperation ::= ITXNA_OPCODE (unsignedInteger | TxnFieldArg | VAR_TMPL) (unsi
 txnasOperation ::= TXNAS_OPCODE (unsignedInteger | TxnFieldArg | VAR_TMPL) {pin=1}
 gtxnasOperation ::= GTXNAS_OPCODE (unsignedInteger | VAR_TMPL) (unsignedInteger | TxnFieldArg | VAR_TMPL) {pin=1}
 gtxnsasOperation ::= GTXNSAS_OPCODE (unsignedInteger | TxnFieldArg | VAR_TMPL) {pin=1}
+
+//In v6
+acctParamsGetOp     ::= 'acct_params_get'
+acctParamsGetOperation ::=  acctParamsGetOp (unsignedInteger | ACCT_PARAMS_GET_FIELD | VAR_TMPL) {pin=1}

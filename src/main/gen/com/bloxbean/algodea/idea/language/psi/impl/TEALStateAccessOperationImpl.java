@@ -41,6 +41,12 @@ public class TEALStateAccessOperationImpl extends ASTWrapperPsiElement implement
 
   @Override
   @Nullable
+  public TEALAcctParamsGetOperation getAcctParamsGetOperation() {
+    return findChildByClass(TEALAcctParamsGetOperation.class);
+  }
+
+  @Override
+  @Nullable
   public TEALAppParamsGetOperation getAppParamsGetOperation() {
     return findChildByClass(TEALAppParamsGetOperation.class);
   }

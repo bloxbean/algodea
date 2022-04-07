@@ -57,6 +57,7 @@ public class TEALDocumentationProvider extends AbstractDocumentationProvider  {
             TEALTypes.ASSET_PARAMS_GET_FIELD,
             TEALTypes.ASSET_HOLDING_GET_FIELD,
             TEALTypes.APP_PARAMS_GET_FIELD,
+            TEALTypes.ACCT_PARAMS_GET_FIELD,
             TEALTypes.INNER_TRANSACTION_OP
     );
 
@@ -153,6 +154,11 @@ public class TEALDocumentationProvider extends AbstractDocumentationProvider  {
         } else if(TEALTypes.APP_PARAMS_GET_FIELD.equals(element.getNode().getElementType())) {
             String value = element.getNode().getText();
             Field field = TEALOpCodeFactory.getInstance().getField(APP_PARAMS_GET_FIELDS, value);
+            if(field != null)
+                return field.formatHtml();
+        } else if(TEALTypes.ACCT_PARAMS_GET_FIELD.equals(element.getNode().getElementType())) {
+            String value = element.getNode().getText();
+            Field field = TEALOpCodeFactory.getInstance().getField(ACCT_PARAMS_GET_FIELDS, value);
             if(field != null)
                 return field.formatHtml();
         }

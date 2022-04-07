@@ -970,6 +970,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
   //                             | assetHoldingGetOperation
   //                             | assetParamsGetOperation
   //                             | appParamsGetOperation
+  //                             | acctParamsGetOperation
   //                             | MIN_BALANCE_OPCODE
   //                             | LOG_OPCODE
   public static boolean StateAccessOperation(PsiBuilder b, int l) {
@@ -989,6 +990,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
     if (!r) r = assetHoldingGetOperation(b, l + 1);
     if (!r) r = assetParamsGetOperation(b, l + 1);
     if (!r) r = appParamsGetOperation(b, l + 1);
+    if (!r) r = acctParamsGetOperation(b, l + 1);
     if (!r) r = MIN_BALANCE_OPCODE(b, l + 1);
     if (!r) r = LOG_OPCODE(b, l + 1);
     exit_section_(b, l, m, r, false, null);
@@ -1038,7 +1040,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
   //                        | 'ConfigAssetManager'|'ConfigAssetReserve'|'ConfigAssetFreeze'|'ConfigAssetClawback'|'FreezeAsset'
   //                        | 'FreezeAssetAccount'|'FreezeAssetFrozen' | 'Assets' | 'NumAssets' | 'Applications' | 'NumApplications'
   //                        | 'GlobalNumUint' | 'GlobalNumByteSlice' | 'LocalNumUint' | 'LocalNumByteSlice' | 'ExtraProgramPages'
-  //                        | 'Nonparticipation' | 'Logs' | 'NumLogs' | 'CreatedAssetID' | 'CreatedApplicationID'
+  //                        | 'Nonparticipation' | 'Logs' | 'NumLogs' | 'CreatedAssetID' | 'CreatedApplicationID' | 'LastLog' | 'StateProofPK'
   public static boolean TxnFieldArg(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "TxnFieldArg")) return false;
     boolean r;
@@ -1105,6 +1107,8 @@ public class TEALParser implements PsiParser, LightPsiParser {
     if (!r) r = consumeToken(b, "NumLogs");
     if (!r) r = consumeToken(b, "CreatedAssetID");
     if (!r) r = consumeToken(b, "CreatedApplicationID");
+    if (!r) r = consumeToken(b, "LastLog");
+    if (!r) r = consumeToken(b, "StateProofPK");
     exit_section_(b, l, m, r, false, null);
     return r;
   }
@@ -1117,6 +1121,40 @@ public class TEALParser implements PsiParser, LightPsiParser {
     Marker m = enter_section_(b, l, _NONE_, UNCOVER_OPCODE, "<uncover opcode>");
     r = consumeToken(b, "uncover");
     exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // 'acct_params_get'
+  public static boolean acctParamsGetOp(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "acctParamsGetOp")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, ACCT_PARAMS_GET_OP, "<acct params get op>");
+    r = consumeToken(b, "acct_params_get");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // acctParamsGetOp (unsignedInteger | ACCT_PARAMS_GET_FIELD | VAR_TMPL)
+  public static boolean acctParamsGetOperation(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "acctParamsGetOperation")) return false;
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, ACCT_PARAMS_GET_OPERATION, "<acct params get operation>");
+    r = acctParamsGetOp(b, l + 1);
+    p = r; // pin = 1
+    r = r && acctParamsGetOperation_1(b, l + 1);
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
+  }
+
+  // unsignedInteger | ACCT_PARAMS_GET_FIELD | VAR_TMPL
+  private static boolean acctParamsGetOperation_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "acctParamsGetOperation_1")) return false;
+    boolean r;
+    r = unsignedInteger(b, l + 1);
+    if (!r) r = consumeToken(b, ACCT_PARAMS_GET_FIELD);
+    if (!r) r = consumeToken(b, VAR_TMPL);
     return r;
   }
 
