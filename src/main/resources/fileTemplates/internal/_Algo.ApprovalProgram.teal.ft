@@ -1,4 +1,4 @@
-#pragma version 5
+#pragma version 6
 
 // read global state
 byte "counter"
