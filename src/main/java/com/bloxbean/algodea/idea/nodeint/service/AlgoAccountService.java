@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 BloxBean Project
+ * Copyright (c) 2022 BloxBean Project
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,13 +22,9 @@
 package com.bloxbean.algodea.idea.nodeint.service;
 
 import com.algorand.algosdk.crypto.Address;
-import com.algorand.algosdk.v2.client.algod.AccountInformation;
-import com.algorand.algosdk.v2.client.common.AlgodClient;
 import com.algorand.algosdk.v2.client.common.Response;
-import com.algorand.algosdk.v2.client.model.Account;
-import com.algorand.algosdk.v2.client.model.Asset;
-import com.algorand.algosdk.v2.client.model.AssetHolding;
-import com.algorand.algosdk.v2.client.model.AssetResponse;
+import com.algorand.algosdk.v2.client.indexer.LookupAccountByID;
+import com.algorand.algosdk.v2.client.model.*;
 import com.bloxbean.algodea.idea.nodeint.exception.ApiCallException;
 import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
 import com.bloxbean.algodea.idea.nodeint.model.AccountAsset;
@@ -50,36 +46,42 @@ public class AlgoAccountService extends AlgoBaseService {
     }
 
     public Long getBalance(String address) throws Exception {
-        AlgodClient algodClient = getAlgodClient();
-        AccountInformation accountInformation = algodClient.AccountInformation(new Address(address));
-        Response<Account> accountResponse = accountInformation.execute(getHeaders()._1(), getHeaders()._2());
-        if(accountResponse.isSuccessful()) {
-            Account account = accountResponse.body();
-            if(account != null)
-                return account.amount;
-            else
-                throw new ApiCallException("Unable to get the accoung balance: Response " + accountResponse);
-        } else {
-            logListener.error("Unable to get the accoung balance: Response " + accountResponse);
-            throw new ApiCallException("Unable to get the accoung balance: Response " + accountResponse);
-        }
-
+        Account account = getAccount(address);
+        if (account != null)
+            return account.amount;
+        else
+            throw new ApiCallException("Unable to get the account balance");
     }
 
     public Account getAccount(String address) throws ApiCallException {
         try {
-            Response<Account> accountResponse = client.AccountInformation(new Address(address)).execute(getHeaders()._1(), getHeaders()._2());
+            if(indexerClient == null) {
+                Response<Account> accountResponse = client.AccountInformation(new Address(address)).execute(getHeaders()._1(), getHeaders()._2());
 
-            if(!accountResponse.isSuccessful()) {
-                printErrorMessage("Unable to fetch account information for address : " + address, accountResponse);
-                return null;
+                if (!accountResponse.isSuccessful()) {
+                    printErrorMessage("Unable to fetch account information for address : " + address, accountResponse);
+                    return null;
+                }
+
+                Account account = accountResponse.body();
+                if (account != null) {
+                    return account;
+                } else
+                    return null;
+            } else {
+                logListener.info("Fetching balance from Indexer Url ...");
+                LookupAccountByID lookupAccountByID = indexerClient.lookupAccountByID(new Address(address));
+                Response<AccountResponse> accountResponseResponse =
+                        lookupAccountByID.execute(getHeaders()._1(), getHeaders()._2());
+
+                if (accountResponseResponse.isSuccessful() && accountResponseResponse.body() != null) {
+                    Account account = accountResponseResponse.body().account;
+                    return account;
+                } else {
+                    printErrorMessage("Unable to get the account balance: Response ", accountResponseResponse);
+                    return null;
+                }
             }
-
-            Account account = accountResponse.body();
-            if(account != null) {
-                return account;
-            } else
-                return null;
         } catch (NoSuchAlgorithmException e) {
             logListener.error("Invalid address : " + address);
             throw new ApiCallException("Invalid address : " + address);

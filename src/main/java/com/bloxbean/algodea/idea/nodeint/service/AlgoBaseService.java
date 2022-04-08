@@ -108,10 +108,6 @@ public class AlgoBaseService {
         this.networkGenesisHash = nodeInfo.getGenesisHash();
     }
 
-    public AlgodClient getAlgodClient() {
-        return algoConnectionFactory.connect();
-    }
-
     public void printErrorMessage(String message, Response response) {
         if(response == null) {
             logListener.error(message);

@@ -20,6 +20,7 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 public class RemoteNodeConfigDialog extends DialogWrapper{
     private JPanel contentPane;
@@ -35,6 +36,23 @@ public class RemoteNodeConfigDialog extends DialogWrapper{
     private TextFieldWithAutoCompletion nodeApiEndpoint;
 
     private Project project;
+
+    private static java.util.List<NodeConfig> defaultNodeConfigs;
+
+    static {
+        defaultNodeConfigs = new ArrayList<>();
+
+        defaultNodeConfigs.add(new NodeConfig("http://localhost:4001",
+                "http://localhost:8980", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"));
+
+        defaultNodeConfigs.add(new NodeConfig("https://node.testnet.algoexplorerapi.io",
+                "https://algoindexer.testnet.algoexplorerapi.io", "algoexplorer-dummykey"));
+        defaultNodeConfigs.add(new NodeConfig("https://node.algoexplorerapi.io",
+                "https://algoindexer.algoexplorerapi.io", "algoexplorer-dummykey"));
+
+        defaultNodeConfigs.add(new NodeConfig("https://testnet-algorand.api.purestake.io/ps2",
+                "https://testnet-algorand.api.purestake.io/idx2", ""));
+    }
 
     public RemoteNodeConfigDialog(Project project) {
         this(project, null);
@@ -196,25 +214,61 @@ public class RemoteNodeConfigDialog extends DialogWrapper{
         // TODO: place custom component creation code here
         Collection<String> availableNodeOptions = new ArrayList<String>();
         availableNodeOptions.add("");
-        availableNodeOptions.add("https://localhost:4001");
-        availableNodeOptions.add("https://testnet-algorand.api.purestake.io/ps2");
-        availableNodeOptions.add("https://api.testnet.algoexplorer.io");
+
+        availableNodeOptions.addAll(defaultNodeConfigs.stream().map(nodeConfig -> nodeConfig.apiEndpoint).collect(Collectors.toList()));
         nodeApiEndpoint =  TextFieldWithAutoCompletion.create(project, availableNodeOptions, true, "" );
 
         nodeApiEndpoint.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent e) {
                 super.focusLost(e);
-                if(nodeApiEndpoint != null && nodeApiEndpoint.getText().contains("algoexplorer.io")
-                        && StringUtil.isEmpty(apiKey.getText())) {
-                    apiKey.setText("algoexplorer-dummykey");
+                if(nodeApiEndpoint != null && !nodeApiEndpoint.getText().isEmpty()) {
+                    NodeConfig defNodeConfig = getDefaultNodeConfigByApiEndpoint(nodeApiEndpoint.getText());
+                    if (defNodeConfig != null) {
+                        if (StringUtil.isEmpty(apiKey.getText())) {
+                            apiKey.setText(defNodeConfig.getApiKey());
+                        }
+
+                        if (StringUtil.isEmpty(indexerApiEndpoint.getText())) {
+                            indexerApiEndpoint.setText(defNodeConfig.getIndexerApiEndpoint());
+                        }
+                    }
                 }
             }
         });
 
         Collection<String> availableIndexerEndpoints = new ArrayList<String>();
         availableIndexerEndpoints.add("");
-        availableIndexerEndpoints.add("https://testnet-algorand.api.purestake.io/idx2");
+        availableIndexerEndpoints.addAll(defaultNodeConfigs.stream().map(nodeConfig -> nodeConfig.indexerApiEndpoint).collect(Collectors.toList()));
         indexerApiEndpoint = TextFieldWithAutoCompletion.create(project, availableIndexerEndpoints, true, "" );
+    }
+
+    private NodeConfig getDefaultNodeConfigByApiEndpoint(String apiEndpoint) {
+        return defaultNodeConfigs.stream().filter(nodeConfig -> nodeConfig.apiEndpoint.equals(apiEndpoint)).findFirst()
+                .get();
+    }
+
+    static class NodeConfig {
+        String apiEndpoint;
+        String indexerApiEndpoint;
+        String apiKey;
+
+        public NodeConfig(String apiEndpoint, String indexerApiEndpoint, String apiKey) {
+            this.apiEndpoint = apiEndpoint;
+            this.apiKey = apiKey;
+            this.indexerApiEndpoint = indexerApiEndpoint;
+        }
+
+        public String getApiEndpoint() {
+            return apiEndpoint;
+        }
+
+        public String getIndexerApiEndpoint() {
+            return indexerApiEndpoint;
+        }
+
+        public String getApiKey() {
+            return apiKey;
+        }
     }
 }
