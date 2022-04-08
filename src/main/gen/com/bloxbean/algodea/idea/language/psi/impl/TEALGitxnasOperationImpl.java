@@ -11,14 +11,14 @@ import static com.bloxbean.algodea.idea.language.psi.TEALTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.bloxbean.algodea.idea.language.psi.*;
 
-public class TEALPseudoOpImpl extends ASTWrapperPsiElement implements TEALPseudoOp {
+public class TEALGitxnasOperationImpl extends ASTWrapperPsiElement implements TEALGitxnasOperation {
 
-  public TEALPseudoOpImpl(@NotNull ASTNode node) {
+  public TEALGitxnasOperationImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull TEALVisitor visitor) {
-    visitor.visitPseudoOp(this);
+    visitor.visitGitxnasOperation(this);
   }
 
   @Override
@@ -28,27 +28,21 @@ public class TEALPseudoOpImpl extends ASTWrapperPsiElement implements TEALPseudo
   }
 
   @Override
-  @Nullable
-  public TEALAddrStatement getAddrStatement() {
-    return findChildByClass(TEALAddrStatement.class);
+  @NotNull
+  public TEALGitxnasOpcode getGitxnasOpcode() {
+    return findNotNullChildByClass(TEALGitxnasOpcode.class);
   }
 
   @Override
   @Nullable
-  public TEALByteStatement getByteStatement() {
-    return findChildByClass(TEALByteStatement.class);
+  public TEALTxnFieldArg getTxnFieldArg() {
+    return findChildByClass(TEALTxnFieldArg.class);
   }
 
   @Override
-  @Nullable
-  public TEALIntStatement getIntStatement() {
-    return findChildByClass(TEALIntStatement.class);
-  }
-
-  @Override
-  @Nullable
-  public TEALMethodStatement getMethodStatement() {
-    return findChildByClass(TEALMethodStatement.class);
+  @NotNull
+  public List<TEALUnsignedInteger> getUnsignedIntegerList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, TEALUnsignedInteger.class);
   }
 
 }

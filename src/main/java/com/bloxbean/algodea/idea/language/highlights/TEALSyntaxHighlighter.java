@@ -46,7 +46,7 @@ public class TEALSyntaxHighlighter extends SyntaxHighlighterBase {
     private static final TokenSet OPERATIONS = TokenSet.create(TEALKeywords.GENERAL_OPERATIONS_ELEMENTS.toArray(new IElementType[0]));
 
     private static final TokenSet PSEUDO_OP_CODES = TokenSet.create(
-            INT, BYTE, ADDR
+            INT, BYTE, ADDR, METHOD
     );
 //
     private static final Map<IElementType, TextAttributesKey> keys = new HashMap<>();

@@ -31,7 +31,7 @@ SPACE=[ \t\n\x0B\f\r]+
 COMMENT="//".*
 L_INTEGER=0|[1-9][0-9]*
 L_STRING=('([^'\\]|\\.)*'|\"([^\"\\]|\\.)*\")
-LOADING_OP=(intcblock|intc|intc_0|intc_1|intc_2|intc_3|bytecblock|bytec|bytec_0|bytec_1|bytec_2|bytec_3|arg|arg_0|arg_1|arg_2|arg_3|global|load|store|pushint|pushbytes|gload|gloads|gaid|gaids|loads|stores|bzero|args)
+LOADING_OP=(intcblock|intc|intc_0|intc_1|intc_2|intc_3|bytecblock|bytec|bytec_0|bytec_1|bytec_2|bytec_3|arg|arg_0|arg_1|arg_2|arg_3|global|load|store|pushint|pushbytes|gload|gloads|gaid|gaids|loads|stores|bzero|args|gloadss)
 FLOWCONTROL_OP=(err|return|pop|dup|dup2|bnz|bz|b|dig|swap|select|cover|uncover|assert|callsub|retsub)
 STATEACCESS_OP=(balance|app_opted_in|app_local_get|app_local_get_ex|app_global_get|app_global_get_ex|app_local_put|app_global_put|app_local_del|app_global_del|asset_holding_get|asset_params_get|app_params_get|acct_params_get|min_balance|log)
 TXN_LOADING_OP=(txn|gtxn|txna|gtxna|gtxns|gtxnsa|txnas|gtxnas|gtxnsas)
@@ -43,7 +43,7 @@ ASSET_PARAMS_GET_FIELD=(AssetTotal|AssetDecimals|AssetDefaultFrozen|AssetUnitNam
 ECDSA_OP=(ecdsa_verify|ecdsa_pk_decompress|ecdsa_pk_recover)
 APP_PARAMS_GET_FIELD=(AppApprovalProgram|AppClearStateProgram|AppGlobalNumUint|AppGlobalNumByteSlice|AppLocalNumUint|AppLocalNumByteSlice|AppExtraProgramPages|AppCreator|AppAddress)
 ACCT_PARAMS_GET_FIELD=(AcctBalance|AcctMinBalance|AcctAuthAddr)
-INNER_TRANSACTION_OP=(itxn_begin|itxn_field|itxn_submit|itxn|itxna)
+INNER_TRANSACTION_OP=(itxn_begin|itxn_field|itxn_submit|itxn|itxna|itxn_next|gitxn|gitxna|gitxnas|itxnas)
 OCTAL=(0)[0-9]+
 HEX=(0x|0X)[a-fA-F0-9]*
 VAR_TMPL=(VAR_TMPL_)([a-zA-Z0-9_$.#@~?]+)
@@ -91,6 +91,7 @@ ID=([a-zA-Z0-9_$.#@~?=+-]+[a-zA-Z0-9_$.#@~?=+-]*)
   "~"                            { return BITWISE_INVERT; }
   "mulw"                         { return MULW; }
   "addw"                         { return ADDW; }
+  "divw"                         { return DIVW; } //v6
   "divmodw"                      { return DIVMODW;} //v4
   "expw"                         { return EXPW_OPCODE; } //v4
   "getbit"                       { return GETBIT; }
@@ -109,6 +110,7 @@ ID=([a-zA-Z0-9_$.#@~?=+-]+[a-zA-Z0-9_$.#@~?=+-]*)
   "int"                          { return INT; }
   "byte"                         { return BYTE; }
   "addr"                         { return ADDR; }
+  "method"                       { return METHOD; }
   "#pragma"                      { return PRAGMA_KEYWORD; }
   ":"                            { return COLON; }
 

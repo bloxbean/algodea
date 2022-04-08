@@ -52,6 +52,7 @@ public interface TEALTypes {
   IElementType DIG_OPCODE = new TEALElementType("DIG_OPCODE");
   IElementType DIG_OPERATION = new TEALElementType("DIG_OPERATION");
   IElementType DIVMODW_OPCODE = new TEALElementType("DIVMODW_OPCODE");
+  IElementType DIVW_OPCODE = new TEALElementType("DIVW_OPCODE");
   IElementType ECDSA_OP = new TEALElementType("ECDSA_OP");
   IElementType ECDSA_PK_DECOMPRESS_OPCODE = new TEALElementType("ECDSA_PK_DECOMPRESS_OPCODE");
   IElementType ECDSA_PK_RECOVER_OPCODE = new TEALElementType("ECDSA_PK_RECOVER_OPCODE");
@@ -72,6 +73,13 @@ public interface TEALTypes {
   IElementType GENERAL_OPERATION = new TEALElementType("GENERAL_OPERATION");
   IElementType GETBIT_OPCODE = new TEALElementType("GETBIT_OPCODE");
   IElementType GETBYTE_OPCODE = new TEALElementType("GETBYTE_OPCODE");
+  IElementType GITXNAS_OPCODE = new TEALElementType("GITXNAS_OPCODE");
+  IElementType GITXNAS_OPERATION = new TEALElementType("GITXNAS_OPERATION");
+  IElementType GITXNA_OPCODE = new TEALElementType("GITXNA_OPCODE");
+  IElementType GITXNA_OPERATION = new TEALElementType("GITXNA_OPERATION");
+  IElementType GITXN_OPCODE = new TEALElementType("GITXN_OPCODE");
+  IElementType GITXN_OPERATION = new TEALElementType("GITXN_OPERATION");
+  IElementType GLOADSS_OPCODE = new TEALElementType("GLOADSS_OPCODE");
   IElementType GLOADS_OPCODE = new TEALElementType("GLOADS_OPCODE");
   IElementType GLOADS_OPERATION = new TEALElementType("GLOADS_OPERATION");
   IElementType GLOAD_OPCODE = new TEALElementType("GLOAD_OPCODE");
@@ -94,11 +102,14 @@ public interface TEALTypes {
   IElementType INTCBLOCK_OPERATION = new TEALElementType("INTCBLOCK_OPERATION");
   IElementType INTC_OPERATION = new TEALElementType("INTC_OPERATION");
   IElementType INT_STATEMENT = new TEALElementType("INT_STATEMENT");
+  IElementType ITXNAS_OPCODE = new TEALElementType("ITXNAS_OPCODE");
+  IElementType ITXNAS_OPERATION = new TEALElementType("ITXNAS_OPERATION");
   IElementType ITXNA_OPCODE = new TEALElementType("ITXNA_OPCODE");
   IElementType ITXNA_OPERATION = new TEALElementType("ITXNA_OPERATION");
   IElementType ITXN_BEGIN_OPCODE = new TEALElementType("ITXN_BEGIN_OPCODE");
   IElementType ITXN_FIELD_OPCODE = new TEALElementType("ITXN_FIELD_OPCODE");
   IElementType ITXN_FIELD_OPERATION = new TEALElementType("ITXN_FIELD_OPERATION");
+  IElementType ITXN_NEXT_OPCODE = new TEALElementType("ITXN_NEXT_OPCODE");
   IElementType ITXN_OPCODE = new TEALElementType("ITXN_OPCODE");
   IElementType ITXN_OPERATION = new TEALElementType("ITXN_OPERATION");
   IElementType ITXN_SUBMIT_OPCODE = new TEALElementType("ITXN_SUBMIT_OPCODE");
@@ -107,6 +118,7 @@ public interface TEALTypes {
   IElementType LOADS_OPERATION = new TEALElementType("LOADS_OPERATION");
   IElementType LOAD_OPERATION = new TEALElementType("LOAD_OPERATION");
   IElementType LOG_OPCODE = new TEALElementType("LOG_OPCODE");
+  IElementType METHOD_STATEMENT = new TEALElementType("METHOD_STATEMENT");
   IElementType MIN_BALANCE_OPCODE = new TEALElementType("MIN_BALANCE_OPCODE");
   IElementType PRAGMA = new TEALElementType("PRAGMA");
   IElementType PRAGMA_VERSION = new TEALElementType("PRAGMA_VERSION");
@@ -158,6 +170,7 @@ public interface TEALTypes {
   IElementType CONCAT = new TEALTokenType("concat");
   IElementType DIVIDE = new TEALTokenType("/");
   IElementType DIVMODW = new TEALTokenType("divmodw");
+  IElementType DIVW = new TEALTokenType("divw");
   IElementType ED25519VERIFY = new TEALTokenType("ed25519verify");
   IElementType EOF = new TEALTokenType("EOF");
   IElementType FLOWCONTROL_OP = new TEALTokenType("FLOWCONTROL_OP");
@@ -182,6 +195,7 @@ public interface TEALTypes {
   IElementType LOGICAL_OR = new TEALTokenType("||");
   IElementType L_INTEGER = new TEALTokenType("l_integer");
   IElementType L_STRING = new TEALTokenType("l_string");
+  IElementType METHOD = new TEALTokenType("method");
   IElementType MINUS = new TEALTokenType("-");
   IElementType MODULO = new TEALTokenType("%");
   IElementType MULW = new TEALTokenType("mulw");
@@ -339,6 +353,9 @@ public interface TEALTypes {
       else if (type == DIVMODW_OPCODE) {
         return new TEALDivmodwOpcodeImpl(node);
       }
+      else if (type == DIVW_OPCODE) {
+        return new TEALDivwOpcodeImpl(node);
+      }
       else if (type == ECDSA_OP) {
         return new TEALEcdsaOpImpl(node);
       }
@@ -398,6 +415,27 @@ public interface TEALTypes {
       }
       else if (type == GETBYTE_OPCODE) {
         return new TEALGetbyteOpcodeImpl(node);
+      }
+      else if (type == GITXNAS_OPCODE) {
+        return new TEALGitxnasOpcodeImpl(node);
+      }
+      else if (type == GITXNAS_OPERATION) {
+        return new TEALGitxnasOperationImpl(node);
+      }
+      else if (type == GITXNA_OPCODE) {
+        return new TEALGitxnaOpcodeImpl(node);
+      }
+      else if (type == GITXNA_OPERATION) {
+        return new TEALGitxnaOperationImpl(node);
+      }
+      else if (type == GITXN_OPCODE) {
+        return new TEALGitxnOpcodeImpl(node);
+      }
+      else if (type == GITXN_OPERATION) {
+        return new TEALGitxnOperationImpl(node);
+      }
+      else if (type == GLOADSS_OPCODE) {
+        return new TEALGloadssOpcodeImpl(node);
       }
       else if (type == GLOADS_OPCODE) {
         return new TEALGloadsOpcodeImpl(node);
@@ -465,6 +503,12 @@ public interface TEALTypes {
       else if (type == INT_STATEMENT) {
         return new TEALIntStatementImpl(node);
       }
+      else if (type == ITXNAS_OPCODE) {
+        return new TEALItxnasOpcodeImpl(node);
+      }
+      else if (type == ITXNAS_OPERATION) {
+        return new TEALItxnasOperationImpl(node);
+      }
       else if (type == ITXNA_OPCODE) {
         return new TEALItxnaOpcodeImpl(node);
       }
@@ -479,6 +523,9 @@ public interface TEALTypes {
       }
       else if (type == ITXN_FIELD_OPERATION) {
         return new TEALItxnFieldOperationImpl(node);
+      }
+      else if (type == ITXN_NEXT_OPCODE) {
+        return new TEALItxnNextOpcodeImpl(node);
       }
       else if (type == ITXN_OPCODE) {
         return new TEALItxnOpcodeImpl(node);
@@ -503,6 +550,9 @@ public interface TEALTypes {
       }
       else if (type == LOG_OPCODE) {
         return new TEALLogOpcodeImpl(node);
+      }
+      else if (type == METHOD_STATEMENT) {
+        return new TEALMethodStatementImpl(node);
       }
       else if (type == MIN_BALANCE_OPCODE) {
         return new TEALMinBalanceOpcodeImpl(node);

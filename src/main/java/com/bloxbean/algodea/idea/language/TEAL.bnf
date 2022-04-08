@@ -34,12 +34,12 @@
         l_integer="regexp:0|[1-9][0-9]*"
         l_string="regexp:('([^'\\]|\\.)*'|\"([^\"\\]|\\.)*\")"
 
-    LOADING_OP = "regexp:(intcblock|intc|intc_0|intc_1|intc_2|intc_3|bytecblock|bytec|bytec_0|bytec_1|bytec_2|bytec_3|arg|arg_0|arg_1|arg_2|arg_3|global|load|store|pushint|pushbytes|gload|gloads|gaid|gaids|loads|stores|bzero|args)"
+    LOADING_OP = "regexp:(intcblock|intc|intc_0|intc_1|intc_2|intc_3|bytecblock|bytec|bytec_0|bytec_1|bytec_2|bytec_3|arg|arg_0|arg_1|arg_2|arg_3|global|load|store|pushint|pushbytes|gload|gloads|gaid|gaids|loads|stores|bzero|args|gloadss)"
     FLOWCONTROL_OP = "regexp:(err|return|pop|dup|dup2|bnz|bz|b|dig|swap|select|cover|uncover|assert)"
     STATEACCESS_OP = "regexp:(balance|app_opted_in|app_local_get|app_local_get_ex|app_global_get|app_global_get_ex|app_local_put|app_global_put|app_local_del|app_global_del|asset_holding_get|asset_params_get|app_params_get|min_balance|log)"
 
     TXN_LOADING_OP = 'regexp:(txn|gtxn|txna|gtxna|gtxns|gtxnsa|txnas|gtxnas|gtxnsas)'
-    INNER_TRANSACTION_OP = 'regexp:(itxn_begin|itxn_field|itxn_submit|itxn|itxna)'
+    INNER_TRANSACTION_OP = 'regexp:(itxn_begin|itxn_field|itxn_submit|itxn|itxna|itxn_next|gitxn|gitxna|gitxnas|itxnas)'
 
   //Operations
     SHA256              = 'sha256'
@@ -73,6 +73,7 @@
 
     MULW                = 'mulw'
     ADDW                = 'addw'
+    DIVW                = 'divw' //v6
     DIVMODW             = 'divmodw'
     GETBIT              = 'getbit'
     SETBIT              = 'setbit'
@@ -104,6 +105,7 @@
     INT = "int"
     BYTE = "byte"
     ADDR = "addr"
+    METHOD = "method" //v6
 
     PRAGMA_KEYWORD = "#pragma"
 
@@ -125,7 +127,7 @@
 
 //top level
 tealFile ::= program
-program ::= [pragma NL*] statement*
+program ::= COMMENT* [pragma NL*] statement*
 
 //since v3 opcodes
 GTXNS_OPCODE ::= 'gtxns';
@@ -211,6 +213,13 @@ ARGS_OPCODE ::= 'args'
 
 //v6 opcodes start
 B_SQRT_OPCODE ::= 'bsqrt'
+DIVW_OPCODE ::= 'divw'
+GLOADSS_OPCODE ::= 'gloadss'
+ITXN_NEXT_OPCODE ::= 'itxn_next'
+GITXN_OPCODE ::= 'gitxn'
+GITXNA_OPCODE ::= 'gitxna'
+GITXNAS_OPCODE ::= 'gitxnas'
+ITXNAS_OPCODE ::= 'itxnas'
 //v6 opcodes
 
 pragma ::= PRAGMA_KEYWORD VERSION pragma_version {pin=1 recoverWhile=statement_recover}
@@ -245,7 +254,7 @@ private statement_recover ::= !(
 
 branch ::= ID COLON
 
-pseudo_op ::= int_statement | byte_statement | addr_statement
+pseudo_op ::= int_statement | byte_statement | addr_statement | method_statement
 int_statement ::= INT (HEX | OCTAL | unsignedInteger | NAMED_INTEGER_CONSTANT | TYPENUM_CONSTANT | VAR_TMPL) {pin=1}
 
 //TODO No strict check for byte pseudo opcode for now
@@ -261,6 +270,8 @@ byte_statement ::= BYTE (l_string | HEX | byte_base64_encoding_type_values | byt
 
 addr_param ::= (ID | VAR_TMPL) {name= "Algo address"}
 addr_statement ::= ADDR addr_param {pin=1}
+
+method_statement ::= METHOD (l_string | ID | VAR_TMPL) {pin=1} //v6
 
 LoadingOperation ::=  intcblockOperation
                                   | intcOperation
@@ -295,6 +306,7 @@ LoadingOperation ::=  intcblockOperation
                                   | gtxnsaLoadingOperation
                                   | gloadOperation
                                   | gloadsOperation
+                                  | GLOADSS_OPCODE //v6
                                   | gaidOperation
                                   | gaidsOperation
                                   | loadsOperation
@@ -387,6 +399,7 @@ GeneralOperation                   ::= SHA256
                                      | BITWISE_INVERT
                                      | MULW
                                      | ADDW
+                                     | DIVW_OPCODE //v6
                                      | DIVMODW_OPCODE
                                      | EXPW_OPCODE
                                      | GETBIT_OPCODE
@@ -456,9 +469,14 @@ uncoverOperation ::= UNCOVER_OPCODE (unsignedInteger | VAR_TMPL) {pin=1}
 extractOperation ::= EXTRACT_OPCODE (unsignedInteger | VAR_TMPL) (unsignedInteger | VAR_TMPL) {pin=1}
 
 innerTransactionOperation ::= ITXN_BEGIN_OPCODE | ITXN_SUBMIT_OPCODE
+                                    | ITXN_NEXT_OPCODE //v6
                                     | itxnFieldOperation
                                     | itxnOperation
-                                    | itxnaOperation {pin=1}
+                                    | itxnaOperation
+                                    | itxnasOperation
+                                    | gitxnOperation
+                                    | gitxnaOperation
+                                    | gitxnasOperation {pin=1}
 itxnFieldOperation ::= ITXN_FIELD_OPCODE (unsignedInteger | TxnFieldArg | VAR_TMPL) {pin=1}
 itxnOperation ::= ITXN_OPCODE (unsignedInteger | TxnFieldArg | VAR_TMPL) {pin=1}
 itxnaOperation ::= ITXNA_OPCODE (unsignedInteger | TxnFieldArg | VAR_TMPL) (unsignedInteger | VAR_TMPL) {pin=1}
@@ -470,3 +488,9 @@ gtxnsasOperation ::= GTXNSAS_OPCODE (unsignedInteger | TxnFieldArg | VAR_TMPL) {
 //In v6
 acctParamsGetOp     ::= 'acct_params_get'
 acctParamsGetOperation ::=  acctParamsGetOp (unsignedInteger | ACCT_PARAMS_GET_FIELD | VAR_TMPL) {pin=1}
+
+gitxnOperation ::= GITXN_OPCODE (unsignedInteger | VAR_TMPL) (unsignedInteger | TxnFieldArg | VAR_TMPL) {pin=1}
+gitxnaOperation ::= GITXNA_OPCODE (unsignedInteger | VAR_TMPL) (unsignedInteger | TxnFieldArg | VAR_TMPL) (unsignedInteger | VAR_TMPL) {pin=1}
+gitxnasOperation ::= GITXNAS_OPCODE (unsignedInteger | VAR_TMPL) (unsignedInteger | TxnFieldArg | VAR_TMPL) {pin=1}
+itxnasOperation ::= ITXNAS_OPCODE (unsignedInteger | TxnFieldArg | VAR_TMPL) {pin=1}
+

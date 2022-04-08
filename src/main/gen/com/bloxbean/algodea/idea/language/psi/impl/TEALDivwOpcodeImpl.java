@@ -11,44 +11,20 @@ import static com.bloxbean.algodea.idea.language.psi.TEALTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.bloxbean.algodea.idea.language.psi.*;
 
-public class TEALPseudoOpImpl extends ASTWrapperPsiElement implements TEALPseudoOp {
+public class TEALDivwOpcodeImpl extends ASTWrapperPsiElement implements TEALDivwOpcode {
 
-  public TEALPseudoOpImpl(@NotNull ASTNode node) {
+  public TEALDivwOpcodeImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull TEALVisitor visitor) {
-    visitor.visitPseudoOp(this);
+    visitor.visitDivwOpcode(this);
   }
 
   @Override
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof TEALVisitor) accept((TEALVisitor)visitor);
     else super.accept(visitor);
-  }
-
-  @Override
-  @Nullable
-  public TEALAddrStatement getAddrStatement() {
-    return findChildByClass(TEALAddrStatement.class);
-  }
-
-  @Override
-  @Nullable
-  public TEALByteStatement getByteStatement() {
-    return findChildByClass(TEALByteStatement.class);
-  }
-
-  @Override
-  @Nullable
-  public TEALIntStatement getIntStatement() {
-    return findChildByClass(TEALIntStatement.class);
-  }
-
-  @Override
-  @Nullable
-  public TEALMethodStatement getMethodStatement() {
-    return findChildByClass(TEALMethodStatement.class);
   }
 
 }

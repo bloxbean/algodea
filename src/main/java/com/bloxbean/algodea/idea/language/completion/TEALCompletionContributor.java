@@ -92,6 +92,14 @@ public class TEALCompletionContributor extends CompletionContributor {
                 ItxnTxnArgsCompletionProvider.PATTERN,
                 new ItxnTxnArgsCompletionProvider());
 
+        //Gitxn, Gitxna
+        extend(CompletionType.BASIC,
+                GITxnArgCompletionProvider.FIRSTARG_PATTERN,
+                new GITxnArgCompletionProvider());
+        extend(CompletionType.BASIC,
+                GITxnArgCompletionProvider.SECONDARG_PATTERN,
+                new GITxnArgCompletionProvider());
+
     }
 
 }

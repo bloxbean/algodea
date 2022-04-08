@@ -14,6 +14,9 @@ public interface TEALLoadingOperation extends PsiElement {
   TEALBZeroOpcode getBZeroOpcode();
 
   @Nullable
+  TEALGloadssOpcode getGloadssOpcode();
+
+  @Nullable
   TEALArgOperation getArgOperation();
 
   @Nullable

@@ -5,18 +5,15 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface TEALPseudoOp extends PsiElement {
+public interface TEALMethodStatement extends PsiElement {
 
   @Nullable
-  TEALAddrStatement getAddrStatement();
+  PsiElement getId();
 
   @Nullable
-  TEALByteStatement getByteStatement();
+  PsiElement getVarTmpl();
 
   @Nullable
-  TEALIntStatement getIntStatement();
-
-  @Nullable
-  TEALMethodStatement getMethodStatement();
+  PsiElement getLString();
 
 }

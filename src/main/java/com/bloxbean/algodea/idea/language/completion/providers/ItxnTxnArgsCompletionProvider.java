@@ -52,7 +52,12 @@ public final class ItxnTxnArgsCompletionProvider extends BaseTxnArgCompletionPro
                     ),
                     psiElement().afterLeaf(
                             psiElement(TEALTypes.INNER_TRANSACTION_OP)
-                                    .withParent(psiElement(TEALTypes.ITXN_OPCODE))
+                                    .withParent(
+                                            StandardPatterns.or(
+                                                psiElement(TEALTypes.ITXN_OPCODE),
+                                                psiElement(TEALTypes.ITXNAS_OPCODE)
+                                            )
+                                    )
                     ),
                     psiElement().afterLeaf(
                             psiElement(TEALTypes.INNER_TRANSACTION_OP)

@@ -14,6 +14,9 @@ public interface TEALGeneralOperation extends PsiElement {
   TEALDivmodwOpcode getDivmodwOpcode();
 
   @Nullable
+  TEALDivwOpcode getDivwOpcode();
+
+  @Nullable
   TEALExpwOpcode getExpwOpcode();
 
   @Nullable

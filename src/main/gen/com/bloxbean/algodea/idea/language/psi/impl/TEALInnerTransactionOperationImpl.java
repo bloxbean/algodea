@@ -35,8 +35,32 @@ public class TEALInnerTransactionOperationImpl extends ASTWrapperPsiElement impl
 
   @Override
   @Nullable
+  public TEALItxnNextOpcode getItxnNextOpcode() {
+    return findChildByClass(TEALItxnNextOpcode.class);
+  }
+
+  @Override
+  @Nullable
   public TEALItxnSubmitOpcode getItxnSubmitOpcode() {
     return findChildByClass(TEALItxnSubmitOpcode.class);
+  }
+
+  @Override
+  @Nullable
+  public TEALGitxnOperation getGitxnOperation() {
+    return findChildByClass(TEALGitxnOperation.class);
+  }
+
+  @Override
+  @Nullable
+  public TEALGitxnaOperation getGitxnaOperation() {
+    return findChildByClass(TEALGitxnaOperation.class);
+  }
+
+  @Override
+  @Nullable
+  public TEALGitxnasOperation getGitxnasOperation() {
+    return findChildByClass(TEALGitxnasOperation.class);
   }
 
   @Override
@@ -55,6 +79,12 @@ public class TEALInnerTransactionOperationImpl extends ASTWrapperPsiElement impl
   @Nullable
   public TEALItxnaOperation getItxnaOperation() {
     return findChildByClass(TEALItxnaOperation.class);
+  }
+
+  @Override
+  @Nullable
+  public TEALItxnasOperation getItxnasOperation() {
+    return findChildByClass(TEALItxnasOperation.class);
   }
 
 }

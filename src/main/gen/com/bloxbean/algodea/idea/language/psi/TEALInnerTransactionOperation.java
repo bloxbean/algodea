@@ -11,7 +11,19 @@ public interface TEALInnerTransactionOperation extends PsiElement {
   TEALItxnBeginOpcode getItxnBeginOpcode();
 
   @Nullable
+  TEALItxnNextOpcode getItxnNextOpcode();
+
+  @Nullable
   TEALItxnSubmitOpcode getItxnSubmitOpcode();
+
+  @Nullable
+  TEALGitxnOperation getGitxnOperation();
+
+  @Nullable
+  TEALGitxnaOperation getGitxnaOperation();
+
+  @Nullable
+  TEALGitxnasOperation getGitxnasOperation();
 
   @Nullable
   TEALItxnFieldOperation getItxnFieldOperation();
@@ -21,5 +33,8 @@ public interface TEALInnerTransactionOperation extends PsiElement {
 
   @Nullable
   TEALItxnaOperation getItxnaOperation();
+
+  @Nullable
+  TEALItxnasOperation getItxnasOperation();
 
 }

@@ -2810,5 +2810,13 @@
     "pushes": [],
     "desc":"addr pseudo opcode",
     "additionalDesc" : "addr {address}"
+  },
+  {
+    "op": "method",
+    "opcode": "Pseudo opcode",
+    "pops": [],
+    "pushes": [],
+    "desc":"method pseudo opcode",
+    "additionalDesc" : "method \"{method signature}\""
   }
 ]

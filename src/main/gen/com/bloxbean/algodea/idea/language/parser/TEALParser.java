@@ -301,6 +301,18 @@ public class TEALParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // 'divw'
+  public static boolean DIVW_OPCODE(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "DIVW_OPCODE")) return false;
+    if (!nextTokenIs(b, DIVW)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, DIVW);
+    exit_section_(b, m, DIVW_OPCODE, r);
+    return r;
+  }
+
+  /* ********************************************************** */
   // 'ecdsa_pk_decompress'
   public static boolean ECDSA_PK_DECOMPRESS_OPCODE(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "ECDSA_PK_DECOMPRESS_OPCODE")) return false;
@@ -486,6 +498,50 @@ public class TEALParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // 'gitxnas'
+  public static boolean GITXNAS_OPCODE(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "GITXNAS_OPCODE")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, GITXNAS_OPCODE, "<gitxnas opcode>");
+    r = consumeToken(b, "gitxnas");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // 'gitxna'
+  public static boolean GITXNA_OPCODE(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "GITXNA_OPCODE")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, GITXNA_OPCODE, "<gitxna opcode>");
+    r = consumeToken(b, "gitxna");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // 'gitxn'
+  public static boolean GITXN_OPCODE(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "GITXN_OPCODE")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, GITXN_OPCODE, "<gitxn opcode>");
+    r = consumeToken(b, "gitxn");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // 'gloadss'
+  public static boolean GLOADSS_OPCODE(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "GLOADSS_OPCODE")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, GLOADSS_OPCODE, "<gloadss opcode>");
+    r = consumeToken(b, "gloadss");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
   // 'gloads'
   public static boolean GLOADS_OPCODE(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "GLOADS_OPCODE")) return false;
@@ -607,6 +663,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
   //                                      | BITWISE_INVERT
   //                                      | MULW
   //                                      | ADDW
+  //                                      | DIVW_OPCODE //v6
   //                                      | DIVMODW_OPCODE
   //                                      | EXPW_OPCODE
   //                                      | GETBIT_OPCODE
@@ -658,6 +715,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
     if (!r) r = consumeToken(b, BITWISE_INVERT);
     if (!r) r = consumeToken(b, MULW);
     if (!r) r = consumeToken(b, ADDW);
+    if (!r) r = DIVW_OPCODE(b, l + 1);
     if (!r) r = DIVMODW_OPCODE(b, l + 1);
     if (!r) r = EXPW_OPCODE(b, l + 1);
     if (!r) r = GETBIT_OPCODE(b, l + 1);
@@ -672,6 +730,17 @@ public class TEALParser implements PsiParser, LightPsiParser {
     if (!r) r = EXTRACT_UINT16_OPCODE(b, l + 1);
     if (!r) r = EXTRACT_UINT32_OPCODE(b, l + 1);
     if (!r) r = EXTRACT_UINT64_OPCODE(b, l + 1);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // 'itxnas'
+  public static boolean ITXNAS_OPCODE(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "ITXNAS_OPCODE")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, ITXNAS_OPCODE, "<itxnas opcode>");
+    r = consumeToken(b, "itxnas");
     exit_section_(b, l, m, r, false, null);
     return r;
   }
@@ -705,6 +774,17 @@ public class TEALParser implements PsiParser, LightPsiParser {
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, ITXN_FIELD_OPCODE, "<itxn field opcode>");
     r = consumeToken(b, "itxn_field");
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // 'itxn_next'
+  public static boolean ITXN_NEXT_OPCODE(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "ITXN_NEXT_OPCODE")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, ITXN_NEXT_OPCODE, "<itxn next opcode>");
+    r = consumeToken(b, "itxn_next");
     exit_section_(b, l, m, r, false, null);
     return r;
   }
@@ -785,6 +865,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
   //                                   | gtxnsaLoadingOperation
   //                                   | gloadOperation
   //                                   | gloadsOperation
+  //                                   | GLOADSS_OPCODE //v6
   //                                   | gaidOperation
   //                                   | gaidsOperation
   //                                   | loadsOperation
@@ -828,6 +909,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
     if (!r) r = gtxnsaLoadingOperation(b, l + 1);
     if (!r) r = gloadOperation(b, l + 1);
     if (!r) r = gloadsOperation(b, l + 1);
+    if (!r) r = GLOADSS_OPCODE(b, l + 1);
     if (!r) r = gaidOperation(b, l + 1);
     if (!r) r = gaidsOperation(b, l + 1);
     if (!r) r = loadsOperation(b, l + 1);
@@ -1810,6 +1892,115 @@ public class TEALParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // GITXN_OPCODE (unsignedInteger | VAR_TMPL) (unsignedInteger | TxnFieldArg | VAR_TMPL)
+  public static boolean gitxnOperation(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "gitxnOperation")) return false;
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, GITXN_OPERATION, "<gitxn operation>");
+    r = GITXN_OPCODE(b, l + 1);
+    p = r; // pin = 1
+    r = r && report_error_(b, gitxnOperation_1(b, l + 1));
+    r = p && gitxnOperation_2(b, l + 1) && r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
+  }
+
+  // unsignedInteger | VAR_TMPL
+  private static boolean gitxnOperation_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "gitxnOperation_1")) return false;
+    boolean r;
+    r = unsignedInteger(b, l + 1);
+    if (!r) r = consumeToken(b, VAR_TMPL);
+    return r;
+  }
+
+  // unsignedInteger | TxnFieldArg | VAR_TMPL
+  private static boolean gitxnOperation_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "gitxnOperation_2")) return false;
+    boolean r;
+    r = unsignedInteger(b, l + 1);
+    if (!r) r = TxnFieldArg(b, l + 1);
+    if (!r) r = consumeToken(b, VAR_TMPL);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // GITXNA_OPCODE (unsignedInteger | VAR_TMPL) (unsignedInteger | TxnFieldArg | VAR_TMPL) (unsignedInteger | VAR_TMPL)
+  public static boolean gitxnaOperation(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "gitxnaOperation")) return false;
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, GITXNA_OPERATION, "<gitxna operation>");
+    r = GITXNA_OPCODE(b, l + 1);
+    p = r; // pin = 1
+    r = r && report_error_(b, gitxnaOperation_1(b, l + 1));
+    r = p && report_error_(b, gitxnaOperation_2(b, l + 1)) && r;
+    r = p && gitxnaOperation_3(b, l + 1) && r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
+  }
+
+  // unsignedInteger | VAR_TMPL
+  private static boolean gitxnaOperation_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "gitxnaOperation_1")) return false;
+    boolean r;
+    r = unsignedInteger(b, l + 1);
+    if (!r) r = consumeToken(b, VAR_TMPL);
+    return r;
+  }
+
+  // unsignedInteger | TxnFieldArg | VAR_TMPL
+  private static boolean gitxnaOperation_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "gitxnaOperation_2")) return false;
+    boolean r;
+    r = unsignedInteger(b, l + 1);
+    if (!r) r = TxnFieldArg(b, l + 1);
+    if (!r) r = consumeToken(b, VAR_TMPL);
+    return r;
+  }
+
+  // unsignedInteger | VAR_TMPL
+  private static boolean gitxnaOperation_3(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "gitxnaOperation_3")) return false;
+    boolean r;
+    r = unsignedInteger(b, l + 1);
+    if (!r) r = consumeToken(b, VAR_TMPL);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // GITXNAS_OPCODE (unsignedInteger | VAR_TMPL) (unsignedInteger | TxnFieldArg | VAR_TMPL)
+  public static boolean gitxnasOperation(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "gitxnasOperation")) return false;
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, GITXNAS_OPERATION, "<gitxnas operation>");
+    r = GITXNAS_OPCODE(b, l + 1);
+    p = r; // pin = 1
+    r = r && report_error_(b, gitxnasOperation_1(b, l + 1));
+    r = p && gitxnasOperation_2(b, l + 1) && r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
+  }
+
+  // unsignedInteger | VAR_TMPL
+  private static boolean gitxnasOperation_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "gitxnasOperation_1")) return false;
+    boolean r;
+    r = unsignedInteger(b, l + 1);
+    if (!r) r = consumeToken(b, VAR_TMPL);
+    return r;
+  }
+
+  // unsignedInteger | TxnFieldArg | VAR_TMPL
+  private static boolean gitxnasOperation_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "gitxnasOperation_2")) return false;
+    boolean r;
+    r = unsignedInteger(b, l + 1);
+    if (!r) r = TxnFieldArg(b, l + 1);
+    if (!r) r = consumeToken(b, VAR_TMPL);
+    return r;
+  }
+
+  /* ********************************************************** */
   // GLOAD_OPCODE (unsignedInteger | VAR_TMPL) (unsignedInteger | VAR_TMPL)
   public static boolean gloadOperation(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "gloadOperation")) return false;
@@ -2104,18 +2295,28 @@ public class TEALParser implements PsiParser, LightPsiParser {
 
   /* ********************************************************** */
   // ITXN_BEGIN_OPCODE | ITXN_SUBMIT_OPCODE
+  //                                     | ITXN_NEXT_OPCODE //v6
   //                                     | itxnFieldOperation
   //                                     | itxnOperation
   //                                     | itxnaOperation
+  //                                     | itxnasOperation
+  //                                     | gitxnOperation
+  //                                     | gitxnaOperation
+  //                                     | gitxnasOperation
   public static boolean innerTransactionOperation(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "innerTransactionOperation")) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, INNER_TRANSACTION_OPERATION, "<inner transaction operation>");
     r = ITXN_BEGIN_OPCODE(b, l + 1);
     if (!r) r = ITXN_SUBMIT_OPCODE(b, l + 1);
+    if (!r) r = ITXN_NEXT_OPCODE(b, l + 1);
     if (!r) r = itxnFieldOperation(b, l + 1);
     if (!r) r = itxnOperation(b, l + 1);
     if (!r) r = itxnaOperation(b, l + 1);
+    if (!r) r = itxnasOperation(b, l + 1);
+    if (!r) r = gitxnOperation(b, l + 1);
+    if (!r) r = gitxnaOperation(b, l + 1);
+    if (!r) r = gitxnasOperation(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
@@ -2293,6 +2494,29 @@ public class TEALParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // ITXNAS_OPCODE (unsignedInteger | TxnFieldArg | VAR_TMPL)
+  public static boolean itxnasOperation(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "itxnasOperation")) return false;
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, ITXNAS_OPERATION, "<itxnas operation>");
+    r = ITXNAS_OPCODE(b, l + 1);
+    p = r; // pin = 1
+    r = r && itxnasOperation_1(b, l + 1);
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
+  }
+
+  // unsignedInteger | TxnFieldArg | VAR_TMPL
+  private static boolean itxnasOperation_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "itxnasOperation_1")) return false;
+    boolean r;
+    r = unsignedInteger(b, l + 1);
+    if (!r) r = TxnFieldArg(b, l + 1);
+    if (!r) r = consumeToken(b, VAR_TMPL);
+    return r;
+  }
+
+  /* ********************************************************** */
   // 'load' (unsignedInteger | VAR_TMPL)
   public static boolean loadOperation(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "loadOperation")) return false;
@@ -2326,6 +2550,30 @@ public class TEALParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // METHOD (l_string | ID | VAR_TMPL)
+  public static boolean method_statement(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "method_statement")) return false;
+    if (!nextTokenIs(b, METHOD)) return false;
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, METHOD_STATEMENT, null);
+    r = consumeToken(b, METHOD);
+    p = r; // pin = 1
+    r = r && method_statement_1(b, l + 1);
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
+  }
+
+  // l_string | ID | VAR_TMPL
+  private static boolean method_statement_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "method_statement_1")) return false;
+    boolean r;
+    r = consumeToken(b, L_STRING);
+    if (!r) r = consumeToken(b, ID);
+    if (!r) r = consumeToken(b, VAR_TMPL);
+    return r;
+  }
+
+  /* ********************************************************** */
   // PRAGMA_KEYWORD VERSION pragma_version
   public static boolean pragma(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "pragma")) return false;
@@ -2351,59 +2599,71 @@ public class TEALParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // [pragma NL*] statement*
+  // COMMENT* [pragma NL*] statement*
   public static boolean program(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "program")) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, PROGRAM, "<program>");
     r = program_0(b, l + 1);
     r = r && program_1(b, l + 1);
+    r = r && program_2(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
 
-  // [pragma NL*]
+  // COMMENT*
   private static boolean program_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "program_0")) return false;
-    program_0_0(b, l + 1);
+    while (true) {
+      int c = current_position_(b);
+      if (!consumeToken(b, COMMENT)) break;
+      if (!empty_element_parsed_guard_(b, "program_0", c)) break;
+    }
+    return true;
+  }
+
+  // [pragma NL*]
+  private static boolean program_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "program_1")) return false;
+    program_1_0(b, l + 1);
     return true;
   }
 
   // pragma NL*
-  private static boolean program_0_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "program_0_0")) return false;
+  private static boolean program_1_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "program_1_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = pragma(b, l + 1);
-    r = r && program_0_0_1(b, l + 1);
+    r = r && program_1_0_1(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
   }
 
   // NL*
-  private static boolean program_0_0_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "program_0_0_1")) return false;
+  private static boolean program_1_0_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "program_1_0_1")) return false;
     while (true) {
       int c = current_position_(b);
       if (!consumeToken(b, NL)) break;
-      if (!empty_element_parsed_guard_(b, "program_0_0_1", c)) break;
+      if (!empty_element_parsed_guard_(b, "program_1_0_1", c)) break;
     }
     return true;
   }
 
   // statement*
-  private static boolean program_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "program_1")) return false;
+  private static boolean program_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "program_2")) return false;
     while (true) {
       int c = current_position_(b);
       if (!statement(b, l + 1)) break;
-      if (!empty_element_parsed_guard_(b, "program_1", c)) break;
+      if (!empty_element_parsed_guard_(b, "program_2", c)) break;
     }
     return true;
   }
 
   /* ********************************************************** */
-  // int_statement | byte_statement | addr_statement
+  // int_statement | byte_statement | addr_statement | method_statement
   public static boolean pseudo_op(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "pseudo_op")) return false;
     boolean r;
@@ -2411,6 +2671,7 @@ public class TEALParser implements PsiParser, LightPsiParser {
     r = int_statement(b, l + 1);
     if (!r) r = byte_statement(b, l + 1);
     if (!r) r = addr_statement(b, l + 1);
+    if (!r) r = method_statement(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
   }

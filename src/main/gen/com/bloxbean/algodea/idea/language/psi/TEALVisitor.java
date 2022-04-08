@@ -103,6 +103,10 @@ public class TEALVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitDivwOpcode(@NotNull TEALDivwOpcode o) {
+    visitPsiElement(o);
+  }
+
   public void visitEcdsaPkDecompressOpcode(@NotNull TEALEcdsaPkDecompressOpcode o) {
     visitPsiElement(o);
   }
@@ -163,6 +167,22 @@ public class TEALVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitGitxnasOpcode(@NotNull TEALGitxnasOpcode o) {
+    visitPsiElement(o);
+  }
+
+  public void visitGitxnaOpcode(@NotNull TEALGitxnaOpcode o) {
+    visitPsiElement(o);
+  }
+
+  public void visitGitxnOpcode(@NotNull TEALGitxnOpcode o) {
+    visitPsiElement(o);
+  }
+
+  public void visitGloadssOpcode(@NotNull TEALGloadssOpcode o) {
+    visitPsiElement(o);
+  }
+
   public void visitGloadsOpcode(@NotNull TEALGloadsOpcode o) {
     visitPsiElement(o);
   }
@@ -199,6 +219,10 @@ public class TEALVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitItxnasOpcode(@NotNull TEALItxnasOpcode o) {
+    visitPsiElement(o);
+  }
+
   public void visitItxnaOpcode(@NotNull TEALItxnaOpcode o) {
     visitPsiElement(o);
   }
@@ -208,6 +232,10 @@ public class TEALVisitor extends PsiElementVisitor {
   }
 
   public void visitItxnFieldOpcode(@NotNull TEALItxnFieldOpcode o) {
+    visitPsiElement(o);
+  }
+
+  public void visitItxnNextOpcode(@NotNull TEALItxnNextOpcode o) {
     visitPsiElement(o);
   }
 
@@ -399,6 +427,18 @@ public class TEALVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitGitxnOperation(@NotNull TEALGitxnOperation o) {
+    visitPsiElement(o);
+  }
+
+  public void visitGitxnaOperation(@NotNull TEALGitxnaOperation o) {
+    visitPsiElement(o);
+  }
+
+  public void visitGitxnasOperation(@NotNull TEALGitxnasOperation o) {
+    visitPsiElement(o);
+  }
+
   public void visitGloadOperation(@NotNull TEALGloadOperation o) {
     visitPsiElement(o);
   }
@@ -467,11 +507,19 @@ public class TEALVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitItxnasOperation(@NotNull TEALItxnasOperation o) {
+    visitPsiElement(o);
+  }
+
   public void visitLoadOperation(@NotNull TEALLoadOperation o) {
     visitPsiElement(o);
   }
 
   public void visitLoadsOperation(@NotNull TEALLoadsOperation o) {
+    visitPsiElement(o);
+  }
+
+  public void visitMethodStatement(@NotNull TEALMethodStatement o) {
     visitPsiElement(o);
   }
 
