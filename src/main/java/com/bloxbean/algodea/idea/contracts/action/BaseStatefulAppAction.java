@@ -84,6 +84,7 @@ public abstract class  BaseStatefulAppAction extends BaseTxnAction {
         dialog.enableDryRun();
         dialog.enableDryRunDump();
         dialog.enableDebug();
+        dialog.enableCodeGen();
 
         boolean ok = dialog.showAndGet();
 

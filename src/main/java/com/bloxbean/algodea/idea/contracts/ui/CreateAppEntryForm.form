@@ -25,7 +25,9 @@
             <rowspec value="center:d:grow"/>
             <colspec value="fill:d:grow"/>
             <constraints/>
-            <properties/>
+            <properties>
+              <preferredSize width="700" height="579"/>
+            </properties>
             <border type="none"/>
             <children>
               <grid id="27dc6" layout-manager="FormLayout">

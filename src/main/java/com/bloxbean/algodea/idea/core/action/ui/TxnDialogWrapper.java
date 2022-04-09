@@ -39,6 +39,7 @@ public abstract class TxnDialogWrapper extends DialogWrapper {
         dryrunDumpAction.setEnabled(false);
 
         codegenAction = new RequestAction("Generate Code", RequestMode.CODE_GENERATE);
+        codegenAction.setEnabled(false);
     }
 
     protected TxnDialogWrapper(@Nullable Project project) {
@@ -115,6 +116,11 @@ public abstract class TxnDialogWrapper extends DialogWrapper {
     public void enableDebug() {
         enableDebug = true;
         debugAction.setEnabled(enableDebug);
+    }
+
+    public void enableCodeGen() {
+        enableCodegen = true;
+        codegenAction.setEnabled(enableCodegen);
     }
 
     protected abstract ValidationInfo doTransactionInputValidation();

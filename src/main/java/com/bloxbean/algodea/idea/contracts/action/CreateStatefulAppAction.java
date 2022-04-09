@@ -137,6 +137,7 @@ public class CreateStatefulAppAction extends BaseTxnAction {
 
             //Disable DryRun for create
 //            createDialog.enableDryRun();
+            createDialog.enableCodeGen();
 
             boolean ok = createDialog.showAndGet();
             if (!ok) {
