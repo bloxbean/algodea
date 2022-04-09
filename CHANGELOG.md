@@ -1,6 +1,7 @@
 ### 0.9.0-beta1
   - AVM 1.1 Opcodes support (TEAL 6)
   - Client code generation (JavaScript) for Stateful contracts (Experimental)
+  - Algoexplorer api endpoints updated
 ### 0.8.0
   - AVM 1.0 Opcodes support (TEAL v5)
   - On-Completion option during stateful contract creation
