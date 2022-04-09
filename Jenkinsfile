@@ -10,7 +10,7 @@ pipeline {
 
     tools {
         //gradle 'Gradle 5.6.2'
-        jdk 'jdk-8'
+        jdk 'jdk-11'
     }
 
     stages {
