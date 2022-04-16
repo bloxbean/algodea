@@ -1,4 +1,4 @@
-package com.bloxbean.algodea.idea.codegen.service;
+package com.bloxbean.algodea.idea.codegen.service.util;
 
 import com.bloxbean.algodea.idea.codegen.CodeGenLang;
 import com.bloxbean.algodea.idea.codegen.service.exception.CodeGenerationException;

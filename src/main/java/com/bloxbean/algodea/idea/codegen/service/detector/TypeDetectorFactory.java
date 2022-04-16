@@ -1,7 +1,8 @@
 package com.bloxbean.algodea.idea.codegen.service.detector;
 
+import com.algorand.algosdk.transaction.SignedTransaction;
 import com.algorand.algosdk.transaction.Transaction;
-import com.bloxbean.algodea.idea.codegen.service.TxnType;
+import com.bloxbean.algodea.idea.codegen.service.util.TxnType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,11 +15,12 @@ public enum TypeDetectorFactory {
     TypeDetectorFactory() {
         detectors = new ArrayList<>();
         detectors.add(new AppCallTypeDetector());
+        detectors.add(new StatelessCallTypeDetector());
     }
 
-    public TxnType deletectType(Transaction transaction) {
+    public TxnType deletectType(SignedTransaction signedTransaction, Transaction transaction) {
         for (TransactionTypeDetector detector: detectors) {
-            TxnType type = detector.detect(transaction);
+            TxnType type = detector.detect(signedTransaction, transaction);
             if (type != null)
                 return type;
         }

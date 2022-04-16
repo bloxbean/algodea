@@ -1,6 +1,8 @@
 package com.bloxbean.algodea.idea.codegen.service;
 
 import com.bloxbean.algodea.idea.codegen.CodeGenLang;
+import com.bloxbean.algodea.idea.codegen.service.impl.JSSdkCodeGenerator;
+import com.bloxbean.algodea.idea.codegen.service.impl.PythonSdkCodeGenerator;
 
 public class SdkCodeGeneratorFactory {
     private JSSdkCodeGenerator jsSdkCodeGenerator;

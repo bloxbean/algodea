@@ -1,11 +1,12 @@
 package com.bloxbean.algodea.idea.codegen.service.detector;
 
+import com.algorand.algosdk.transaction.SignedTransaction;
 import com.algorand.algosdk.transaction.Transaction;
-import com.bloxbean.algodea.idea.codegen.service.TxnType;
+import com.bloxbean.algodea.idea.codegen.service.util.TxnType;
 
 public class AppCallTypeDetector implements TransactionTypeDetector{
     @Override
-    public TxnType detect(Transaction transaction) {
+    public TxnType detect(SignedTransaction signedTransaction, Transaction transaction) {
         if (transaction.type != Transaction.Type.ApplicationCall)
             return null;
 

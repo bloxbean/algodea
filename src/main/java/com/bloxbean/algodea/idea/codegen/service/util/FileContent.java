@@ -1,4 +1,4 @@
-package com.bloxbean.algodea.idea.codegen.service;
+package com.bloxbean.algodea.idea.codegen.service.util;
 
 public class FileContent {
     private String fileName;

@@ -5,8 +5,12 @@ import com.algorand.algosdk.transaction.SignedTransaction;
 import com.algorand.algosdk.transaction.Transaction;
 import com.algorand.algosdk.util.Encoder;
 import com.bloxbean.algodea.idea.codegen.CodeGenLang;
+import com.bloxbean.algodea.idea.codegen.model.CodeGenInfo;
 import com.bloxbean.algodea.idea.codegen.service.detector.TypeDetectorFactory;
 import com.bloxbean.algodea.idea.codegen.service.exception.CodeGenerationException;
+import com.bloxbean.algodea.idea.codegen.service.util.FileContent;
+import com.bloxbean.algodea.idea.codegen.service.util.SdkCodeGenExportUtil;
+import com.bloxbean.algodea.idea.codegen.service.util.TxnType;
 import com.bloxbean.algodea.idea.configuration.action.ConfigurationAction;
 import com.bloxbean.algodea.idea.configuration.model.NodeInfo;
 import com.bloxbean.algodea.idea.nodeint.AlgoServerConfigurationHelper;
@@ -32,7 +36,7 @@ public class SdkCodeGenerationActionHandler {
         this.module = module;
     }
 
-    public void handleCodeGeneration(String txnJson, Account signerAccount, LogListener logListener) {
+    public void handleCodeGeneration(String txnJson, Account signerAccount, CodeGenInfo codeGenInfo, LogListener logListener) {
 //        AlgoConsole console = AlgoConsole.getConsole(project);
 //        console.clearAndshow();
 
@@ -68,7 +72,7 @@ public class SdkCodeGenerationActionHandler {
 //            CodeGenLang lang = dialog.getSelectedLang();
             CodeGenLang lang = CodeGenLang.JS;
             SdkCodeGenerator sdkCodeGenerator = sdkCodeGeneratorFactory.getSdkCodeGenerator(lang);
-            TxnType txnType = TypeDetectorFactory.INSTANCE.deletectType(txn);
+            TxnType txnType = TypeDetectorFactory.INSTANCE.deletectType(signedTransaction, txn);
 
 //            if (!ok || (ok && lang == null)) {
 //                IdeaUtil.showNotification(project, "Code Generation", "Code Generation was cancelled", NotificationType.WARNING, null);
@@ -90,7 +94,7 @@ public class SdkCodeGenerationActionHandler {
 
                     List<FileContent> genereatedContents;
                     try {
-                        genereatedContents = sdkCodeGenerator.generateCode(txn, txnType, signerAccount , deploymentNodeInfo, null, logListener);
+                        genereatedContents = sdkCodeGenerator.generateCode(txn, txnType, signerAccount , deploymentNodeInfo, codeGenInfo, null, logListener);
                     } catch (Exception exception) {
                         logListener.error("Error generating code", exception);
                         return;

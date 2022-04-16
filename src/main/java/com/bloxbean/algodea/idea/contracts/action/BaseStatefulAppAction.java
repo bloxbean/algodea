@@ -193,7 +193,7 @@ public abstract class  BaseStatefulAppAction extends BaseTxnAction {
                                 }
 
                                 debugHandler.startStatefulCallDebugger(project, sourceFiles, console, result.getResponse());
-                            } if (originalReqMode.equals(RequestMode.CODE_GENERATE)) {
+                            } else if (originalReqMode.equals(RequestMode.CODE_GENERATE)) {
                                 processCodeGeneration(project, module, signerAccount, result, logListener);
                             } else {
                                 processResult(project, module, result, requestMode, logListener);

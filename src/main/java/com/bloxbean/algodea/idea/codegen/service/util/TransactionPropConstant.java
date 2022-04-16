@@ -1,8 +1,9 @@
-package com.bloxbean.algodea.idea.codegen.service;
+package com.bloxbean.algodea.idea.codegen.service.util;
 
 public class TransactionPropConstant {
     public static final String SIGNER_MNEMONIC = "SIGNER_MNEMONIC";
     public final static String SENDER = "SENDER";
+    public final static String RECEIVER = "RECEIVER";
     public final static String ALGOD_SERVER = "ALGOD_SERVER";
     public final static String ALGOD_PORT = "ALGOD_PORT";
     public final static String ALGOD_TOKEN = "ALGOD_TOKEN";
@@ -28,4 +29,9 @@ public class TransactionPropConstant {
     public static final String TYPE = "TYPE";
 
     public static final String APP_ID = "APP_ID";
+
+    public static final String TEAL_FILE = "TEAL_FILE";
+    public static final String APPROVAL_PROG_SOURCE = "APPROVAL_PROG_SOURCE";
+    public static final String CLEAR_STATE_PROG_SOURCE = "CLEAR_STATE_PROG_SOURCE";
+    public static final String AMOUNT = "AMOUNT";
 }

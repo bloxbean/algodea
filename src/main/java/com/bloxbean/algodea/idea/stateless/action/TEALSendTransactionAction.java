@@ -3,6 +3,7 @@ package com.bloxbean.algodea.idea.stateless.action;
 import com.algorand.algosdk.account.Account;
 import com.algorand.algosdk.crypto.Address;
 import com.algorand.algosdk.transaction.SignedTransaction;
+import com.bloxbean.algodea.idea.codegen.model.CodeGenInfo;
 import com.bloxbean.algodea.idea.common.AlgoIcons;
 import com.bloxbean.algodea.idea.common.Tuple;
 import com.bloxbean.algodea.idea.compile.service.CompilationResultListener;
@@ -175,6 +176,7 @@ public class TEALSendTransactionAction extends BaseTxnAction {
     class TEALLogicSigTxnHandler implements CompilationResultListener {
         private boolean isAlgoTransfer;
         private LogicSigParams logicSigParams;
+        private Account signingAccount;
         private Address senderAddress;
         private Address receiverAddress;
         private Tuple<BigDecimal, BigInteger> amounts;
@@ -289,13 +291,14 @@ public class TEALSendTransactionAction extends BaseTxnAction {
             TEALSendTransactionDialog dialog = new TEALSendTransactionDialog(project, module, contractHash);
             dialog.enableDryRun();
             dialog.enableDebug();
+            dialog.enableCodeGen();
             boolean ok = dialog.showAndGet();
             if (!ok) {
                 return;
             }
 
             LogicSigSigningAccountForm accountForm = dialog.getLogicSigSignAccountForm();
-            Account account = accountForm.getAccount();
+            signingAccount = accountForm.getAccount();
 
             if(dialog.getLogicSigSignAccountForm().isAccountDelegationType()) //Set senderAddress only for account delegation type.
                 senderAddress = accountForm.getSenderAddress();
@@ -310,7 +313,7 @@ public class TEALSendTransactionAction extends BaseTxnAction {
             }
 
             logicSigParams = new LogicSigParams();
-            logicSigParams.addSigningAccount(account); //Single account
+            logicSigParams.addSigningAccount(signingAccount); //Single account
             if (args != null) {
                 logicSigParams.setArgs(args);
             }
@@ -380,6 +383,10 @@ public class TEALSendTransactionAction extends BaseTxnAction {
                     requestMode = RequestMode.EXPORT_SIGNED;
                 }
 
+                if(requestMode.equals(RequestMode.CODE_GENERATE)) {
+                    requestMode = RequestMode.EXPORT_SIGNED;
+                }
+
                 console.showInfoMessage(String.format("Starting %s ...\n", getTxnCommand()));
                 try {
                     Result result = null;
@@ -392,6 +399,11 @@ public class TEALSendTransactionAction extends BaseTxnAction {
                     if(originalReqMode.equals(RequestMode.DEBUG)) {//Debug call
                         DebugHandler debugHandler = new DebugHandler();
                         debugHandler.startDebugger(project, console, sourcePath, (SignedTransaction) result.getValue(), logicSigParams);
+                    } else if (originalReqMode.equals(RequestMode.CODE_GENERATE)) {
+                        CodeGenInfo codeGenInfo = new CodeGenInfo();
+                        codeGenInfo.setTealFile(sourcePath);
+                        codeGenInfo.setLogicSig(logicSig, logicSigParams.getType());
+                        processCodeGeneration(project, module, signingAccount, result, codeGenInfo, logListener);
                     } else {
                         processResult(project, module, result, requestMode, logListener);
                     }

@@ -10,9 +10,13 @@ import com.bloxbean.algodea.idea.account.model.AlgoAccount;
 import com.bloxbean.algodea.idea.account.service.AccountService;
 import com.bloxbean.algodea.idea.atomic.ui.SigningAccountInputDialog;
 import com.bloxbean.algodea.idea.codegen.CodeGenLang;
+import com.bloxbean.algodea.idea.codegen.model.CodeGenInfo;
 import com.bloxbean.algodea.idea.codegen.service.*;
 import com.bloxbean.algodea.idea.codegen.service.detector.TypeDetectorFactory;
 import com.bloxbean.algodea.idea.codegen.service.exception.CodeGenerationException;
+import com.bloxbean.algodea.idea.codegen.service.util.FileContent;
+import com.bloxbean.algodea.idea.codegen.service.util.SdkCodeGenExportUtil;
+import com.bloxbean.algodea.idea.codegen.service.util.TxnType;
 import com.bloxbean.algodea.idea.codegen.ui.CodeGenTxnDetailsDialog;
 import com.bloxbean.algodea.idea.common.AlgoIcons;
 import com.bloxbean.algodea.idea.common.Tuple;
@@ -130,7 +134,7 @@ public class TxnCodeGenAction extends BaseTxnAction {
             boolean ok = dialog.showAndGet();
             CodeGenLang lang = dialog.getSelectedLang();
             SdkCodeGenerator sdkCodeGenerator = sdkCodeGeneratorFactory.getSdkCodeGenerator(lang);
-            TxnType txnType = TypeDetectorFactory.INSTANCE.deletectType(txn);
+            TxnType txnType = TypeDetectorFactory.INSTANCE.deletectType(signedTransaction, txn);
 
             if (!ok || (ok && lang == null)) {
                 IdeaUtil.showNotification(project, "Code Generation", "Code Generation was cancelled", NotificationType.WARNING, null);
@@ -161,7 +165,9 @@ public class TxnCodeGenAction extends BaseTxnAction {
 
                     List<FileContent> genereatedContents;
                     try {
-                        genereatedContents = sdkCodeGenerator.generateCode(txn, txnType, signer , deploymentNodeInfo, txnVirtualFile.getNameWithoutExtension(), logListener);
+                        CodeGenInfo codeGenInfo = new CodeGenInfo();
+                        codeGenInfo.setTealFile(txnVirtualFile.getCanonicalPath());
+                        genereatedContents = sdkCodeGenerator.generateCode(txn, txnType, signer , deploymentNodeInfo, codeGenInfo, txnVirtualFile.getNameWithoutExtension(), logListener);
                     } catch (Exception exception) {
                         console.showErrorMessage("Error generating code", exception);
                         return;

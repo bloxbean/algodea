@@ -1,4 +1,4 @@
-package com.bloxbean.algodea.idea.codegen.service;
+package com.bloxbean.algodea.idea.codegen.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
