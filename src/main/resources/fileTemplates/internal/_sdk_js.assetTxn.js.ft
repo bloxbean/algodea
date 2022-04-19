@@ -117,8 +117,8 @@ async function createAsset(algodClient) {
     let assetUrl = "${ap.url}";
     let defaultFrozen = ${ap.assetDefaultFrozen};
 
-#if(${ap.assetMetadataHash})
-    let assetMetadataHash = new Uint8Array(Buffer.from("${ap.assetMetadataHash}", "base64"));
+#if(${ap.metadataHash})
+    let assetMetadataHash = new Uint8Array(Buffer.from("${ap.metadataHash}", "base64"));
 #else
     let assetMetadataHash = undefined;
 #end
