@@ -3,6 +3,7 @@ package com.bloxbean.algodea.idea.assets.action;
 import com.algorand.algosdk.account.Account;
 import com.algorand.algosdk.crypto.Address;
 import com.bloxbean.algodea.idea.assets.ui.AssetConfigurationDialog;
+import com.bloxbean.algodea.idea.codegen.model.CodeGenInfo;
 import com.bloxbean.algodea.idea.core.action.BaseTxnAction;
 import com.bloxbean.algodea.idea.nodeint.common.RequestMode;
 import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
@@ -52,8 +53,9 @@ public abstract class BaseAssetOperationAction extends BaseTxnAction {
             warnDeploymentTargetNotConfigured(project, getTitle());
             return;
         }
-        boolean ok = dialog.showAndGet();
 
+        dialog.enableCodeGen();
+        boolean ok = dialog.showAndGet();
         if(!ok) {
             IdeaUtil.showNotification(project, getTitle(), String.format("%s was cancelled", getTxnCommand()), NotificationType.WARNING, null);
             return;
@@ -90,9 +92,14 @@ public abstract class BaseAssetOperationAction extends BaseTxnAction {
 
                 @Override
                 public void run(@NotNull ProgressIndicator indicator) {
+                    RequestMode callRequestMode = requestMode;
+                    if(callRequestMode.equals(RequestMode.CODE_GENERATE)) {
+                        callRequestMode = RequestMode.EXPORT_SIGNED;
+                    }
+
                     console.showInfoMessage(String.format("Starting %s ...\n", getTxnCommand()));
                     try {
-                        Result result = invokeAssetOperation(assetTransactionService, signerAccount, senderAddress, finalAssetTxnPrameters, txnDetailsParameters, requestMode);
+                        Result result = invokeAssetOperation(assetTransactionService, signerAccount, senderAddress, finalAssetTxnPrameters, txnDetailsParameters, callRequestMode);
 
                         if(requestMode.equals(RequestMode.TRANSACTION)) {
                             if (result.isSuccessful()) {
@@ -102,6 +109,9 @@ public abstract class BaseAssetOperationAction extends BaseTxnAction {
                                 console.showErrorMessage(String.format("%s failed", getTxnCommand()));
                                 IdeaUtil.showNotification(project, getTitle(), String.format("%s failed", getTxnCommand()), NotificationType.ERROR, null);
                             }
+                        } else if (requestMode.equals(RequestMode.CODE_GENERATE)) {
+                            CodeGenInfo codeGenInfo = new CodeGenInfo();
+                            processCodeGeneration(project, module, signerAccount, result, codeGenInfo, logListener);
                         } else {
                             processResult(project, module, result, requestMode, logListener);
                         }

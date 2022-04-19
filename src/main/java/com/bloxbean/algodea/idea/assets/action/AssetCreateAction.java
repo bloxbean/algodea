@@ -4,6 +4,7 @@ import com.algorand.algosdk.account.Account;
 import com.algorand.algosdk.crypto.Address;
 import com.bloxbean.algodea.idea.assets.service.AssetCacheService;
 import com.bloxbean.algodea.idea.assets.ui.AssetConfigurationDialog;
+import com.bloxbean.algodea.idea.codegen.model.CodeGenInfo;
 import com.bloxbean.algodea.idea.core.action.BaseTxnAction;
 import com.bloxbean.algodea.idea.nodeint.common.RequestMode;
 import com.bloxbean.algodea.idea.nodeint.exception.DeploymentTargetNotConfigured;
@@ -54,6 +55,7 @@ public class AssetCreateAction extends BaseTxnAction {
             warnDeploymentTargetNotConfigured(project, getTitle());
             return;
         }
+        dialog.enableCodeGen();
         boolean ok = dialog.showAndGet();
 
         if(!ok) {
@@ -78,7 +80,7 @@ public class AssetCreateAction extends BaseTxnAction {
             return;
         }
 
-        RequestMode requestMode = dialog.getRequestMode();
+        final RequestMode requestMode = dialog.getRequestMode();
         LogListener logListener = new LogListenerAdapter(console);
         AssetCacheService assetCacheService = AssetCacheService.getInstance();
         try {
@@ -92,11 +94,16 @@ public class AssetCreateAction extends BaseTxnAction {
 
                 @Override
                 public void run(@NotNull ProgressIndicator indicator) {
+                    RequestMode callRequestMode = requestMode;
+                    if(callRequestMode.equals(RequestMode.CODE_GENERATE)) {
+                        callRequestMode = RequestMode.EXPORT_SIGNED;
+                    }
+
                     console.showInfoMessage(String.format("Starting %s ...\n", getTxnCommand()));
                     try {
-                        Result<Long> result = assetTransactionService.createAsset(creatorAccount, creatorAddress, finalAssetTxnPrameters, txnDetailsParameters, requestMode);
+                        Result<Long> result = assetTransactionService.createAsset(creatorAccount, creatorAddress, finalAssetTxnPrameters, txnDetailsParameters, callRequestMode);
 
-                        if(requestMode.equals(RequestMode.TRANSACTION)) {
+                        if (requestMode.equals(RequestMode.TRANSACTION)) {
                             if (result != null && result.getValue() != null) {
 
                                 if (!StringUtil.isEmpty(assetTransactionService.getNetworkGenesisHash())) {
@@ -110,6 +117,9 @@ public class AssetCreateAction extends BaseTxnAction {
                                 console.showErrorMessage(String.format("%s failed", getTxnCommand()));
                                 IdeaUtil.showNotification(project, getTitle(), String.format("%s failed", getTxnCommand()), NotificationType.ERROR, null);
                             }
+                        } else if (requestMode.equals(RequestMode.CODE_GENERATE)) {
+                            CodeGenInfo codeGenInfo = new CodeGenInfo();
+                            processCodeGeneration(project, module, creatorAccount, result, codeGenInfo, logListener);
                         } else {
                             processResult(project, module, result, requestMode, logListener);
                         }

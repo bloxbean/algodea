@@ -1,0 +1,408 @@
+const algosdk = require('algosdk');
+
+// user declared algod connection parameters
+algodServer = "${ALGOD_SERVER}";
+algodPort = "${ALGOD_PORT}";
+algodToken = "${ALGOD_TOKEN}";
+
+//Signing account
+let  signingAccount = algosdk.mnemonicToSecretKey("${SIGNER_MNEMONIC}");
+
+#set($ap = ${txn.assetParams})
+#if(${codegen_info.txnType} == 'ASSET_CFG_CREATE')
+#assetCreate()
+#end
+#if(${codegen_info.txnType} == 'ASSET_CFG_MODIFY')
+#assetModify()
+#end
+#if(${codegen_info.txnType} == 'ASSET_CFG_DESTROY')
+#assetDestroy()
+#end
+#if(${codegen_info.txnType} == 'ASSET_OPTIN')
+#assetOptIn()
+#end
+#if(${codegen_info.txnType} == 'ASSET_FRZ')
+#assetFreeze()
+#end
+#if(${codegen_info.txnType} == 'ASSET_UNFRZ')
+#assetUnfreeze()
+#end
+#if(${codegen_info.txnType} == 'ASSET_REVOKE')
+#assetRevoke()
+#end
+
+async function main() {
+    try {
+        // initialize an algodClient
+        let algodClient = new algosdk.Algodv2(algodToken, algodServer, algodPort);
+
+#if(${codegen_info.txnType} == 'ASSET_CFG_CREATE')
+        // create asset
+        await createAsset(algodClient);
+#end
+#if(${codegen_info.txnType} == 'ASSET_CFG_MODIFY')
+        // modify asset
+        await modifyAsset(algodClient);
+#end
+#if(${codegen_info.txnType} == 'ASSET_CFG_DESTROY')
+        // destroy asset
+        await destroyAsset(algodClient);
+#end
+#if(${codegen_info.txnType} == 'ASSET_OPTIN')
+       // optin asset
+       await optInAsset(algodClient);
+#end
+#if(${codegen_info.txnType} == 'ASSET_FRZ')
+       // Freeze asset
+       await freezeAsset(algodClient);
+#end
+#if(${codegen_info.txnType} == 'ASSET_UNFRZ')
+       // Freeze asset
+       await unfreezeAsset(algodClient);
+#end
+#if(${codegen_info.txnType} == 'ASSET_REVOKE')
+       // Revoke asset
+       await revokeAsset(algodClient);
+#end
+    } catch (err) {
+        console.log("err", err);
+    }
+}
+
+main();
+
+### txn_options macro starts
+#macro(txn_options)
+    // get suggested parameters
+    let params = await algodClient.getTransactionParams().do();
+#if(${txn.fee})
+    params.fee = ${txn.fee};
+#end
+#if(${txn.firstValid})
+    //params.firstRound = ${txn.firstValid};
+#end
+#if(${txn.lastValid})
+    //params.lastRound = ${txn.lastValid};
+#end
+#if(${txn.note})
+    let note = new Uint8Array(Buffer.from("${txn.note}", "base64"));
+#else
+    let note = undefined;
+#end
+#if(${txn.lease})
+    params.lease = "${txn.lease}";
+#end
+#if(${txn.closeRemainderTo})
+    let closeToRemainderTo = "${txn.closeRemainderTo}"
+#else
+    let closeToRemainderTo = undefined;
+#end
+#if(${txn.closeRemainderTo})
+    let rekeyTo = "${txn.rekeyTo}";
+#else
+    let rekeyTo = undefined;
+#end
+    // params.flatFee = true;
+    console.log(params);
+#end
+### txn_options macro ends
+
+#macro(assetCreate)
+async function createAsset(algodClient) {
+    let creator = "${txn.sender}";
+    let assetName = "${ap.assetName}";
+    let unitName = "${ap.assetUnitName}";
+    let totalIssuance = ${ap.assetTotal};
+    let decimals = ${ap.assetDecimals};
+    let assetUrl = "${ap.url}";
+    let defaultFrozen = ${ap.assetDefaultFrozen};
+
+#if(${ap.assetMetadataHash})
+    let assetMetadataHash = new Uint8Array(Buffer.from("${ap.assetMetadataHash}", "base64"));
+#else
+    let assetMetadataHash = undefined;
+#end
+
+    // The following parameters are the only ones
+    // that can be changed, and they have to be changed
+    // by the current manager
+    // Specified address can change reserve, freeze, clawback, and manager
+#if(${ap.assetManager})
+    let manager = "${ap.assetManager}";
+#else
+    let manager = undefined;
+#end
+
+    // Specified address is considered the asset reserve
+    // (it has no special privileges, this is only informational)
+#if(${ap.assetReserve})
+    let reserve = "${ap.assetReserve}";
+#else
+    let reserve = undefined;
+#end
+
+    // Specified address can freeze or unfreeze user asset holdings
+#if(${ap.assetFreeze})
+    let freeze = "${ap.assetFreeze}";
+#else
+    let freeze = undefined;
+#end
+
+    // Specified address can revoke user asset holdings and send
+    // them to other addresses
+#if(${ap.assetClawback})
+    let clawback = "${ap.assetClawback}";
+#else
+    let clawback = undefined;
+#end
+
+#txn_options()
+
+    // signing and sending "txn" allows "addr" to create an asset
+    let txn = algosdk.makeAssetCreateTxnWithSuggestedParams(
+        creator,
+        note,
+        totalIssuance,
+        decimals,
+        defaultFrozen,
+        manager,
+        reserve,
+        freeze,
+        clawback,
+        unitName,
+        assetName,
+        assetUrl,
+        assetMetadataHash,
+        params);
+
+    let rawSignedTxn = txn.signTxn(signingAccount.sk)
+    let tx = (await algodClient.sendRawTransaction(rawSignedTxn).do());
+
+    let assetID = null;
+    // wait for transaction to be confirmed
+    const ptx = await algosdk.waitForConfirmation(algodClient, tx.txId, 4);
+    // Get the new asset's information from the creator account
+    assetID = ptx["asset-index"];
+    //Get the completed Transaction
+    console.log("Transaction " + tx.txId + " confirmed in round " + ptx["confirmed-round"]);
+    console.log("Asset Id : " + assetID);
+}
+#end
+
+#macro(assetModify)
+async function modifyAsset(algodClient) {
+    let existingManager = "${txn.sender}";
+    let assetID = ${txn.assetIndex};
+
+    // specified address can change reserve, freeze, clawback, and manager
+#if(${ap.assetManager})
+    let manager = "${ap.assetManager}";
+#else
+    let manager = undefined;
+#end
+
+    // Specified address is considered the asset reserve
+    // (it has no special privileges, this is only informational)
+#if(${ap.assetReserve})
+    let reserve = "${ap.assetReserve}";
+#else
+    let reserve = undefined;
+#end
+
+    // Specified address can freeze or unfreeze user asset holdings
+#if(${ap.assetFreeze})
+    let freeze = "${ap.assetFreeze}";
+#else
+    let freeze = undefined;
+#end
+
+    // Specified address can revoke user asset holdings and send
+    // them to other addresses
+#if(${ap.assetClawback})
+    let clawback = "${ap.assetClawback}";
+#else
+    let clawback = undefined;
+#end
+
+#txn_options()
+
+    // Note that the change has to come from the existing manager
+    let txn = algosdk.makeAssetConfigTxnWithSuggestedParams(
+        existingManager,
+        note,
+        assetID,
+        manager,
+        reserve,
+        freeze,
+        clawback,
+        params,
+        false,
+        rekeyTo);
+
+    let rawSignedTxn = txn.signTxn(signingAccount.sk)
+    let tx = (await algodClient.sendRawTransaction(rawSignedTxn).do());
+
+    // wait for transaction to be confirmed
+    const ptx = await algosdk.waitForConfirmation(algodClient, tx.txId, 4);
+
+    //Get the completed Transaction
+    console.log("Transaction " + tx.txId + " confirmed in round " + ptx["confirmed-round"]);
+    console.log("Asset Id : " + assetID);
+}
+#end
+
+#macro(assetDestroy)
+async function destroyAsset(algodClient) {
+    let manager = "${txn.sender}";
+    let assetID = ${txn.assetIndex};
+
+    #txn_options()
+
+    // if all assets are held by the asset creator,
+     // the asset creator can sign and issue "txn" to remove the asset from the ledger.
+    let txn = algosdk.makeAssetDestroyTxnWithSuggestedParams(
+        manager,
+        note,
+        assetID,
+        params);
+
+    let rawSignedTxn = txn.signTxn(signingAccount.sk)
+    let tx = (await algodClient.sendRawTransaction(rawSignedTxn).do());
+
+    // wait for transaction to be confirmed
+    const ptx = await algosdk.waitForConfirmation(algodClient, tx.txId, 4);
+
+    //Get the completed Transaction
+    console.log("Transaction " + tx.txId + " confirmed in round " + ptx["confirmed-round"]);
+    console.log("Asset Id : " + assetID);
+}
+#end
+
+#macro(assetOptIn)
+async function optInAsset(algodClient) {
+    let sender = "${txn.sender}";
+    let recipient = "${txn.assetReceiver}"
+    let assetID = ${txn.xferAsset};
+    let amount = 0;
+
+    #txn_options()
+    // We set revocationTarget to undefined as
+    // This is not a clawback operation
+    let revocationTarget = undefined;
+
+    // signing and sending "txn" allows sender to begin accepting asset
+    let txn = algosdk.makeAssetTransferTxnWithSuggestedParams(
+        sender,
+        recipient,
+        closeToRemainderTo,
+        revocationTarget,
+        amount,
+        note,
+        assetID,
+        params);
+
+    let rawSignedTxn = txn.signTxn(signingAccount.sk)
+    let tx = (await algodClient.sendRawTransaction(rawSignedTxn).do());
+
+    // wait for transaction to be confirmed
+    const ptx = await algosdk.waitForConfirmation(algodClient, tx.txId, 4);
+
+    //Get the completed Transaction
+    console.log("Transaction " + tx.txId + " confirmed in round " + ptx["confirmed-round"]);
+    console.log("Asset Id : " + assetID);
+}
+#end
+
+#macro(assetFreeze)
+async function freezeAsset(algodClient) {
+    let sender = "${txn.sender}";
+    let freezeTarget = "${txn.freezeTarget}";
+    let assetID = ${txn.assetFreezeID};
+    let freezeState = true;
+
+    #txn_options()
+
+    // The freeze transaction needs to be signed by the freeze account
+    let txn = algosdk.makeAssetFreezeTxnWithSuggestedParams(
+        sender,
+        note,
+        assetID,
+        freezeTarget,
+        freezeState,
+        params,
+        rekeyTo
+    )
+
+    let rawSignedTxn = txn.signTxn(signingAccount.sk)
+    let tx = (await algodClient.sendRawTransaction(rawSignedTxn).do());
+
+    // wait for transaction to be confirmed
+    const ptx = await algosdk.waitForConfirmation(algodClient, tx.txId, 4);
+
+    //Get the completed Transaction
+    console.log("Transaction " + tx.txId + " confirmed in round " + ptx["confirmed-round"]);
+    console.log("Asset Id : " + assetID);
+}
+#end
+
+#macro(assetUnfreeze)
+async function unfreezeAsset(algodClient) {
+    let sender = "${txn.sender}";
+    let freezeTarget = "${txn.freezeTarget}";
+    let assetID = ${txn.assetFreezeID};
+    let freezeState = false;
+
+    #txn_options()
+
+    // The unfreeze transaction needs to be signed by the freeze account
+    let txn = algosdk.makeAssetFreezeTxnWithSuggestedParams(
+        sender,
+        note,
+        assetID,
+        freezeTarget,
+        freezeState,
+        params,
+        rekeyTo
+    )
+
+    let rawSignedTxn = txn.signTxn(signingAccount.sk)
+    let tx = (await algodClient.sendRawTransaction(rawSignedTxn).do());
+
+    // wait for transaction to be confirmed
+    const ptx = await algosdk.waitForConfirmation(algodClient, tx.txId, 4);
+
+    //Get the completed Transaction
+    console.log("Transaction " + tx.txId + " confirmed in round " + ptx["confirmed-round"]);
+    console.log("Asset Id : " + assetID);
+}
+#end
+
+#macro(assetRevoke)
+async function revokeAsset(algodClient) {
+    // Revoke an Asset:
+    // The asset was also created with the ability for it to be revoked by
+    // the clawbackaddress. If the asset was created or configured by the manager
+    // to not allow this by setting the clawbackaddress to "" then this would
+    // not be possible.
+    let sender = "${txn.sender}";
+    let revocationTarget = "${txn.assetSender}";
+    let receiver = "${txn.assetReceiver}";
+    let assetID = ${txn.xferAsset};
+    let amount = ${txn.assetAmount};
+
+    #txn_options()
+
+    let txn = algosdk.makeAssetTransferTxnWithSuggestedParams(sender, receiver, closeToRemainderTo, revocationTarget,
+        amount, note, assetID, params, rekeyTo);
+
+    let rawSignedTxn = txn.signTxn(signingAccount.sk)
+    let tx = (await algodClient.sendRawTransaction(rawSignedTxn).do());
+
+    // wait for transaction to be confirmed
+    const ptx = await algosdk.waitForConfirmation(algodClient, tx.txId, 4);
+
+    //Get the completed Transaction
+    console.log("Transaction " + tx.txId + " confirmed in round " + ptx["confirmed-round"]);
+    console.log("Asset Id : " + assetID);
+}
+#end

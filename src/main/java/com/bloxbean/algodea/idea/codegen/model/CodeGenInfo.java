@@ -3,6 +3,7 @@ package com.bloxbean.algodea.idea.codegen.model;
 import com.algorand.algosdk.crypto.LogicsigSignature;
 import com.algorand.algosdk.crypto.MultisigSignature;
 import com.algorand.algosdk.util.Encoder;
+import com.bloxbean.algodea.idea.codegen.service.util.TxnType;
 import com.bloxbean.algodea.idea.nodeint.model.LogicSigType;
 import com.intellij.util.Base64;
 
@@ -22,6 +23,8 @@ public class CodeGenInfo {
     private MultisigSignature msig;
 
     private LogicSigType logicSigType;
+
+    private TxnType txnType;
 
     public String getTealFile() {
         return tealFile;
@@ -99,4 +102,14 @@ public class CodeGenInfo {
         return msig;
     }
 
+    public String getTxnType() {
+        if (txnType != null)
+            return txnType.toString();
+        else
+            return null;
+    }
+
+    public void setTxnType(TxnType txnType) {
+        this.txnType = txnType;
+    }
 }

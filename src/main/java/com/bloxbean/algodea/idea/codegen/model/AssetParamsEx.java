@@ -2,6 +2,7 @@ package com.bloxbean.algodea.idea.codegen.model;
 
 import com.algorand.algosdk.crypto.Address;
 import com.algorand.algosdk.transaction.AssetParams;
+import org.apache.commons.codec.binary.Hex;
 
 import java.math.BigInteger;
 
@@ -36,8 +37,12 @@ public class AssetParamsEx {
         return assetParams.url;
     }
 
-    public byte[] getMetadataHash() {
-        return assetParams.metadataHash;
+    public String getMetadataHash() {
+        if (assetParams.metadataHash != null && assetParams.metadataHash.length > 0) {
+            return Hex.encodeHexString(assetParams.metadataHash);
+        } else {
+            return null;
+        }
     }
 
     public String getAssetManager() {

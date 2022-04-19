@@ -27,6 +27,9 @@ public class JSSdkCodeGenerator implements SdkCodeGenerator {
     private static final String JS_LOGIC_SIG_CONTRACT_TEMPLATE = "_sdk_js.logicSigTxn.js";
     private static final String JS_LOGIC_SIG_DELEGATION_TEMPLATE = "_sdk_js.logicSigTxn.js";
 
+    //Asset txns
+    private static final String JS_ASSET_TXN_TEMPLATE = "_sdk_js.assetTxn.js";
+
     private final static String JS_PACKAGE_JSON = "_sdk_js.package.json";
 
     private final static String TARGET_JS_FILE = "TARGET_JS_FILE";
@@ -74,8 +77,19 @@ public class JSSdkCodeGenerator implements SdkCodeGenerator {
                 targetFileName += "_delegation";
             }
             return createTxnFromTemplate(JS_LOGIC_SIG_DELEGATION_TEMPLATE, transaction, signer, nodeInfo, codeGenInfo, targetFileName, logListener);
+        } else if (type == TxnType.ASSET_CFG_CREATE
+                || type == TxnType.ASSET_CFG_MODIFY
+                || type == TxnType.ASSET_CFG_DESTROY
+                || type == TxnType.ASSET_OPTIN
+                || type == TxnType.ASSET_FRZ
+                || type == TxnType.ASSET_UNFRZ
+                || type == TxnType.ASSET_REVOKE
+        ) {
+            if (targetFileName == null)
+                targetFileName = type.toString().toLowerCase();
+            return createTxnFromTemplate(JS_ASSET_TXN_TEMPLATE, transaction, signer, nodeInfo, codeGenInfo, targetFileName, logListener);
         } else
-            throw new CodeGenerationException("Code generation no supported for the txn type: " + type);
+            throw new CodeGenerationException("Code generation is not supported for the txn type: " + type);
     }
 
     @NotNull

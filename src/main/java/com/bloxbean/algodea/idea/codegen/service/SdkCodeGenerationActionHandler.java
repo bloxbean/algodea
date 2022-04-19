@@ -37,9 +37,6 @@ public class SdkCodeGenerationActionHandler {
     }
 
     public void handleCodeGeneration(String txnJson, Account signerAccount, CodeGenInfo codeGenInfo, LogListener logListener) {
-//        AlgoConsole console = AlgoConsole.getConsole(project);
-//        console.clearAndshow();
-
         SdkCodeGeneratorFactory sdkCodeGeneratorFactory = project.getService(SdkCodeGeneratorFactory.class);
         if (sdkCodeGeneratorFactory == null) {
             logListener.error("Unexpected error. SdkCodeGeneratorFactory not found");
@@ -65,72 +62,45 @@ public class SdkCodeGenerationActionHandler {
                 txn = signedTransaction.tx;
             }
 
-//            String content = JsonUtil.getPrettyJson(txn);
-//
-//            CodeGenTxnDetailsDialog dialog = new CodeGenTxnDetailsDialog(project, txn, content);
-//            boolean ok = dialog.showAndGet();
-//            CodeGenLang lang = dialog.getSelectedLang();
             CodeGenLang lang = CodeGenLang.JS;
             SdkCodeGenerator sdkCodeGenerator = sdkCodeGeneratorFactory.getSdkCodeGenerator(lang);
             TxnType txnType = TypeDetectorFactory.INSTANCE.deletectType(signedTransaction, txn);
+            codeGenInfo.setTxnType(txnType);
 
-//            if (!ok || (ok && lang == null)) {
-//                IdeaUtil.showNotification(project, "Code Generation", "Code Generation was cancelled", NotificationType.WARNING, null);
-//                return;
-//            }
+            logListener.info("Generating code ....");
+            logListener.info("Language: " + lang.toString().toLowerCase());
 
-//            if (sdkCodeGenerator == null) {
-//                logListener.error("No code generator found for lang : " + lang);
-//                return;
-//            }
-
-
-//             Task.Backgroundable task = new Task.Backgroundable(project, "Code generation") {
-//
-//                @Override
-//                public void run(@NotNull ProgressIndicator indicator) {
-                    logListener.info("Generating code ....");
-                    logListener.info("Language: " + lang.toString().toLowerCase());
-
-                    List<FileContent> genereatedContents;
-                    try {
-                        genereatedContents = sdkCodeGenerator.generateCode(txn, txnType, signerAccount , deploymentNodeInfo, codeGenInfo, null, logListener);
-                    } catch (Exception exception) {
-                        logListener.error("Error generating code", exception);
-                        return;
-                    }
-
-                    if (genereatedContents == null || genereatedContents.size() == 0) {
-                        logListener.info("No file generated");
-                        return;
-                    }
-
-                    ApplicationManager.getApplication().invokeLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            String targetFolder = SdkCodeGenExportUtil.getSdkCodeGenerationFolder(project, module, lang, logListener);
-                            try {
-                                SdkCodeGenExportUtil.writeGeneratedCodeFile(genereatedContents, targetFolder, logListener);
-                            } catch (CodeGenerationException codeGenerationException) {
-                                logListener.error("Error writing generating file to disk", codeGenerationException);
-                            }
-                        }
-                    });
-//                }
-//            };
-
-//            ProgressManager.getInstance().runProcessWithProgressAsynchronously(task, new BackgroundableProcessIndicator(task));
-//        } catch (DeploymentTargetNotConfigured deploymentTargetNotConfigured) {
-//            //deploymentTargetNotConfigured.printStackTrace();
-//            warnDeploymentTargetNotConfigured(project, getTitle());
-//        }
-            } catch (Exception ex) {
-                if (LOG.isDebugEnabled()) {
-                    LOG.error(ex);
-                }
-                logListener.error(ex.getMessage());
-                IdeaUtil.showNotification(project, getTitle(), String.format("Code generation failed, reason: %s", ex.getMessage()), NotificationType.ERROR, null);
+            List<FileContent> genereatedContents;
+            try {
+                genereatedContents = sdkCodeGenerator.generateCode(txn, txnType, signerAccount, deploymentNodeInfo, codeGenInfo, null, logListener);
+            } catch (Exception exception) {
+                logListener.error("Error generating code", exception);
+                return;
             }
+
+            if (genereatedContents == null || genereatedContents.size() == 0) {
+                logListener.info("No file generated");
+                return;
+            }
+
+            ApplicationManager.getApplication().invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    String targetFolder = SdkCodeGenExportUtil.getSdkCodeGenerationFolder(project, module, lang, logListener);
+                    try {
+                        SdkCodeGenExportUtil.writeGeneratedCodeFile(genereatedContents, targetFolder, logListener);
+                    } catch (CodeGenerationException codeGenerationException) {
+                        logListener.error("Error writing generating file to disk", codeGenerationException);
+                    }
+                }
+            });
+        } catch (Exception ex) {
+            if (LOG.isDebugEnabled()) {
+                LOG.error(ex);
+            }
+            logListener.error(ex.getMessage());
+            IdeaUtil.showNotification(project, getTitle(), String.format("Code generation failed, reason: %s", ex.getMessage()), NotificationType.ERROR, null);
+        }
     }
 
     private String getTitle() {
