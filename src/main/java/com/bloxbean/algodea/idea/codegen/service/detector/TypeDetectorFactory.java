@@ -17,6 +17,7 @@ public enum TypeDetectorFactory {
         detectors.add(new AppCallTypeDetector());
         detectors.add(new StatelessCallTypeDetector());
         detectors.add(new AssetTxnTypeDetector());
+        detectors.add(new TransferTxnTypeDetector());
     }
 
     public TxnType deletectType(SignedTransaction signedTransaction, Transaction transaction) {

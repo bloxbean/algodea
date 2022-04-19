@@ -30,6 +30,9 @@ public class JSSdkCodeGenerator implements SdkCodeGenerator {
     //Asset txns
     private static final String JS_ASSET_TXN_TEMPLATE = "_sdk_js.assetTxn.js";
 
+    //Payment txn (Algo & ASA)
+    private static final String JS_PAYMENT_TXN_TEMPLATE = "_sdk_js.paymentTxn.js";
+
     private final static String JS_PACKAGE_JSON = "_sdk_js.package.json";
 
     private final static String TARGET_JS_FILE = "TARGET_JS_FILE";
@@ -88,6 +91,13 @@ public class JSSdkCodeGenerator implements SdkCodeGenerator {
             if (targetFileName == null)
                 targetFileName = type.toString().toLowerCase();
             return createTxnFromTemplate(JS_ASSET_TXN_TEMPLATE, transaction, signer, nodeInfo, codeGenInfo, targetFileName, logListener);
+
+        } else if (type == TxnType.TRANSFER_ALGO
+                || type == TxnType.TRANSFER_ASA) {
+
+            if (targetFileName == null)
+                targetFileName = type.toString().toLowerCase();
+            return createTxnFromTemplate(JS_PAYMENT_TXN_TEMPLATE, transaction, signer, nodeInfo, codeGenInfo, targetFileName, logListener);
         } else
             throw new CodeGenerationException("Code generation is not supported for the txn type: " + type);
     }

@@ -84,6 +84,8 @@ main();
 #if(${txn.lastValid})
     //params.lastRound = ${txn.lastValid};
 #end
+    //const enc = new TextEncoder();
+    //let note = enc.encode("Hello World");
 #if(${txn.note})
     let note = new Uint8Array(Buffer.from("${txn.note}", "base64"));
 #else
@@ -97,7 +99,7 @@ main();
 #else
     let closeToRemainderTo = undefined;
 #end
-#if(${txn.closeRemainderTo})
+#if(${txn.rekeyTo})
     let rekeyTo = "${txn.rekeyTo}";
 #else
     let rekeyTo = undefined;

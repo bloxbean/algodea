@@ -1,0 +1,149 @@
+const algosdk = require('algosdk');
+
+// user declared algod connection parameters
+algodServer = "${ALGOD_SERVER}";
+algodPort = "${ALGOD_PORT}";
+algodToken = "${ALGOD_TOKEN}";
+
+//Signing account
+let  signingAccount = algosdk.mnemonicToSecretKey("${SIGNER_MNEMONIC}");
+
+#if(${codegen_info.txnType} == 'TRANSFER_ALGO')
+#transferAlgo()
+#end
+#if(${codegen_info.txnType} == 'TRANSFER_ASA')
+#transferAsset()
+#end
+
+async function main() {
+    try {
+        // initialize an algodClient
+        let algodClient = new algosdk.Algodv2(algodToken, algodServer, algodPort);
+
+#if(${codegen_info.txnType} == 'TRANSFER_ALGO')
+        // transfer algo
+        await transferAlgo(algodClient);
+#end
+#if(${codegen_info.txnType} == 'TRANSFER_ASA')
+        // transfer asa
+        await transferASA(algodClient);
+#end
+    } catch (err) {
+        console.log("err", err);
+    }
+}
+
+main();
+
+### txn_options macro starts
+#macro(txn_options)
+    // get suggested parameters
+    let params = await algodClient.getTransactionParams().do();
+#if(${txn.fee})
+    params.fee = ${txn.fee};
+#end
+#if(${txn.firstValid})
+    //params.firstRound = ${txn.firstValid};
+#end
+#if(${txn.lastValid})
+    //params.lastRound = ${txn.lastValid};
+#end
+    //const enc = new TextEncoder();
+    //let note = enc.encode("Hello World");
+#if(${txn.note})
+    let note = new Uint8Array(Buffer.from("${txn.note}", "base64"));
+#else
+    let note = undefined;
+#end
+#if(${txn.lease})
+    params.lease = "${txn.lease}";
+#end
+#if(${txn.closeRemainderTo})
+    let closeToRemainderTo = "${txn.closeRemainderTo}"
+#else
+    let closeToRemainderTo = undefined;
+#end
+#if(${txn.rekeyTo})
+    let rekeyTo = "${txn.rekeyTo}";
+#else
+    let rekeyTo = undefined;
+#end
+    // params.flatFee = true;
+    console.log(params);
+#end
+### txn_options macro ends
+
+#macro(transferAsset)
+async function transferASA(algodClient) {
+    let sender = "${txn.sender}";
+    let recipient = "${txn.assetReceiver}"
+    let amount = ${txn.assetAmount}
+    let assetID = ${txn.xferAsset};
+
+    #txn_options()
+    let revocationTarget = undefined;
+
+    // create txn
+    let txn = algosdk.makeAssetTransferTxnWithSuggestedParams(
+        sender,
+        recipient,
+        closeToRemainderTo,
+        revocationTarget,
+        amount,
+        note,
+        assetID,
+        params,
+        rekeyTo);
+
+    // sign and send txn
+    let rawSignedTxn = txn.signTxn(signingAccount.sk)
+    let tx = (await algodClient.sendRawTransaction(rawSignedTxn).do());
+
+    // wait for transaction to be confirmed
+    const ptx = await algosdk.waitForConfirmation(algodClient, tx.txId, 4);
+
+    //Get the completed Transaction
+    console.log("Transaction " + tx.txId + " confirmed in round " + ptx["confirmed-round"]);
+
+    console.log("Sender   : " + sender);
+    console.log("Receiver : " + recipient);
+    console.log("Asset Id : " + assetID);
+    console.log("Amount   : " + amount);
+}
+#end
+
+#macro(transferAlgo)
+async function transferAlgo(algodClient) {
+    let sender = "${txn.sender}";
+    let recipient = "${txn.receiver}"
+    let amount = ${txn.amount}
+
+    #txn_options()
+    let revocationTarget = undefined;
+
+    // create txn
+    let txn = algosdk.makePaymentTxnWithSuggestedParams(
+        sender,
+        recipient,
+        amount,
+        closeToRemainderTo,
+        note,
+        params,
+        rekeyTo);
+
+    // sign and send txn
+    let rawSignedTxn = txn.signTxn(signingAccount.sk)
+    let tx = (await algodClient.sendRawTransaction(rawSignedTxn).do());
+
+    // wait for transaction to be confirmed
+    const ptx = await algosdk.waitForConfirmation(algodClient, tx.txId, 4);
+
+    //Get the completed Transaction
+    console.log("Transaction " + tx.txId + " confirmed in round " + ptx["confirmed-round"]);
+
+    console.log("Sender   : " + sender);
+    console.log("Receiver : " + recipient);
+    console.log("Amount   : " + amount);
+}
+#end
+

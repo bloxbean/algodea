@@ -2,6 +2,7 @@ package com.bloxbean.algodea.idea.transaction.action;
 
 import com.algorand.algosdk.account.Account;
 import com.algorand.algosdk.crypto.Address;
+import com.bloxbean.algodea.idea.codegen.model.CodeGenInfo;
 import com.bloxbean.algodea.idea.common.AlgoIcons;
 import com.bloxbean.algodea.idea.common.Tuple;
 import com.bloxbean.algodea.idea.core.action.BaseTxnAction;
@@ -52,6 +53,7 @@ public class TransferAction extends BaseTxnAction {
 
         try {
             TransferDialog transferDialog = new TransferDialog(project);
+            transferDialog.enableCodeGen();
             boolean ok = transferDialog.showAndGet();
 
             if (!ok) {
@@ -91,6 +93,11 @@ public class TransferAction extends BaseTxnAction {
 
                 @Override
                 public void run(@NotNull ProgressIndicator indicator) {
+                    RequestMode callRequestMode = requestMode;
+                    if(callRequestMode.equals(RequestMode.CODE_GENERATE)) {
+                        callRequestMode = RequestMode.EXPORT_SIGNED;
+                    }
+
                     console.showInfoMessage(String.format("Starting %s ...\n", getTxnCommand()));
                     try {
                         Result result = null;
@@ -109,25 +116,18 @@ public class TransferAction extends BaseTxnAction {
 
                         if (transferDialog.isAlgoTransfer()) { //SignerAccount and fromAddress should be same
                             result = transactionService.transfer(signerAccount, fromAddress, toAddress.toString(), amountTuple._2().longValue(),
-                                     txnDetailsParameters, requestMode);
+                                     txnDetailsParameters, callRequestMode);
                         } else { //asset transfer
-                            result = assetTransactionService.assetTransfer(signerAccount, fromAddress, toAddress.toString(), asset, amountTuple._2(), txnDetailsParameters, requestMode);
+                            result = assetTransactionService.assetTransfer(signerAccount, fromAddress, toAddress.toString(),
+                                    asset, amountTuple._2(), txnDetailsParameters, callRequestMode);
                         }
 
-                        processResult(project, module, result, requestMode, logListener);
-//                        if(requestMode == null || requestMode.equals(RequestMode.TRANSACTION)) {
-//                            if (result.isSuccessful()) {
-//                                console.showInfoMessage(String.format("Successfully transferred %s %s from %s to %s  ", amountInDecimal,
-//                                        finalAssetName, fromAccount.getAddress().toString(), toAddress.toString()));
-//                                IdeaUtil.showNotification(project, getTitle(), String.format("%s was successful", getTxnCommand()),
-//                                        NotificationType.INFORMATION, null);
-//                            } else {
-//                                console.showErrorMessage(String.format("%s failed", getTxnCommand()));
-//                                IdeaUtil.showNotification(project, getTitle(), String.format("%s failed", getTxnCommand()), NotificationType.ERROR, null);
-//                            }
-//                        } else if(requestMode.equals(RequestMode.EXPORT_SIGNED) || requestMode.equals(RequestMode.EXPORT_UNSIGNED)) {
-//                            exportTransaction(project, module, requestMode, result, logListener);
-//                        }
+                        if (requestMode.equals(RequestMode.CODE_GENERATE)) {
+                            CodeGenInfo codeGenInfo = new CodeGenInfo();
+                            processCodeGeneration(project, module, signerAccount, result, codeGenInfo, logListener);
+                        } else {
+                            processResult(project, module, result, requestMode, logListener);
+                        }
                     } catch (Exception exception) {
                         if (LOG.isDebugEnabled()) {
                             LOG.warn(exception);
