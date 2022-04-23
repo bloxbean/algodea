@@ -61,7 +61,7 @@ public class ApplicationStateExportAction extends AlgoBaseAction {
                             @Override
                             public void run() {
                                 try {
-                                    ExporterUtil.exportDryRunApplications(module, result, "applications", logListener);
+                                    ExporterUtil.exportDryRunApplications(project, module, result, "applications", logListener);
                                 } catch (Exception exception) {
                                     console.showErrorMessage("Application(s) export failed");
                                     console.showErrorMessage(exception.getMessage());

@@ -78,7 +78,7 @@ public abstract class BaseTxnAction extends AlgoBaseAction {
                         }
 
                         logListener.info(finalResult.getResponse());
-                        boolean status = ExporterUtil.exportTransaction(module, finalResult.getResponse(), txnOutputFileName, logListener);
+                        boolean status = ExporterUtil.exportTransaction(project, module, finalResult.getResponse(), txnOutputFileName, logListener);
                         if(status) {
                             IdeaUtil.showNotification(project, "Export Transaction", String.format("Export transaction has been completed"),
                                     NotificationType.INFORMATION, null);
@@ -151,7 +151,7 @@ public abstract class BaseTxnAction extends AlgoBaseAction {
                         }
 
 //                      logListener.info(finalResult.getResponse());
-                        boolean status = ExporterUtil.exportDryRunResponse(module, finalResult.getResponse(), dryRunOutputFile, logListener);
+                        boolean status = ExporterUtil.exportDryRunResponse(project, module, finalResult.getResponse(), dryRunOutputFile, logListener);
                         if(status) {
                             IdeaUtil.showNotification(project, "Dry Run", String.format("Dry run transaction has been completed"),
                                     NotificationType.INFORMATION, null);
@@ -206,7 +206,7 @@ public abstract class BaseTxnAction extends AlgoBaseAction {
                         }
 
 //                      logListener.info(finalResult.getResponse());
-                        boolean status = ExporterUtil.exportDryRunDumpResponse(module, finalResult.getResponse(), debuggerContextOutputFile, logListener);
+                        boolean status = ExporterUtil.exportDryRunDumpResponse(project, module, finalResult.getResponse(), debuggerContextOutputFile, logListener);
                         if(status) {
                             IdeaUtil.showNotification(project, "Dry Run dump", String.format("Dry Run dump exported successfully"),
                                     NotificationType.INFORMATION, null);

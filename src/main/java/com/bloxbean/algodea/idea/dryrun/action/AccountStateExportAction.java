@@ -60,7 +60,7 @@ public class AccountStateExportAction extends AlgoBaseAction {
                             @Override
                             public void run() {
                                 try {
-                                    ExporterUtil.exportDryRunAccounts(module, result, "accounts", logListener);
+                                    ExporterUtil.exportDryRunAccounts(project, module, result, "accounts", logListener);
                                 } catch (Exception exception) {
                                     console.showErrorMessage("Account(s) export failed");
                                     console.showErrorMessage(exception.getMessage());

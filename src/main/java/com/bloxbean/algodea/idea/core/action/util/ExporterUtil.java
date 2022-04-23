@@ -4,6 +4,7 @@ import com.bloxbean.algodea.idea.nodeint.service.LogListener;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.module.Module;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -13,8 +14,8 @@ import java.io.IOException;
 import static com.bloxbean.algodea.idea.common.AlgoConstants.*;
 
 public class ExporterUtil {
-    public static boolean exportTransaction(Module module, String txnJson, String outputFileName, LogListener logListener) throws Exception {
-        VirtualFile txnOutputFolder = AlgoContractModuleHelper.getTxnOutputFolder(module);
+    public static boolean exportTransaction(Project project, Module module, String txnJson, String outputFileName, LogListener logListener) throws Exception {
+        VirtualFile txnOutputFolder = AlgoContractModuleHelper.getTxnOutputFolder(project, module);
 
         String txnOutFileName = getOutputFileName(txnOutputFolder, outputFileName, ALGO_TXN_FILE_EXT, "Export Transaction", logListener);
         if(StringUtil.isEmpty(txnOutFileName))
@@ -35,8 +36,8 @@ public class ExporterUtil {
         return true;
     }
 
-    public static boolean exportDryRunResponse(Module module, String dryRunResult, String outputFileName, LogListener logListener) throws Exception {
-        VirtualFile dryRunOutputFolder = AlgoContractModuleHelper.getDryRunOutputFolder(module);
+    public static boolean exportDryRunResponse(Project project, Module module, String dryRunResult, String outputFileName, LogListener logListener) throws Exception {
+        VirtualFile dryRunOutputFolder = AlgoContractModuleHelper.getDryRunOutputFolder(project, module);
 
         String txnOutFileName = getOutputFileName(dryRunOutputFolder, outputFileName, ALGO_DRY_RUN_FILE_EXT, "Dry run", logListener);
         if(StringUtil.isEmpty(txnOutFileName))
@@ -57,8 +58,8 @@ public class ExporterUtil {
         return true;
     }
 
-    public static boolean exportDryRunDumpResponse(Module module, String debugContext, String outputFileName, LogListener logListener) throws Exception {
-        VirtualFile dryRunOutputFolder = AlgoContractModuleHelper.getDryRunOutputFolder(module);
+    public static boolean exportDryRunDumpResponse(Project project, Module module, String debugContext, String outputFileName, LogListener logListener) throws Exception {
+        VirtualFile dryRunOutputFolder = AlgoContractModuleHelper.getDryRunOutputFolder(project, module);
 
         String txnOutFileName = getOutputFileName(dryRunOutputFolder, outputFileName, ALGO_DEBUGGER_CONTEXT_FILE_EXT, "Debugger Context", logListener);
         if(StringUtil.isEmpty(txnOutFileName))
@@ -79,8 +80,8 @@ public class ExporterUtil {
         return true;
     }
 
-    public static boolean exportDryRunAccounts(Module module, String accounts, String outputFileName, LogListener logListener) throws Exception {
-        VirtualFile dryRunOutputFolder = AlgoContractModuleHelper.getDryRunOutputFolder(module);
+    public static boolean exportDryRunAccounts(Project project, Module module, String accounts, String outputFileName, LogListener logListener) throws Exception {
+        VirtualFile dryRunOutputFolder = AlgoContractModuleHelper.getDryRunOutputFolder(project, module);
 
         String accountsOutputFie = getOutputFileName(dryRunOutputFolder, outputFileName, ".json", "Export accounts", logListener);
         if(StringUtil.isEmpty(accountsOutputFie))
@@ -101,8 +102,8 @@ public class ExporterUtil {
         return true;
     }
 
-    public static boolean exportDryRunApplications(Module module, String accounts, String outputFileName, LogListener logListener) throws Exception {
-        VirtualFile dryRunOutputFolder = AlgoContractModuleHelper.getDryRunOutputFolder(module);
+    public static boolean exportDryRunApplications(Project project, Module module, String accounts, String outputFileName, LogListener logListener) throws Exception {
+        VirtualFile dryRunOutputFolder = AlgoContractModuleHelper.getDryRunOutputFolder(project, module);
 
         String applicationsOutputFile = getOutputFileName(dryRunOutputFolder, outputFileName, ".json", "Export applications", logListener);
         if(StringUtil.isEmpty(applicationsOutputFile))

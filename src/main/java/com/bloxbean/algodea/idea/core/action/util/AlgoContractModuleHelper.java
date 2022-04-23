@@ -63,8 +63,10 @@ public class AlgoContractModuleHelper {
         return basePath + File.separator + AlgoContractModuleHelper.BUILD_FOLDER;
     }
 
-    @NotNull
     private static String getTopLevelFolder(Module module) {
+        if (module == null)
+            return null;
+
         Project project = module.getProject();
         if(project != null) {
             return project.getBasePath();
@@ -141,9 +143,12 @@ public class AlgoContractModuleHelper {
         return moduleOutFolder;
     }
 
-    public static VirtualFile getTxnOutputFolder(Module module) throws Exception{
+    public static VirtualFile getTxnOutputFolder(Project project, Module module) throws Exception{
         VirtualFile moduleOutFolder = null;
         String moduleDir = getTopLevelFolder(module);
+
+        if (StringUtil.isEmpty(moduleDir)) //If module dir is null
+            moduleDir = project.getBasePath();
 
         try {
             File moduleOutFolderFile = new File(
@@ -164,9 +169,12 @@ public class AlgoContractModuleHelper {
 
         return moduleOutFolder;
     }
-    public static VirtualFile getDryRunOutputFolder(Module module) throws Exception{
+    public static VirtualFile getDryRunOutputFolder(Project project, Module module) throws Exception{
         VirtualFile moduleOutFolder = null;
         String moduleDir = getTopLevelFolder(module);
+
+        if (StringUtil.isEmpty(moduleDir)) //If module dir is null
+            moduleDir = project.getBasePath();
 
         try {
             File moduleOutFolderFile = new File(

@@ -98,7 +98,7 @@ public class AtomicTransferDialog extends DialogWrapper {
         try {
             buildFolder = AlgoContractModuleHelper.getBuildFolder(project, module);
 
-            VirtualFile txnFileFolderVf = AlgoContractModuleHelper.getTxnOutputFolder(module);
+            VirtualFile txnFileFolderVf = AlgoContractModuleHelper.getTxnOutputFolder(project, module);
             if(txnFileFolderVf != null)
                 txnFileFolder = txnFileFolderVf.getCanonicalPath();
             else
