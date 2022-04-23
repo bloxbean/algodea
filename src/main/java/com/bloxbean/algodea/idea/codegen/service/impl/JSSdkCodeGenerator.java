@@ -15,13 +15,8 @@ import java.io.File;
 import java.util.*;
 
 public class JSSdkCodeGenerator implements SdkCodeGenerator {
-    private final static String JS_CREATE_APP_TEMPLATE = "_sdk_js.createApp.js";
-    private final static String JS_CALL_APP_TEMPLATE = "_sdk_js.callApp.js";
-    private final static String JS_OPTIN_APP_TEMPLATE = "_sdk_js.optInApp.js";
-    private static final String JS_DELETE_APP_TEMPLATE = "_sdk_js.deleteApp.js";
-    private static final String JS_UPDATE_APP_TEMPLATE = "_sdk_js.updateApp.js";
-    private static final String JS_CLOSE_OUT_APP_TEMPLATE = "_sdk_js.closeOutApp.js";
-    private static final String JS_CLEAR_STATE_APP_TEMPLATE = "_sdk_js.clearStateApp.js";
+    //Stateful contract
+    private final static String JS_STATEFUL_APP_TEMPLATE = "_sdk_js.statefulAppTxn.js";
 
     //Stateless contracts
     private static final String JS_LOGIC_SIG_CONTRACT_TEMPLATE = "_sdk_js.logicSigTxn.js";
@@ -40,34 +35,16 @@ public class JSSdkCodeGenerator implements SdkCodeGenerator {
     @Override
     public List<FileContent> generateCode(Transaction transaction, TxnType type, Account signer, NodeInfo nodeInfo, CodeGenInfo codeGenInfo,
                                           String targetFileName, LogListener logListener) throws CodeGenerationException {
-        if (type == TxnType.APP_CREATE) {
+        if (type == TxnType.APP_CREATE
+                || type == TxnType.APP_CALL
+                || type == TxnType.APP_OPTIN
+                || type == TxnType.APP_DELETE
+                || type == TxnType.APP_UPDATE
+                || type == TxnType.APP_CLOSEOUT
+                || type == TxnType.APP_CLEARSTATE) {
             if (targetFileName == null)
-                targetFileName = "createApp";
-            return createTxnFromTemplate(JS_CREATE_APP_TEMPLATE, transaction, signer, nodeInfo, codeGenInfo, targetFileName, logListener);
-        } else if (type == TxnType.APP_CALL) {
-            if (targetFileName == null)
-                targetFileName = "callApp";
-            return createTxnFromTemplate(JS_CALL_APP_TEMPLATE, transaction, signer, nodeInfo, codeGenInfo, targetFileName, logListener);
-        } else if (type == TxnType.APP_OPTIN) {
-            if (targetFileName == null)
-                targetFileName = "optInApp";
-            return createTxnFromTemplate(JS_OPTIN_APP_TEMPLATE, transaction, signer, nodeInfo, codeGenInfo, targetFileName, logListener);
-        } else if (type == TxnType.APP_DELETE) {
-            if (targetFileName == null)
-                targetFileName = "deleteApp";
-            return createTxnFromTemplate(JS_DELETE_APP_TEMPLATE, transaction, signer, nodeInfo, codeGenInfo, targetFileName, logListener);
-        } else if (type == TxnType.APP_UPDATE) {
-            if (targetFileName == null)
-                targetFileName = "updateApp";
-            return createTxnFromTemplate(JS_UPDATE_APP_TEMPLATE, transaction, signer, nodeInfo, codeGenInfo, targetFileName, logListener);
-        } else if (type == TxnType.APP_CLOSEOUT) {
-            if (targetFileName == null)
-                targetFileName = "closeOutApp";
-            return createTxnFromTemplate(JS_CLOSE_OUT_APP_TEMPLATE, transaction, signer, nodeInfo, codeGenInfo, targetFileName, logListener);
-        } else if (type == TxnType.APP_CLEARSTATE) {
-            if (targetFileName == null)
-                targetFileName = "clearStateApp";
-            return createTxnFromTemplate(JS_CLEAR_STATE_APP_TEMPLATE, transaction, signer, nodeInfo, codeGenInfo, targetFileName, logListener);
+                targetFileName = type.toString().toLowerCase();
+            return createTxnFromTemplate(JS_STATEFUL_APP_TEMPLATE, transaction, signer, nodeInfo, codeGenInfo, targetFileName, logListener);
         } else if (type == TxnType.LOGIC_SIG_CONTRACT) {
             if (targetFileName == null) {
                 targetFileName = getStatelessTargetFileName(codeGenInfo);

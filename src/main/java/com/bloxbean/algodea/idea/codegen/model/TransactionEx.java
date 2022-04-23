@@ -156,8 +156,13 @@ public class TransactionEx extends Transaction {
         return txn.freezeState;
     }
 
-    public List<byte[]> getApplicationArgs() {
-        return txn.applicationArgs;
+    public List<String> getApplicationArgs() {
+        if (txn.applicationArgs != null && txn.applicationArgs.size() > 0) {
+            return txn.applicationArgs.stream()
+                    .map(bytes -> Base64.encode(bytes))
+                    .collect(Collectors.toList());
+        } else
+            return null;
     }
 
     public OnCompletion getOnCompletion() {
@@ -172,13 +177,8 @@ public class TransactionEx extends Transaction {
         if (txn.accounts == null)
             return Collections.EMPTY_LIST;
         else
-            return txn.accounts.stream().map(address -> {
-                try {
-                    return address.encodeAsString();
-                } catch (NoSuchAlgorithmException e) {
-                    return "";
-                }
-            }).collect(Collectors.toList());
+            return txn.accounts.stream().map(address ->toAddressString(address))
+                    .collect(Collectors.toList());
     }
 
     public List<Long> getForeignApps() {

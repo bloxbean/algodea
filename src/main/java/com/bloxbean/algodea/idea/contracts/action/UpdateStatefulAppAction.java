@@ -104,6 +104,7 @@ public class UpdateStatefulAppAction extends BaseTxnAction {
 
             UpdateAppDialog dialog = new UpdateAppDialog(project, cacheService.getContract());
 
+            dialog.enableCodeGen();
            //Disable dry run for update
 //            dialog.enableDryRun();
 
@@ -229,10 +230,17 @@ public class UpdateStatefulAppAction extends BaseTxnAction {
                 @Override
                 public void run(@NotNull ProgressIndicator indicator) {
                     console.showInfoMessage("Updating stateful smart contract ...");
+
+                    RequestMode originalReqMode = requestMode;
+                    RequestMode callRequestMode = originalReqMode;
+                    if(callRequestMode.equals(RequestMode.CODE_GENERATE)) {
+                        callRequestMode = RequestMode.EXPORT_SIGNED;
+                    }
+
                     Long appId = appTxnBaseForm.getAppId();
                     Result result = null;
                     try {
-                       result = sfService.updateApp(appId, signerAccount, senderAddress, appProgText, clearProgText, generalTxnDetailsParam, requestMode);
+                       result = sfService.updateApp(appId, signerAccount, senderAddress, appProgText, clearProgText, generalTxnDetailsParam, callRequestMode);
                     } catch (Exception exception) {
                         if(LOG.isDebugEnabled()) {
                             LOG.warn(exception);
@@ -255,6 +263,8 @@ public class UpdateStatefulAppAction extends BaseTxnAction {
                             console.showErrorMessage("Update App failed");
                             IdeaUtil.showNotification(project, "Update App", "Update App failed", NotificationType.ERROR, null);
                         }
+                    } else if (originalReqMode.equals(RequestMode.CODE_GENERATE)) {
+                        processCodeGeneration(project, module, signerAccount, result, logListener);
                     } else {
                         processResult(project, module, result, requestMode, logListener);
                     }

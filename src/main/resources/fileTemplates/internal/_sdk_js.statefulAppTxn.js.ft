@@ -1,0 +1,455 @@
+const algosdk = require('algosdk');
+
+// user declared algod connection parameters
+algodServer = "${ALGOD_SERVER}";
+algodPort = "${ALGOD_PORT}";
+algodToken = "${ALGOD_TOKEN}";
+
+//Signing account
+let  signingAccount = algosdk.mnemonicToSecretKey("${SIGNER_MNEMONIC}");
+
+#if(${codegen_info.txnType} == 'APP_CREATE')
+// create app
+#createApp()
+#end
+#if(${codegen_info.txnType} == 'APP_OPTIN')
+// optIn app
+#optInApp()
+#end
+#if(${codegen_info.txnType} == 'APP_CALL')
+// call app
+#callApp()
+#end
+#if(${codegen_info.txnType} == 'APP_DELETE')
+// delete app
+#deleteApp()
+#end
+#if(${codegen_info.txnType} == 'APP_UPDATE')
+// update app
+#updateApp()
+#end
+#if(${codegen_info.txnType} == 'APP_CLOSEOUT')
+// closeout app
+#closeOutApp()
+#end
+#if(${codegen_info.txnType} == 'APP_CLEARSTATE')
+// clear app
+#clearApp()
+#end
+// helper function to await transaction confirmation
+// Function used to wait for a tx confirmation
+const waitForConfirmation = async function (algodClient, txId) {
+    let status = (await algodClient.status().do());
+    let lastRound = status["last-round"];
+    while (true) {
+        const pendingInfo = await algodClient.pendingTransactionInformation(txId).do();
+        if (pendingInfo["confirmed-round"] !== null && pendingInfo["confirmed-round"] > 0) {
+            //Got the completed Transaction
+            console.log("Transaction " + txId + " confirmed in round " + pendingInfo["confirmed-round"]);
+            break;
+        }
+        lastRound++;
+        await algodClient.statusAfterBlock(lastRound).do();
+    }
+};
+
+async function main() {
+    try {
+        // initialize an algodClient
+        let algodClient = new algosdk.Algodv2(algodToken, algodServer, algodPort);
+
+#if(${codegen_info.txnType} == 'APP_CREATE')
+        // create application
+        await createApp(algodClient);
+#end
+#if(${codegen_info.txnType} == 'APP_OPTIN')
+        // optIn application
+        await optInApp(algodClient);
+#end
+#if(${codegen_info.txnType} == 'APP_CALL')
+        // call application
+        await callApp(algodClient);
+#end
+#if(${codegen_info.txnType} == 'APP_DELETE')
+        // delete application
+        await deleteApp(algodClient);
+#end
+#if(${codegen_info.txnType} == 'APP_UPDATE')
+        // update application
+        await updateApp(algodClient);
+#end
+#if(${codegen_info.txnType} == 'APP_CLOSEOUT')
+        // closeout application
+        await closeOutApp(algodClient);
+#end
+#if(${codegen_info.txnType} == 'APP_CLEARSTATE')
+            // clearstate application
+            clearApp(algodClient);
+#end
+    } catch (err) {
+        console.log("err", err);
+    }
+}
+
+main();
+
+#macro(createApp)
+async function createApp(algodClient) {
+    let creator = "${txn.sender}";
+
+    // compiled approval program
+    let approvalProgramCompiled = "${APPROVAL_PROG_COMPILED}";
+
+    // compiled clear state program
+    let clearProgramCompiled = "${CLEAR_STATE_PROG_COMPILED}";
+
+    // compile programs if your have source
+    //let approvalProgram = await compileProgram(algodClient, approvalProgramSourceInitial);
+    //let clearProgram = await compileProgram(algodClient, clearProgramSource);
+
+    let approvalCompiledBytes = new Uint8Array(Buffer.from(approvalProgramCompiled, "base64"));
+    let clearStateCompiledBytes = new Uint8Array(Buffer.from(clearProgramCompiled, "base64"));
+
+    // declare application state storage (immutable)
+    let localInts = ${LOCAL_INTS};
+    let localBytes = ${LOCAL_BYTES};
+    let globalInts = ${GLOBAL_INTS};
+    let globalBytes = ${GLOBAL_BYTES};
+
+    #if(${txn.extraPages})
+    let extraPages = ${txn.extraPages};
+    #else
+    let extraPages = undefined;
+    #end
+
+    #app_options()
+    #txn_options()
+
+    // declare onComplete as NoOp
+    let onComplete = algosdk.OnApplicationComplete.NoOpOC;
+
+    // create unsigned transaction
+    let txn = algosdk.makeApplicationCreateTxn(creator, params, onComplete,
+        approvalCompiledBytes, clearStateCompiledBytes,
+        localInts, localBytes, globalInts, globalBytes, applArgs, accounts, foreignApps,
+        foreignAssets, note, lease, rekeyTo, extraPages);
+    let txId = txn.txID().toString();
+
+    // Sign the transaction
+    let signedTxn = txn.signTxn(signingAccount.sk);
+    console.log("Signed transaction with txID: %s", txId);
+
+    // Submit the transaction
+    await algodClient.sendRawTransaction(signedTxn).do();
+
+    // Wait for confirmation
+    await waitForConfirmation(algodClient, txId);
+
+    // display results
+    let transactionResponse = await algodClient.pendingTransactionInformation(txId).do();
+    let appId = transactionResponse['application-index'];
+    console.log("Created new app-id: ", appId);
+    return appId;
+}
+
+// helper function to compile program source
+/* async function compileProgram(algodClient, programSource) {
+    let encoder = new TextEncoder();
+    let programBytes = encoder.encode(programSource);
+    let compileResponse = await algodClient.compile(programBytes).do();
+    let compiledBytes = new Uint8Array(Buffer.from(compileResponse.result, "base64"));
+    return compiledBytes;
+}*/
+#end
+
+#macro(optInApp)
+async function optInApp(algodClient) {
+    let appId = ${txn.applicationId};
+
+    let sender = "${txn.sender}";
+    #app_options()
+    #txn_options()
+
+    // create unsigned transaction
+    let txn = algosdk.makeApplicationOptInTxn(sender, params, appId, applArgs, accounts, foreignApps,
+                                                foreignAssets, note, lease, rekeyTo);
+    let txId = txn.txID().toString();
+
+    // Sign the transaction
+    let signedTxn = txn.signTxn(signingAccount.sk);
+    console.log("Signed transaction with txID: %s", txId);
+
+    // Submit the transaction
+    await algodClient.sendRawTransaction(signedTxn).do();
+
+    // Wait for confirmation
+    await waitForConfirmation(algodClient, txId);
+
+    // display results
+    let transactionResponse = await algodClient.pendingTransactionInformation(txId).do();
+    console.log("Opted-in to app-id:",transactionResponse['txn']['txn']['apid'])
+}
+#end
+#macro(callApp)
+async function callApp(algodClient) {
+    let appId = ${txn.applicationId};
+
+    let sender = "${txn.sender}";
+    #app_options()
+    #txn_options()
+
+    // create unsigned transaction
+    let txn = algosdk.makeApplicationNoOpTxn(sender, params, appId, applArgs, accounts, foreignApps, foreignAssets,
+        note, lease, rekeyTo);
+    let txId = txn.txID().toString();
+
+    // Sign the transaction
+    let signedTxn = txn.signTxn(signingAccount.sk);
+    console.log("Signed transaction with txID: %s", txId);
+
+    // Submit the transaction
+    await algodClient.sendRawTransaction(signedTxn).do();
+
+    // Wait for confirmation
+    await waitForConfirmation(algodClient, txId);
+
+    // display results
+    let transactionResponse = await algodClient.pendingTransactionInformation(txId).do();
+    console.log("Called app-id:",transactionResponse['txn']['txn']['apid'])
+    if (transactionResponse['global-state-delta'] !== undefined ) {
+        console.log("Global State updated:",transactionResponse['global-state-delta']);
+    }
+    if (transactionResponse['local-state-delta'] !== undefined ) {
+        console.log("Local State updated:",transactionResponse['local-state-delta']);
+    }
+}
+#end
+
+#macro(deleteApp)
+async function deleteApp(algodClient) {
+    let appId = ${txn.applicationId};
+
+    let sender = "${txn.sender}";
+    #app_options()
+    #txn_options()
+
+    // create unsigned transaction
+    let txn = algosdk.makeApplicationDeleteTxn(sender, params, appId, applArgs, accounts, foreignApps, foreignAssets,
+                                                note, lease, rekeyTo);
+    let txId = txn.txID().toString();
+
+    // Sign the transaction
+    let signedTxn = txn.signTxn(signingAccount.sk);
+    console.log("Signed transaction with txID: %s", txId);
+
+    // Submit the transaction
+    await algodClient.sendRawTransaction(signedTxn).do();
+
+    // Wait for confirmation
+    await waitForConfirmation(algodClient, txId);
+
+    // display results
+    let transactionResponse = await algodClient.pendingTransactionInformation(txId).do();
+    let deletedAppId = transactionResponse['txn']['txn'].apid;
+    console.log("Deleted app-id: ",deletedAppId);
+    return appId;
+}
+#end
+
+#macro(updateApp)
+async function updateApp(algodClient) {
+    let appId = ${txn.applicationId};
+    let sender = "${txn.sender}";
+
+    // compiled approval program
+    let approvalProgramCompiled = "${APPROVAL_PROG_COMPILED}";
+
+    // compiled clear state program
+    let clearProgramCompiled = "${CLEAR_STATE_PROG_COMPILED}";
+
+    // compile programs if your have source
+    //let approvalProgram = await compileProgram(algodClient, approvalProgramSourceInitial);
+    //let clearProgram = await compileProgram(algodClient, clearProgramSource);
+
+    let approvalCompiledBytes = new Uint8Array(Buffer.from(approvalProgramCompiled, "base64"));
+    let clearStateCompiledBytes = new Uint8Array(Buffer.from(clearProgramCompiled, "base64"));
+
+    #app_options()
+    #txn_options()
+
+    // create unsigned transaction
+    let txn = algosdk.makeApplicationUpdateTxn(sender, params, appId, approvalCompiledBytes, clearStateCompiledBytes,
+                                            applArgs, accounts, foreignApps, foreignAssets, note, lease, rekeyTo);
+    let txId = txn.txID().toString();
+
+    // Sign the transaction
+    let signedTxn = txn.signTxn(signingAccount.sk);
+    console.log("Signed transaction with txID: %s", txId);
+
+    // Submit the transaction
+    await algodClient.sendRawTransaction(signedTxn).do();
+
+    // Wait for confirmation
+    await waitForConfirmation(algodClient, txId);
+
+    // display results
+    let transactionResponse = await algodClient.pendingTransactionInformation(txId).do();
+    let updatedAppId = transactionResponse['txn']['txn'].apid;
+    console.log("Updated app-id: ", updatedAppId);
+    return updatedAppId;
+}
+
+// helper function to compile program source
+/* async function compileProgram(algodClient, programSource) {
+    let encoder = new TextEncoder();
+    let programBytes = encoder.encode(programSource);
+    let compileResponse = await algodClient.compile(programBytes).do();
+    let compiledBytes = new Uint8Array(Buffer.from(compileResponse.result, "base64"));
+    return compiledBytes;
+}*/
+#end
+
+#macro(clearApp)
+async function clearApp(algodClient) {
+    let appId = ${txn.applicationId};
+
+    let sender = "${txn.sender}";
+    #app_options()
+    #txn_options()
+
+    // create unsigned transaction
+    let txn = algosdk.makeApplicationClearStateTxn(sender, params, appId, applArgs, accounts, foreignApps, foreignAssets,
+                                                        note, lease, rekeyTo);
+    let txId = txn.txID().toString();
+
+    // Sign the transaction
+    let signedTxn = txn.signTxn(signingAccount.sk);
+    console.log("Signed transaction with txID: %s", txId);
+
+    // Submit the transaction
+    await algodClient.sendRawTransaction(signedTxn).do();
+
+    // Wait for confirmation
+    await waitForConfirmation(algodClient, txId);
+
+    // display results
+    let transactionResponse = await algodClient.pendingTransactionInformation(txId).do();
+    let clearedAppId = transactionResponse['txn']['txn'].apid;
+    console.log("Cleared local state for app-id: ", clearedAppId);
+    return appId;
+}
+#end
+
+#macro(closeOutApp)
+async function closeOutApp(algodClient) {
+    let appId = ${txn.applicationId};
+
+    let sender = "${txn.sender}";
+    #app_options()
+    #txn_options()
+
+    // create unsigned transaction
+    let txn = algosdk.makeApplicationCloseOutTxn(sender, params, appId, applArgs, accounts, foreignApps, foreignAssets,
+                                                    note, lease, rekeyTo);
+    let txId = txn.txID().toString();
+
+    // Sign the transaction
+    let signedTxn = txn.signTxn(signingAccount.sk);
+    console.log("Signed transaction with txID: %s", txId);
+
+    // Submit the transaction
+    await algodClient.sendRawTransaction(signedTxn).do();
+
+    // Wait for confirmation
+    await waitForConfirmation(algodClient, txId);
+
+    // display results
+    let transactionResponse = await algodClient.pendingTransactionInformation(txId).do();
+    console.log("Closed out from app-id:",transactionResponse['txn']['txn']['apid'])
+}
+#end
+### application options macro
+#macro(app_options)
+#if(${txn.applicationArgs})
+
+    let applArgs = [
+#foreach( $arg in ${txn.applicationArgs} )
+        new Uint8Array(Buffer.from("$arg", "base64")),
+#end
+    ];
+#else
+    let applArgs = undefined;
+#end
+
+#if(${txn.accounts})
+    let accounts = [
+#foreach( $arg in ${txn.accounts} )
+       '${arg}',
+#end
+    ];
+#else
+    let accounts = undefined;
+#end
+
+#if(${txn.foreignApps})
+    let foreignApps = [
+#foreach( $arg in ${txn.foreignApps} )
+        ${arg},
+#end
+    ];
+#else
+    let foreignApps = undefined;
+#end
+
+#if(${txn.foreignApps})
+    let foreignAssets = [
+#foreach( $arg in ${txn.foreignAssets} )
+         ${arg},
+#end
+    ];
+#else
+    let foreignAssets = undefined;
+#end
+
+#end
+### application options macro ends
+
+### txn_options macro starts
+#macro(txn_options)
+    // get suggested parameters
+    let params = await algodClient.getTransactionParams().do();
+    // params.flatFee = true;
+#if(${txn.fee})
+    params.fee = ${txn.fee};
+#end
+#if(${txn.firstValid})
+    //params.firstRound = ${txn.firstValid};
+#end
+#if(${txn.lastValid})
+    //params.lastRound = ${txn.lastValid};
+#end
+    //const enc = new TextEncoder();
+    //let note = enc.encode("Hello World");
+#if(${txn.note})
+    let note = new Uint8Array(Buffer.from("${txn.note}", "base64"));
+#else
+    let note = undefined;
+#end
+#if(${txn.lease})
+    let lease = "${txn.lease}";
+#else
+    let lease = undefined;
+#end
+#if(${txn.closeRemainderTo})
+    let closeToRemainderTo = "${txn.closeRemainderTo}"
+#else
+    let closeToRemainderTo = undefined;
+#end
+#if(${txn.rekeyTo})
+    let rekeyTo = "${txn.rekeyTo}";
+#else
+    let rekeyTo = undefined;
+#end
+    console.log(params);
+#end
+### txn_options macro ends

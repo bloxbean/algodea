@@ -92,7 +92,9 @@ main();
     let note = undefined;
 #end
 #if(${txn.lease})
-    params.lease = "${txn.lease}";
+    let lease = "${txn.lease}";
+#else
+    let lease = undefined;
 #end
 #if(${txn.closeRemainderTo})
     let closeToRemainderTo = "${txn.closeRemainderTo}"

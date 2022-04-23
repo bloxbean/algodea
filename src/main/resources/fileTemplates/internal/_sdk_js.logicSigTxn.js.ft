@@ -34,7 +34,9 @@ console.log("My Address: " + myAccount.addr);
     //params.lastRound = ${txn.lastValid};
 #end
 #if(${txn.lease})
-    params.lease = "${txn.lease}";
+    let lease = "${txn.lease}";
+#else
+    let lease = undefined;
 #end
     // params.flatFee = true;
     console.log(params);
