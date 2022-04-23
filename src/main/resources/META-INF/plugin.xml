@@ -194,13 +194,13 @@
             <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl T" second-keystroke="E"/>
         </action>
 
-        <action id="com.bloxbean.algodea.idea.codegen.action.TxnCodeGenAction" class="com.bloxbean.algodea.idea.codegen.action.TxnCodeGenAction"
+        <!--<action id="com.bloxbean.algodea.idea.codegen.action.TxnCodeGenAction" class="com.bloxbean.algodea.idea.codegen.action.TxnCodeGenAction"
                 text="Generate code (Algorand sdk)"
                 popup="true"
                 description="Generate code (Algorand sdk)">
             <add-to-group group-id="ProjectViewPopupMenu" relative-to-action="com.bloxbean.algodea.idea.core.action.AlgoActionGroup"  anchor="before"/>
             <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl T" second-keystroke="G"/>
-        </action>
+        </action> -->
 
         <!-- Stateless contract actions -->
         <action id="com.bloxbean.algodea.idea.stateless.action.TEALSendTransactionAction" class="com.bloxbean.algodea.idea.stateless.action.TEALSendTransactionAction"
