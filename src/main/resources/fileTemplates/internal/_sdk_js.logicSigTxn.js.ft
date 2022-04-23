@@ -9,49 +9,33 @@ algodToken = "${ALGOD_TOKEN}";
 
 tealSrcFile = "${TEAL_FILE}";
 
-// create an algod v2 client
-let algodclient = new algosdk.Algodv2(algodToken, algodServer, algodPort);
-
 ## Delegation transaction
 #if(${codegen_info.logicSigType} == 'DELEGATION_ACCOUNT')
 //Signing account
-let  myAccount = algosdk.mnemonicToSecretKey("${SIGNER_MNEMONIC}");
-console.log("My Address: " + myAccount.addr);
+let  signingAccount = algosdk.mnemonicToSecretKey("${SIGNER_MNEMONIC}");
+console.log("Signing Address: " + signingAccount.addr);
 #end
 
-(async () => {
-
-    // get suggested parameters
-    let params = await algodclient.getTransactionParams().do();
-
-#if(${txn.fee})
-    params.fee = ${txn.fee};
+#if(${codegen_info.logicSigType} == 'DELEGATION_ACCOUNT')
+//Delegated Approval Mode
+#elseif(${codegen_info.logicSigType} == 'CONTRACT_ACCOUNT')
+//Contract Account Mode
 #end
-#if(${txn.firstValid})
-    //params.firstRound = ${txn.firstValid};
-#end
-#if(${txn.lastValid})
-    //params.lastRound = ${txn.lastValid};
-#end
-#if(${txn.lease})
-    let lease = "${txn.lease}";
-#else
-    let lease = undefined;
-#end
-    // params.flatFee = true;
+async function logicSigTransfer(algodClient) {
+    #txn_options()
     console.log(params);
 
     //Compile TEAL
-    let program = await compileTEAL(tealSrcFile);
+    let program = await compileTEAL(tealSrcFile, algodClient);
     //Or, directly use the compiled bytes
     //let program = new Uint8Array(Buffer.from("${codegen_info.logic}", "base64"));
 
 #if(${codegen_info.logicArgs})
-   let args = [
+    let args = [
 #foreach( $arg in ${codegen_info.logicArgs} )
-    new Uint8Array(Buffer.from("$arg", "base64")),
+     new Uint8Array(Buffer.from("$arg", "base64")),
 #end
-   ];
+    ];
     let lsig = new algosdk.LogicSigAccount(program, args);
 #else
     let lsig = algosdk.makeLogicSig(program);
@@ -62,34 +46,16 @@ console.log("My Address: " + myAccount.addr);
     ## Delegation transaction
     let sender = "${SENDER}";
     // sign the logic signature with an account sk
-    lsig.sign(myAccount.sk);
+    lsig.sign(signingAccount.sk);
 #else
     ## Contract transaction
     let sender = lsig.address();
 #end
-
-#if(${txn.closeRemainderTo})
-    let closeToRemainder = "${txn.closeRemainderTo}"
-#else
-    let closeToRemainder = undefined;
-#end
-
-#if(${txn.note})
-    let note = new Uint8Array(Buffer.from("${txn.note}", "base64"));
-#else
-    let note = undefined;
-#end
-#if(${txn.closeRemainderTo})
-   let rekeyTo = "${txn.rekeyTo}";
-#else
-   let rekeyTo = undefined;
-#end
-
 #if(${txn.type} == 'pay')
     let receiver = "${txn.receiver}";
     let amount = ${txn.amount};
 
-    let txn = algosdk.makePaymentTxnWithSuggestedParams(sender, receiver, amount, closeToRemainder, note, params, rekeyTo);
+    let txn = algosdk.makePaymentTxnWithSuggestedParams(sender, receiver, amount, closeToRemainderTo, note, params, rekeyTo);
 #elseif(${txn.type} == 'axfer')
     let receiver = "${txn.assetReceiver}"
 #if(${txn.assetAmount})
@@ -100,35 +66,84 @@ console.log("My Address: " + myAccount.addr);
     let assetId = ${txn.xferAsset};
     let revocationTarget = undefined;
 
-    let txn = algosdk.makeAssetTransferTxnWithSuggestedParams(sender, receiver, closeToRemainder, revocationTarget, amount, note, assetId, params, rekeyTo);
+    let txn = algosdk.makeAssetTransferTxnWithSuggestedParams(sender, receiver, closeToRemainderTo, revocationTarget, amount, note, assetId, params, rekeyTo);
 #end
     // Create the LogicSigTransaction with contract account LogicSig
     let rawSignedTxn = algosdk.signLogicSigTransactionObject(txn, lsig);
 
     // send raw LogicSigTransaction to network
     // fs.writeFileSync("simple.stxn", rawSignedTxn.blob);
-    let tx = (await algodclient.sendRawTransaction(rawSignedTxn.blob).do());
+    let tx = (await algodClient.sendRawTransaction(rawSignedTxn.blob).do());
     console.log("Transaction : " + tx.txId);
-    const confirmedTxn = await algosdk.waitForConfirmation(algodclient, tx.txId, 4);
+    const confirmedTxn = await algosdk.waitForConfirmation(algodClient, tx.txId, 4);
     //Get the completed Transaction
     console.log("Transaction " + tx.txId + " confirmed in round " + confirmedTxn["confirmed-round"]);
+}
 
-})().catch(e => {
-    console.log(e.message);
-    console.log(e);
-});
-
-async function compileTEAL(tealPath) {
+async function compileTEAL(tealPath, algodClient) {
     //Compile TEAL file
     let  fs = require('fs'),
         path = require('path'),
         filePath = path.join(tealPath);
     // filePath = path.join(__dirname, '<filename>');
     let data = fs.readFileSync(filePath);
-    let results = await algodclient.compile(data).do();
+    let results = await algodClient.compile(data).do();
     console.log("Hash = " + results.hash);
     console.log("Result = " + results.result);
     let program = new Uint8Array(Buffer.from(results.result, "base64"));
 
     return program;
 }
+
+async function main() {
+    try {
+        // initialize an algodClient
+        let algodClient = new algosdk.Algodv2(algodToken, algodServer, algodPort);
+
+        await logicSigTransfer(algodClient);
+    } catch (err) {
+        console.log("err", err);
+    }
+}
+
+main()
+
+### txn_options macro starts
+#macro(txn_options)
+    // get suggested parameters
+    let params = await algodClient.getTransactionParams().do();
+    // params.flatFee = true;
+#if(${txn.fee})
+    params.fee = ${txn.fee};
+#end
+#if(${txn.firstValid})
+    //params.firstRound = ${txn.firstValid};
+#end
+#if(${txn.lastValid})
+    //params.lastRound = ${txn.lastValid};
+#end
+    //const enc = new TextEncoder();
+    //let note = enc.encode("Hello World");
+#if(${txn.note})
+    let note = new Uint8Array(Buffer.from("${txn.note}", "base64"));
+#else
+    let note = undefined;
+#end
+#if(${txn.lease})
+    let lease = "${txn.lease}";
+#else
+    let lease = undefined;
+#end
+#if(${txn.closeRemainderTo})
+    let closeToRemainderTo = "${txn.closeRemainderTo}"
+#else
+    let closeToRemainderTo = undefined;
+#end
+#if(${txn.rekeyTo})
+    let rekeyTo = "${txn.rekeyTo}";
+#else
+    let rekeyTo = undefined;
+#end
+    console.log(params);
+#end
+### txn_options macro ends
