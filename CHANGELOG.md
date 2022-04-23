@@ -1,6 +1,10 @@
-### 0.9.0-beta1
+### 0.9.0-beta2
   - AVM 1.1 Opcodes support (TEAL 6)
-  - Client code generation (JavaScript) for Stateful contracts (Experimental)
+  - Client code generation (JavaScript) for 
+      - Stateful contract operations
+      - Stateless contract operations
+      - ASA operations
+      - Transfer Algo/ASA
   - Algoexplorer api endpoints updated
 ### 0.8.0
   - AVM 1.0 Opcodes support (TEAL v5)
