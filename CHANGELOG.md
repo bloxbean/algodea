@@ -1,4 +1,4 @@
-### 0.9.0-beta2
+### 0.9.0
   - AVM 1.1 Opcodes support (TEAL 6)
   - Client code generation (JavaScript) for 
       - Stateful contract operations
