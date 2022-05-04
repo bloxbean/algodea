@@ -6,9 +6,7 @@ algoDEA - Algorand Plugin for Intellij
 
 [algoDEA Documents](https://algodea-docs.bloxbean.com)
 
-Stable Version : [v0.8.0](https://github.com/bloxbean/algodea/releases/tag/v0.8.0) (Available on Jetbrains Plugin Marketplace)
-
-Latest Beta : [v0.9.0-beta2](https://github.com/bloxbean/algodea/releases/tag/v0.9.0-beta2) (TEAL 6 support) (Supported IDE version: 2021.1 or above)
+Stable Version : [v0.9.0](https://github.com/bloxbean/algodea/releases/tag/v0.9.0) (Available on Jetbrains Plugin Marketplace)
 
 ## Features
   - Algorand Smart Contract Project type
@@ -41,8 +39,10 @@ Latest Beta : [v0.9.0-beta2](https://github.com/bloxbean/algodea/releases/tag/v0
       
   - Transfer 
       - Algo, ASA
+
+  - JS Client code (sdk) generation
       
-## Supported IntelliJ version (2020.2 and above)
+## Supported IntelliJ version (2021.1 and above)
 
 The plugin has been tested with the following IDEs
 
